@@ -155,7 +155,7 @@
                     <a href="{{ route('admin.system-overview') }}" 
                        class="nav-item nav-link flex items-center px-4 py-3 text-white rounded-xl font-medium {{ request()->routeIs('admin.system-overview') ? 'active' : '' }}">
                         <i class='bx bx-stats text-xl mr-4'></i>
-                        <span>Gambaran Sistem</span>
+                        <span>Sistem Info</span>
                         @if(request()->routeIs('admin.system-overview'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
