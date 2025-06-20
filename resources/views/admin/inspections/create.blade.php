@@ -42,14 +42,7 @@
         <span class="text-emerald-600 font-medium">Tambah Pemeriksaan</span>
     </div>
 
-    <!-- Back Button -->
-    <div class="mb-6">
-        <a href="{{ route('admin.inspections.index') }}" 
-           class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-            <i class='bx bx-arrow-back mr-2'></i>
-            Kembali ke Senarai Pemeriksaan
-        </a>
-    </div>
+
 
     <!-- Progress Steps -->
     <div class="mb-8">

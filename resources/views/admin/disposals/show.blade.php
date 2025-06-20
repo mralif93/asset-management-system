@@ -51,14 +51,8 @@
         <span class="text-emerald-600 font-medium">Butiran Pelupusan</span>
     </div>
 
-    <!-- Back Button & Actions -->
-    <div class="flex items-center justify-between mb-8">
-        <a href="{{ route('admin.disposals.index') }}" 
-           class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-            <i class='bx bx-arrow-back mr-2'></i>
-            Kembali ke Senarai Pelupusan
-        </a>
-        
+    <!-- Actions -->
+    <div class="flex items-center justify-end mb-8">
         <div class="flex space-x-3">
             @if(($disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu') === 'menunggu')
                 <a href="{{ route('admin.disposals.edit', $disposal) }}" 

@@ -48,14 +48,8 @@
         <span class="text-emerald-600 font-medium">{{ $maintenanceRecord->asset->nama_aset ?? 'Rekod' }}</span>
     </div>
 
-    <!-- Back Button & Actions -->
-    <div class="flex items-center justify-between mb-8">
-        <a href="{{ route('admin.maintenance-records.index') }}" 
-           class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-            <i class='bx bx-arrow-back mr-2'></i>
-            Kembali ke Senarai Penyelenggaraan
-        </a>
-        
+    <!-- Actions -->
+    <div class="flex items-center justify-end mb-8">
         <div class="flex space-x-3">
             <a href="{{ route('admin.maintenance-records.edit', $maintenanceRecord) }}" 
                class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">

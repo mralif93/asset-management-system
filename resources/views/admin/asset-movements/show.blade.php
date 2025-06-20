@@ -48,14 +48,8 @@
         <span class="text-emerald-600 font-medium">{{ $assetMovement->asset->nama_aset }}</span>
     </div>
 
-    <!-- Back Button & Actions -->
-    <div class="flex items-center justify-between mb-8">
-        <a href="{{ route('admin.asset-movements.index') }}" 
-           class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-            <i class='bx bx-arrow-back mr-2'></i>
-            Kembali ke Senarai Pergerakan
-        </a>
-        
+    <!-- Actions -->
+    <div class="flex items-center justify-end mb-8">
         <div class="flex space-x-3">
             @if($assetMovement->status_pergerakan === 'menunggu_kelulusan')
             <a href="{{ route('admin.asset-movements.edit', $assetMovement) }}" 

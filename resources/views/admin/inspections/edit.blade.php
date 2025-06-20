@@ -45,14 +45,7 @@
         <span class="text-emerald-600 font-medium">Edit: {{ $inspection->asset->nama_aset }}</span>
     </div>
 
-    <!-- Back Button -->
-    <div class="mb-6">
-        <a href="{{ route('admin.inspections.show', $inspection) }}" 
-           class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-            <i class='bx bx-arrow-back mr-2'></i>
-            Kembali ke Detail Pemeriksaan
-        </a>
-    </div>
+
 
     <!-- Form Card - Full Width -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
