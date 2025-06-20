@@ -12,34 +12,43 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('masjids_suraus', function (Blueprint $table) {
-            // Add missing fields based on user specifications
+            // Add missing fields that were not included in the previous migration
             
-            // Add jenis field (Masjid/Surau type)
-            $table->string('jenis')->default('Masjid')->after('singkatan_nama');
+            // Add singkatan_nama field (for asset serial generation)
+            if (!Schema::hasColumn('masjids_suraus', 'singkatan_nama')) {
+                $table->string('singkatan_nama', 20)->nullable()->after('nama');
+            }
             
-            // Add poskod field
-            $table->string('poskod')->nullable()->after('alamat_baris_3');
+            // Add separate address lines
+            if (!Schema::hasColumn('masjids_suraus', 'alamat_baris_1')) {
+                $table->string('alamat_baris_1')->nullable()->after('jenis');
+            }
+            if (!Schema::hasColumn('masjids_suraus', 'alamat_baris_2')) {
+                $table->string('alamat_baris_2')->nullable()->after('alamat_baris_1');
+            }
+            if (!Schema::hasColumn('masjids_suraus', 'alamat_baris_3')) {
+                $table->string('alamat_baris_3')->nullable()->after('alamat_baris_2');
+            }
             
-            // Add bandar field
-            $table->string('bandar')->nullable()->after('poskod');
+            // Add negara field
+            if (!Schema::hasColumn('masjids_suraus', 'negara')) {
+                $table->string('negara')->default('Malaysia')->after('negeri');
+            }
             
-            // Add negeri field
-            $table->string('negeri')->nullable()->after('bandar');
+            // Add daerah field (required)
+            if (!Schema::hasColumn('masjids_suraus', 'daerah')) {
+                $table->string('daerah')->default('')->after('negara');
+            }
             
-            // Add no_telefon field
-            $table->string('no_telefon')->nullable()->after('daerah');
+            // Rename telefon to no_telefon if needed
+            if (Schema::hasColumn('masjids_suraus', 'telefon') && !Schema::hasColumn('masjids_suraus', 'no_telefon')) {
+                $table->renameColumn('telefon', 'no_telefon');
+            }
             
-            // Add imam_ketua field
-            $table->string('imam_ketua')->nullable()->after('email');
-            
-            // Add bilangan_jemaah field
-            $table->integer('bilangan_jemaah')->nullable()->after('imam_ketua');
-            
-            // Add tahun_dibina field
-            $table->integer('tahun_dibina')->nullable()->after('bilangan_jemaah');
-            
-            // Add catatan field
-            $table->text('catatan')->nullable()->after('status');
+            // Drop old alamat field since we have separate address lines now
+            if (Schema::hasColumn('masjids_suraus', 'alamat')) {
+                $table->dropColumn('alamat');
+            }
         });
     }
 
@@ -49,17 +58,23 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('masjids_suraus', function (Blueprint $table) {
+            // Add back alamat field
+            $table->text('alamat')->nullable()->after('jenis');
+            
+            // Drop the new fields
             $table->dropColumn([
-                'jenis',
-                'poskod',
-                'bandar', 
-                'negeri',
-                'no_telefon',
-                'imam_ketua',
-                'bilangan_jemaah',
-                'tahun_dibina',
-                'catatan'
+                'singkatan_nama',
+                'alamat_baris_1',
+                'alamat_baris_2', 
+                'alamat_baris_3',
+                'negara',
+                'daerah'
             ]);
+            
+            // Rename no_telefon back to telefon if needed
+            if (Schema::hasColumn('masjids_suraus', 'no_telefon')) {
+                $table->renameColumn('no_telefon', 'telefon');
+            }
         });
     }
 };

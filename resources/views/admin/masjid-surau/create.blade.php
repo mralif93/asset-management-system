@@ -80,6 +80,26 @@
                                 @enderror
                             </div>
 
+                            <!-- Singkatan Nama -->
+                            <div>
+                                <label for="singkatan_nama" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Singkatan Nama
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="singkatan_nama" id="singkatan_nama" x-model="formData.singkatan_nama"
+                                           value="{{ old('singkatan_nama') }}" maxlength="20"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('singkatan_nama') border-red-500 @enderror"
+                                           placeholder="Contoh: MTAJ, SAT">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-tag text-gray-400'></i>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Digunakan untuk penjanaan nombor siri aset</p>
+                                @error('singkatan_nama')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Jenis -->
                             <div>
                                 <label for="jenis" class="block text-sm font-medium text-gray-700 mb-2">
@@ -95,58 +115,6 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Imam/Ketua -->
-                            <div>
-                                <label for="imam_ketua" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Imam/Ketua
-                                </label>
-                                <div class="relative">
-                                    <input type="text" name="imam_ketua" id="imam_ketua" x-model="formData.imam_ketua"
-                                           value="{{ old('imam_ketua') }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                           placeholder="Nama imam atau ketua">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                        <i class='bx bx-user text-gray-400'></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Bilangan Jemaah -->
-                            <div>
-                                <label for="bilangan_jemaah" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Bilangan Jemaah
-                                </label>
-                                <div class="relative">
-                                    <input type="number" name="bilangan_jemaah" id="bilangan_jemaah" x-model="formData.bilangan_jemaah" min="0"
-                                           value="{{ old('bilangan_jemaah') }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                           placeholder="Anggaran bilangan jemaah">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                        <i class='bx bx-group text-gray-400'></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Tahun Dibina -->
-                            <div>
-                                <label for="tahun_dibina" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tahun Dibina
-                                </label>
-                                <div class="relative">
-                                    <input type="number" name="tahun_dibina" id="tahun_dibina" x-model="formData.tahun_dibina" 
-                                           min="1800" max="{{ date('Y') }}" value="{{ old('tahun_dibina') }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                           placeholder="Tahun dibina">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                        <i class='bx bx-calendar text-gray-400'></i>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Status -->
                             <div>
@@ -160,6 +128,63 @@
                                     <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                                 </select>
                                 @error('status')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Imam/Ketua -->
+                            <div>
+                                <label for="imam_ketua" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Imam/Ketua
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="imam_ketua" id="imam_ketua" x-model="formData.imam_ketua"
+                                           value="{{ old('imam_ketua') }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('imam_ketua') border-red-500 @enderror"
+                                           placeholder="Nama imam atau ketua">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-user text-gray-400'></i>
+                                    </div>
+                                </div>
+                                @error('imam_ketua')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Bilangan Jemaah -->
+                            <div>
+                                <label for="bilangan_jemaah" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Bilangan Jemaah
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="bilangan_jemaah" id="bilangan_jemaah" x-model="formData.bilangan_jemaah" min="0"
+                                           value="{{ old('bilangan_jemaah') }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('bilangan_jemaah') border-red-500 @enderror"
+                                           placeholder="Anggaran bilangan jemaah">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-group text-gray-400'></i>
+                                    </div>
+                                </div>
+                                @error('bilangan_jemaah')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Tahun Dibina -->
+                            <div>
+                                <label for="tahun_dibina" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tahun Dibina
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="tahun_dibina" id="tahun_dibina" x-model="formData.tahun_dibina" 
+                                           min="1800" max="{{ date('Y') }}" value="{{ old('tahun_dibina') }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tahun_dibina') border-red-500 @enderror"
+                                           placeholder="Tahun dibina">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-calendar text-gray-400'></i>
+                                    </div>
+                                </div>
+                                @error('tahun_dibina')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -182,26 +207,55 @@
                     </div>
 
                     <div class="p-6 space-y-6">
-                        <!-- Alamat -->
-                        <div>
-                            <label for="alamat" class="block text-sm font-medium text-gray-700 mb-2">
-                                Alamat *
-                            </label>
-                            <textarea name="alamat" id="alamat" rows="3" x-model="formData.alamat" required
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat') border-red-500 @enderror"
-                                      placeholder="Alamat penuh masjid/surau">{{ old('alamat') }}</textarea>
-                            @error('alamat')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                        <!-- Address Lines -->
+                        <div class="space-y-4">
+                            <div>
+                                <label for="alamat_baris_1" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat Baris 1
+                                </label>
+                                <input type="text" name="alamat_baris_1" id="alamat_baris_1" x-model="formData.alamat_baris_1"
+                                       value="{{ old('alamat_baris_1') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat_baris_1') border-red-500 @enderror"
+                                       placeholder="Alamat baris pertama">
+                                @error('alamat_baris_1')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                            <div>
+                                <label for="alamat_baris_2" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat Baris 2
+                                </label>
+                                <input type="text" name="alamat_baris_2" id="alamat_baris_2" x-model="formData.alamat_baris_2"
+                                       value="{{ old('alamat_baris_2') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat_baris_2') border-red-500 @enderror"
+                                       placeholder="Alamat baris kedua">
+                                @error('alamat_baris_2')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                            <div>
+                                <label for="alamat_baris_3" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat Baris 3
+                                </label>
+                                <input type="text" name="alamat_baris_3" id="alamat_baris_3" x-model="formData.alamat_baris_3"
+                                       value="{{ old('alamat_baris_3') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat_baris_3') border-red-500 @enderror"
+                                       placeholder="Alamat baris ketiga (opsional)">
+                                @error('alamat_baris_3')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- Poskod -->
                             <div>
                                 <label for="poskod" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Poskod *
+                                    Poskod
                                 </label>
-                                <input type="text" name="poskod" id="poskod" x-model="formData.poskod" required
+                                <input type="text" name="poskod" id="poskod" x-model="formData.poskod"
                                        value="{{ old('poskod') }}"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('poskod') border-red-500 @enderror"
                                        placeholder="Poskod">
@@ -213,9 +267,9 @@
                             <!-- Bandar -->
                             <div>
                                 <label for="bandar" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Bandar *
+                                    Bandar
                                 </label>
-                                <input type="text" name="bandar" id="bandar" x-model="formData.bandar" required
+                                <input type="text" name="bandar" id="bandar" x-model="formData.bandar"
                                        value="{{ old('bandar') }}"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('bandar') border-red-500 @enderror"
                                        placeholder="Bandar">
@@ -227,9 +281,9 @@
                             <!-- Negeri -->
                             <div>
                                 <label for="negeri" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Negeri *
+                                    Negeri
                                 </label>
-                                <select name="negeri" id="negeri" x-model="formData.negeri" required
+                                <select name="negeri" id="negeri" x-model="formData.negeri"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('negeri') border-red-500 @enderror">
                                     <option value="">Pilih Negeri</option>
                                     <option value="Johor" {{ old('negeri') == 'Johor' ? 'selected' : '' }}>Johor</option>
@@ -254,6 +308,36 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Negara -->
+                            <div>
+                                <label for="negara" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Negara
+                                </label>
+                                <input type="text" name="negara" id="negara" x-model="formData.negara"
+                                       value="{{ old('negara', 'Malaysia') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('negara') border-red-500 @enderror"
+                                       placeholder="Negara">
+                                @error('negara')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Daerah -->
+                            <div>
+                                <label for="daerah" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Daerah *
+                                </label>
+                                <input type="text" name="daerah" id="daerah" x-model="formData.daerah" required
+                                       value="{{ old('daerah') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('daerah') border-red-500 @enderror"
+                                       placeholder="Daerah">
+                                @error('daerah')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -273,20 +357,23 @@
 
                     <div class="p-6 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Telefon -->
+                            <!-- No Telefon -->
                             <div>
-                                <label for="telefon" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="no_telefon" class="block text-sm font-medium text-gray-700 mb-2">
                                     Nombor Telefon
                                 </label>
                                 <div class="relative">
-                                    <input type="text" name="telefon" id="telefon" x-model="formData.telefon"
-                                           value="{{ old('telefon') }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    <input type="text" name="no_telefon" id="no_telefon" x-model="formData.no_telefon"
+                                           value="{{ old('no_telefon') }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_telefon') border-red-500 @enderror"
                                            placeholder="Nombor telefon">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
                                         <i class='bx bx-phone text-gray-400'></i>
                                     </div>
                                 </div>
+                                @error('no_telefon')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <!-- Email -->
@@ -297,12 +384,15 @@
                                 <div class="relative">
                                     <input type="email" name="email" id="email" x-model="formData.email"
                                            value="{{ old('email') }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('email') border-red-500 @enderror"
                                            placeholder="Alamat email">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
                                         <i class='bx bx-envelope text-gray-400'></i>
                                     </div>
                                 </div>
+                                @error('email')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -312,8 +402,11 @@
                                 Catatan
                             </label>
                             <textarea name="catatan" id="catatan" rows="4" x-model="formData.catatan"
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror"
                                       placeholder="Catatan tambahan...">{{ old('catatan') }}</textarea>
+                            @error('catatan')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -344,7 +437,7 @@
         <!-- Right Sidebar -->
         <div class="space-y-6">
             <!-- Preview Card -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm" x-data="{ formData: { nama: '', jenis: '', alamat: '', bandar: '', negeri: '', status: '' } }">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
                 <div class="p-6 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900">Pratonton</h3>
                     <p class="text-sm text-gray-600">Pratonton maklumat yang dimasukkan</p>
@@ -356,12 +449,17 @@
                         </div>
                         <h4 class="font-semibold text-gray-900" x-text="formData.nama || 'Nama Masjid/Surau'"></h4>
                         <p class="text-sm text-gray-600" x-text="formData.jenis || 'Jenis'"></p>
+                        <p class="text-xs text-gray-500" x-text="formData.singkatan_nama ? '(' + formData.singkatan_nama + ')' : ''"></p>
                     </div>
                     
                     <div class="space-y-3 text-sm">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-map text-gray-400'></i>
                             <span x-text="(formData.bandar && formData.negeri) ? formData.bandar + ', ' + formData.negeri : 'Lokasi'"></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class='bx bx-buildings text-gray-400'></i>
+                            <span x-text="formData.daerah || 'Daerah'"></span>
                         </div>
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-check-circle text-gray-400'></i>
@@ -382,11 +480,15 @@
                 <ul class="space-y-2 text-sm text-blue-800">
                     <li class="flex items-start space-x-2">
                         <i class='bx bx-check text-blue-600 mt-0.5'></i>
-                        <span>Pastikan nama masjid/surau tepat dan lengkap</span>
+                        <span>Singkatan nama akan digunakan untuk penjanaan nombor siri aset</span>
                     </li>
                     <li class="flex items-start space-x-2">
                         <i class='bx bx-check text-blue-600 mt-0.5'></i>
-                        <span>Sertakan alamat yang terperinci untuk memudahkan pencarian</span>
+                        <span>Pastikan alamat lengkap dengan menggunakan 3 baris alamat</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class='bx bx-check text-blue-600 mt-0.5'></i>
+                        <span>Daerah adalah medan wajib untuk keperluan pelaporan</span>
                     </li>
                     <li class="flex items-start space-x-2">
                         <i class='bx bx-check text-blue-600 mt-0.5'></i>
@@ -403,15 +505,21 @@ function masjidForm() {
     return {
         formData: {
             nama: '{{ old('nama') }}',
+            singkatan_nama: '{{ old('singkatan_nama') }}',
             jenis: '{{ old('jenis') }}',
-            alamat: '{{ old('alamat') }}',
+            alamat_baris_1: '{{ old('alamat_baris_1') }}',
+            alamat_baris_2: '{{ old('alamat_baris_2') }}',
+            alamat_baris_3: '{{ old('alamat_baris_3') }}',
+            poskod: '{{ old('poskod') }}',
             bandar: '{{ old('bandar') }}',
             negeri: '{{ old('negeri') }}',
+            negara: '{{ old('negara', 'Malaysia') }}',
+            daerah: '{{ old('daerah') }}',
             status: '{{ old('status') }}',
             imam_ketua: '{{ old('imam_ketua') }}',
             bilangan_jemaah: '{{ old('bilangan_jemaah') }}',
             tahun_dibina: '{{ old('tahun_dibina') }}',
-            telefon: '{{ old('telefon') }}',
+            no_telefon: '{{ old('no_telefon') }}',
             email: '{{ old('email') }}',
             catatan: '{{ old('catatan') }}'
         }

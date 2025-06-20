@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             InspectionSeeder::class,
             MaintenanceRecordSeeder::class,
             DisposalSeeder::class,
-            LossWriteoffSeeder::class,
+            // LossWriteoffSeeder::class, // Commented out due to column name issues
             ImmovableAssetSeeder::class,
         ]);
 
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         $this->command->line('✅ Inspections seeded');
         $this->command->line('✅ Maintenance records seeded');
         $this->command->line('✅ Disposals seeded');
-        $this->command->line('✅ Loss/writeoffs seeded');
+        $this->command->line('⚠️  Loss/writeoffs skipped (needs column fixes)');
         $this->command->line('✅ Immovable assets seeded');
         $this->command->line('');
         $this->command->info('🚀 Your Asset Management System is ready with comprehensive test data!');

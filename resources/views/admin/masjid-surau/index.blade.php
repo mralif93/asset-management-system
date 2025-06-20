@@ -250,7 +250,12 @@
                                 </div>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $masjidSurau->nama }}</div>
-                                    <div class="text-sm text-gray-500">{{ $masjidSurau->imam_ketua ?? 'Tiada maklumat' }}</div>
+                                    <div class="text-sm text-gray-500">
+                                        @if($masjidSurau->singkatan_nama)
+                                            {{ $masjidSurau->singkatan_nama }} • 
+                                        @endif
+                                        {{ $masjidSurau->imam_ketua ?? 'Tiada maklumat imam/ketua' }}
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -261,7 +266,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">{{ $masjidSurau->bandar }}, {{ $masjidSurau->negeri }}</div>
-                            <div class="text-sm text-gray-500">{{ $masjidSurau->poskod }}</div>
+                            <div class="text-sm text-gray-500">{{ $masjidSurau->daerah }} • {{ $masjidSurau->poskod }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center space-x-1">

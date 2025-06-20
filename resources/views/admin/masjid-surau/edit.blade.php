@@ -20,6 +20,12 @@
                         <div class="w-2 h-2 {{ $masjidSurau->status == 'Aktif' ? 'bg-green-400' : 'bg-red-400' }} rounded-full"></div>
                         <span class="text-emerald-100">{{ $masjidSurau->status }}</span>
                     </div>
+                    @if($masjidSurau->singkatan_nama)
+                    <div class="flex items-center space-x-2">
+                        <i class='bx bx-tag text-emerald-200'></i>
+                        <span class="text-emerald-100">{{ $masjidSurau->singkatan_nama }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
             <div class="hidden md:block">
@@ -89,6 +95,26 @@
                                 @enderror
                             </div>
 
+                            <!-- Singkatan Nama -->
+                            <div>
+                                <label for="singkatan_nama" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Singkatan Nama
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="singkatan_nama" id="singkatan_nama" x-model="formData.singkatan_nama"
+                                           value="{{ old('singkatan_nama', $masjidSurau->singkatan_nama) }}" maxlength="20"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('singkatan_nama') border-red-500 @enderror"
+                                           placeholder="Contoh: MTAJ, SAT">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-tag text-gray-400'></i>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Digunakan untuk penjanaan nombor siri aset</p>
+                                @error('singkatan_nama')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Jenis -->
                             <div>
                                 <label for="jenis" class="block text-sm font-medium text-gray-700 mb-2">
@@ -104,58 +130,6 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Imam/Ketua -->
-                            <div>
-                                <label for="imam_ketua" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Imam/Ketua
-                                </label>
-                                <div class="relative">
-                                    <input type="text" name="imam_ketua" id="imam_ketua" x-model="formData.imam_ketua"
-                                           value="{{ old('imam_ketua', $masjidSurau->imam_ketua) }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                           placeholder="Nama imam atau ketua">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                        <i class='bx bx-user text-gray-400'></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Bilangan Jemaah -->
-                            <div>
-                                <label for="bilangan_jemaah" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Bilangan Jemaah
-                                </label>
-                                <div class="relative">
-                                    <input type="number" name="bilangan_jemaah" id="bilangan_jemaah" x-model="formData.bilangan_jemaah" min="0"
-                                           value="{{ old('bilangan_jemaah', $masjidSurau->bilangan_jemaah) }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                           placeholder="Anggaran bilangan jemaah">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                        <i class='bx bx-group text-gray-400'></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Tahun Dibina -->
-                            <div>
-                                <label for="tahun_dibina" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tahun Dibina
-                                </label>
-                                <div class="relative">
-                                    <input type="number" name="tahun_dibina" id="tahun_dibina" x-model="formData.tahun_dibina" 
-                                           min="1800" max="{{ date('Y') }}" value="{{ old('tahun_dibina', $masjidSurau->tahun_dibina) }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                           placeholder="Tahun dibina">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                        <i class='bx bx-calendar text-gray-400'></i>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Status -->
                             <div>
@@ -169,6 +143,63 @@
                                     <option value="Tidak Aktif" {{ old('status', $masjidSurau->status) == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                                 </select>
                                 @error('status')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Imam/Ketua -->
+                            <div>
+                                <label for="imam_ketua" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Imam/Ketua
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="imam_ketua" id="imam_ketua" x-model="formData.imam_ketua"
+                                           value="{{ old('imam_ketua', $masjidSurau->imam_ketua) }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('imam_ketua') border-red-500 @enderror"
+                                           placeholder="Nama imam atau ketua">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-user text-gray-400'></i>
+                                    </div>
+                                </div>
+                                @error('imam_ketua')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Bilangan Jemaah -->
+                            <div>
+                                <label for="bilangan_jemaah" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Bilangan Jemaah
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="bilangan_jemaah" id="bilangan_jemaah" x-model="formData.bilangan_jemaah" min="0"
+                                           value="{{ old('bilangan_jemaah', $masjidSurau->bilangan_jemaah) }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('bilangan_jemaah') border-red-500 @enderror"
+                                           placeholder="Anggaran bilangan jemaah">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-group text-gray-400'></i>
+                                    </div>
+                                </div>
+                                @error('bilangan_jemaah')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Tahun Dibina -->
+                            <div>
+                                <label for="tahun_dibina" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tahun Dibina
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="tahun_dibina" id="tahun_dibina" x-model="formData.tahun_dibina" 
+                                           min="1800" max="{{ date('Y') }}" value="{{ old('tahun_dibina', $masjidSurau->tahun_dibina) }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tahun_dibina') border-red-500 @enderror"
+                                           placeholder="Tahun dibina">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                        <i class='bx bx-calendar text-gray-400'></i>
+                                    </div>
+                                </div>
+                                @error('tahun_dibina')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -191,26 +222,55 @@
                     </div>
 
                     <div class="p-6 space-y-6">
-                        <!-- Alamat -->
-                        <div>
-                            <label for="alamat" class="block text-sm font-medium text-gray-700 mb-2">
-                                Alamat *
-                            </label>
-                            <textarea name="alamat" id="alamat" rows="3" x-model="formData.alamat" required
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat') border-red-500 @enderror"
-                                      placeholder="Alamat penuh masjid/surau">{{ old('alamat', $masjidSurau->alamat) }}</textarea>
-                            @error('alamat')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                        <!-- Address Lines -->
+                        <div class="space-y-4">
+                            <div>
+                                <label for="alamat_baris_1" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat Baris 1
+                                </label>
+                                <input type="text" name="alamat_baris_1" id="alamat_baris_1" x-model="formData.alamat_baris_1"
+                                       value="{{ old('alamat_baris_1', $masjidSurau->alamat_baris_1) }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat_baris_1') border-red-500 @enderror"
+                                       placeholder="Alamat baris pertama">
+                                @error('alamat_baris_1')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                            <div>
+                                <label for="alamat_baris_2" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat Baris 2
+                                </label>
+                                <input type="text" name="alamat_baris_2" id="alamat_baris_2" x-model="formData.alamat_baris_2"
+                                       value="{{ old('alamat_baris_2', $masjidSurau->alamat_baris_2) }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat_baris_2') border-red-500 @enderror"
+                                       placeholder="Alamat baris kedua">
+                                @error('alamat_baris_2')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                            <div>
+                                <label for="alamat_baris_3" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat Baris 3
+                                </label>
+                                <input type="text" name="alamat_baris_3" id="alamat_baris_3" x-model="formData.alamat_baris_3"
+                                       value="{{ old('alamat_baris_3', $masjidSurau->alamat_baris_3) }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat_baris_3') border-red-500 @enderror"
+                                       placeholder="Alamat baris ketiga (opsional)">
+                                @error('alamat_baris_3')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- Poskod -->
                             <div>
                                 <label for="poskod" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Poskod *
+                                    Poskod
                                 </label>
-                                <input type="text" name="poskod" id="poskod" x-model="formData.poskod" required
+                                <input type="text" name="poskod" id="poskod" x-model="formData.poskod"
                                        value="{{ old('poskod', $masjidSurau->poskod) }}"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('poskod') border-red-500 @enderror"
                                        placeholder="Poskod">
@@ -222,9 +282,9 @@
                             <!-- Bandar -->
                             <div>
                                 <label for="bandar" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Bandar *
+                                    Bandar
                                 </label>
-                                <input type="text" name="bandar" id="bandar" x-model="formData.bandar" required
+                                <input type="text" name="bandar" id="bandar" x-model="formData.bandar"
                                        value="{{ old('bandar', $masjidSurau->bandar) }}"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('bandar') border-red-500 @enderror"
                                        placeholder="Bandar">
@@ -236,9 +296,9 @@
                             <!-- Negeri -->
                             <div>
                                 <label for="negeri" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Negeri *
+                                    Negeri
                                 </label>
-                                <select name="negeri" id="negeri" x-model="formData.negeri" required
+                                <select name="negeri" id="negeri" x-model="formData.negeri"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('negeri') border-red-500 @enderror">
                                     <option value="">Pilih Negeri</option>
                                     <option value="Johor" {{ old('negeri', $masjidSurau->negeri) == 'Johor' ? 'selected' : '' }}>Johor</option>
@@ -263,6 +323,36 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Negara -->
+                            <div>
+                                <label for="negara" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Negara
+                                </label>
+                                <input type="text" name="negara" id="negara" x-model="formData.negara"
+                                       value="{{ old('negara', $masjidSurau->negara ?? 'Malaysia') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('negara') border-red-500 @enderror"
+                                       placeholder="Negara">
+                                @error('negara')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Daerah -->
+                            <div>
+                                <label for="daerah" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Daerah *
+                                </label>
+                                <input type="text" name="daerah" id="daerah" x-model="formData.daerah" required
+                                       value="{{ old('daerah', $masjidSurau->daerah) }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('daerah') border-red-500 @enderror"
+                                       placeholder="Daerah">
+                                @error('daerah')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -282,20 +372,23 @@
 
                     <div class="p-6 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Telefon -->
+                            <!-- No Telefon -->
                             <div>
-                                <label for="telefon" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="no_telefon" class="block text-sm font-medium text-gray-700 mb-2">
                                     Nombor Telefon
                                 </label>
                                 <div class="relative">
-                                    <input type="text" name="telefon" id="telefon" x-model="formData.telefon"
-                                           value="{{ old('telefon', $masjidSurau->telefon) }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    <input type="text" name="no_telefon" id="no_telefon" x-model="formData.no_telefon"
+                                           value="{{ old('no_telefon', $masjidSurau->no_telefon) }}"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_telefon') border-red-500 @enderror"
                                            placeholder="Nombor telefon">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
                                         <i class='bx bx-phone text-gray-400'></i>
                                     </div>
                                 </div>
+                                @error('no_telefon')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <!-- Email -->
@@ -306,12 +399,15 @@
                                 <div class="relative">
                                     <input type="email" name="email" id="email" x-model="formData.email"
                                            value="{{ old('email', $masjidSurau->email) }}"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('email') border-red-500 @enderror"
                                            placeholder="Alamat email">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
                                         <i class='bx bx-envelope text-gray-400'></i>
                                     </div>
                                 </div>
+                                @error('email')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -321,8 +417,11 @@
                                 Catatan
                             </label>
                             <textarea name="catatan" id="catatan" rows="4" x-model="formData.catatan"
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror"
                                       placeholder="Catatan tambahan...">{{ old('catatan', $masjidSurau->catatan) }}</textarea>
+                            @error('catatan')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -365,12 +464,19 @@
                         </div>
                         <h4 class="font-semibold text-gray-900">{{ $masjidSurau->nama }}</h4>
                         <p class="text-sm text-gray-600">{{ $masjidSurau->jenis }}</p>
+                        @if($masjidSurau->singkatan_nama)
+                        <p class="text-xs text-gray-500">({{ $masjidSurau->singkatan_nama }})</p>
+                        @endif
                     </div>
                     
                     <div class="space-y-3 text-sm">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-map text-gray-400'></i>
                             <span>{{ $masjidSurau->bandar }}, {{ $masjidSurau->negeri }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class='bx bx-buildings text-gray-400'></i>
+                            <span>{{ $masjidSurau->daerah }}</span>
                         </div>
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-check-circle text-gray-400'></i>
@@ -406,7 +512,7 @@
                     @if($masjidSurau->bilangan_jemaah)
                     <div class="flex justify-between">
                         <span>Bilangan Jemaah:</span>
-                        <span class="font-medium">{{ $masjidSurau->bilangan_jemaah }}</span>
+                        <span class="font-medium">{{ number_format($masjidSurau->bilangan_jemaah) }}</span>
                     </div>
                     @endif
                     @if($masjidSurau->tahun_dibina)
@@ -415,6 +521,29 @@
                         <span class="font-medium">{{ date('Y') - $masjidSurau->tahun_dibina }} tahun</span>
                     </div>
                     @endif
+                </div>
+            </div>
+
+            <!-- Address Preview -->
+            <div class="bg-green-50 rounded-xl border border-green-200 p-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class='bx bx-map text-green-600 text-lg'></i>
+                    </div>
+                    <h3 class="font-semibold text-green-900">Alamat Lengkap</h3>
+                </div>
+                <div class="text-sm text-green-800">
+                    @if($masjidSurau->alamat_baris_1)
+                        <div>{{ $masjidSurau->alamat_baris_1 }}</div>
+                    @endif
+                    @if($masjidSurau->alamat_baris_2)
+                        <div>{{ $masjidSurau->alamat_baris_2 }}</div>
+                    @endif
+                    @if($masjidSurau->alamat_baris_3)
+                        <div>{{ $masjidSurau->alamat_baris_3 }}</div>
+                    @endif
+                    <div>{{ $masjidSurau->poskod }} {{ $masjidSurau->bandar }}</div>
+                    <div>{{ $masjidSurau->negeri }}, {{ $masjidSurau->negara }}</div>
                 </div>
             </div>
         </div>
@@ -426,15 +555,21 @@ function masjidForm() {
     return {
         formData: {
             nama: '{{ old('nama', $masjidSurau->nama) }}',
+            singkatan_nama: '{{ old('singkatan_nama', $masjidSurau->singkatan_nama) }}',
             jenis: '{{ old('jenis', $masjidSurau->jenis) }}',
-            alamat: '{{ old('alamat', $masjidSurau->alamat) }}',
+            alamat_baris_1: '{{ old('alamat_baris_1', $masjidSurau->alamat_baris_1) }}',
+            alamat_baris_2: '{{ old('alamat_baris_2', $masjidSurau->alamat_baris_2) }}',
+            alamat_baris_3: '{{ old('alamat_baris_3', $masjidSurau->alamat_baris_3) }}',
+            poskod: '{{ old('poskod', $masjidSurau->poskod) }}',
             bandar: '{{ old('bandar', $masjidSurau->bandar) }}',
             negeri: '{{ old('negeri', $masjidSurau->negeri) }}',
+            negara: '{{ old('negara', $masjidSurau->negara ?? 'Malaysia') }}',
+            daerah: '{{ old('daerah', $masjidSurau->daerah) }}',
             status: '{{ old('status', $masjidSurau->status) }}',
             imam_ketua: '{{ old('imam_ketua', $masjidSurau->imam_ketua) }}',
             bilangan_jemaah: '{{ old('bilangan_jemaah', $masjidSurau->bilangan_jemaah) }}',
             tahun_dibina: '{{ old('tahun_dibina', $masjidSurau->tahun_dibina) }}',
-            telefon: '{{ old('telefon', $masjidSurau->telefon) }}',
+            no_telefon: '{{ old('no_telefon', $masjidSurau->no_telefon) }}',
             email: '{{ old('email', $masjidSurau->email) }}',
             catatan: '{{ old('catatan', $masjidSurau->catatan) }}'
         }
