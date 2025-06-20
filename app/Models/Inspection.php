@@ -13,15 +13,18 @@ class Inspection extends Model
     protected $fillable = [
         'asset_id',
         'tarikh_pemeriksaan',
-        'keadaan_aset',
-        'lokasi_semasa_pemeriksaan',
-        'cadangan_tindakan',
-        'pegawai_pemeriksa',
-        'catatan_pemeriksa',
+        'kondisi_aset',
+        'tarikh_pemeriksaan_akan_datang',
+        'nama_pemeriksa',
+        'catatan_pemeriksaan',
+        'tindakan_diperlukan',
+        'gambar_pemeriksaan',
     ];
 
     protected $casts = [
         'tarikh_pemeriksaan' => 'date',
+        'tarikh_pemeriksaan_akan_datang' => 'date',
+        'gambar_pemeriksaan' => 'array',
     ];
 
     /**

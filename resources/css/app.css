@@ -1,1 +1,17 @@
-/* Using Tailwind CSS via CDN - no build process needed */
+/* Custom styles for asset management system */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Additional custom styles if needed */
+.scrollbar-thin {
+    scrollbar-width: thin;
+}
+
+.scrollbar-thumb-slate-600 {
+    scrollbar-color: #475569 transparent;
+}
+
+.scrollbar-track-transparent {
+    scrollbar-track-color: transparent;
+}

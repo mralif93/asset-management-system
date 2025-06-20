@@ -69,11 +69,11 @@
                     Discover the future of asset management with intelligent tracking, predictive analytics, and seamless workflow automation that scales with your business.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                    <a href="{{ route('register') ?? '#' }}" class="bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-emerald-700 transition-all duration-200 transform hover:scale-105">
-                        Start Your Free Trial
+                    <a href="{{ route('register') }}" class="bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-emerald-700 transition-all duration-200 transform hover:scale-105">
+                        Daftar Akaun Percuma
                     </a>
-                    <a href="#demo" class="bg-transparent text-white px-8 py-4 rounded-lg text-lg font-semibold border-2 border-emerald-400 hover:bg-emerald-400 hover:text-slate-900 transition-all duration-200">
-                        Watch Demo
+                    <a href="{{ route('login') }}" class="bg-transparent text-white px-8 py-4 rounded-lg text-lg font-semibold border-2 border-emerald-400 hover:bg-emerald-400 hover:text-slate-900 transition-all duration-200">
+                        Log Masuk
                     </a>
                 </div>
                 <div class="flex flex-col sm:flex-row items-center justify-center text-gray-300 space-y-2 sm:space-y-0 sm:space-x-8">
@@ -273,11 +273,11 @@
                     Join thousands of companies already using AssetFlow to optimize their operations and reduce costs.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                    <a href="{{ route('register') ?? '#' }}" class="bg-white text-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all duration-200 transform hover:scale-105">
-                        Start Free Trial - No Credit Card Required
+                    <a href="{{ route('register') }}" class="bg-white text-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all duration-200 transform hover:scale-105">
+                        Daftar Akaun Percuma
                     </a>
-                    <a href="#contact" class="bg-transparent text-white px-8 py-4 rounded-lg text-lg font-semibold border-2 border-white hover:bg-white hover:text-emerald-600 transition-all duration-200">
-                        Schedule a Demo
+                    <a href="{{ route('login') }}" class="bg-transparent text-white px-8 py-4 rounded-lg text-lg font-semibold border-2 border-white hover:bg-white hover:text-emerald-600 transition-all duration-200">
+                        Log Masuk
                     </a>
                 </div>
                 <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-emerald-100">

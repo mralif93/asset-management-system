@@ -52,6 +52,14 @@ class Asset extends Model
     }
 
     /**
+     * Alias for assetMovements relationship.
+     */
+    public function movements(): HasMany
+    {
+        return $this->assetMovements();
+    }
+
+    /**
      * Get the inspections for the asset.
      */
     public function inspections(): HasMany

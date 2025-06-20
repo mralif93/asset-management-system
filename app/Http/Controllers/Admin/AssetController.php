@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\MasjidSurau;
 use App\Helpers\AssetRegistrationNumber;
@@ -17,10 +18,7 @@ class AssetController extends Controller
     {
         $query = Asset::with('masjidSurau');
         
-        // Filter by masjid/surau if user is not admin
-        if (Auth::user()->role !== 'admin') {
-            $query->where('masjid_surau_id', Auth::user()->masjid_surau_id);
-        }
+        // Admin can see all assets
         
         // Filter by location if requested
         if ($request->filled('lokasi')) {
@@ -39,7 +37,7 @@ class AssetController extends Controller
         
         $assets = $query->paginate(15);
         
-        return view('assets.index', compact('assets'));
+        return view('admin.assets.index', compact('assets'));
     }
 
     /**
@@ -50,7 +48,7 @@ class AssetController extends Controller
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
         
-        return view('assets.create', compact('masjidSuraus', 'assetTypes'));
+        return view('admin.assets.create', compact('masjidSuraus', 'assetTypes'));
     }
 
     /**
@@ -76,11 +74,6 @@ class AssetController extends Controller
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        // Set masjid_surau_id based on user role
-        if (Auth::user()->role !== 'admin') {
-            $validated['masjid_surau_id'] = Auth::user()->masjid_surau_id;
-        }
-
         // Generate registration number
         $tarikhPerolehan = new \Carbon\Carbon($validated['tarikh_perolehan']);
         $validated['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
@@ -101,7 +94,7 @@ class AssetController extends Controller
 
         $asset = Asset::create($validated);
 
-        return redirect()->route('assets.show', $asset)
+        return redirect()->route('admin.assets.show', $asset)
                         ->with('success', 'Aset baru berjaya didaftarkan dengan nombor siri: ' . $asset->no_siri_pendaftaran);
     }
 
@@ -112,7 +105,7 @@ class AssetController extends Controller
     {
         $asset->load(['masjidSurau', 'movements', 'inspections', 'maintenanceRecords']);
         
-        return view('assets.show', compact('asset'));
+        return view('admin.assets.show', compact('asset'));
     }
 
     /**
@@ -123,7 +116,7 @@ class AssetController extends Controller
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
         
-        return view('assets.edit', compact('asset', 'masjidSuraus', 'assetTypes'));
+        return view('admin.assets.edit', compact('asset', 'masjidSuraus', 'assetTypes'));
     }
 
     /**
@@ -159,7 +152,7 @@ class AssetController extends Controller
 
         $asset->update($validated);
 
-        return redirect()->route('assets.show', $asset)
+        return redirect()->route('admin.assets.show', $asset)
                         ->with('success', 'Butiran aset berjaya dikemaskini.');
     }
 
@@ -170,7 +163,7 @@ class AssetController extends Controller
     {
         $asset->delete();
 
-        return redirect()->route('assets.index')
+        return redirect()->route('admin.assets.index')
                         ->with('success', 'Rekod aset berjaya dipadamkan.');
     }
 
@@ -184,14 +177,9 @@ class AssetController extends Controller
         $query = Asset::with('masjidSurau')
                      ->where('lokasi_penempatan', 'like', '%' . $lokasi . '%');
         
-        // Filter by masjid/surau if user is not admin
-        if (Auth::user()->role !== 'admin') {
-            $query->where('masjid_surau_id', Auth::user()->masjid_surau_id);
-        }
-        
         $assets = $query->get();
         
-        return view('assets.by-location', compact('assets', 'lokasi'));
+        return view('admin.assets.by-location', compact('assets', 'lokasi'));
     }
 
     /**
@@ -206,7 +194,23 @@ class AssetController extends Controller
 
         $asset->update($validated);
 
-        return redirect()->route('assets.show', $asset)
+        return redirect()->route('admin.assets.show', $asset)
                         ->with('success', 'Lokasi aset berjaya dikemaskini.');
+    }
+
+    /**
+     * padamAsetTerpilih(): Delete multiple selected assets from the system
+     */
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'asset_ids' => 'required|array|min:1',
+            'asset_ids.*' => 'exists:assets,id'
+        ]);
+
+        $deletedCount = Asset::whereIn('id', $validated['asset_ids'])->delete();
+
+        return redirect()->route('admin.assets.index')
+                        ->with('success', "Berjaya memadamkan {$deletedCount} aset yang dipilih.");
     }
 }
