@@ -274,6 +274,23 @@
                         @endif
                     </a>
                 </div>
+
+                <!-- Settings Section -->
+                <div class="mb-8">
+                    <h3 class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
+                        <i class='bx bx-cog text-emerald-300 mr-2'></i>
+                        Tetapan
+                    </h3>
+                    
+                    <a href="{{ route('admin.masjid-surau.index') }}" 
+                       class="nav-item nav-link flex items-center px-4 py-3 text-white rounded-xl font-medium {{ request()->routeIs('admin.masjid-surau.*') ? 'active' : '' }}">
+                        <i class='bx bx-buildings text-xl mr-4'></i>
+                        <span>Masjid/Surau</span>
+                        @if(request()->routeIs('admin.masjid-surau.*'))
+                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                        @endif
+                    </a>
+                </div>
             </nav>
         </aside>
 

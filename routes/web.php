@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DisposalController;
 use App\Http\Controllers\Admin\LossWriteoffController;
 use App\Http\Controllers\Admin\ImmovableAssetController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\MasjidSurauController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
@@ -105,6 +106,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/maintenance-schedule', [ReportController::class, 'maintenanceSchedule'])->name('maintenance-schedule');
         Route::get('/asset-depreciation', [ReportController::class, 'assetDepreciation'])->name('asset-depreciation');
     });
+
+    // Settings - Masjid/Surau Management
+    Route::resource('masjid-surau', MasjidSurauController::class);
+    Route::patch('masjid-surau/{masjidSurau}/toggle-status', [MasjidSurauController::class, 'toggleStatus'])->name('masjid-surau.toggle-status');
+    Route::post('masjid-surau/bulk-delete', [MasjidSurauController::class, 'bulkDelete'])->name('masjid-surau.bulk-delete');
 });
 
 // User Routes - Only dashboard and profile

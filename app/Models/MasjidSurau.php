@@ -14,12 +14,18 @@ class MasjidSurau extends Model
 
     protected $fillable = [
         'nama',
-        'singkatan_nama',
+        'jenis',
         'alamat',
-        'daerah',
-        'no_telefon',
+        'poskod',
+        'bandar',
+        'negeri',
+        'telefon',
         'email',
+        'imam_ketua',
+        'bilangan_jemaah',
+        'tahun_dibina',
         'status',
+        'catatan',
     ];
 
     /**
