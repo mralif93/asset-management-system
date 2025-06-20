@@ -281,31 +281,44 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <form action="{{ route('admin.masjid-surau.toggle-status', $masjidSurau) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full transition-colors {{ $masjidSurau->status == 'Aktif' ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }}">
-                                    <div class="w-2 h-2 {{ $masjidSurau->status == 'Aktif' ? 'bg-green-500' : 'bg-red-500' }} rounded-full mr-2"></div>
-                                    {{ $masjidSurau->status }}
-                                </button>
-                            </form>
+                            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full {{ $masjidSurau->status == 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                <div class="w-2 h-2 {{ $masjidSurau->status == 'Aktif' ? 'bg-green-500' : 'bg-red-500' }} rounded-full mr-2"></div>
+                                {{ $masjidSurau->status }}
+                            </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <a href="{{ route('admin.masjid-surau.show', $masjidSurau) }}" 
-                               class="inline-flex items-center px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-colors">
-                                <i class='bx bx-show mr-1'></i>
-                                Lihat
-                            </a>
-                            <a href="{{ route('admin.masjid-surau.edit', $masjidSurau) }}" 
-                               class="inline-flex items-center px-3 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-xs font-medium rounded-lg transition-colors">
-                                <i class='bx bx-edit mr-1'></i>
-                                Edit
-                            </a>
-                            <button onclick="confirmDelete({{ $masjidSurau->id }}, '{{ $masjidSurau->nama }}')" 
-                                    class="inline-flex items-center px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-lg transition-colors">
-                                <i class='bx bx-trash mr-1'></i>
-                                Padam
-                            </button>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-3">
+                                <a href="{{ route('admin.masjid-surau.show', $masjidSurau) }}" 
+                                   class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+                                   title="Lihat">
+                                    <i class='bx bx-show text-sm'></i>
+                                </a>
+                                <a href="{{ route('admin.masjid-surau.edit', $masjidSurau) }}" 
+                                   class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
+                                   title="Edit">
+                                    <i class='bx bx-edit text-sm'></i>
+                                </a>
+                                
+                                <form action="{{ route('admin.masjid-surau.toggle-status', $masjidSurau) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" 
+                                            class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors"
+                                            title="{{ $masjidSurau->status == 'Aktif' ? 'Nyahaktifkan' : 'Aktifkan' }}">
+                                        @if($masjidSurau->status == 'Aktif')
+                                            <i class='bx bx-toggle-right text-sm'></i>
+                                        @else
+                                            <i class='bx bx-toggle-left text-sm'></i>
+                                        @endif
+                                    </button>
+                                </form>
+
+                                <button onclick="confirmDelete({{ $masjidSurau->id }}, '{{ $masjidSurau->nama }}')" 
+                                        class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
+                                        title="Padamkan">
+                                    <i class='bx bx-trash text-sm'></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
