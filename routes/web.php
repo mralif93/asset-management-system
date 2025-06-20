@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\MasjidSurauController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\User\UserDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -112,6 +113,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('masjid-surau', MasjidSurauController::class);
     Route::patch('masjid-surau/{masjidSurau}/toggle-status', [MasjidSurauController::class, 'toggleStatus'])->name('masjid-surau.toggle-status');
     Route::post('masjid-surau/bulk-delete', [MasjidSurauController::class, 'bulkDelete'])->name('masjid-surau.bulk-delete');
+    
+    // Settings - Audit Trails
+    Route::prefix('audit-trails')->name('audit-trails.')->group(function () {
+        Route::get('/', [AuditTrailController::class, 'index'])->name('index');
+        Route::get('/export/csv', [AuditTrailController::class, 'export'])->name('export');
+        Route::post('/cleanup', [AuditTrailController::class, 'cleanup'])->name('cleanup');
+        Route::get('/user-activity/json', [AuditTrailController::class, 'userActivity'])->name('user-activity');
+        Route::get('/{auditTrail}', [AuditTrailController::class, 'show'])->name('show');
+    });
 });
 
 // User Routes - Only dashboard and profile

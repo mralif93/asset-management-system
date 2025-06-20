@@ -219,6 +219,15 @@
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
                     </a>
+
+                    <a href="{{ route('admin.audit-trails.index') }}" 
+                       class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.audit-trails.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
+                        <i class='bx bx-history text-xl mr-4'></i>
+                        <span>Log Audit</span>
+                        @if(request()->routeIs('admin.audit-trails.*'))
+                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                        @endif
+                    </a>
                 </div>
             </nav>
         </aside>

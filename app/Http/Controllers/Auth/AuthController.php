@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\MasjidSurau;
+use App\Services\AuditTrailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -46,6 +47,9 @@ class AuthController extends Controller
 
             $user = Auth::user();
             
+            // Log successful login
+            AuditTrailService::logLogin($user, true);
+            
             // Redirect based on role
             if ($user->role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
@@ -53,6 +57,10 @@ class AuthController extends Controller
                 return redirect()->intended(route('user.dashboard'));
             }
         }
+
+        // Log failed login attempt
+        $attemptedUser = User::where('email', $request->email)->first();
+        AuditTrailService::logLogin($attemptedUser, false);
 
         return back()->withErrors([
             'email' => 'Maklumat log masuk tidak tepat.',
@@ -171,6 +179,11 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        
+        // Log logout before actually logging out
+        AuditTrailService::logLogout($user);
+        
         Auth::logout();
 
         $request->session()->invalidate();
