@@ -11,7 +11,7 @@ class MasjidSurau extends Model
 {
     use HasFactory, Auditable;
 
-    protected $table = 'masjids_suraus';
+    protected $table = 'masjid_surau';
 
     protected $fillable = [
         'nama',
@@ -33,6 +33,9 @@ class MasjidSurau extends Model
         'tahun_dibina',
         'status',
         'catatan',
+        'nama_rasmi',
+        'kawasan',
+        'pautan_peta',
     ];
 
     /**

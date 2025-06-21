@@ -67,7 +67,7 @@ class ImmovableAssetController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'masjid_surau_id' => 'required|exists:masjids_suraus,id',
+            'masjid_surau_id' => 'required|exists:masjid_surau,id',
             'nama_aset' => 'required|string|max:255',
             'jenis_aset' => 'required|string',
             'alamat' => 'nullable|string',

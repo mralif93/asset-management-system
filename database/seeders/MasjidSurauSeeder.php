@@ -2,235 +2,361 @@
 
 namespace Database\Seeders;
 
-use App\Models\MasjidSurau;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\DomCrawler\Crawler;
+use App\Models\MasjidSurau;
 
 class MasjidSurauSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    private $sources = [
+        [
+            'url' => 'https://e-masjid.jais.gov.my/dashboard/listmasjid',
+            'type' => 'Masjid'
+        ],
+        [
+            'url' => 'https://e-masjid.jais.gov.my/dashboard/listsurau',
+            'type' => 'Surau'
+        ],
+        [
+            'url' => 'https://e-masjid.jais.gov.my/dashboard/listsuraujumaat',
+            'type' => 'Surau'
+        ]
+    ];
+
+    public function run()
     {
-        // Clear existing data first
-        MasjidSurau::truncate();
+        $this->command->info('Starting MasjidSurau data scraping from e-masjid.jais.gov.my...');
+
+        // Check if Symfony DomCrawler is available
+        if (!class_exists(Crawler::class)) {
+            $this->command->warn('Symfony DomCrawler not found. Installing required package...');
+            $this->command->info('Please run: composer require symfony/dom-crawler');
+            
+            // Fallback to manual data if scraping fails
+            $this->createFallbackData();
+            return;
+        }
+
+        $client = Http::withOptions([
+            'verify' => false,
+            'timeout' => 30,
+            'connect_timeout' => 10
+        ])->withHeaders([
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language' => 'en-US,en;q=0.5',
+            'Accept-Encoding' => 'gzip, deflate',
+            'Connection' => 'keep-alive',
+        ]);
+
+        $totalProcessed = 0;
+
+        foreach ($this->sources as $source) {
+            $url = $source['url'];
+            $type = $source['type'];
+            
+            $this->command->info("Processing {$type} from {$url}");
+
+            try {
+                // Initial request to get the page structure
+                $initialResponse = $client->get($url);
+                
+                if ($initialResponse->failed()) {
+                    $this->command->error("Failed to fetch initial page for {$url}. Status: " . $initialResponse->status());
+                    continue;
+                }
+
+                $crawler = new Crawler($initialResponse->body());
+                
+                // Try to get CSRF token
+                $csrfToken = null;
+                try {
+                    $csrfToken = $crawler->filter('meta[name="csrf-token"]')->attr('content');
+                } catch (\Exception $e) {
+                    $this->command->warn("Could not find CSRF token for {$url}");
+                }
+                
+                // Try to get total records from DataTables info
+                $totalRecords = 0;
+                try {
+                    $recordsText = $crawler->filter('.dataTables_info')->text();
+                    preg_match('/(\d+)(?=\s+entries$)/', $recordsText, $matches);
+                    $totalRecords = isset($matches[1]) ? (int)$matches[1] : 0;
+                } catch (\Exception $e) {
+                    $this->command->warn("Could not determine total records for {$url}");
+                }
+
+                if ($totalRecords > 0) {
+                    $perPage = 10;
+                    $totalPages = ceil($totalRecords / $perPage);
+                    $this->command->info("Found {$totalRecords} records, processing {$totalPages} pages");
+
+                    // Process pages
+                    for ($page = 1; $page <= $totalPages; $page++) {
+                        try {
+                            $pageUrl = "{$url}?page={$page}";
+                            $pageData = ['DataTables_Table_0_length' => $perPage];
+                            
+                            if ($csrfToken) {
+                                $pageData['_token'] = $csrfToken;
+                            }
+
+                            $response = $client->asForm()->post($pageUrl, $pageData);
+
+                            if ($response->successful()) {
+                                $processed = $this->parsePage($response->body(), $type);
+                                $totalProcessed += $processed;
+                                $this->command->info("Processed page {$page}/{$totalPages} for {$type} - {$processed} records");
+                            } else {
+                                $this->command->error("Failed to fetch page {$page} for {$type}. Status: " . $response->status());
+                            }
+                        } catch (\Exception $e) {
+                            $this->command->error("Error processing page {$page} for {$type}: " . $e->getMessage());
+                        }
+                        
+                        // Rate limiting - be respectful to the server
+                        sleep(2);
+                    }
+                } else {
+                    // Try to parse the initial page directly
+                    $processed = $this->parsePage($initialResponse->body(), $type);
+                    $totalProcessed += $processed;
+                    $this->command->info("Processed initial page for {$type} - {$processed} records");
+                }
+
+            } catch (\Exception $e) {
+                $this->command->error("Error processing {$type} from {$url}: " . $e->getMessage());
+                Log::error("MasjidSurauSeeder error for {$type}: " . $e->getMessage());
+            }
+        }
+
+        if ($totalProcessed === 0) {
+            $this->command->warn('No data was scraped. Creating fallback data...');
+            $this->createFallbackData();
+        } else {
+            $this->command->info("Scraping completed! Total records processed: {$totalProcessed}");
+        }
+    }
+
+    private function parsePage(string $html, string $type): int
+    {
+        $crawler = new Crawler($html);
+        $processed = 0;
         
-        $masjidSuraus = [
-            [
-                'nama' => 'Masjid Tengku Ampuan Jemaah',
-                'singkatan_nama' => 'MTAJ',
-                'jenis' => 'Masjid',
-                'kategori' => 'Kariah',
-                'alamat_baris_1' => 'Jalan Sultan Abdul Aziz Shah',
-                'alamat_baris_2' => 'Bukit Jelutong',
-                'alamat_baris_3' => null,
-                'poskod' => '40150',
-                'bandar' => 'Shah Alam',
-                'negeri' => 'Selangor',
-                'negara' => 'Malaysia',
-                'daerah' => 'Petaling',
-                'no_telefon' => '03-78461234',
-                'email' => 'mtaj@gmail.com',
-                'imam_ketua' => 'Ustaz Ahmad bin Abdullah',
-                'bilangan_jemaah' => 500,
-                'tahun_dibina' => 1995,
-                'status' => 'Aktif',
-                'catatan' => 'Masjid utama kawasan Bukit Jelutong dengan kapasiti jemaah yang besar.',
-            ],
-            [
-                'nama' => 'Surau At-Taqwa',
-                'singkatan_nama' => 'SAT',
-                'jenis' => 'Surau',
-                'kategori' => 'Kariah',
-                'alamat_baris_1' => 'Taman Bukit Jelutong',
-                'alamat_baris_2' => 'Seksyen U8',
-                'alamat_baris_3' => null,
-                'poskod' => '40150',
-                'bandar' => 'Shah Alam',
-                'negeri' => 'Selangor',
-                'negara' => 'Malaysia',
-                'daerah' => 'Petaling',
-                'no_telefon' => '03-78461235',
-                'email' => 'attaqwa@gmail.com',
-                'imam_ketua' => 'Encik Mohd Ali bin Hassan',
-                'bilangan_jemaah' => 150,
-                'tahun_dibina' => 2005,
-                'status' => 'Aktif',
-                'catatan' => 'Surau komuniti untuk penduduk Taman Bukit Jelutong.',
-            ],
-            [
-                'nama' => 'Masjid Al-Hidayah',
-                'singkatan_nama' => 'MAH',
-                'jenis' => 'Masjid',
-                'kategori' => 'Negeri',
-                'alamat_baris_1' => 'Seksyen 3',
-                'alamat_baris_2' => 'Jalan Tengku Ampuan Zabedah A9/A',
-                'alamat_baris_3' => null,
-                'poskod' => '40000',
-                'bandar' => 'Shah Alam',
-                'negeri' => 'Selangor',
-                'negara' => 'Malaysia',
-                'daerah' => 'Petaling',
-                'no_telefon' => '03-55121234',
-                'email' => 'alhidayah@gmail.com',
-                'imam_ketua' => 'Ustaz Ibrahim bin Yusuf',
-                'bilangan_jemaah' => 800,
-                'tahun_dibina' => 1980,
-                'status' => 'Aktif',
-                'catatan' => 'Masjid bersejarah di Seksyen 3 Shah Alam.',
-            ],
-            [
-                'nama' => 'Surau An-Nur',
-                'singkatan_nama' => 'SAN',
-                'jenis' => 'Surau',
-                'kategori' => 'Swasta',
-                'alamat_baris_1' => 'Bandar Baru Klang',
-                'alamat_baris_2' => 'Jalan Tiara 2A',
-                'alamat_baris_3' => null,
-                'poskod' => '41150',
-                'bandar' => 'Klang',
-                'negeri' => 'Selangor',
-                'negara' => 'Malaysia',
-                'daerah' => 'Klang',
-                'no_telefon' => '03-33451234',
-                'email' => 'annur@gmail.com',
-                'imam_ketua' => 'Encik Zainal bin Ahmad',
-                'bilangan_jemaah' => 200,
-                'tahun_dibina' => 2010,
-                'status' => 'Aktif',
-                'catatan' => 'Surau moden dengan kemudahan lengkap.',
-            ],
-            [
-                'nama' => 'Masjid Jamek Petaling Jaya',
-                'singkatan_nama' => 'MJPJ',
-                'jenis' => 'Masjid',
-                'kategori' => 'Kariah',
-                'alamat_baris_1' => 'Seksyen 14',
-                'alamat_baris_2' => 'Jalan 14/22',
-                'alamat_baris_3' => null,
-                'poskod' => '46100',
-                'bandar' => 'Petaling Jaya',
-                'negeri' => 'Selangor',
-                'negara' => 'Malaysia',
-                'daerah' => 'Petaling',
-                'no_telefon' => '03-79551234',
-                'email' => 'mjpj@gmail.com',
-                'imam_ketua' => 'Ustaz Rahman bin Omar',
-                'bilangan_jemaah' => 600,
-                'tahun_dibina' => 1975,
-                'status' => 'Aktif',
-                'catatan' => 'Masjid jamek utama Petaling Jaya dengan sejarah panjang.',
-            ],
-            [
-                'nama' => 'Surau Ar-Rahman',
-                'singkatan_nama' => 'SAR',
-                'jenis' => 'Surau',
-                'kategori' => 'Wakaf',
-                'alamat_baris_1' => 'Taman Subang Jaya',
-                'alamat_baris_2' => 'Jalan SS15/4A',
-                'alamat_baris_3' => null,
-                'poskod' => '47500',
-                'bandar' => 'Subang Jaya',
-                'negeri' => 'Selangor',
-                'negara' => 'Malaysia',
-                'daerah' => 'Petaling',
-                'no_telefon' => '03-56331234',
-                'email' => 'arrahman@gmail.com',
-                'imam_ketua' => 'Encik Rashid bin Mahmud',
-                'bilangan_jemaah' => 120,
-                'tahun_dibina' => 2015,
-                'status' => 'Aktif',
-                'catatan' => 'Surau baharu dengan reka bentuk moden.',
-            ],
+        try {
+            $crawler->filter('tbody tr[role="row"]')->each(function (Crawler $row) use ($type, &$processed) {
+                try {
+                    $columns = $row->filter('td');
+                    
+                    if ($columns->count() < 5) {
+                        return; // Skip rows with insufficient data
+                    }
+
+                    // Extract data from columns (adjust indices based on actual table structure)
+                    $nama = trim($columns->eq(1)->text());
+                    $namaRasmi = $columns->count() > 2 ? trim($columns->eq(2)->text()) : null;
+                    $noTelefon = $columns->count() > 3 ? trim($columns->eq(3)->text()) : null;
+                    $fullAddress = $columns->count() > 4 ? trim($columns->eq(4)->text()) : '';
+                    $poskod = $columns->count() > 5 ? trim($columns->eq(5)->text()) : '00000';
+                    $negeri = $columns->count() > 6 ? trim($columns->eq(6)->text()) : '';
+                    $daerah = $columns->count() > 7 ? trim($columns->eq(7)->text()) : '';
+                    $kawasan = $columns->count() > 8 ? trim($columns->eq(8)->text()) : null;
+                    
+                    // Extract map link if available
+                    $pautanPeta = null;
+                    if ($columns->count() > 9) {
+                        try {
+                            $mapLink = $columns->eq(9)->filter('a');
+                            if ($mapLink->count() > 0) {
+                                $pautanPeta = $mapLink->attr('href');
+                            }
+                        } catch (\Exception $e) {
+                            // Map link extraction failed, continue without it
+                        }
+                    }
+
+                    if (empty($nama)) {
+                        return; // Skip if no name
+                    }
+
+                    // Split address into components
+                    $addressLines = $this->splitAddress($fullAddress);
+                    
+                    // Generate singkatan_nama from nama
+                    $singkatanNama = $this->generateSingkatan($nama);
+
+                    // Check if record already exists
+                    $exists = MasjidSurau::where('nama', $nama)
+                                        ->where('jenis', $type)
+                                        ->exists();
+                    
+                    if (!$exists) {
+                        MasjidSurau::create([
+                            'nama' => $nama,
+                            'nama_rasmi' => $namaRasmi !== $nama ? $namaRasmi : null,
+                            'singkatan_nama' => $singkatanNama,
+                            'jenis' => $type,
+                            'alamat_baris_1' => $addressLines[0] ?? null,
+                            'alamat_baris_2' => $addressLines[1] ?? null,
+                            'alamat_baris_3' => $addressLines[2] ?? null,
+                            'poskod' => $poskod ?: '00000',
+                            'negeri' => $negeri ?: 'Selangor',
+                            'daerah' => $daerah,
+                            'kawasan' => $kawasan,
+                            'no_telefon' => $noTelefon,
+                            'pautan_peta' => $pautanPeta,
+                            'bandar' => $this->extractCity($fullAddress),
+                            'negara' => 'Malaysia',
+                            'status' => 'Aktif'
+                        ]);
+                        
+                        $processed++;
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Error parsing row: " . $e->getMessage());
+                }
+            });
+        } catch (\Exception $e) {
+            Log::error("Error parsing page HTML: " . $e->getMessage());
+        }
+
+        return $processed;
+    }
+
+    private function splitAddress(string $address): array
+    {
+        if (empty($address)) {
+            return [];
+        }
+
+        // Split address into logical components
+        $parts = preg_split('/,\s*/', $address);
+        $lines = [];
+        
+        if (count($parts) > 2) {
+            // First line: Building/compound name
+            $lines[] = $parts[0];
+            // Second line: Street/area
+            $lines[] = implode(', ', array_slice($parts, 1, -1));
+            // Third line: City/postcode area
+            $lines[] = end($parts);
+        } elseif (count($parts) == 2) {
+            $lines[] = $parts[0];
+            $lines[] = $parts[1];
+        } else {
+            $lines[] = $address;
+        }
+        
+        return array_slice($lines, 0, 3);
+    }
+
+    private function extractCity(string $address): string
+    {
+        if (empty($address)) {
+            return '';
+        }
+
+        // Try to extract city name from address
+        if (preg_match('/(\d{5})\s+(.*?)(?:,|$)/', $address, $matches)) {
+            return trim($matches[2] ?? '');
+        }
+        
+        // Fallback: take the last part before postcode
+        $parts = preg_split('/,\s*/', $address);
+        if (count($parts) > 1) {
+            $lastPart = end($parts);
+            // Remove postcode if present
+            $cleaned = preg_replace('/\d{5}/', '', $lastPart);
+            return trim($cleaned);
+        }
+        
+        return '';
+    }
+
+    private function generateSingkatan(string $nama): string
+    {
+        // Remove common prefixes
+        $cleaned = preg_replace('/^(Masjid|Surau)\s+/i', '', $nama);
+        
+        // Split into words and take first letter of each significant word
+        $words = preg_split('/\s+/', $cleaned);
+        $singkatan = '';
+        
+        foreach ($words as $word) {
+            if (strlen($word) > 2 && !in_array(strtolower($word), ['dan', 'di', 'ke', 'dari', 'untuk'])) {
+                $singkatan .= strtoupper(substr($word, 0, 1));
+            }
+        }
+        
+        // Ensure minimum length of 2 and maximum of 6
+        if (strlen($singkatan) < 2) {
+            $singkatan = strtoupper(substr($cleaned, 0, 3));
+        }
+        
+        return substr($singkatan, 0, 6);
+    }
+
+    private function createFallbackData()
+    {
+        $this->command->info('Creating fallback sample data...');
+        
+        $fallbackData = [
             [
                 'nama' => 'Masjid Negara',
+                'nama_rasmi' => 'Masjid Negara Malaysia',
                 'singkatan_nama' => 'MN',
                 'jenis' => 'Masjid',
                 'kategori' => 'Persekutuan',
                 'alamat_baris_1' => 'Jalan Perdana',
                 'alamat_baris_2' => 'Tasik Perdana',
-                'alamat_baris_3' => null,
                 'poskod' => '50480',
                 'bandar' => 'Kuala Lumpur',
-                'negeri' => 'Wilayah Persekutuan Kuala Lumpur',
-                'negara' => 'Malaysia',
+                'negeri' => 'Kuala Lumpur',
                 'daerah' => 'Kuala Lumpur',
-                'no_telefon' => '03-26935435',
-                'email' => 'masjidn@gov.my',
-                'imam_ketua' => 'Dato\' Ustaz Hasan bin Ali',
-                'bilangan_jemaah' => 15000,
-                'tahun_dibina' => 1965,
-                'status' => 'Aktif',
-                'catatan' => 'Masjid kebangsaan Malaysia dengan seni bina yang unik dan bersejarah.',
-            ],
-            [
-                'nama' => 'Surau Al-Ikhlas',
-                'singkatan_nama' => 'SAI',
-                'jenis' => 'Surau',
-                'kategori' => 'Kariah',
-                'alamat_baris_1' => 'Kampung Baru',
-                'alamat_baris_2' => 'Jalan Raja Muda Abdul Aziz',
-                'alamat_baris_3' => null,
-                'poskod' => '50300',
-                'bandar' => 'Kuala Lumpur',
-                'negeri' => 'Wilayah Persekutuan Kuala Lumpur',
                 'negara' => 'Malaysia',
-                'daerah' => 'Kuala Lumpur',
-                'no_telefon' => '03-26921234',
-                'email' => 'alikhlas@gmail.com',
-                'imam_ketua' => 'Haji Mahmud bin Ibrahim',
-                'bilangan_jemaah' => 80,
-                'tahun_dibina' => 1960,
-                'status' => 'Tidak Aktif',
-                'catatan' => 'Surau lama yang memerlukan pembaikan dan pengubahsuaian.',
+                'no_telefon' => '03-26910733',
+                'status' => 'Aktif'
             ],
             [
                 'nama' => 'Masjid Sultan Salahuddin Abdul Aziz',
+                'nama_rasmi' => 'Masjid Sultan Salahuddin Abdul Aziz Shah',
                 'singkatan_nama' => 'MSSAA',
                 'jenis' => 'Masjid',
                 'kategori' => 'Negeri',
                 'alamat_baris_1' => 'Persiaran Masjid',
                 'alamat_baris_2' => 'Seksyen 14',
-                'alamat_baris_3' => null,
                 'poskod' => '40000',
                 'bandar' => 'Shah Alam',
                 'negeri' => 'Selangor',
-                'negara' => 'Malaysia',
                 'daerah' => 'Petaling',
-                'no_telefon' => '03-55444000',
-                'email' => 'masjidnegeri@selangor.gov.my',
-                'imam_ketua' => 'Dato\' Ustaz Mohd Yusof bin Ahmad',
-                'bilangan_jemaah' => 24000,
-                'tahun_dibina' => 1988,
-                'status' => 'Aktif',
-                'catatan' => 'Masjid negeri Selangor, dikenali sebagai Masjid Biru dengan kubah biru yang terkenal.',
+                'negara' => 'Malaysia',
+                'no_telefon' => '03-55121951',
+                'status' => 'Aktif'
             ],
             [
-                'nama' => 'Surau Al-Falah',
-                'singkatan_nama' => 'SAF',
+                'nama' => 'Surau Al-Hidayah',
+                'singkatan_nama' => 'SAH',
                 'jenis' => 'Surau',
                 'kategori' => 'Kariah',
                 'alamat_baris_1' => 'Taman Melawati',
-                'alamat_baris_2' => 'Jalan Melawati 1',
-                'alamat_baris_3' => null,
                 'poskod' => '53100',
                 'bandar' => 'Kuala Lumpur',
-                'negeri' => 'Wilayah Persekutuan Kuala Lumpur',
-                'negara' => 'Malaysia',
+                'negeri' => 'Kuala Lumpur',
                 'daerah' => 'Gombak',
-                'no_telefon' => '03-41061234',
-                'email' => 'alfalah@gmail.com',
-                'imam_ketua' => 'Ustaz Farid bin Hashim',
-                'bilangan_jemaah' => 180,
-                'tahun_dibina' => 2008,
-                'status' => 'Aktif',
-                'catatan' => 'Surau komuniti yang aktif dengan pelbagai program keagamaan.',
-            ],
+                'negara' => 'Malaysia',
+                'status' => 'Aktif'
+            ]
         ];
 
-        foreach ($masjidSuraus as $data) {
-            MasjidSurau::create($data);
+        foreach ($fallbackData as $data) {
+            MasjidSurau::updateOrCreate(
+                ['nama' => $data['nama'], 'jenis' => $data['jenis']],
+                $data
+            );
         }
+
+        $this->command->info('Fallback data created successfully!');
     }
 }

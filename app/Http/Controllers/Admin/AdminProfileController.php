@@ -46,7 +46,7 @@ class AdminProfileController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['nullable', 'string', 'max:20'],
             'position' => ['nullable', 'string', 'max:255'],
-            'masjid_surau_id' => ['nullable', 'exists:masjids_suraus,id'],
+            'masjid_surau_id' => ['nullable', 'exists:masjid_surau,id'],
         ]);
         
         $user->fill($validated);

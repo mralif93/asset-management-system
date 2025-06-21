@@ -75,7 +75,7 @@ class UserController extends Controller
             'position' => 'nullable|string|max:255',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,user',
-            'masjid_surau_id' => 'required|exists:masjids_suraus,id',
+            'masjid_surau_id' => 'required|exists:masjid_surau,id',
             'email_verified_at' => 'nullable|boolean',
         ]);
 
@@ -147,7 +147,7 @@ class UserController extends Controller
             'position' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|in:admin,user',
-            'masjid_surau_id' => 'required|exists:masjids_suraus,id',
+            'masjid_surau_id' => 'required|exists:masjid_surau,id',
             'email_verified_at' => 'nullable|boolean',
         ]);
 

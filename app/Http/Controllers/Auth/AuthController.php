@@ -87,7 +87,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone' => ['required', 'string', 'max:20'],
             'position' => ['required', 'string', 'max:255'],
-            'masjid_surau_id' => ['required', 'exists:masjids_suraus,id'],
+            'masjid_surau_id' => ['required', 'exists:masjid_surau,id'],
             'terms' => ['required', 'accepted'],
         ]);
 
