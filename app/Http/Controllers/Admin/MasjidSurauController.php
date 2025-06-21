@@ -12,11 +12,36 @@ class MasjidSurauController extends Controller
     /**
      * Display a listing of the masjid/surau.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $masjidSuraus = MasjidSurau::withCount(['assets', 'users'])
-                                  ->orderBy('created_at', 'desc')
-                                  ->paginate(10);
+        $query = MasjidSurau::withCount(['assets', 'users']);
+
+        // Apply filters
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('singkatan_nama', 'like', "%{$search}%")
+                  ->orWhere('imam_ketua', 'like', "%{$search}%")
+                  ->orWhere('bandar', 'like', "%{$search}%")
+                  ->orWhere('daerah', 'like', "%{$search}%")
+                  ->orWhere('negeri', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->get('jenis'));
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->get('kategori'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->get('status'));
+        }
+
+        $masjidSuraus = $query->orderBy('created_at', 'desc')->paginate(10);
 
         // Statistics for the index page
         $statistics = [
@@ -46,6 +71,7 @@ class MasjidSurauController extends Controller
             'nama' => 'required|string|max:255',
             'singkatan_nama' => 'nullable|string|max:20',
             'jenis' => 'required|in:Masjid,Surau',
+            'kategori' => 'nullable|in:Kariah,Persekutuan,Negeri,Swasta,Wakaf',
             'alamat_baris_1' => 'nullable|string|max:255',
             'alamat_baris_2' => 'nullable|string|max:255',
             'alamat_baris_3' => 'nullable|string|max:255',
@@ -109,6 +135,7 @@ class MasjidSurauController extends Controller
             'nama' => 'required|string|max:255',
             'singkatan_nama' => 'nullable|string|max:20',
             'jenis' => 'required|in:Masjid,Surau',
+            'kategori' => 'nullable|in:Kariah,Persekutuan,Negeri,Swasta,Wakaf',
             'alamat_baris_1' => 'nullable|string|max:255',
             'alamat_baris_2' => 'nullable|string|max:255',
             'alamat_baris_3' => 'nullable|string|max:255',

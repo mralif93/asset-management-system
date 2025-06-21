@@ -165,6 +165,39 @@
                                 @enderror
                             </div>
 
+                            <!-- Kategori -->
+                            <div>
+                                <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-tag-alt mr-1'></i>
+                                    Kategori
+                                </label>
+                                <div class="relative">
+                                    <select id="kategori" 
+                                            name="kategori" 
+                                            x-model="form.kategori"
+                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kategori') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Kategori</option>
+                                        <option value="Kariah" {{ old('kategori', $masjidSurau->kategori) == 'Kariah' ? 'selected' : '' }}>Kariah</option>
+                                        <option value="Persekutuan" {{ old('kategori', $masjidSurau->kategori) == 'Persekutuan' ? 'selected' : '' }}>Persekutuan</option>
+                                        <option value="Negeri" {{ old('kategori', $masjidSurau->kategori) == 'Negeri' ? 'selected' : '' }}>Negeri</option>
+                                        <option value="Swasta" {{ old('kategori', $masjidSurau->kategori) == 'Swasta' ? 'selected' : '' }}>Swasta</option>
+                                        <option value="Wakaf" {{ old('kategori', $masjidSurau->kategori) == 'Wakaf' ? 'selected' : '' }}>Wakaf</option>
+                                    </select>
+                                    <i class='bx bx-tag-alt absolute left-3 top-3.5 text-gray-400'></i>
+                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                </div>
+                                @error('kategori')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                                <p class="mt-1 text-xs text-emerald-600 flex items-center">
+                                    <i class='bx bx-info-circle mr-1'></i>
+                                    Kategori pentadbiran masjid/surau
+                                </p>
+                            </div>
+
                             <!-- Status -->
                             <div>
                                 <label for="status" class="block text-sm font-medium text-gray-700 mb-2">

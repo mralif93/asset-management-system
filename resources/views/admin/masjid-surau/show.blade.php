@@ -184,6 +184,34 @@
                         </dd>
                     </div>
 
+                    <!-- Kategori -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-tag-alt text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Kategori</dt>
+                        </div>
+                        <dd class="flex items-center">
+                            @if($masjidSurau->kategori)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                    {{ $masjidSurau->kategori == 'Kariah' ? 'bg-green-100 text-green-800' : 
+                                       ($masjidSurau->kategori == 'Persekutuan' ? 'bg-red-100 text-red-800' : 
+                                       ($masjidSurau->kategori == 'Negeri' ? 'bg-yellow-100 text-yellow-800' : 
+                                       ($masjidSurau->kategori == 'Swasta' ? 'bg-indigo-100 text-indigo-800' : 
+                                       'bg-orange-100 text-orange-800'))) }}">
+                                    <i class='bx bx-tag mr-1'></i>
+                                    {{ $masjidSurau->kategori }}
+                                </span>
+                            @else
+                                <span class="text-gray-400 italic">Tidak ditetapkan</span>
+                            @endif
+                        </dd>
+                        @if($masjidSurau->kategori)
+                            <p class="text-xs text-gray-500 mt-2">
+                                Kategori pentadbiran {{ strtolower($masjidSurau->jenis) }}
+                            </p>
+                        @endif
+                    </div>
+
                     <!-- Status -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">

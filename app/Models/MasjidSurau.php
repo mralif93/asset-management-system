@@ -17,6 +17,7 @@ class MasjidSurau extends Model
         'nama',
         'singkatan_nama',
         'jenis',
+        'kategori',
         'alamat_baris_1',
         'alamat_baris_2',
         'alamat_baris_3',

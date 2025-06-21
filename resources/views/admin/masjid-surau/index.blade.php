@@ -164,6 +164,18 @@
             </div>
 
             <div>
+                <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                <select name="kategori" id="kategori" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    <option value="">Semua Kategori</option>
+                    <option value="Kariah" {{ request('kategori') == 'Kariah' ? 'selected' : '' }}>Kariah</option>
+                    <option value="Persekutuan" {{ request('kategori') == 'Persekutuan' ? 'selected' : '' }}>Persekutuan</option>
+                    <option value="Negeri" {{ request('kategori') == 'Negeri' ? 'selected' : '' }}>Negeri</option>
+                    <option value="Swasta" {{ request('kategori') == 'Swasta' ? 'selected' : '' }}>Swasta</option>
+                    <option value="Wakaf" {{ request('kategori') == 'Wakaf' ? 'selected' : '' }}>Wakaf</option>
+                </select>
+            </div>
+
+            <div>
                 <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                     <option value="">Semua Status</option>
@@ -228,6 +240,7 @@
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masjid/Surau</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aset</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengguna</th>
@@ -263,6 +276,20 @@
                             <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full {{ $masjidSurau->jenis == 'Masjid' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
                                 {{ $masjidSurau->jenis }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if($masjidSurau->kategori)
+                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full 
+                                    {{ $masjidSurau->kategori == 'Kariah' ? 'bg-green-100 text-green-800' : 
+                                       ($masjidSurau->kategori == 'Persekutuan' ? 'bg-red-100 text-red-800' : 
+                                       ($masjidSurau->kategori == 'Negeri' ? 'bg-yellow-100 text-yellow-800' : 
+                                       ($masjidSurau->kategori == 'Swasta' ? 'bg-indigo-100 text-indigo-800' : 
+                                       'bg-orange-100 text-orange-800'))) }}">
+                                    {{ $masjidSurau->kategori }}
+                                </span>
+                            @else
+                                <span class="text-xs text-gray-400">-</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">{{ $masjidSurau->bandar }}, {{ $masjidSurau->negeri }}</div>
@@ -323,7 +350,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center">
+                        <td colspan="9" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                     <i class='bx bx-buildings text-3xl text-gray-400'></i>
