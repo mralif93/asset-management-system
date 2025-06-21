@@ -42,10 +42,23 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         $remember = $request->boolean('remember');
 
-        if (Auth::attempt($credentials, $remember)) {
+        // Check if user exists and credentials are correct
+        $user = User::where('email', $request->email)->first();
+        
+        if ($user && Hash::check($request->password, $user->password)) {
+            // Check if email is verified
+            if (is_null($user->email_verified_at)) {
+                // Log failed login attempt due to unverified email
+                AuditTrailService::logLogin($user, false);
+                
+                return back()->withErrors([
+                    'email' => 'Akaun anda belum disahkan. Sila hubungi pentadbir untuk mengesahkan akaun anda sebelum log masuk.',
+                ])->withInput($request->except('password'));
+            }
+            
+            // Email is verified, proceed with login
+            Auth::login($user, $remember);
             $request->session()->regenerate();
-
-            $user = Auth::user();
             
             // Log successful login
             AuditTrailService::logLogin($user, true);
@@ -103,11 +116,12 @@ class AuthController extends Controller
             'position' => $request->position,
             'masjid_surau_id' => $request->masjid_surau_id,
             'role' => 'user', // Default role is user
+            // email_verified_at remains null by default
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('user.dashboard')->with('success', 'Akaun berjaya didaftarkan! Selamat datang ke AssetFlow.');
+        // Don't auto-login unverified users
+        // Redirect to login page with success message
+        return redirect()->route('login')->with('success', 'Akaun berjaya didaftarkan! Sila tunggu pentadbir mengesahkan akaun anda sebelum log masuk.');
     }
 
     /**
