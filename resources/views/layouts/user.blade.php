@@ -148,11 +148,11 @@
                         Profil
                     </h3>
                     
-                    <a href="{{ route('profile.edit') }}" 
-                       class="nav-item nav-link flex items-center px-4 py-3 text-white rounded-xl font-medium {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                    <a href="{{ route('user.profile.edit') }}" 
+                       class="nav-item nav-link flex items-center px-4 py-3 text-white rounded-xl font-medium {{ request()->routeIs('user.profile.*') ? 'active' : '' }}">
                         <i class='bx bx-user-circle text-xl mr-4'></i>
                         <span>Kemaskini Profil</span>
-                        @if(request()->routeIs('profile.*'))
+                        @if(request()->routeIs('user.profile.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
                     </a>
@@ -209,7 +209,7 @@
                                             <p class="text-sm text-gray-500">{{ Auth::user()->email }}</p>
                                         </div>
                                         
-                                        <a href="{{ route('profile.edit') }}" 
+                                        <a href="{{ route('user.profile.edit') }}" 
                                            class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out">
                                             <i class='bx bx-user text-gray-400 mr-3'></i>
                                             Profil Saya

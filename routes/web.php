@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserProfileController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\AssetMovementController;
 use App\Http\Controllers\Admin\InspectionController;
@@ -47,11 +49,14 @@ Route::middleware(['auth'])->group(function () {
         }
     })->name('dashboard');
     
-    // Profile Management (available to both admin and user)
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Legacy profile redirect - redirect to appropriate profile based on role
+    Route::get('/profile', function () {
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.profile.edit');
+        } else {
+            return redirect()->route('user.profile.edit');
+        }
+    })->name('profile.edit');
 });
 
 // Admin Routes - ALL modules under admin
@@ -122,11 +127,31 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/user-activity/json', [AuditTrailController::class, 'userActivity'])->name('user-activity');
         Route::get('/{auditTrail}', [AuditTrailController::class, 'show'])->name('show');
     });
+    
+    // Admin Profile Management
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [AdminProfileController::class, 'edit'])->name('edit');
+        Route::patch('/', [AdminProfileController::class, 'update'])->name('update');
+        Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('password');
+        Route::get('/settings', [AdminProfileController::class, 'settings'])->name('settings');
+        Route::patch('/settings', [AdminProfileController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/activity', [AdminProfileController::class, 'activity'])->name('activity');
+        Route::delete('/', [AdminProfileController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // User Routes - Only dashboard and profile
 Route::middleware(['auth', 'user'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    
+    // User Profile Management
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [UserProfileController::class, 'edit'])->name('edit');
+        Route::patch('/', [UserProfileController::class, 'update'])->name('update');
+        Route::put('/password', [UserProfileController::class, 'updatePassword'])->name('password');
+        Route::get('/activity', [UserProfileController::class, 'activity'])->name('activity');
+        Route::delete('/', [UserProfileController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // require __DIR__.'/auth.php'; // Commented out to use custom authentication

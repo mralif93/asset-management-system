@@ -228,6 +228,15 @@
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
                     </a>
+
+                    <a href="{{ route('admin.profile.edit') }}" 
+                       class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.profile.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
+                        <i class='bx bx-user-circle text-xl mr-4'></i>
+                        <span>Profil Admin</span>
+                        @if(request()->routeIs('admin.profile.*'))
+                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                        @endif
+                    </a>
                 </div>
             </nav>
         </aside>
@@ -287,7 +296,7 @@
                                             <p class="text-sm text-gray-500">{{ Auth::user()->email }}</p>
                                         </div>
                                         
-                                        <a href="{{ route('profile.edit') }}" 
+                                        <a href="{{ route('admin.profile.edit') }}" 
                                            class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150">
                                             <i class='bx bx-user text-gray-400 mr-3'></i>
                                             Profil Saya

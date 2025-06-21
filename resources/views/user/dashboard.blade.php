@@ -74,7 +74,7 @@
     <!-- Quick Actions -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Update Profile -->
-        <a href="{{ route('profile.edit') }}" class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
+                        <a href="{{ route('user.profile.edit') }}" class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
                     <i class='bx bx-edit text-emerald-600 text-xl'></i>
@@ -130,7 +130,7 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-gray-900">Maklumat Pengguna</h2>
-                        <a href="{{ route('profile.edit') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                        <a href="{{ route('user.profile.edit') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                             Kemaskini
                         </a>
                     </div>

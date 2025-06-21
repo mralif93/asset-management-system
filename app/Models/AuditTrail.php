@@ -105,7 +105,31 @@ class AuditTrail extends Model
      */
     public function getFormattedActionAttribute()
     {
+        return $this->formatAction();
+    }
+
+    /**
+     * Format action name for display
+     */
+    public function formatAction()
+    {
         $actions = [
+            'create' => 'Dicipta',
+            'update' => 'Dikemaskini', 
+            'delete' => 'Dipadam',
+            'view' => 'Dilihat',
+            'login' => 'Log Masuk',
+            'logout' => 'Log Keluar',
+            'export' => 'Dieksport',
+            'import' => 'Diimport',
+            'approve' => 'Diluluskan',
+            'reject' => 'Ditolak',
+            'activate' => 'Diaktifkan',
+            'deactivate' => 'Dinyahaktifkan',
+            'profile_update' => 'Kemaskini Profil',
+            'password_update' => 'Tukar Kata Laluan',
+            'account_deletion' => 'Padam Akaun',
+            // Add more action mappings as needed
             'CREATE' => 'Dicipta',
             'UPDATE' => 'Dikemaskini',
             'DELETE' => 'Dipadam',
@@ -120,7 +144,7 @@ class AuditTrail extends Model
             'DEACTIVATE' => 'Dinyahaktifkan',
         ];
 
-        return $actions[$this->action] ?? $this->action;
+        return $actions[strtolower($this->action)] ?? $actions[$this->action] ?? ucfirst(str_replace('_', ' ', $this->action));
     }
 
     /**
@@ -165,6 +189,14 @@ class AuditTrail extends Model
      */
     public function getBrowserAttribute()
     {
+        return $this->getBrowserName();
+    }
+
+    /**
+     * Get browser name from user agent
+     */
+    public function getBrowserName()
+    {
         if (!$this->user_agent) {
             return 'Unknown';
         }
@@ -190,6 +222,14 @@ class AuditTrail extends Model
      * Get platform from user agent
      */
     public function getPlatformAttribute()
+    {
+        return $this->getPlatformName();
+    }
+
+    /**
+     * Get platform name from user agent
+     */
+    public function getPlatformName()
     {
         if (!$this->user_agent) {
             return 'Unknown';

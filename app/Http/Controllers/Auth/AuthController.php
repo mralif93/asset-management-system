@@ -85,6 +85,8 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'phone' => ['required', 'string', 'max:20'],
+            'position' => ['required', 'string', 'max:255'],
             'masjid_surau_id' => ['required', 'exists:masjids_suraus,id'],
             'terms' => ['required', 'accepted'],
         ]);
@@ -97,6 +99,8 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'position' => $request->position,
             'masjid_surau_id' => $request->masjid_surau_id,
             'role' => 'user', // Default role is user
         ]);
