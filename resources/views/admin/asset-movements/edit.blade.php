@@ -172,6 +172,30 @@
                                 @enderror
                             </div>
 
+                            <!-- Application Date -->
+                            <div>
+                                <label for="tarikh_permohonan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-calendar-plus mr-1'></i>
+                                    Tarikh Permohonan <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="date" 
+                                           id="tarikh_permohonan" 
+                                           name="tarikh_permohonan" 
+                                           value="{{ old('tarikh_permohonan', $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('Y-m-d') : '') }}"
+                                           required
+                                           x-model="form.tarikh_permohonan"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_permohonan') border-red-500 @enderror bg-white">
+                                    <i class='bx bx-calendar-plus absolute left-3 top-3.5 text-gray-400'></i>
+                                </div>
+                                @error('tarikh_permohonan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             <!-- Movement Date -->
                             <div>
                                 <label for="tarikh_pergerakan" class="block text-sm font-medium text-gray-700 mb-2">
@@ -247,7 +271,7 @@
                             </div>
 
                             <!-- Expected Return Date (for borrowing) -->
-                            <div x-show="form.jenis_pergerakan === 'Peminjaman'" class="md:col-span-2">
+                            <div x-show="form.jenis_pergerakan === 'Peminjaman'">
                                 <label for="tarikh_jangka_pulangan" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-time mr-1'></i>
                                     Tarikh Jangka Pulangan
@@ -286,22 +310,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Responsible Person -->
                             <div>
-                                <label for="pegawai_bertanggungjawab" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="nama_peminjam_pegawai_bertanggungjawab" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-user mr-1'></i>
-                                    Nama Pegawai <span class="text-red-500">*</span>
+                                    Pegawai Bertanggungjawab <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <input type="text" 
-                                           id="pegawai_bertanggungjawab" 
-                                           name="pegawai_bertanggungjawab" 
-                                           value="{{ old('pegawai_bertanggungjawab', $assetMovement->pegawai_bertanggungjawab) }}"
+                                           id="nama_peminjam_pegawai_bertanggungjawab" 
+                                           name="nama_peminjam_pegawai_bertanggungjawab" 
+                                           value="{{ old('nama_peminjam_pegawai_bertanggungjawab', $assetMovement->nama_peminjam_pegawai_bertanggungjawab) }}"
                                            required
-                                           x-model="form.pegawai_bertanggungjawab"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('pegawai_bertanggungjawab') border-red-500 @enderror bg-white"
-                                           placeholder="Nama pegawai">
+                                           x-model="form.nama_peminjam_pegawai_bertanggungjawab"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_peminjam_pegawai_bertanggungjawab') border-red-500 @enderror bg-white"
+                                           placeholder="Nama pegawai yang bertanggungjawab">
                                     <i class='bx bx-user absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
-                                @error('pegawai_bertanggungjawab')
+                                @error('nama_peminjam_pegawai_bertanggungjawab')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
@@ -390,7 +414,8 @@
                                     </div>
                                     <div>
                                         <p class="font-medium text-gray-900" x-text="form.jenis_pergerakan || '{{ $assetMovement->jenis_pergerakan }}'">{{ $assetMovement->jenis_pergerakan }}</p>
-                                        <p class="text-sm text-gray-500" x-text="form.tarikh_pergerakan || '{{ $assetMovement->tarikh_pergerakan ? $assetMovement->tarikh_pergerakan->format('Y-m-d') : '' }}'">{{ $assetMovement->tarikh_pergerakan ? $assetMovement->tarikh_pergerakan->format('Y-m-d') : '' }}</p>
+                                        <p class="text-sm text-gray-500">Permohonan: <span x-text="form.tarikh_permohonan || '{{ $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('d/m/Y') : '' }}'">{{ $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('d/m/Y') : '' }}</span></p>
+                                        <p class="text-sm text-gray-500">Pergerakan: <span x-text="form.tarikh_pergerakan || '{{ $assetMovement->tarikh_pergerakan ? $assetMovement->tarikh_pergerakan->format('d/m/Y') : '' }}'">{{ $assetMovement->tarikh_pergerakan ? $assetMovement->tarikh_pergerakan->format('d/m/Y') : '' }}</span></p>
                                     </div>
                                 </div>
                                 
@@ -405,7 +430,7 @@
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Pegawai:</span>
-                                        <span class="text-sm font-medium" x-text="form.pegawai_bertanggungjawab || '{{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab }}'">{{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab }}</span>
+                                        <span class="text-sm font-medium" x-text="form.nama_peminjam_pegawai_bertanggungjawab || '{{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab }}'">{{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab }}</span>
                                     </div>
                                     @if($assetMovement->tarikh_jangka_pulangan || $assetMovement->jenis_pergerakan === 'Peminjaman')
                                     <div x-show="form.jenis_pergerakan === 'Peminjaman'" class="flex justify-between">
@@ -505,11 +530,12 @@
         return {
             form: {
                 jenis_pergerakan: '{{ old('jenis_pergerakan', $assetMovement->jenis_pergerakan) }}',
+                tarikh_permohonan: '{{ old('tarikh_permohonan', $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('Y-m-d') : '') }}',
                 tarikh_pergerakan: '{{ old('tarikh_pergerakan', $assetMovement->tarikh_pergerakan ? $assetMovement->tarikh_pergerakan->format('Y-m-d') : '') }}',
                 lokasi_asal: '{{ old('lokasi_asal', $assetMovement->lokasi_asal) }}',
                 lokasi_destinasi: '{{ old('lokasi_destinasi', $assetMovement->lokasi_destinasi) }}',
                 tarikh_jangka_pulangan: '{{ old('tarikh_jangka_pulangan', $assetMovement->tarikh_jangka_pulangan ? $assetMovement->tarikh_jangka_pulangan->format('Y-m-d') : '') }}',
-                pegawai_bertanggungjawab: '{{ old('pegawai_bertanggungjawab', $assetMovement->nama_peminjam_pegawai_bertanggungjawab) }}',
+                nama_peminjam_pegawai_bertanggungjawab: '{{ old('nama_peminjam_pegawai_bertanggungjawab', $assetMovement->nama_peminjam_pegawai_bertanggungjawab) }}',
                 sebab_pergerakan: '{{ old('sebab_pergerakan', $assetMovement->sebab_pergerakan) }}',
                 catatan_pergerakan: '{{ old('catatan_pergerakan', $assetMovement->catatan_pergerakan) }}'
             },

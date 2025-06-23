@@ -68,7 +68,7 @@ trait Auditable
     /**
      * Log a view event for this model
      */
-    public function auditView(string $description = null)
+    public function auditView(?string $description = null)
     {
         try {
             return AuditTrailService::logView($this, $description);
@@ -81,7 +81,7 @@ trait Auditable
     /**
      * Log status change for this model
      */
-    public function auditStatusChange(string $oldStatus, string $newStatus, string $description = null)
+    public function auditStatusChange(string $oldStatus, string $newStatus, ?string $description = null)
     {
         try {
             return AuditTrailService::logStatusChange($this, $oldStatus, $newStatus, $description);
@@ -94,7 +94,7 @@ trait Auditable
     /**
      * Log approval/rejection for this model
      */
-    public function auditApproval(bool $approved, string $reason = null)
+    public function auditApproval(bool $approved, ?string $reason = null)
     {
         try {
             return AuditTrailService::logApproval($this, $approved, $reason);

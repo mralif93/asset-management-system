@@ -14,24 +14,24 @@ class LossWriteoff extends Model
 
     protected $fillable = [
         'asset_id',
-        'user_id',
-        'tarikh_kehilangan',
-        'jenis_kehilangan',
-        'sebab_kehilangan',
+        'tarikh_laporan',
+        'jenis_kejadian',
+        'sebab_kejadian',
+        'butiran_kejadian',
+        'pegawai_pelapor',
+        'tarikh_kelulusan_hapus_kira',
+        'status_kejadian',
+        'catatan',
         'nilai_kehilangan',
         'laporan_polis',
-        'catatan_kehilangan',
         'dokumen_kehilangan',
-        'status_kelulusan',
-        'tarikh_kelulusan',
         'diluluskan_oleh',
         'sebab_penolakan',
-        'catatan',
     ];
 
     protected $casts = [
-        'tarikh_kehilangan' => 'date',
-        'tarikh_kelulusan' => 'date',
+        'tarikh_laporan' => 'date',
+        'tarikh_kelulusan_hapus_kira' => 'date',
         'nilai_kehilangan' => 'decimal:2',
         'dokumen_kehilangan' => 'array',
     ];
@@ -42,14 +42,6 @@ class LossWriteoff extends Model
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
-    }
-
-    /**
-     * Get the user who reported the loss/writeoff.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

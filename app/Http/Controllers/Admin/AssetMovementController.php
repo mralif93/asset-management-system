@@ -43,12 +43,15 @@ class AssetMovementController extends Controller
             'lokasi_asal' => 'required|string|max:255',
             'lokasi_destinasi' => 'required|string|max:255',
             'tarikh_pergerakan' => 'required|date',
+            'nama_peminjam_pegawai_bertanggungjawab' => 'required|string|max:255',
+            'tarikh_jangka_pulangan' => 'nullable|date|after:tarikh_pergerakan',
             'sebab_pergerakan' => 'required|string',
             'catatan_pergerakan' => 'nullable|string',
         ]);
 
         $validated['user_id'] = Auth::id();
         $validated['status_pergerakan'] = 'menunggu_kelulusan';
+        $validated['tarikh_permohonan'] = now();
 
         $assetMovement = AssetMovement::create($validated);
 
@@ -92,9 +95,12 @@ class AssetMovementController extends Controller
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'jenis_pergerakan' => 'required|string',
+            'tarikh_permohonan' => 'required|date',
             'lokasi_asal' => 'required|string|max:255',
             'lokasi_destinasi' => 'required|string|max:255',
-            'tarikh_pergerakan' => 'required|date',
+            'tarikh_pergerakan' => 'required|date|after_or_equal:tarikh_permohonan',
+            'nama_peminjam_pegawai_bertanggungjawab' => 'required|string|max:255',
+            'tarikh_jangka_pulangan' => 'nullable|date|after:tarikh_pergerakan',
             'sebab_pergerakan' => 'required|string',
             'catatan_pergerakan' => 'nullable|string',
         ]);

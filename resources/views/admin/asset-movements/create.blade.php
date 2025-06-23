@@ -256,8 +256,33 @@
                                 @enderror
                             </div>
 
+                            <!-- Responsible Person -->
+                            <div>
+                                <label for="nama_peminjam_pegawai_bertanggungjawab" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-user mr-1'></i>
+                                    Pegawai Bertanggungjawab <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" 
+                                           id="nama_peminjam_pegawai_bertanggungjawab" 
+                                           name="nama_peminjam_pegawai_bertanggungjawab" 
+                                           value="{{ old('nama_peminjam_pegawai_bertanggungjawab') }}"
+                                           required
+                                           x-model="form.nama_peminjam_pegawai_bertanggungjawab"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_peminjam_pegawai_bertanggungjawab') border-red-500 @enderror bg-white"
+                                           placeholder="Nama pegawai yang bertanggungjawab">
+                                    <i class='bx bx-user absolute left-3 top-3.5 text-gray-400'></i>
+                                </div>
+                                @error('nama_peminjam_pegawai_bertanggungjawab')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             <!-- Expected Return Date (for borrowing) -->
-                            <div x-show="form.jenis_pergerakan === 'Peminjaman'" class="md:col-span-2">
+                            <div x-show="form.jenis_pergerakan === 'Peminjaman'">
                                 <label for="tarikh_jangka_pulangan" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-time mr-1'></i>
                                     Tarikh Jangka Pulangan
@@ -465,6 +490,7 @@
                 tarikh_pergerakan: '{{ old('tarikh_pergerakan', date('Y-m-d')) }}',
                 lokasi_asal: '{{ old('lokasi_asal') }}',
                 lokasi_destinasi: '{{ old('lokasi_destinasi') }}',
+                nama_peminjam_pegawai_bertanggungjawab: '{{ old('nama_peminjam_pegawai_bertanggungjawab') }}',
                 tarikh_jangka_pulangan: '{{ old('tarikh_jangka_pulangan') }}',
                 sebab_pergerakan: '{{ old('sebab_pergerakan') }}',
                 catatan_pergerakan: '{{ old('catatan_pergerakan') }}'

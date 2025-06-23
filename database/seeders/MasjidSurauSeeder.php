@@ -144,31 +144,40 @@ class MasjidSurauSeeder extends Seeder
     {
         $crawler = new Crawler($html);
         $processed = 0;
+        $skipped = 0;
+        $totalRows = 0;
         
         try {
-            $crawler->filter('tbody tr[role="row"]')->each(function (Crawler $row) use ($type, &$processed) {
+            $crawler->filter('tbody tr')->each(function (Crawler $row) use ($type, &$processed, &$skipped, &$totalRows) {
+                $totalRows++;
                 try {
                     $columns = $row->filter('td');
                     
                     if ($columns->count() < 5) {
+                        $skipped++;
+                        $this->command->warn("Skipped row {$totalRows}: insufficient columns ({$columns->count()})");
                         return; // Skip rows with insufficient data
                     }
 
-                    // Extract data from columns (adjust indices based on actual table structure)
+                    // Extract data from columns based on actual table structure
+                    // Column 0: Bil, Column 1: Nama, Column 2: Daerah, Column 3: Kategori, Column 4: No Tel
                     $nama = trim($columns->eq(1)->text());
-                    $namaRasmi = $columns->count() > 2 ? trim($columns->eq(2)->text()) : null;
-                    $noTelefon = $columns->count() > 3 ? trim($columns->eq(3)->text()) : null;
-                    $fullAddress = $columns->count() > 4 ? trim($columns->eq(4)->text()) : '';
-                    $poskod = $columns->count() > 5 ? trim($columns->eq(5)->text()) : '00000';
-                    $negeri = $columns->count() > 6 ? trim($columns->eq(6)->text()) : '';
-                    $daerah = $columns->count() > 7 ? trim($columns->eq(7)->text()) : '';
-                    $kawasan = $columns->count() > 8 ? trim($columns->eq(8)->text()) : null;
+                    $daerah = trim($columns->eq(2)->text());
+                    $kategori = trim($columns->eq(3)->text());
+                    $noTelefon = trim($columns->eq(4)->text());
+                    
+                    // Set default values for missing fields
+                    $namaRasmi = null;
+                    $fullAddress = '';
+                    $poskod = '00000';
+                    $negeri = 'Selangor'; // Default since this is JAIS (Selangor)
+                    $kawasan = null;
                     
                     // Extract map link if available
                     $pautanPeta = null;
-                    if ($columns->count() > 9) {
+                    if ($columns->count() > 5) {
                         try {
-                            $mapLink = $columns->eq(9)->filter('a');
+                            $mapLink = $columns->eq(5)->filter('a');
                             if ($mapLink->count() > 0) {
                                 $pautanPeta = $mapLink->attr('href');
                             }
@@ -178,6 +187,8 @@ class MasjidSurauSeeder extends Seeder
                     }
 
                     if (empty($nama)) {
+                        $skipped++;
+                        $this->command->warn("Skipped row {$totalRows}: empty name");
                         return; // Skip if no name
                     }
 
@@ -198,6 +209,7 @@ class MasjidSurauSeeder extends Seeder
                             'nama_rasmi' => $namaRasmi !== $nama ? $namaRasmi : null,
                             'singkatan_nama' => $singkatanNama,
                             'jenis' => $type,
+                            'kategori' => $kategori,
                             'alamat_baris_1' => $addressLines[0] ?? null,
                             'alamat_baris_2' => $addressLines[1] ?? null,
                             'alamat_baris_3' => $addressLines[2] ?? null,
@@ -213,8 +225,13 @@ class MasjidSurauSeeder extends Seeder
                         ]);
                         
                         $processed++;
+                    } else {
+                        $skipped++;
+                        $this->command->warn("Skipped row {$totalRows}: '{$nama}' already exists");
                     }
                 } catch (\Exception $e) {
+                    $skipped++;
+                    $this->command->error("Error parsing row {$totalRows}: " . $e->getMessage());
                     Log::error("Error parsing row: " . $e->getMessage());
                 }
             });
@@ -222,6 +239,7 @@ class MasjidSurauSeeder extends Seeder
             Log::error("Error parsing page HTML: " . $e->getMessage());
         }
 
+        $this->command->info("Summary for {$type}: {$totalRows} total rows, {$processed} processed, {$skipped} skipped");
         return $processed;
     }
 

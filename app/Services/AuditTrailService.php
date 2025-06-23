@@ -37,7 +37,7 @@ class AuditTrailService
     /**
      * Log model creation
      */
-    public static function logCreate(Model $model, string $description = null): AuditTrail
+    public static function logCreate(Model $model, ?string $description = null): AuditTrail
     {
         return self::log([
             'action' => 'CREATE',
@@ -52,7 +52,7 @@ class AuditTrailService
     /**
      * Log model update
      */
-    public static function logUpdate(Model $model, array $oldValues, string $description = null): AuditTrail
+    public static function logUpdate(Model $model, array $oldValues, ?string $description = null): AuditTrail
     {
         $changes = [];
         foreach ($model->getDirty() as $key => $value) {
@@ -79,7 +79,7 @@ class AuditTrailService
     /**
      * Log model deletion
      */
-    public static function logDelete(Model $model, string $description = null): AuditTrail
+    public static function logDelete(Model $model, ?string $description = null): AuditTrail
     {
         return self::log([
             'action' => 'DELETE',
@@ -94,7 +94,7 @@ class AuditTrailService
     /**
      * Log model view/access
      */
-    public static function logView(Model $model, string $description = null): AuditTrail
+    public static function logView(Model $model, ?string $description = null): AuditTrail
     {
         return self::log([
             'action' => 'VIEW',
@@ -137,7 +137,7 @@ class AuditTrailService
     /**
      * Log export action
      */
-    public static function logExport(string $exportType, array $filters = [], string $description = null): AuditTrail
+    public static function logExport(string $exportType, array $filters = [], ?string $description = null): AuditTrail
     {
         return self::log([
             'action' => 'EXPORT',
@@ -153,7 +153,7 @@ class AuditTrailService
     /**
      * Log import action
      */
-    public static function logImport(string $importType, int $recordCount, string $description = null): AuditTrail
+    public static function logImport(string $importType, int $recordCount, ?string $description = null): AuditTrail
     {
         return self::log([
             'action' => 'IMPORT',
@@ -169,7 +169,7 @@ class AuditTrailService
     /**
      * Log approval action
      */
-    public static function logApproval(Model $model, bool $approved, string $reason = null): AuditTrail
+    public static function logApproval(Model $model, bool $approved, ?string $reason = null): AuditTrail
     {
         $action = $approved ? 'APPROVE' : 'REJECT';
         $status = $approved ? 'Diluluskan' : 'Ditolak';
@@ -190,7 +190,7 @@ class AuditTrailService
     /**
      * Log status change
      */
-    public static function logStatusChange(Model $model, string $oldStatus, string $newStatus, string $description = null): AuditTrail
+    public static function logStatusChange(Model $model, string $oldStatus, string $newStatus, ?string $description = null): AuditTrail
     {
         $action = $newStatus === 'active' || $newStatus === 'Aktif' ? 'ACTIVATE' : 'DEACTIVATE';
         
@@ -213,7 +213,7 @@ class AuditTrailService
     public static function logCustom(
         string $action, 
         string $description, 
-        Model $model = null, 
+        ?Model $model = null, 
         array $additionalData = [],
         string $status = 'success'
     ): AuditTrail {
@@ -239,7 +239,7 @@ class AuditTrailService
     /**
      * Log failed action
      */
-    public static function logFailure(string $action, string $error, Model $model = null): AuditTrail
+    public static function logFailure(string $action, string $error, ?Model $model = null): AuditTrail
     {
         $data = [
             'action' => strtoupper($action),

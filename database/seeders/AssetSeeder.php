@@ -83,36 +83,40 @@ class AssetSeeder extends Seeder
             ],
         ];
 
-        // Create assets for MTAJ (first 3 assets)
-        $mtaj = $masjidSuraus->where('singkatan_nama', 'MTAJ')->first();
-        for ($i = 0; $i < 3; $i++) {
-            $assetData = $sampleAssets[$i];
-            $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
-            
-            Asset::create(array_merge($assetData, [
-                'masjid_surau_id' => $mtaj->id,
-                'no_siri_pendaftaran' => AssetRegistrationNumber::generate(
-                    $mtaj->id, 
-                    $assetData['jenis_aset'], 
-                    $tarikhPerolehan->format('y')
-                ),
-            ]));
+        // Create assets for the first masjid (first 3 assets)
+        $firstMasjid = $masjidSuraus->where('jenis', 'Masjid')->first() ?? $masjidSuraus->first();
+        if ($firstMasjid) {
+            for ($i = 0; $i < 3; $i++) {
+                $assetData = $sampleAssets[$i];
+                $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
+                
+                Asset::create(array_merge($assetData, [
+                    'masjid_surau_id' => $firstMasjid->id,
+                    'no_siri_pendaftaran' => AssetRegistrationNumber::generate(
+                        $firstMasjid->id, 
+                        $assetData['jenis_aset'], 
+                        $tarikhPerolehan->format('y')
+                    ),
+                ]));
+            }
         }
 
-        // Create assets for SAT (last 2 assets)
-        $sat = $masjidSuraus->where('singkatan_nama', 'SAT')->first();
-        for ($i = 3; $i < 5; $i++) {
-            $assetData = $sampleAssets[$i];
-            $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
-            
-            Asset::create(array_merge($assetData, [
-                'masjid_surau_id' => $sat->id,
-                'no_siri_pendaftaran' => AssetRegistrationNumber::generate(
-                    $sat->id, 
-                    $assetData['jenis_aset'], 
-                    $tarikhPerolehan->format('y')
-                ),
-            ]));
+        // Create assets for the first surau (last 2 assets)
+        $firstSurau = $masjidSuraus->where('jenis', 'Surau')->first() ?? $masjidSuraus->skip(1)->first();
+        if ($firstSurau) {
+            for ($i = 3; $i < 5; $i++) {
+                $assetData = $sampleAssets[$i];
+                $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
+                
+                Asset::create(array_merge($assetData, [
+                    'masjid_surau_id' => $firstSurau->id,
+                    'no_siri_pendaftaran' => AssetRegistrationNumber::generate(
+                        $firstSurau->id, 
+                        $assetData['jenis_aset'], 
+                        $tarikhPerolehan->format('y')
+                    ),
+                ]));
+            }
         }
 
         // Create additional sample assets for demonstration
@@ -122,9 +126,8 @@ class AssetSeeder extends Seeder
     private function createAdditionalSampleAssets($masjidSuraus)
     {
         $additionalAssets = [
-            // More MTAJ assets to show sequence numbering
+            // More assets for first masjid
             [
-                'masjid' => 'MTAJ',
                 'nama_aset' => 'Printer Canon ImageClass MF244dw',
                 'jenis_aset' => 'Harta Modal',
                 'tarikh_perolehan' => '2018-07-20',
@@ -132,9 +135,9 @@ class AssetSeeder extends Seeder
                 'nilai_perolehan' => 2100.00,
                 'lokasi_penempatan' => 'Pejabat Imam',
                 'pegawai_bertanggungjawab_lokasi' => 'Ustaz Ahmad bin Ali',
+                'use_first_masjid' => true,
             ],
             [
-                'masjid' => 'MTAJ',
                 'nama_aset' => 'Lori Nissan Cabstar',
                 'jenis_aset' => 'Kenderaan',
                 'tarikh_perolehan' => '2023-08-15',
@@ -144,10 +147,10 @@ class AssetSeeder extends Seeder
                 'susut_nilai_tahunan' => 5625.00,
                 'lokasi_penempatan' => 'Tempat Letak Kereta',
                 'pegawai_bertanggungjawab_lokasi' => 'Encik Karim bin Osman',
+                'use_first_masjid' => true,
             ],
-            // SAT additional assets
+            // Assets for first surau
             [
-                'masjid' => 'SAT',
                 'nama_aset' => 'Set Sofa Ruang Tamu',
                 'jenis_aset' => 'Perabot',
                 'tarikh_perolehan' => '2023-04-10',
@@ -155,25 +158,33 @@ class AssetSeeder extends Seeder
                 'nilai_perolehan' => 1200.00,
                 'lokasi_penempatan' => 'Ruang Tamu',
                 'pegawai_bertanggungjawab_lokasi' => 'Haji Ibrahim bin Yusof',
+                'use_first_masjid' => false, // Use first surau
             ],
         ];
 
+        $firstMasjid = $masjidSuraus->where('jenis', 'Masjid')->first() ?? $masjidSuraus->first();
+        $firstSurau = $masjidSuraus->where('jenis', 'Surau')->first() ?? $masjidSuraus->skip(1)->first();
+
         foreach ($additionalAssets as $assetData) {
-            $masjid = $masjidSuraus->where('singkatan_nama', $assetData['masjid'])->first();
-            $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
+            $useFirstMasjid = $assetData['use_first_masjid'] ?? true;
+            $masjid = $useFirstMasjid ? $firstMasjid : $firstSurau;
             
-            unset($assetData['masjid']); // Remove the masjid key as it's not needed in the asset data
-            
-            Asset::create(array_merge($assetData, [
-                'masjid_surau_id' => $masjid->id,
-                'no_siri_pendaftaran' => AssetRegistrationNumber::generate(
-                    $masjid->id, 
-                    $assetData['jenis_aset'], 
-                    $tarikhPerolehan->format('y')
-                ),
-                'status_aset' => 'Sedang Digunakan',
-                'catatan' => 'Asset sampel untuk demonstrasi sistem',
-            ]));
+            if ($masjid) {
+                $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
+                
+                unset($assetData['use_first_masjid']); // Remove the helper key
+                
+                Asset::create(array_merge($assetData, [
+                    'masjid_surau_id' => $masjid->id,
+                    'no_siri_pendaftaran' => AssetRegistrationNumber::generate(
+                        $masjid->id, 
+                        $assetData['jenis_aset'], 
+                        $tarikhPerolehan->format('y')
+                    ),
+                    'status_aset' => 'Sedang Digunakan',
+                    'catatan' => 'Asset sampel untuk demonstrasi sistem',
+                ]));
+            }
         }
     }
 }

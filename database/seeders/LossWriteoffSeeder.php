@@ -21,36 +21,39 @@ class LossWriteoffSeeder extends Seeder
         // Sample loss/writeoff records
         $lossWriteoffs = [
             [
-                'tarikh_kehilangan' => Carbon::now()->subDays(120),
-                'jenis_kehilangan' => 'Kecurian',
-                'sebab_kehilangan' => 'Pecah Rumah',
+                'tarikh_laporan' => Carbon::now()->subDays(120),
+                'jenis_kejadian' => 'Kecurian',
+                'sebab_kejadian' => 'Pecah Rumah',
+                'butiran_kejadian' => 'Komputer hilang setelah pecah rumah pada waktu malam. Kaca tingkap dipecahkan dan komputer dicuri.',
+                'pegawai_pelapor' => 'Ustaz Ahmad bin Ali',
                 'nilai_kehilangan' => 2500.00,
                 'laporan_polis' => 'IPD Shah Alam No: SA2024081500123',
-                'catatan_kehilangan' => 'Komputer hilang setelah pecah rumah pada waktu malam. Kaca tingkap dipecahkan dan komputer dicuri.',
-                'tarikh_kelulusan' => Carbon::now()->subDays(100),
-                'status_kelulusan' => 'diluluskan',
+                'tarikh_kelulusan_hapus_kira' => Carbon::now()->subDays(100),
+                'status_kejadian' => 'Diluluskan',
                 'catatan' => 'Kes pecah rumah pada 15/8/2024, laporan polis dibuat, sistem keselamatan dipertingkatkan. Tindakan: Laporan polis dibuat, sistem keselamatan dipertingkatkan. Status tuntutan insurans: Dituntut.',
             ],
             [
-                'tarikh_kehilangan' => Carbon::now()->subDays(80),
-                'jenis_kehilangan' => 'Kerosakan',
-                'sebab_kehilangan' => 'Kebakaran',
+                'tarikh_laporan' => Carbon::now()->subDays(80),
+                'jenis_kejadian' => 'Kerosakan',
+                'sebab_kejadian' => 'Kebakaran',
+                'butiran_kejadian' => 'Kebakaran kecil di dewan solat menyebabkan 10 unit kerusi musnah sepenuhnya akibat litar pintas elektrik.',
+                'pegawai_pelapor' => 'Encik Mahmud bin Hassan',
                 'nilai_kehilangan' => 150.00,
                 'laporan_polis' => null,
-                'catatan_kehilangan' => 'Kebakaran kecil di dewan solat menyebabkan 10 unit kerusi musnah sepenuhnya akibat litar pintas elektrik.',
-                'tarikh_kelulusan' => Carbon::now()->subDays(70),
-                'status_kelulusan' => 'diluluskan',
+                'tarikh_kelulusan_hapus_kira' => Carbon::now()->subDays(70),
+                'status_kejadian' => 'Diluluskan',
                 'catatan' => 'Lokasi: Dewan Solat Utama. Tindakan: Bomba dipanggil, kerusi yang rosak dibuang. Status tuntutan insurans: Tidak Dituntut.',
             ],
             [
-                'tarikh_kehilangan' => Carbon::now()->subDays(45),
-                'jenis_kehilangan' => 'Kemalangan',
-                'sebab_kehilangan' => 'Kegagalan Pemasangan',
+                'tarikh_laporan' => Carbon::now()->subDays(45),
+                'jenis_kejadian' => 'Kemalangan',
+                'sebab_kejadian' => 'Kegagalan Pemasangan',
+                'butiran_kejadian' => 'Unit penyaman udara terjatuh semasa kerja penyelenggaraan dan rosak teruk.',
+                'pegawai_pelapor' => 'Ustaz Ahmad bin Ali',
                 'nilai_kehilangan' => 3200.00,
                 'laporan_polis' => null,
-                'catatan_kehilangan' => 'Unit penyaman udara terjatuh semasa kerja penyelenggaraan dan rosak teruk.',
-                'tarikh_kelulusan' => Carbon::now()->subDays(30),
-                'status_kelulusan' => 'diluluskan',
+                'tarikh_kelulusan_hapus_kira' => Carbon::now()->subDays(30),
+                'status_kejadian' => 'Diluluskan',
                 'catatan' => 'Lokasi: Dewan Solat Utama. Tindakan: Kontraktor bertanggungjawab, claim insurance. Status tuntutan insurans: Diluluskan.',
             ],
         ];
@@ -59,12 +62,10 @@ class LossWriteoffSeeder extends Seeder
         foreach ($lossWriteoffs as $index => $lossData) {
             if ($index < $assets->count()) {
                 $asset = $assets[$index];
-                $user = $users->random();
                 $approver = $users->where('role', 'admin')->first() ?? $users->first();
                 
                 LossWriteoff::create(array_merge($lossData, [
                     'asset_id' => $asset->id,
-                    'user_id' => $user->id,
                     'diluluskan_oleh' => $approver->id,
                 ]));
 
@@ -81,39 +82,33 @@ class LossWriteoffSeeder extends Seeder
 
     private function createAdditionalLossWriteoffs()
     {
-        $additionalAssets = Asset::where('status_aset', 'Sedang Digunakan')->limit(4)->get();
+        $additionalAssets = Asset::where('status_aset', 'Sedang Digunakan')->limit(2)->get();
         $users = User::all();
 
-        $jenisKehilangan = [
+        $jenisKejadian = [
             'Kecurian',
             'Kehilangan',
             'Kerosakan',
             'Kemalangan',
-            'Bencana Alam',
-            'Vandalisme',
-            'Hapus Kira'
         ];
 
-        $sebabKehilangan = [
+        $sebabKejadian = [
             'Pecah Rumah', 'Kegagalan Keselamatan', 'Kebakaran', 'Kegagalan Pemasangan',
-            'Ribut Petir', 'Vandalisme Awam', 'Akhir Hayat Berguna', 'Kecuaian',
-            'Kemalangan Jalan Raya', 'Banjir', 'Gempa Bumi', 'Angin Kencang'
         ];
 
-        $statusKelulusan = ['menunggu', 'diluluskan', 'ditolak'];
+        $statusKejadian = ['Menunggu', 'Diluluskan', 'Ditolak'];
 
         foreach ($additionalAssets as $asset) {
-            $jenis = $jenisKehilangan[array_rand($jenisKehilangan)];
-            $sebab = $sebabKehilangan[array_rand($sebabKehilangan)];
-            $status = $statusKelulusan[array_rand($statusKelulusan)];
-            $user = $users->random();
+            $jenis = $jenisKejadian[array_rand($jenisKejadian)];
+            $sebab = $sebabKejadian[array_rand($sebabKejadian)];
+            $status = $statusKejadian[array_rand($statusKejadian)];
             
-            $tarikhKehilangan = Carbon::now()->subDays(rand(1, 365));
+            $tarikhLaporan = Carbon::now()->subDays(rand(1, 365));
             $tarikhKelulusan = null;
             $diluluskanOleh = null;
             
-            if ($status === 'diluluskan') {
-                $tarikhKelulusan = $tarikhKehilangan->copy()->addDays(rand(7, 30));
+            if ($status === 'Diluluskan') {
+                $tarikhKelulusan = $tarikhLaporan->copy()->addDays(rand(7, 30));
                 $diluluskanOleh = $users->where('role', 'admin')->first()?->id ?? $users->first()->id;
             }
 
@@ -121,23 +116,23 @@ class LossWriteoffSeeder extends Seeder
 
             LossWriteoff::create([
                 'asset_id' => $asset->id,
-                'user_id' => $user->id,
-                'tarikh_kehilangan' => $tarikhKehilangan,
-                'jenis_kehilangan' => $jenis,
-                'sebab_kehilangan' => $sebab,
+                'tarikh_laporan' => $tarikhLaporan,
+                'jenis_kejadian' => $jenis,
+                'sebab_kejadian' => $sebab,
+                'butiran_kejadian' => $this->generateChronology($jenis),
+                'pegawai_pelapor' => 'Pegawai ' . $users->random()->name,
                 'nilai_kehilangan' => $nilaiKehilangan,
                 'laporan_polis' => $jenis === 'Kecurian' ? 'LP/' . rand(1000, 9999) . '/' . date('Y') : null,
-                'catatan_kehilangan' => $this->generateChronology($jenis),
                 'dokumen_kehilangan' => null,
-                'tarikh_kelulusan' => $tarikhKelulusan,
-                'status_kelulusan' => $status,
+                'tarikh_kelulusan_hapus_kira' => $tarikhKelulusan,
+                'status_kejadian' => $status,
                 'diluluskan_oleh' => $diluluskanOleh,
-                'sebab_penolakan' => $status === 'ditolak' ? 'Maklumat tidak mencukupi' : null,
+                'sebab_penolakan' => $status === 'Ditolak' ? 'Maklumat tidak mencukupi' : null,
                 'catatan' => $this->generateLossNote($jenis, $sebab, $nilaiKehilangan),
             ]);
 
             // Update asset status if approved for writeoff
-            if ($status === 'diluluskan') {
+            if ($status === 'Diluluskan') {
                 $asset->update(['status_aset' => 'Hilang/Dihapus Kira']);
             }
         }
