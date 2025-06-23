@@ -134,7 +134,7 @@
                     <a href="{{ route('user.dashboard') }}" 
                        class="nav-item nav-link flex items-center px-4 py-3 text-white rounded-xl font-medium {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
                         <i class='bx bxs-dashboard text-xl mr-4'></i>
-                        <span>Papan Pemuka</span>
+                        <span>Dashboard</span>
                         @if(request()->routeIs('user.dashboard'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -145,13 +145,13 @@
                 <div class="mb-8">
                     <h3 class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
                         <i class='bx bx-user text-emerald-300 mr-2'></i>
-                        Profil
+                        Profile
                     </h3>
                     
                     <a href="{{ route('user.profile.edit') }}" 
                        class="nav-item nav-link flex items-center px-4 py-3 text-white rounded-xl font-medium {{ request()->routeIs('user.profile.*') ? 'active' : '' }}">
                         <i class='bx bx-user-circle text-xl mr-4'></i>
-                        <span>Kemaskini Profil</span>
+                        <span>Update Profile</span>
                         @if(request()->routeIs('user.profile.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -188,7 +188,7 @@
                                     </div>
                                     <div class="hidden md:block text-left">
                                         <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
-                                        <p class="text-xs text-gray-500">Pengguna</p>
+                                        <p class="text-xs text-gray-500">User</p>
                                     </div>
                                     <i class='bx bx-chevron-down text-gray-400'></i>
                                 </button>
@@ -212,7 +212,7 @@
                                         <a href="{{ route('user.profile.edit') }}" 
                                            class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out">
                                             <i class='bx bx-user text-gray-400 mr-3'></i>
-                                            Profil Saya
+                                            My Profile
                                         </a>
                                         
                                         <div class="border-t border-gray-100 my-1"></div>
@@ -222,7 +222,7 @@
                                             <button type="submit" 
                                                     class="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition duration-150 ease-in-out">
                                                 <i class='bx bx-log-out text-red-500 mr-3'></i>
-                                                Log Keluar
+                                                Logout
                                             </button>
                                         </form>
                                     </div>
@@ -269,20 +269,20 @@
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-900">AssetFlow Management System</p>
-                                    <p class="text-xs text-gray-500">Sistem Pengurusan Aset Komprehensif</p>
+                                    <p class="text-xs text-gray-500">Comprehensive Asset Management System</p>
                                 </div>
                             </div>
                             
                             <div class="flex items-center space-x-6 text-sm text-gray-500">
-                                <p>&copy; {{ date('Y') }} AssetFlow. Semua hak terpelihara.</p>
+                                <p>&copy; {{ date('Y') }} AssetFlow. All rights reserved.</p>
                                 <div class="flex items-center space-x-4">
                                     <span class="flex items-center">
                                         <i class='bx bx-shield-check text-emerald-500 mr-1'></i>
-                                        Selamat
+                                        Secure
                                     </span>
                                     <span class="flex items-center">
                                         <div class="w-2 h-2 bg-emerald-400 rounded-full mr-2"></div>
-                                        Sistem Aktif
+                                        System Active
                                     </span>
                                 </div>
                             </div>

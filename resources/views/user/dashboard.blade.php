@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
-@section('title', 'Dashboard Pengguna')
-@section('page-title', 'Dashboard Pengguna')
+@section('title', 'User Dashboard')
+@section('page-title', 'User Dashboard')
 
 @section('content')
 <div class="p-6">
@@ -10,8 +10,8 @@
         <div class="bg-emerald-600 rounded-2xl p-8 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold mb-2">Selamat datang, {{ Auth::user()->name }}!</h1>
-                    <p class="text-emerald-100 text-lg">Sistem Pengurusan Aset Masjid & Surau</p>
+                    <h1 class="text-3xl font-bold mb-2">Welcome, {{ Auth::user()->name }}!</h1>
+                    <p class="text-emerald-100 text-lg">Masjid & Surau Asset Management System</p>
                 </div>
                 <div class="hidden md:block">
                     <i class='bx bx-user-check text-6xl text-emerald-200'></i>
@@ -28,10 +28,10 @@
                 <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
                     <i class='bx bx-user text-emerald-600 text-xl'></i>
                 </div>
-                <span class="text-sm text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full font-medium">Aktif</span>
+                <span class="text-sm text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full font-medium">Active</span>
             </div>
             <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ Auth::user()->role === 'user' ? '100' : '90' }}%</h3>
-            <p class="text-sm text-gray-600">Profil Lengkap</p>
+            <p class="text-sm text-gray-600">Profile Complete</p>
         </div>
 
         <!-- Account Status -->
@@ -42,8 +42,8 @@
                 </div>
                 <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">Verified</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">Aktif</h3>
-            <p class="text-sm text-gray-600">Status Akaun</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">Active</h3>
+            <p class="text-sm text-gray-600">Account Status</p>
         </div>
 
         <!-- User Role -->
@@ -55,7 +55,7 @@
                 <span class="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full font-medium">{{ ucfirst(Auth::user()->role) }}</span>
             </div>
             <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ ucfirst(Auth::user()->role) }}</h3>
-            <p class="text-sm text-gray-600">Peranan</p>
+            <p class="text-sm text-gray-600">Role</p>
         </div>
 
         <!-- Last Login -->
@@ -66,8 +66,8 @@
                 </div>
                 <span class="text-sm text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium">Online</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">Hari Ini</h3>
-            <p class="text-sm text-gray-600">Log Masuk Terakhir</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">Today</h3>
+            <p class="text-sm text-gray-600">Last Login</p>
         </div>
     </div>
 
@@ -81,8 +81,8 @@
                 </div>
                 <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-emerald-600 transition-colors'></i>
             </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Kemaskini Profil</h3>
-            <p class="text-sm text-gray-600">Ubah maklumat peribadi anda</p>
+            <h3 class="font-semibold text-gray-900 mb-2">Update Profile</h3>
+            <p class="text-sm text-gray-600">Change your personal information</p>
         </a>
 
         <!-- Contact Admin -->
@@ -93,8 +93,8 @@
                 </div>
                 <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-blue-600 transition-colors'></i>
             </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Hubungi Sokongan</h3>
-            <p class="text-sm text-gray-600">Bantuan dan sokongan teknikal</p>
+            <h3 class="font-semibold text-gray-900 mb-2">Contact Support</h3>
+            <p class="text-sm text-gray-600">Help and technical support</p>
         </div>
 
         <!-- System Info -->
@@ -105,8 +105,8 @@
                 </div>
                 <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-purple-600 transition-colors'></i>
             </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Maklumat Sistem</h3>
-            <p class="text-sm text-gray-600">Panduan dan FAQ sistem</p>
+            <h3 class="font-semibold text-gray-900 mb-2">System Information</h3>
+            <p class="text-sm text-gray-600">System guide and FAQ</p>
         </div>
 
         <!-- Security -->
@@ -117,8 +117,8 @@
                 </div>
                 <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-amber-600 transition-colors'></i>
             </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Keselamatan</h3>
-            <p class="text-sm text-gray-600">Tukar kata laluan & keselamatan</p>
+            <h3 class="font-semibold text-gray-900 mb-2">Security</h3>
+            <p class="text-sm text-gray-600">Change password & security</p>
         </div>
     </div>
 
@@ -129,9 +129,9 @@
             <div class="bg-white rounded-xl border border-gray-200">
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-lg font-semibold text-gray-900">Maklumat Pengguna</h2>
+                        <h2 class="text-lg font-semibold text-gray-900">User Information</h2>
                         <a href="{{ route('user.profile.edit') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
-                            Kemaskini
+                            Update
                         </a>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-gray-900 font-medium">{{ Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-500 mt-1">Nama Penuh</p>
+                                <p class="text-xs text-gray-500 mt-1">Full Name</p>
                             </div>
                         </div>
                         
@@ -153,7 +153,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-gray-900 font-medium">{{ Auth::user()->email }}</p>
-                                <p class="text-xs text-gray-500 mt-1">Alamat Email</p>
+                                <p class="text-xs text-gray-500 mt-1">Email Address</p>
                             </div>
                         </div>
                         
@@ -164,7 +164,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-gray-900 font-medium">{{ Auth::user()->phone }}</p>
-                                <p class="text-xs text-gray-500 mt-1">Nombor Telefon</p>
+                                <p class="text-xs text-gray-500 mt-1">Phone Number</p>
                             </div>
                         </div>
                         @endif
@@ -176,7 +176,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-gray-900 font-medium">{{ Auth::user()->position }}</p>
-                                <p class="text-xs text-gray-500 mt-1">Jawatan</p>
+                                <p class="text-xs text-gray-500 mt-1">Position</p>
                             </div>
                         </div>
                         @endif
@@ -190,101 +190,58 @@
             <!-- Account Health -->
             <div class="bg-white rounded-xl border border-gray-200">
                 <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900">Status Akaun</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Account Status</h3>
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                                <span class="text-sm text-gray-700">Akaun Aktif</span>
+                                <span class="text-sm text-gray-700">Active Account</span>
                             </div>
-                            <span class="text-sm font-medium text-green-600">Ya</span>
+                            <span class="text-sm font-medium text-green-600">✓</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                                <span class="text-sm text-gray-700">Email Disahkan</span>
+                                <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <span class="text-sm text-gray-700">Email Verified</span>
                             </div>
-                            <span class="text-sm font-medium text-green-600">Ya</span>
+                            <span class="text-sm font-medium text-blue-600">✓</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                                <span class="text-sm text-gray-700">Profil Lengkap</span>
+                                <span class="text-sm text-gray-700">Profile Complete</span>
                             </div>
-                            <span class="text-sm font-medium text-emerald-600">{{ Auth::user()->phone && Auth::user()->position ? 'Ya' : 'Sebahagian' }}</span>
+                            <span class="text-sm font-medium text-emerald-600">✓</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- System Status -->
+            <!-- Quick Links -->
             <div class="bg-white rounded-xl border border-gray-200">
                 <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900">Status Sistem</h3>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-700">Sistem Online</span>
-                            <div class="flex items-center space-x-2">
-                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span class="text-sm font-medium text-green-600">Aktif</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-700">Sambungan</span>
-                            <div class="flex items-center space-x-2">
-                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span class="text-sm font-medium text-green-600">Stabil</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-700">Keselamatan</span>
-                            <div class="flex items-center space-x-2">
-                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span class="text-sm font-medium text-green-600">Selamat</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900">Aktiviti Terkini</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Quick Links</h3>
                 </div>
                 <div class="p-6">
                     <div class="space-y-3">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class='bx bx-log-in text-emerald-600 text-sm'></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-900">Log masuk ke sistem</p>
-                                <p class="text-xs text-gray-500">Baru sahaja</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class='bx bx-user text-blue-600 text-sm'></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-900">Profil dilihat</p>
-                                <p class="text-xs text-gray-500">5 minit yang lalu</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class='bx bx-check text-green-600 text-sm'></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-900">Akaun disahkan</p>
-                                <p class="text-xs text-gray-500">1 hari yang lalu</p>
-                            </div>
-                        </div>
+                        <a href="{{ route('user.profile.edit') }}" class="flex items-center space-x-3 text-sm text-gray-700 hover:text-emerald-600 transition-colors">
+                            <i class='bx bx-edit text-gray-400'></i>
+                            <span>Edit Profile</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 text-sm text-gray-700 hover:text-emerald-600 transition-colors">
+                            <i class='bx bx-lock text-gray-400'></i>
+                            <span>Change Password</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 text-sm text-gray-700 hover:text-emerald-600 transition-colors">
+                            <i class='bx bx-help-circle text-gray-400'></i>
+                            <span>Help & Support</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 text-sm text-gray-700 hover:text-emerald-600 transition-colors">
+                            <i class='bx bx-log-out text-gray-400'></i>
+                            <span>Logout</span>
+                        </a>
                     </div>
                 </div>
             </div>
