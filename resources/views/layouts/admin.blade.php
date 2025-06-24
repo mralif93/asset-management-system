@@ -75,7 +75,7 @@
                     <a href="{{ route('admin.dashboard') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.dashboard') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bxs-dashboard text-xl mr-4'></i>
-                        <span>Dashboard</span>
+                        <span>Papan Pemuka</span>
                         @if(request()->routeIs('admin.dashboard'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -84,7 +84,7 @@
                     <a href="{{ route('admin.system-overview') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.system-overview') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-stats text-xl mr-4'></i>
-                        <span>System Overview</span>
+                        <span>Sistem Info</span>
                         @if(request()->routeIs('admin.system-overview'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -95,13 +95,13 @@
                 <div class="mb-8">
                     <h3 class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
                         <i class='bx bx-group text-emerald-300 mr-2'></i>
-                        Users
+                        Pengguna
                     </h3>
 
                     <a href="{{ route('admin.users.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.users.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-list-ul text-xl mr-4'></i>
-                        <span>Users</span>
+                        <span>Pengguna</span>
                         @if(request()->routeIs('admin.users.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -112,13 +112,13 @@
                 <div class="mb-8">
                     <h3 class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
                         <i class='bx bx-package text-emerald-300 mr-2'></i>
-                        Assets
+                        Aset
                     </h3>
                     
                     <a href="{{ route('admin.assets.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.assets.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-box text-xl mr-4'></i>
-                        <span>Movable Assets</span>
+                        <span>Aset Alih</span>
                         @if(request()->routeIs('admin.assets.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -127,7 +127,7 @@
                     <a href="{{ route('admin.asset-movements.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.asset-movements.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-transfer text-xl mr-4'></i>
-                        <span>Asset Movements</span>
+                        <span>Pergerakan Aset</span>
                         @if(request()->routeIs('admin.asset-movements.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -136,7 +136,7 @@
                     <a href="{{ route('admin.immovable-assets.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.immovable-assets.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-buildings text-xl mr-4'></i>
-                        <span>Immovable Assets</span>
+                        <span>Aset Tak Alih</span>
                         @if(request()->routeIs('admin.immovable-assets.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -147,13 +147,13 @@
                 <div class="mb-8">
                     <h3 class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
                         <i class='bx bx-cog text-emerald-300 mr-2'></i>
-                        Operations
+                        Operasi
                     </h3>
                     
                     <a href="{{ route('admin.inspections.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.inspections.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-search-alt text-xl mr-4'></i>
-                        <span>Inspections</span>
+                        <span>Pemeriksaan</span>
                         @if(request()->routeIs('admin.inspections.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -162,7 +162,7 @@
                     <a href="{{ route('admin.maintenance-records.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.maintenance-records.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-wrench text-xl mr-4'></i>
-                        <span>Maintenance</span>
+                        <span>Penyelenggaraan</span>
                         @if(request()->routeIs('admin.maintenance-records.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -171,7 +171,7 @@
                     <a href="{{ route('admin.disposals.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.disposals.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-trash text-xl mr-4'></i>
-                        <span>Disposals</span>
+                        <span>Pelupusan</span>
                         @if(request()->routeIs('admin.disposals.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -180,7 +180,7 @@
                     <a href="{{ route('admin.loss-writeoffs.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.loss-writeoffs.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-error-circle text-xl mr-4'></i>
-                        <span>Loss/Write-offs</span>
+                        <span>Kehilangan</span>
                         @if(request()->routeIs('admin.loss-writeoffs.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -191,13 +191,13 @@
                 <div class="mb-8">
                     <h3 class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
                         <i class='bx bx-bar-chart-alt-2 text-emerald-300 mr-2'></i>
-                        Reports
+                        Laporan
                     </h3>
                     
                     <a href="{{ route('admin.reports.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.reports.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-file-blank text-xl mr-4'></i>
-                        <span>All Reports</span>
+                        <span>Semua Laporan</span>
                         @if(request()->routeIs('admin.reports.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -208,7 +208,7 @@
                 <div class="mb-8">
                     <h3 class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
                         <i class='bx bx-cog text-emerald-300 mr-2'></i>
-                        Settings
+                        Tetapan
                     </h3>
                     
                     <a href="{{ route('admin.masjid-surau.index') }}" 
@@ -223,7 +223,7 @@
                     <a href="{{ route('admin.audit-trails.index') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.audit-trails.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-history text-xl mr-4'></i>
-                        <span>Audit Logs</span>
+                        <span>Log Audit</span>
                         @if(request()->routeIs('admin.audit-trails.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -232,7 +232,7 @@
                     <a href="{{ route('admin.profile.edit') }}" 
                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.profile.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                         <i class='bx bx-user-circle text-xl mr-4'></i>
-                        <span>Admin Profile</span>
+                        <span>Profil Admin</span>
                         @if(request()->routeIs('admin.profile.*'))
                             <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
                         @endif
@@ -299,13 +299,13 @@
                                         <a href="{{ route('admin.profile.edit') }}" 
                                            class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150">
                                             <i class='bx bx-user text-gray-400 mr-3'></i>
-                                            My Profile
+                                            Profil Saya
                                         </a>
                                         
                                         <a href="#" 
                                            class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150">
                                             <i class='bx bx-cog text-gray-400 mr-3'></i>
-                                            Settings
+                                            Tetapan
                                         </a>
                                         
                                         <div class="border-t border-gray-100 my-1"></div>
@@ -315,7 +315,7 @@
                                             <button type="submit" 
                                                     class="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150">
                                                 <i class='bx bx-log-out text-red-500 mr-3'></i>
-                                                Logout
+                                                Log Keluar
                                             </button>
                                         </form>
                                     </div>
@@ -362,20 +362,20 @@
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-900">AssetFlow Management System</p>
-                                    <p class="text-xs text-gray-500">Comprehensive Asset Management System</p>
+                                    <p class="text-xs text-gray-500">Sistem Pengurusan Aset Komprehensif</p>
                                 </div>
                             </div>
                             
                             <div class="flex items-center space-x-6 text-sm text-gray-500">
-                                <p>&copy; {{ date('Y') }} AssetFlow. All rights reserved.</p>
+                                <p>&copy; {{ date('Y') }} AssetFlow. Semua hak terpelihara.</p>
                                 <div class="flex items-center space-x-4">
                                     <span class="flex items-center">
                                         <i class='bx bx-shield-check text-emerald-500 mr-1'></i>
-                                        Secure
+                                        Selamat
                                     </span>
                                     <span class="flex items-center">
                                         <div class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></div>
-                                        System Active
+                                        Sistem Aktif
                                     </span>
                                 </div>
                             </div>
