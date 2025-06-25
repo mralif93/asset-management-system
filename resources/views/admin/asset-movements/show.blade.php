@@ -302,7 +302,7 @@
                     <!-- Purpose -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-target text-blue-600 mr-2'></i>
+                            <i class='bx bx-transfer text-blue-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Sebab Pergerakan</dt>
                         </div>
                         <dd class="text-gray-900">{{ $assetMovement->sebab_pergerakan }}</dd>
@@ -501,7 +501,7 @@
                             Rekod tersimpan selamat
                         </div>
                         <div class="flex items-center text-amber-700">
-                            <i class='bx bx-shield-check mr-2'></i>
+                            <i class='bx bx-shield-plus mr-2'></i>
                             Data dilindungi SSL
                         </div>
                         <div class="flex items-center text-amber-700">
