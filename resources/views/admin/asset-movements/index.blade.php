@@ -298,16 +298,56 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-center justify-end space-x-2">
+                                <!-- View Button -->
                                 <a href="{{ route('admin.asset-movements.show', $movement) }}" 
-                                   class="text-emerald-600 hover:text-emerald-900">
-                                    <i class='bx bx-show'></i>
+                                   class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+                                   title="Lihat">
+                                    <i class='bx bx-show text-sm'></i>
                                 </a>
+
+                                <!-- Edit Button -->
                                 @if($movement->status_pergerakan === 'menunggu_kelulusan')
                                 <a href="{{ route('admin.asset-movements.edit', $movement) }}" 
-                                   class="text-blue-600 hover:text-blue-900">
-                                    <i class='bx bx-edit'></i>
+                                   class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
+                                   title="Edit">
+                                    <i class='bx bx-edit text-sm'></i>
                                 </a>
+                                @endif
+
+                                <!-- Approve Button -->
+                                @if($movement->status_pergerakan === 'menunggu_kelulusan')
+                                <form action="{{ route('admin.asset-movements.approve', $movement) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" 
+                                            class="w-8 h-8 bg-green-100 hover:bg-green-200 text-green-600 rounded-lg flex items-center justify-center transition-colors"
+                                            title="Luluskan"
+                                            onclick="return confirm('Luluskan pergerakan ini?')">
+                                        <i class='bx bx-check text-sm'></i>
+                                    </button>
+                                </form>
+
+                                <!-- Reject Button -->
+                                <button onclick="showRejectModal({{ $movement->id }})" 
+                                        class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
+                                        title="Tolak">
+                                    <i class='bx bx-x text-sm'></i>
+                                </button>
+                                @endif
+
+                                <!-- Delete Button -->
+                                @if($movement->status_pergerakan === 'menunggu_kelulusan')
+                                <form action="{{ route('admin.asset-movements.destroy', $movement) }}" method="POST" class="inline" 
+                                      onsubmit="return confirm('Adakah anda pasti ingin memadamkan pergerakan ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center transition-colors"
+                                            title="Padamkan">
+                                        <i class='bx bx-trash text-sm'></i>
+                                    </button>
+                                </form>
                                 @endif
                             </div>
                         </td>
