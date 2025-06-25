@@ -260,8 +260,8 @@
                                     <i class='bx bx-package text-emerald-600'></i>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $movement->asset->nama_aset }}</div>
-                                    <div class="text-sm text-gray-500">{{ $movement->asset->no_siri_pendaftaran }}</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $movement->asset->nama_aset ?? 'Aset Tidak Ditemui' }}</div>
+                                    <div class="text-sm text-gray-500">{{ $movement->asset->no_siri_pendaftaran ?? '-' }}</div>
                                 </div>
                             </div>
                         </td>
@@ -271,20 +271,20 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $movement->masjidSurauAsal->nama }}</div>
+                            <div class="text-sm text-gray-900">{{ $movement->masjidSurauAsal->nama ?? 'Tidak Ditetapkan' }}</div>
                             <div class="text-xs text-gray-500">{{ $movement->lokasi_terperinci_asal }}</div>
                             <div class="mt-1">
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $movement->status_kelulusan_asal === 'diluluskan' ? 'bg-green-100 text-green-800' : ($movement->status_kelulusan_asal === 'menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                    {{ ucfirst($movement->status_kelulusan_asal) }}
+                                    {{ ucfirst($movement->status_kelulusan_asal ?? 'Menunggu') }}
                                 </span>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $movement->masjidSurauDestinasi->nama }}</div>
+                            <div class="text-sm text-gray-900">{{ $movement->masjidSurauDestinasi->nama ?? 'Tidak Ditetapkan' }}</div>
                             <div class="text-xs text-gray-500">{{ $movement->lokasi_terperinci_destinasi }}</div>
                             <div class="mt-1">
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $movement->status_kelulusan_destinasi === 'diluluskan' ? 'bg-green-100 text-green-800' : ($movement->status_kelulusan_destinasi === 'menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                    {{ ucfirst($movement->status_kelulusan_destinasi) }}
+                                    {{ ucfirst($movement->status_kelulusan_destinasi ?? 'Menunggu') }}
                                 </span>
                             </div>
                         </td>
