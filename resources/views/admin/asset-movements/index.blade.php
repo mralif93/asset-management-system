@@ -343,7 +343,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
-                                            class="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center transition-colors"
+                                            class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
                                             title="Padamkan">
                                         <i class='bx bx-trash text-sm'></i>
                                     </button>
