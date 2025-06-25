@@ -42,9 +42,7 @@
         <span class="text-emerald-600 font-medium">Edit: {{ $user->name }}</span>
     </div>
 
-
-
-    <!-- Form Card - Full Width -->
+    <!-- Form Card -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
         <form action="{{ route('admin.users.update', $user) }}" method="POST" class="space-y-0">
             @csrf
@@ -69,12 +67,10 @@
                 </div>
             </div>
 
-            <!-- Form Content - Two Column Layout -->
+            <!-- Form Content -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6">
-                
                 <!-- Left Column - Main Form -->
                 <div class="lg:col-span-2 space-y-8">
-                    
                     <!-- Personal Information Section -->
                     <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                         <div class="flex items-center mb-6">
@@ -196,7 +192,7 @@
                     <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
                         <div class="flex items-center mb-6">
                             <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-shield text-white text-xl'></i>
+                                <i class='bx bx-shield-plus text-white text-xl'></i>
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">Peranan & Organisasi</h3>
@@ -280,7 +276,7 @@
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
                         <div class="flex items-center mb-6">
                             <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-shield-check text-white text-xl'></i>
+                                <i class='bx bx-shield-minus text-white text-xl'></i>
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">Status Akaun</h3>
@@ -391,7 +387,6 @@
                 <!-- Right Column - Preview & Info -->
                 <div class="lg:col-span-1">
                     <div class="sticky top-6 space-y-6">
-                        
                         <!-- Current User Preview -->
                         <div class="bg-gradient-to-br from-indigo-50 to-purple-100 rounded-xl p-6 border border-indigo-200">
                             <div class="flex items-center mb-4">
@@ -494,7 +489,7 @@
                         <i class='bx bx-info-circle mr-1'></i>
                         Kemaskini terakhir: {{ $user->updated_at->format('d/m/Y H:i') }}
                     </div>
-                    
+
                     <div class="flex space-x-3">
                         <a href="{{ route('admin.users.index') }}" 
                            class="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors">
