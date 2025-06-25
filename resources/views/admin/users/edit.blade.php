@@ -46,7 +46,7 @@
 
     <!-- Form Card - Full Width -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <form action="{{ route('admin.users.update', $user) }}" method="POST" x-data="editUserForm()" class="space-y-0">
+        <form action="{{ route('admin.users.update', $user) }}" method="POST" class="space-y-0">
             @csrf
             @method('PUT')
 
@@ -103,7 +103,6 @@
                                            name="name" 
                                            value="{{ old('name', $user->name) }}"
                                            required
-                                           x-model="form.name"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama penuh">
                                 </div>
@@ -130,7 +129,6 @@
                                            name="email" 
                                            value="{{ old('email', $user->email) }}"
                                            required
-                                           x-model="form.email"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('email') border-red-500 @enderror bg-white"
                                            placeholder="contoh@email.com">
                                 </div>
@@ -156,7 +154,6 @@
                                            id="phone" 
                                            name="phone" 
                                            value="{{ old('phone', $user->phone) }}"
-                                           x-model="form.phone"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('phone') border-red-500 @enderror bg-white"
                                            placeholder="010-1234567">
                                 </div>
@@ -182,7 +179,6 @@
                                            id="position" 
                                            name="position" 
                                            value="{{ old('position', $user->position) }}"
-                                           x-model="form.position"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('position') border-red-500 @enderror bg-white"
                                            placeholder="Cth: Setiausaha, Bendahari">
                                 </div>
@@ -225,7 +221,6 @@
                                     <select id="role" 
                                             name="role" 
                                             required
-                                            x-model="form.role"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('role') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Peranan</option>
                                         <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Pentadbir</option>
@@ -241,7 +236,7 @@
                                 @if($user->role === 'admin' && \App\Models\User::where('role', 'admin')->count() <= 1)
                                     <p class="mt-1 text-xs text-amber-600 flex items-center">
                                         <i class='bx bx-warning mr-1'></i>
-                                        Ini adalah pentadbir terakhir dalam sistem
+                                        This is the last administrator in the system
                                     </p>
                                 @endif
                             </div>
@@ -262,7 +257,6 @@
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
-                                            x-model="form.masjid_surau_id"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjid)
@@ -300,7 +294,6 @@
                                 <label class="flex items-center">
                                     <input type="checkbox" name="email_verified_at" value="1" 
                                            {{ $user->email_verified_at ? 'checked' : '' }}
-                                           x-model="form.email_verified_at"
                                            class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
                                     <div class="ml-3">
                                         <span class="text-sm font-medium text-gray-700">Email disahkan</span>
@@ -351,7 +344,6 @@
                                            id="password" 
                                            name="password"
                                            minlength="8"
-                                           x-model="form.password"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('password') border-red-500 @enderror bg-white"
                                            placeholder="Minimum 8 aksara">
                                     <i class='bx bx-lock absolute left-3 top-3.5 text-gray-400'></i>
@@ -375,7 +367,6 @@
                                            id="password_confirmation" 
                                            name="password_confirmation"
                                            minlength="8"
-                                           x-model="form.password_confirmation"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
                                            placeholder="Sahkan kata laluan">
                                     <i class='bx bx-lock-alt absolute left-3 top-3.5 text-gray-400'></i>
@@ -413,26 +404,26 @@
                             <div class="space-y-4">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                                        <span class="text-emerald-700 font-medium" x-text="form.name ? form.name.charAt(0).toUpperCase() : '{{ substr($user->name, 0, 1) }}'">{{ substr($user->name, 0, 1) }}</span>
+                                        <span class="text-emerald-700 font-medium">{{ substr($user->name, 0, 1) }}</span>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900" x-text="form.name || '{{ $user->name }}'">{{ $user->name }}</p>
-                                        <p class="text-sm text-gray-500" x-text="form.email || '{{ $user->email }}'">{{ $user->email }}</p>
+                                        <p class="font-medium text-gray-900">{{ $user->name }}</p>
+                                        <p class="text-sm text-gray-500">{{ $user->email }}</p>
                                     </div>
                                 </div>
                                 
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Telefon:</span>
-                                        <span class="text-sm font-medium" x-text="form.phone || '{{ $user->phone ?: '-' }}'">{{ $user->phone ?: '-' }}</span>
+                                        <span class="text-sm font-medium">{{ $user->phone ?: '-' }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Jawatan:</span>
-                                        <span class="text-sm font-medium" x-text="form.position || '{{ $user->position ?: '-' }}'">{{ $user->position ?: '-' }}</span>
+                                        <span class="text-sm font-medium">{{ $user->position ?: '-' }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Peranan:</span>
-                                        <span class="text-sm font-medium" x-text="form.role || '{{ $user->role }}'">{{ $user->role }}</span>
+                                        <span class="text-sm font-medium">{{ $user->role }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -524,22 +515,6 @@
 
 @push('scripts')
 <script>
-    function editUserForm() {
-        return {
-            form: {
-                name: '{{ old('name', $user->name) }}',
-                email: '{{ old('email', $user->email) }}',
-                phone: '{{ old('phone', $user->phone) }}',
-                position: '{{ old('position', $user->position) }}',
-                role: '{{ old('role', $user->role) }}',
-                masjid_surau_id: '{{ old('masjid_surau_id', $user->masjid_surau_id) }}',
-                password: '',
-                password_confirmation: '',
-                email_verified_at: {{ $user->email_verified_at ? 'true' : 'false' }}
-            }
-        }
-    }
-
     // Password validation
     document.getElementById('password').addEventListener('input', function() {
         const password = this.value;
