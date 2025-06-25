@@ -11,7 +11,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-3xl font-bold mb-2">Butiran Pemeriksaan</h1>
-                <p class="text-emerald-100 text-lg">Paparan lengkap pemeriksaan {{ $inspection->asset->nama_aset }} - {{ $inspection->tarikh_pemeriksaan->format('d/m/Y') }}</p>
+                <p class="text-emerald-100 text-lg">Paparan lengkap untuk {{ $inspection->asset->nama_aset }} - {{ $inspection->tarikh_pemeriksaan->format('d/m/Y') }}</p>
                 <div class="flex items-center space-x-4 mt-4">
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-search-alt-2 text-emerald-200'></i>
@@ -249,7 +249,7 @@
                         <i class='bx bx-note text-emerald-600 mr-2'></i>
                         <dt class="text-sm font-medium text-gray-600">Catatan Pemeriksaan</dt>
                     </div>
-                    <dd class="text-gray-900 bg-gray-50 p-3 rounded-lg">{{ $inspection->catatan_pemeriksaan }}</dd>
+                    <dd class="text-gray-700 whitespace-pre-wrap">{{ $inspection->catatan_pemeriksaan }}</dd>
                 </div>
                 @endif
 

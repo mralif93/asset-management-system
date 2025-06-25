@@ -106,7 +106,8 @@ class AdminDashboardController extends Controller
      */
     public function systemOverview(Request $request)
     {
-        $query = MasjidSurau::with(['assets', 'users']);
+        $query = MasjidSurau::with(['assets', 'users'])
+                           ->withCount(['assets', 'users']);
         
         // Add search functionality
         if ($request->filled('search')) {
@@ -127,22 +128,28 @@ class AdminDashboardController extends Controller
         // Get per page value with default of 10
         $perPage = $request->get('per_page', 10);
         
+        // Get the paginated results
+        $masjids = $query->paginate($perPage)->withQueryString();
+        
+        // Calculate system stats
+        $systemStats = [
+            'total_assets' => Asset::count(),
+            'total_value' => Asset::sum('nilai_perolehan') ?: 0,
+            'active_users' => User::whereNotNull('email_verified_at')->count(),
+            'pending_approvals' => AssetMovement::where('status_permohonan', 'Menunggu Kelulusan')->count(),
+            'total_masjids' => MasjidSurau::count(),
+            'total_users' => User::count(),
+            'admin_users' => User::where('role', 'admin')->count(),
+            'regular_users' => User::where('role', 'user')->count(),
+            'assets_this_month' => Asset::whereMonth('created_at', now()->month)->count(),
+            'movements_this_month' => AssetMovement::whereMonth('created_at', now()->month)->count(),
+            'inspections_this_month' => Inspection::whereMonth('created_at', now()->month)->count(),
+            'maintenance_this_month' => MaintenanceRecord::whereMonth('created_at', now()->month)->count(),
+        ];
+
         $overview = [
-            'masjids' => $query->paginate($perPage)->withQueryString(), // Add withQueryString to preserve search params
-            'system_stats' => [
-                'total_assets' => Asset::count(),
-                'total_value' => Asset::sum('nilai_perolehan') ?: 0,
-                'active_users' => User::whereNotNull('email_verified_at')->count(),
-                'pending_approvals' => AssetMovement::where('status_permohonan', 'Menunggu Kelulusan')->count(),
-                'total_masjids' => MasjidSurau::count(),
-                'total_users' => User::count(),
-                'admin_users' => User::where('role', 'admin')->count(),
-                'regular_users' => User::where('role', 'user')->count(),
-                'assets_this_month' => Asset::whereMonth('created_at', now()->month)->count(),
-                'movements_this_month' => AssetMovement::whereMonth('created_at', now()->month)->count(),
-                'inspections_this_month' => Inspection::whereMonth('created_at', now()->month)->count(),
-                'maintenance_this_month' => MaintenanceRecord::whereMonth('created_at', now()->month)->count(),
-            ]
+            'masjids' => $masjids,
+            'system_stats' => $systemStats
         ];
 
         return view('admin.system-overview', compact('overview'));

@@ -284,11 +284,11 @@
                                             <div class="flex items-center space-x-4 mt-2">
                                                 <div class="flex items-center space-x-1">
                                                     <i class='bx bx-box text-emerald-500 text-sm'></i>
-                                                    <span class="text-xs text-gray-600">{{ $masjid->assets_count ?? 0 }} aset</span>
+                                                    <span class="text-xs text-gray-600">{{ $masjid instanceof \App\Models\MasjidSurau ? ($masjid->assets_count ?? 0) : 0 }} aset</span>
                                                 </div>
                                                 <div class="flex items-center space-x-1">
                                                     <i class='bx bx-group text-blue-500 text-sm'></i>
-                                                    <span class="text-xs text-gray-600">{{ $masjid->users_count ?? 0 }} pengguna</span>
+                                                    <span class="text-xs text-gray-600">{{ $masjid instanceof \App\Models\MasjidSurau ? ($masjid->users_count ?? 0) : 0 }} pengguna</span>
                                                 </div>
                                                 <div class="flex items-center space-x-1">
                                                     <div class="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -299,7 +299,7 @@
                                     </div>
                                     <div class="flex items-center space-x-2">
                                         <div class="text-right">
-                                            <div class="text-lg font-bold text-gray-900">RM {{ number_format(($masjid->assets->sum('nilai_perolehan') ?? 0), 0) }}</div>
+                                            <div class="text-lg font-bold text-gray-900">RM {{ number_format(($masjid instanceof \App\Models\MasjidSurau ? ($masjid->assets->sum('nilai_perolehan') ?? 0) : 0), 0) }}</div>
                                             <div class="text-xs text-gray-500">Nilai Aset</div>
                                         </div>
                                         <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
@@ -309,22 +309,22 @@
                                 </div>
                                 
                                 <!-- Asset Status Mini Chart -->
-                                @if($masjid->assets->count() > 0)
+                                @if($masjid instanceof \App\Models\MasjidSurau && ($masjid->assets->count() ?? 0) > 0)
                                 <div class="mt-4 pt-4 border-t border-gray-200">
                                     <div class="flex items-center justify-between text-xs">
                                         <span class="text-gray-600">Status Aset:</span>
                                         <div class="flex items-center space-x-4">
                                             <div class="flex items-center space-x-1">
                                                 <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                                <span class="text-gray-600">{{ $masjid->assets->where('status_aset', 'aktif')->count() }} Aktif</span>
+                                                <span class="text-gray-600">{{ $masjid instanceof \App\Models\MasjidSurau ? $masjid->assets->where('status_aset', 'aktif')->count() : 0 }} Aktif</span>
                                             </div>
                                             <div class="flex items-center space-x-1">
                                                 <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
-                                                <span class="text-gray-600">{{ $masjid->assets->where('status_aset', 'dalam_penyelenggaraan')->count() }} Maintenance</span>
+                                                <span class="text-gray-600">{{ $masjid instanceof \App\Models\MasjidSurau ? $masjid->assets->where('status_aset', 'dalam_penyelenggaraan')->count() : 0 }} Maintenance</span>
                                             </div>
                                             <div class="flex items-center space-x-1">
                                                 <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                                                <span class="text-gray-600">{{ $masjid->assets->where('status_aset', 'rosak')->count() }} Rosak</span>
+                                                <span class="text-gray-600">{{ $masjid instanceof \App\Models\MasjidSurau ? $masjid->assets->where('status_aset', 'rosak')->count() : 0 }} Rosak</span>
                                             </div>
                                         </div>
                                     </div>
@@ -368,13 +368,13 @@
                         @php
                             $totalAssets = $overview['system_stats']['total_assets'] ?? 1;
                             $activeAssets = collect($overview['masjids'])->sum(function($masjid) {
-                                return $masjid->assets->where('status_aset', 'aktif')->count();
+                                return $masjid instanceof \App\Models\MasjidSurau ? $masjid->assets->where('status_aset', 'aktif')->count() : 0;
                             });
                             $maintenanceAssets = collect($overview['masjids'])->sum(function($masjid) {
-                                return $masjid->assets->where('status_aset', 'dalam_penyelenggaraan')->count();
+                                return $masjid instanceof \App\Models\MasjidSurau ? $masjid->assets->where('status_aset', 'dalam_penyelenggaraan')->count() : 0;
                             });
                             $damagedAssets = collect($overview['masjids'])->sum(function($masjid) {
-                                return $masjid->assets->where('status_aset', 'rosak')->count();
+                                return $masjid instanceof \App\Models\MasjidSurau ? $masjid->assets->where('status_aset', 'rosak')->count() : 0;
                             });
                         @endphp
                         
