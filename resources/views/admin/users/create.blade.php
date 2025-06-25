@@ -122,6 +122,9 @@
                                     Nama Penuh <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-user text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="name" 
                                            name="name" 
@@ -130,7 +133,6 @@
                                            x-model="form.name"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama penuh">
-                                    <i class='bx bx-user absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -147,6 +149,9 @@
                                     Alamat E-mel <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-envelope text-gray-400'></i>
+                                    </div>
                                     <input type="email" 
                                            id="email" 
                                            name="email" 
@@ -155,7 +160,6 @@
                                            x-model="form.email"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('email') border-red-500 @enderror bg-white"
                                            placeholder="contoh@email.com">
-                                    <i class='bx bx-envelope absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('email')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -172,6 +176,9 @@
                                     Nombor Telefon
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-phone text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="phone" 
                                            name="phone" 
@@ -179,7 +186,6 @@
                                            x-model="form.phone"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('phone') border-red-500 @enderror bg-white"
                                            placeholder="010-1234567">
-                                    <i class='bx bx-phone absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('phone')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -196,6 +202,9 @@
                                     Jawatan
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-briefcase text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="position" 
                                            name="position" 
@@ -203,7 +212,6 @@
                                            x-model="form.position"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('position') border-red-500 @enderror bg-white"
                                            placeholder="Cth: Setiausaha, Bendahari">
-                                    <i class='bx bx-briefcase absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('position')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -235,17 +243,21 @@
                                     Peranan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-shield text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="role" 
                                             name="role" 
                                             required
                                             x-model="form.role"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('role') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('role') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Peranan</option>
                                         <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Pentadbir</option>
                                         <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>Pengguna</option>
                                     </select>
-                                    <i class='bx bx-shield absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('role')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -262,15 +274,21 @@
                             <!-- Masjid/Surau -->
                             <div>
                                 <label for="masjid_surau_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-building mr-1'></i>
+                                    <i class='bx bx-building-house mr-1'></i>
                                     Masjid/Surau <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building-house text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
                                             x-model="form.masjid_surau_id"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjid)
                                             <option value="{{ $masjid->id }}" {{ old('masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
@@ -278,8 +296,6 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <i class='bx bx-building absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('masjid_surau_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -311,6 +327,9 @@
                                     Kata Laluan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-lock text-gray-400'></i>
+                                    </div>
                                     <input type="password" 
                                            id="password" 
                                            name="password" 
@@ -319,7 +338,6 @@
                                            x-model="form.password"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('password') border-red-500 @enderror bg-white"
                                            placeholder="Minimum 8 aksara">
-                                    <i class='bx bx-lock absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('password')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -336,6 +354,9 @@
                                     Sahkan Kata Laluan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-lock-alt text-gray-400'></i>
+                                    </div>
                                     <input type="password" 
                                            id="password_confirmation" 
                                            name="password_confirmation" 
@@ -344,7 +365,6 @@
                                            x-model="form.password_confirmation"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
                                            placeholder="Sahkan kata laluan">
-                                    <i class='bx bx-lock-alt absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                             </div>
                         </div>
@@ -384,7 +404,7 @@
                         <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 border border-blue-200">
                             <div class="flex items-center mb-4">
                                 <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                                    <i class='bx bx-show text-white'></i>
+                                    <i class='bx bx-user text-white'></i>
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900">Pratonton Pengguna</h3>
                             </div>
@@ -419,7 +439,12 @@
 
                         <!-- Progress Card -->
                         <div class="bg-white rounded-xl p-6 border border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Kemajuan Borang</h3>
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center mr-3">
+                                    <i class='bx bx-file text-white'></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900">Kemajuan Borang</h3>
+                            </div>
                             
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">

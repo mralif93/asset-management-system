@@ -104,6 +104,9 @@
                                     Nama Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-buildings text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="nama_aset" 
                                            name="nama_aset" 
@@ -112,7 +115,6 @@
                                            x-model="form.nama_aset"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_aset') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama aset">
-                                    <i class='bx bx-buildings absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nama_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -129,18 +131,22 @@
                                     Jenis Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-category text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="jenis_aset" 
                                             name="jenis_aset" 
                                             required
                                             x-model="form.jenis_aset"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Jenis Aset</option>
                                         <option value="Tanah" {{ old('jenis_aset', $immovableAsset->jenis_aset) === 'Tanah' ? 'selected' : '' }}>Tanah</option>
                                         <option value="Bangunan" {{ old('jenis_aset', $immovableAsset->jenis_aset) === 'Bangunan' ? 'selected' : '' }}>Bangunan</option>
                                         <option value="Tanah dan Bangunan" {{ old('jenis_aset', $immovableAsset->jenis_aset) === 'Tanah dan Bangunan' ? 'selected' : '' }}>Tanah dan Bangunan</option>
                                     </select>
-                                    <i class='bx bx-category absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('jenis_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -157,11 +163,17 @@
                                     Masjid/Surau <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
                                             x-model="form.masjid_surau_id"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjidSurau)
                                             <option value="{{ $masjidSurau->id }}" {{ old('masjid_surau_id', $immovableAsset->masjid_surau_id) == $masjidSurau->id ? 'selected' : '' }}>
@@ -169,8 +181,6 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <i class='bx bx-building absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('masjid_surau_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -187,13 +197,15 @@
                                     Alamat
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map text-gray-400'></i>
+                                    </div>
                                     <textarea id="alamat" 
                                               name="alamat" 
                                               rows="3"
                                               x-model="form.alamat"
                                               class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat') border-red-500 @enderror bg-white"
                                               placeholder="Masukkan alamat lengkap aset">{{ old('alamat', $immovableAsset->alamat) }}</textarea>
-                                    <i class='bx bx-map absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('alamat')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -225,6 +237,9 @@
                                     No. Hakmilik
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-file text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="no_hakmilik" 
                                            name="no_hakmilik" 
@@ -232,7 +247,6 @@
                                            x-model="form.no_hakmilik"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_hakmilik') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. hakmilik">
-                                    <i class='bx bx-file absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('no_hakmilik')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -249,6 +263,9 @@
                                     No. Lot
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map-pin text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="no_lot" 
                                            name="no_lot" 
@@ -256,7 +273,6 @@
                                            x-model="form.no_lot"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_lot') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. lot">
-                                    <i class='bx bx-map-pin absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('no_lot')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -266,34 +282,56 @@
                                 @enderror
                             </div>
 
-                            <!-- Area -->
+                            <!-- Land Area -->
                             <div>
-                                <label for="luas_tanah_bangunan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-vector mr-1'></i>
-                                    Luas (meter persegi) <span class="text-red-500">*</span>
+                                <label for="keluasan_tanah" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-area mr-1'></i>
+                                    Keluasan Tanah
                                 </label>
                                 <div class="relative">
-                                    <input type="number" 
-                                           step="0.01"
-                                           id="luas_tanah_bangunan" 
-                                           name="luas_tanah_bangunan" 
-                                           value="{{ old('luas_tanah_bangunan', $immovableAsset->luas_tanah_bangunan) }}"
-                                           required
-                                           x-model="form.luas_tanah_bangunan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('luas_tanah_bangunan') border-red-500 @enderror bg-white"
-                                           placeholder="0.00">
-                                    <i class='bx bx-vector absolute left-3 top-3.5 text-gray-400'></i>
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-area text-gray-400'></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="keluasan_tanah" 
+                                           name="keluasan_tanah" 
+                                           value="{{ old('keluasan_tanah', $immovableAsset->keluasan_tanah) }}"
+                                           x-model="form.keluasan_tanah"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_tanah') border-red-500 @enderror bg-white"
+                                           placeholder="Masukkan keluasan tanah">
                                 </div>
-                                @error('luas_tanah_bangunan')
+                                @error('keluasan_tanah')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
                                     </p>
                                 @enderror
-                                <p class="mt-1 text-xs text-purple-600 flex items-center">
-                                    <i class='bx bx-info-circle mr-1'></i>
-                                    Ukuran dalam meter persegi (m²)
-                                </p>
+                            </div>
+
+                            <!-- Building Area -->
+                            <div>
+                                <label for="keluasan_bangunan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-building-house mr-1'></i>
+                                    Keluasan Bangunan
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building-house text-gray-400'></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="keluasan_bangunan" 
+                                           name="keluasan_bangunan" 
+                                           value="{{ old('keluasan_bangunan', $immovableAsset->keluasan_bangunan) }}"
+                                           x-model="form.keluasan_bangunan"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_bangunan') border-red-500 @enderror bg-white"
+                                           placeholder="Masukkan keluasan bangunan">
+                                </div>
+                                @error('keluasan_bangunan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -524,7 +562,7 @@
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Luas:</span>
-                                        <span class="text-sm font-medium" x-text="(form.luas_tanah_bangunan || '{{ $immovableAsset->luas_tanah_bangunan }}') + ' m²'">{{ $immovableAsset->luas_tanah_bangunan }} m²</span>
+                                        <span class="text-sm font-medium" x-text="(form.keluasan_tanah || '{{ $immovableAsset->keluasan_tanah }}') + ' m²'">{{ $immovableAsset->keluasan_tanah }} m²</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Keadaan:</span>
@@ -633,7 +671,8 @@
                 alamat: '{{ old('alamat', $immovableAsset->alamat) }}',
                 no_hakmilik: '{{ old('no_hakmilik', $immovableAsset->no_hakmilik) }}',
                 no_lot: '{{ old('no_lot', $immovableAsset->no_lot) }}',
-                luas_tanah_bangunan: '{{ old('luas_tanah_bangunan', $immovableAsset->luas_tanah_bangunan) }}',
+                keluasan_tanah: '{{ old('keluasan_tanah', $immovableAsset->keluasan_tanah) }}',
+                keluasan_bangunan: '{{ old('keluasan_bangunan', $immovableAsset->keluasan_bangunan) }}',
                 tarikh_perolehan: '{{ old('tarikh_perolehan', $immovableAsset->tarikh_perolehan ? $immovableAsset->tarikh_perolehan->format('Y-m-d') : '') }}',
                 sumber_perolehan: '{{ old('sumber_perolehan', $immovableAsset->sumber_perolehan) }}',
                 kos_perolehan: '{{ old('kos_perolehan', $immovableAsset->kos_perolehan) }}',

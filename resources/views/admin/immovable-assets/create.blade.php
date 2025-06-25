@@ -122,6 +122,9 @@
                                     Nama Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-buildings text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="nama_aset" 
                                            name="nama_aset" 
@@ -130,7 +133,6 @@
                                            x-model="form.nama_aset"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_aset') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama aset">
-                                    <i class='bx bx-buildings absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nama_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -147,18 +149,22 @@
                                     Jenis Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-category text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="jenis_aset" 
                                             name="jenis_aset" 
                                             required
                                             x-model="form.jenis_aset"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Jenis Aset</option>
                                         <option value="Tanah" {{ old('jenis_aset') === 'Tanah' ? 'selected' : '' }}>Tanah</option>
                                         <option value="Bangunan" {{ old('jenis_aset') === 'Bangunan' ? 'selected' : '' }}>Bangunan</option>
                                         <option value="Tanah dan Bangunan" {{ old('jenis_aset') === 'Tanah dan Bangunan' ? 'selected' : '' }}>Tanah dan Bangunan</option>
                                     </select>
-                                    <i class='bx bx-category absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('jenis_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -175,11 +181,17 @@
                                     Masjid/Surau <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
                                             x-model="form.masjid_surau_id"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjidSurau)
                                             <option value="{{ $masjidSurau->id }}" {{ old('masjid_surau_id') == $masjidSurau->id ? 'selected' : '' }}>
@@ -187,8 +199,6 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <i class='bx bx-building absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('masjid_surau_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -205,13 +215,15 @@
                                     Alamat
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map text-gray-400'></i>
+                                    </div>
                                     <textarea id="alamat" 
                                               name="alamat" 
                                               rows="3"
                                               x-model="form.alamat"
                                               class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat') border-red-500 @enderror bg-white"
                                               placeholder="Masukkan alamat lengkap aset">{{ old('alamat') }}</textarea>
-                                    <i class='bx bx-map absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('alamat')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -227,7 +239,7 @@
                     <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
                         <div class="flex items-center mb-6">
                             <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-file-contract text-white text-xl'></i>
+                                <i class='bx bx-file text-white text-xl'></i>
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">Hakmilik & Ukuran</h3>
@@ -243,6 +255,9 @@
                                     No. Hakmilik
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-file text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="no_hakmilik" 
                                            name="no_hakmilik" 
@@ -250,7 +265,6 @@
                                            x-model="form.no_hakmilik"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_hakmilik') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. hakmilik">
-                                    <i class='bx bx-file absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('no_hakmilik')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -267,6 +281,9 @@
                                     No. Lot
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map-pin text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="no_lot" 
                                            name="no_lot" 
@@ -274,7 +291,6 @@
                                            x-model="form.no_lot"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_lot') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. lot">
-                                    <i class='bx bx-map-pin absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('no_lot')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -284,34 +300,56 @@
                                 @enderror
                             </div>
 
-                            <!-- Area -->
+                            <!-- Land Area -->
                             <div>
-                                <label for="luas_tanah_bangunan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-vector mr-1'></i>
-                                    Luas (meter persegi) <span class="text-red-500">*</span>
+                                <label for="keluasan_tanah" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-area mr-1'></i>
+                                    Keluasan Tanah
                                 </label>
                                 <div class="relative">
-                                    <input type="number" 
-                                           step="0.01"
-                                           id="luas_tanah_bangunan" 
-                                           name="luas_tanah_bangunan" 
-                                           value="{{ old('luas_tanah_bangunan') }}"
-                                           required
-                                           x-model="form.luas_tanah_bangunan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('luas_tanah_bangunan') border-red-500 @enderror bg-white"
-                                           placeholder="0.00">
-                                    <i class='bx bx-vector absolute left-3 top-3.5 text-gray-400'></i>
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-area text-gray-400'></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="keluasan_tanah" 
+                                           name="keluasan_tanah" 
+                                           value="{{ old('keluasan_tanah') }}"
+                                           x-model="form.keluasan_tanah"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_tanah') border-red-500 @enderror bg-white"
+                                           placeholder="Masukkan keluasan tanah">
                                 </div>
-                                @error('luas_tanah_bangunan')
+                                @error('keluasan_tanah')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
                                     </p>
                                 @enderror
-                                <p class="mt-1 text-xs text-purple-600 flex items-center">
-                                    <i class='bx bx-info-circle mr-1'></i>
-                                    Ukuran dalam meter persegi (m²)
-                                </p>
+                            </div>
+
+                            <!-- Building Area -->
+                            <div>
+                                <label for="keluasan_bangunan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-building-house mr-1'></i>
+                                    Keluasan Bangunan
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building-house text-gray-400'></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="keluasan_bangunan" 
+                                           name="keluasan_bangunan" 
+                                           value="{{ old('keluasan_bangunan') }}"
+                                           x-model="form.keluasan_bangunan"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_bangunan') border-red-500 @enderror bg-white"
+                                           placeholder="Masukkan keluasan bangunan">
+                                </div>
+                                @error('keluasan_bangunan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -320,7 +358,7 @@
                     <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border border-amber-200">
                         <div class="flex items-center mb-6">
                             <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-handshake text-white text-xl'></i>
+                                <i class='bx bx-folder text-white text-xl'></i>
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">Perolehan & Keadaan</h3>
@@ -336,6 +374,9 @@
                                     Tarikh Perolehan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-calendar text-gray-400'></i>
+                                    </div>
                                     <input type="date" 
                                            id="tarikh_perolehan" 
                                            name="tarikh_perolehan" 
@@ -343,7 +384,6 @@
                                            required
                                            x-model="form.tarikh_perolehan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_perolehan') border-red-500 @enderror bg-white">
-                                    <i class='bx bx-calendar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('tarikh_perolehan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -356,15 +396,21 @@
                             <!-- Acquisition Source -->
                             <div>
                                 <label for="sumber_perolehan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-source mr-1'></i>
+                                    <i class='bx bx-info-circle mr-1'></i>
                                     Sumber Perolehan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-info-circle text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="sumber_perolehan" 
                                             name="sumber_perolehan" 
                                             required
                                             x-model="form.sumber_perolehan"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('sumber_perolehan') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('sumber_perolehan') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Sumber Perolehan</option>
                                         <option value="Pembelian" {{ old('sumber_perolehan') === 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
                                         <option value="Hibah" {{ old('sumber_perolehan') === 'Hibah' ? 'selected' : '' }}>Hibah</option>
@@ -372,8 +418,6 @@
                                         <option value="Derma" {{ old('sumber_perolehan') === 'Derma' ? 'selected' : '' }}>Derma</option>
                                         <option value="Lain-lain" {{ old('sumber_perolehan') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
                                     </select>
-                                    <i class='bx bx-source absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('sumber_perolehan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -390,6 +434,9 @@
                                     Kos Perolehan (RM) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-dollar text-gray-400'></i>
+                                    </div>
                                     <input type="number" 
                                            step="0.01"
                                            id="kos_perolehan" 
@@ -399,7 +446,6 @@
                                            x-model="form.kos_perolehan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_perolehan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
-                                    <i class='bx bx-dollar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('kos_perolehan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -416,11 +462,17 @@
                                     Keadaan Semasa <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-check-circle text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="keadaan_semasa" 
                                             name="keadaan_semasa" 
                                             required
                                             x-model="form.keadaan_semasa"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_semasa') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_semasa') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Keadaan Semasa</option>
                                         <option value="Sangat Baik" {{ old('keadaan_semasa') === 'Sangat Baik' ? 'selected' : '' }}>Sangat Baik</option>
                                         <option value="Baik" {{ old('keadaan_semasa') === 'Baik' ? 'selected' : '' }}>Baik</option>
@@ -428,8 +480,6 @@
                                         <option value="Perlu Pembaikan" {{ old('keadaan_semasa') === 'Perlu Pembaikan' ? 'selected' : '' }}>Perlu Pembaikan</option>
                                         <option value="Rosak" {{ old('keadaan_semasa') === 'Rosak' ? 'selected' : '' }}>Rosak</option>
                                     </select>
-                                    <i class='bx bx-check-circle absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('keadaan_semasa')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -451,13 +501,15 @@
                                 Gambar Aset
                             </label>
                             <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class='bx bx-images text-gray-400'></i>
+                                </div>
                                 <input type="file" 
                                        id="gambar_aset" 
                                        name="gambar_aset[]" 
                                        multiple 
                                        accept="image/*"
                                        class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('gambar_aset') border-red-500 @enderror bg-white">
-                                <i class='bx bx-images absolute left-3 top-3.5 text-gray-400'></i>
                             </div>
                             <p class="mt-1 text-xs text-amber-600">Format yang diterima: JPEG, PNG, JPG. Maksimum 2MB setiap fail.</p>
                             @error('gambar_aset')
@@ -475,13 +527,15 @@
                                 Catatan
                             </label>
                             <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class='bx bx-note text-gray-400'></i>
+                                </div>
                                 <textarea id="catatan" 
                                           name="catatan" 
                                           rows="4"
                                           x-model="form.catatan"
                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
                                           placeholder="Masukkan catatan tambahan jika ada">{{ old('catatan') }}</textarea>
-                                <i class='bx bx-note absolute left-3 top-3.5 text-gray-400'></i>
                             </div>
                             @error('catatan')
                                 <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -520,7 +574,7 @@
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Luas:</span>
-                                        <span class="text-sm font-medium" x-text="form.luas_tanah_bangunan ? form.luas_tanah_bangunan + ' m²' : '-'">-</span>
+                                        <span class="text-sm font-medium" x-text="form.keluasan_tanah ? form.keluasan_tanah + ' m²' : '-'">-</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Kos:</span>
@@ -539,8 +593,13 @@
                         </div>
 
                         <!-- Progress Card -->
-                        <div class="bg-white rounded-xl p-6 border border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Kemajuan Borang</h3>
+                        <div class="bg-gradient-to-br from-gray-50 to-white-100 rounded-xl p-6 border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center mr-3">
+                                    <i class='bx bx-file text-white'></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900">Kemajuan Borang</h3>
+                            </div>
                             
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
@@ -551,7 +610,7 @@
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Hakmilik & Ukuran</span>
-                                    <div class="flex items-center" x-show="form.luas_tanah_bangunan">
+                                    <div class="flex items-center" x-show="form.keluasan_tanah">
                                         <i class='bx bx-check text-green-500'></i>
                                     </div>
                                 </div>
@@ -629,7 +688,8 @@
                 alamat: '{{ old('alamat') }}',
                 no_hakmilik: '{{ old('no_hakmilik') }}',
                 no_lot: '{{ old('no_lot') }}',
-                luas_tanah_bangunan: '{{ old('luas_tanah_bangunan') }}',
+                keluasan_tanah: '{{ old('keluasan_tanah') }}',
+                keluasan_bangunan: '{{ old('keluasan_bangunan') }}',
                 tarikh_perolehan: '{{ old('tarikh_perolehan') }}',
                 sumber_perolehan: '{{ old('sumber_perolehan') }}',
                 kos_perolehan: '{{ old('kos_perolehan') }}',
@@ -640,7 +700,7 @@
     }
 
     // Form validation
-    document.getElementById('luas_tanah_bangunan').addEventListener('input', function() {
+    document.getElementById('keluasan_tanah').addEventListener('input', function() {
         const value = parseFloat(this.value);
         if (value < 0) {
             this.setCustomValidity('Luas tidak boleh negatif');

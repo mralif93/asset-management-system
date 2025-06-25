@@ -91,6 +91,9 @@
                                     Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-package text-gray-400'></i>
+                                    </div>
                                     <select id="asset_id" 
                                             name="asset_id" 
                                             required
@@ -104,8 +107,9 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <i class='bx bx-package absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                 </div>
                                 @error('asset_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -160,6 +164,9 @@
                                     Jenis Pergerakan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-category text-gray-400'></i>
+                                    </div>
                                     <select id="jenis_pergerakan" 
                                             name="jenis_pergerakan" 
                                             required
@@ -171,8 +178,9 @@
                                         <option value="Peminjaman" {{ old('jenis_pergerakan') === 'Peminjaman' ? 'selected' : '' }}>Peminjaman</option>
                                         <option value="Pulangan" {{ old('jenis_pergerakan') === 'Pulangan' ? 'selected' : '' }}>Pulangan</option>
                                     </select>
-                                    <i class='bx bx-category absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                 </div>
                                 @error('jenis_pergerakan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -189,6 +197,9 @@
                                     Tarikh Pergerakan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-calendar text-gray-400'></i>
+                                    </div>
                                     <input type="date" 
                                            id="tarikh_pergerakan" 
                                            name="tarikh_pergerakan" 
@@ -196,7 +207,6 @@
                                            required
                                            x-model="form.tarikh_pergerakan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_pergerakan') border-red-500 @enderror bg-white">
-                                    <i class='bx bx-calendar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('tarikh_pergerakan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -213,6 +223,9 @@
                                     Masjid/Surau Asal <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building-house text-gray-400'></i>
+                                    </div>
                                     <select id="masjid_surau_asal_id" 
                                             name="masjid_surau_asal_id" 
                                             required
@@ -225,8 +238,9 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <i class='bx bx-building-house absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                 </div>
                                 @error('masjid_surau_asal_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -243,6 +257,9 @@
                                     Masjid/Surau Destinasi <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building-house text-gray-400'></i>
+                                    </div>
                                     <select id="masjid_surau_destinasi_id" 
                                             name="masjid_surau_destinasi_id" 
                                             required
@@ -255,8 +272,9 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <i class='bx bx-building-house absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                 </div>
                                 @error('masjid_surau_destinasi_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -273,6 +291,9 @@
                                     Lokasi Terperinci Asal <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map-pin text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="lokasi_terperinci_asal" 
                                            name="lokasi_terperinci_asal" 
@@ -280,7 +301,6 @@
                                            required
                                            placeholder="Contoh: Bilik Stor Tingkat 1"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_terperinci_asal') border-red-500 @enderror bg-white">
-                                    <i class='bx bx-map-pin absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('lokasi_terperinci_asal')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -297,6 +317,9 @@
                                     Lokasi Terperinci Destinasi <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map-pin text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="lokasi_terperinci_destinasi" 
                                            name="lokasi_terperinci_destinasi" 
@@ -304,7 +327,6 @@
                                            required
                                            placeholder="Contoh: Ruang Solat Utama"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_terperinci_destinasi') border-red-500 @enderror bg-white">
-                                    <i class='bx bx-map-pin absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('lokasi_terperinci_destinasi')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -321,6 +343,9 @@
                                     Pegawai Bertanggungjawab <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-user text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="nama_peminjam_pegawai_bertanggungjawab" 
                                            name="nama_peminjam_pegawai_bertanggungjawab" 
@@ -329,7 +354,6 @@
                                            x-model="form.nama_peminjam_pegawai_bertanggungjawab"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_peminjam_pegawai_bertanggungjawab') border-red-500 @enderror bg-white"
                                            placeholder="Nama pegawai yang bertanggungjawab">
-                                    <i class='bx bx-user absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nama_peminjam_pegawai_bertanggungjawab')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -346,13 +370,15 @@
                                     Tarikh Jangka Pulangan
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-time text-gray-400'></i>
+                                    </div>
                                     <input type="date" 
                                            id="tarikh_jangka_pulangan" 
                                            name="tarikh_jangka_pulangan" 
                                            value="{{ old('tarikh_jangka_pulangan') }}"
                                            x-model="form.tarikh_jangka_pulangan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_jangka_pulangan') border-red-500 @enderror bg-white">
-                                    <i class='bx bx-time absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('tarikh_jangka_pulangan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">

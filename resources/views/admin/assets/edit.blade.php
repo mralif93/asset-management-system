@@ -95,6 +95,9 @@
                                     Nama Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-package text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="nama_aset" 
                                            name="nama_aset" 
@@ -103,7 +106,6 @@
                                            x-model="form.nama_aset"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_aset') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama aset">
-                                    <i class='bx bx-package absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nama_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -120,18 +122,22 @@
                                     Jenis Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-category text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="jenis_aset" 
                                             name="jenis_aset" 
                                             required
                                             x-model="form.jenis_aset"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Jenis Aset</option>
                                         @foreach($assetTypes as $type)
                                             <option value="{{ $type }}" {{ old('jenis_aset', $asset->jenis_aset) === $type ? 'selected' : '' }}>{{ $type }}</option>
                                         @endforeach
                                     </select>
-                                    <i class='bx bx-category absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('jenis_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -148,13 +154,15 @@
                                     No. Siri Pendaftaran <span class="text-gray-500">(Read-only)</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-barcode text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="no_siri_pendaftaran" 
                                            name="no_siri_pendaftaran" 
                                            value="{{ $asset->no_siri_pendaftaran }}"
                                            readonly
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 font-mono">
-                                    <i class='bx bx-barcode absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                             </div>
 
@@ -165,18 +173,22 @@
                                     Status Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-check-circle text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
                                     <select id="status_aset" 
                                             name="status_aset" 
                                             required
                                             x-model="form.status_aset"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_aset') border-red-500 @enderror appearance-none bg-white">
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Status</option>
                                         <option value="Sedang Digunakan" {{ old('status_aset', $asset->status_aset) === 'Sedang Digunakan' ? 'selected' : '' }}>Sedang Digunakan</option>
                                         <option value="Dalam Penyelenggaraan" {{ old('status_aset', $asset->status_aset) === 'Dalam Penyelenggaraan' ? 'selected' : '' }}>Dalam Penyelenggaraan</option>
                                         <option value="Rosak" {{ old('status_aset', $asset->status_aset) === 'Rosak' ? 'selected' : '' }}>Rosak</option>
                                     </select>
-                                    <i class='bx bx-check-circle absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('status_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -193,6 +205,9 @@
                                     Lokasi Penempatan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map text-gray-400'></i>
+                                    </div>
                                     <input type="text" 
                                            id="lokasi_penempatan" 
                                            name="lokasi_penempatan" 
@@ -201,7 +216,6 @@
                                            x-model="form.lokasi_penempatan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror bg-white"
                                            placeholder="Cth: Ruang Utama, Pejabat">
-                                    <i class='bx bx-map absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('lokasi_penempatan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -353,6 +367,9 @@
                                     Umur Faedah (Tahun)
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-time text-gray-400'></i>
+                                    </div>
                                     <input type="number" 
                                            id="umur_faedah_tahunan" 
                                            name="umur_faedah_tahunan" 
@@ -361,7 +378,6 @@
                                            x-model="form.umur_faedah_tahunan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('umur_faedah_tahunan') border-red-500 @enderror bg-white"
                                            placeholder="Cth: 5">
-                                    <i class='bx bx-time absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('umur_faedah_tahunan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -378,6 +394,9 @@
                                     Susut Nilai Tahunan (RM)
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-trending-down text-gray-400'></i>
+                                    </div>
                                     <input type="number" 
                                            id="susut_nilai_tahunan" 
                                            name="susut_nilai_tahunan" 
@@ -387,9 +406,42 @@
                                            x-model="form.susut_nilai_tahunan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('susut_nilai_tahunan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
-                                    <i class='bx bx-trending-down absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('susut_nilai_tahunan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Masjid/Surau -->
+                            <div>
+                                <label for="masjid_surau_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-building mr-1'></i>
+                                    Masjid/Surau <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-building text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
+                                    <select id="masjid_surau_id" 
+                                            name="masjid_surau_id" 
+                                            required
+                                            x-model="form.masjid_surau_id"
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Masjid/Surau</option>
+                                        @foreach($masjidSuraus as $masjid)
+                                            <option value="{{ $masjid->id }}" {{ old('masjid_surau_id', $asset->masjid_surau_id) == $masjid->id ? 'selected' : '' }}>
+                                                {{ $masjid->nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('masjid_surau_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
