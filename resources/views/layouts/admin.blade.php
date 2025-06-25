@@ -7,17 +7,17 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- TailwindCSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- TailwindCSS -->
+    <script src="{{ asset('assets/js/tailwind.min.js') }}"></script>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="{{ asset('assets/fonts/manrope.css') }}" rel="stylesheet">
     
     <!-- Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="{{ asset('assets/css/boxicons.min.css') }}" rel="stylesheet">
     
     <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="{{ asset('assets/js/alpine.min.js') }}"></script>
 
     <!-- Tailwind Configuration -->
     <script>
