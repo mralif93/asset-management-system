@@ -142,7 +142,7 @@
         </div>
         
         <form method="GET" action="{{ route('admin.asset-movements.index') }}" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search -->
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Cari</label>
@@ -179,6 +179,32 @@
                     </select>
                 </div>
 
+                <!-- Source Masjid/Surau Filter -->
+                <div>
+                    <label for="masjid_surau_asal_id" class="block text-sm font-medium text-gray-700 mb-2">Masjid/Surau Asal</label>
+                    <select id="masjid_surau_asal_id" name="masjid_surau_asal_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Semua Lokasi</option>
+                        @foreach($masjidSuraus as $masjid)
+                            <option value="{{ $masjid->id }}" {{ request('masjid_surau_asal_id') == $masjid->id ? 'selected' : '' }}>
+                                {{ $masjid->nama }} ({{ $masjid->jenis }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Destination Masjid/Surau Filter -->
+                <div>
+                    <label for="masjid_surau_destinasi_id" class="block text-sm font-medium text-gray-700 mb-2">Masjid/Surau Destinasi</label>
+                    <select id="masjid_surau_destinasi_id" name="masjid_surau_destinasi_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Semua Lokasi</option>
+                        @foreach($masjidSuraus as $masjid)
+                            <option value="{{ $masjid->id }}" {{ request('masjid_surau_destinasi_id') == $masjid->id ? 'selected' : '' }}>
+                                {{ $masjid->nama }} ({{ $masjid->jenis }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <!-- Actions -->
                 <div class="flex items-end space-x-2">
                     <button type="submit" 
@@ -202,126 +228,94 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-lg font-semibold text-gray-900">Senarai Pergerakan Aset</h2>
-                    <p class="text-sm text-gray-600">Urus dan pantau semua pergerakan aset sistem</p>
+                    <p class="text-sm text-gray-600">{{ $assetMovements->total() }} pergerakan dijumpai</p>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <span class="text-sm text-gray-500">{{ $assetMovements->total() }} pergerakan</span>
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-600">Terkini</span>
+                    <i class='bx bx-chevron-down text-gray-400'></i>
                 </div>
             </div>
         </div>
 
+        <!-- Table Content -->
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-50">
-                    <tr>
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aset</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dari</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ke</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarikh</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Tindakan</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tindakan</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($assetMovements as $movement)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                                    <i class='bx bx-package text-emerald-700 text-xl'></i>
+                                <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                    <i class='bx bx-package text-emerald-600'></i>
                                 </div>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $movement->asset->nama_aset }}</div>
                                     <div class="text-sm text-gray-500">{{ $movement->asset->no_siri_pendaftaran }}</div>
-                                    @if($movement->asset->masjidSurau)
-                                        <div class="text-xs text-gray-400 flex items-center">
-                                            <i class='bx bx-building mr-1'></i>
-                                            {{ $movement->asset->masjidSurau->nama }}
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full {{ $movement->jenis_pergerakan === 'Pemindahan' ? 'bg-blue-100 text-blue-800' : ($movement->jenis_pergerakan === 'Peminjaman' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800') }}">
-                                {{ $movement->jenis_pergerakan ?? 'Pemindahan' }}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $movement->jenis_pergerakan === 'Pemindahan' ? 'bg-blue-100 text-blue-800' : ($movement->jenis_pergerakan === 'Peminjaman' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800') }}">
+                                {{ $movement->jenis_pergerakan }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <div class="space-y-1">
-                                <div class="flex items-center text-red-600">
-                                    <i class='bx bx-map-pin mr-1'></i>
-                                    <span class="text-xs">Dari: {{ $movement->lokasi_asal }}</span>
-                                </div>
-                                <div class="flex items-center text-green-600">
-                                    <i class='bx bx-map mr-1'></i>
-                                    <span class="text-xs">Ke: {{ $movement->lokasi_destinasi }}</span>
-                                </div>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $movement->masjidSurauAsal->nama }}</div>
+                            <div class="text-xs text-gray-500">{{ $movement->lokasi_terperinci_asal }}</div>
+                            <div class="mt-1">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $movement->status_kelulusan_asal === 'diluluskan' ? 'bg-green-100 text-green-800' : ($movement->status_kelulusan_asal === 'menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                    {{ ucfirst($movement->status_kelulusan_asal) }}
+                                </span>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full {{ $movement->status_pergerakan === 'diluluskan' ? 'bg-green-100 text-green-800' : ($movement->status_pergerakan === 'menunggu_kelulusan' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                <div class="w-2 h-2 {{ $movement->status_pergerakan === 'diluluskan' ? 'bg-green-500' : ($movement->status_pergerakan === 'menunggu_kelulusan' ? 'bg-yellow-500' : 'bg-red-500') }} rounded-full mr-2"></div>
-                                {{ $movement->status_pergerakan === 'menunggu_kelulusan' ? 'Menunggu' : ($movement->status_pergerakan === 'diluluskan' ? 'Diluluskan' : 'Ditolak') }}
-                            </span>
+                            <div class="text-sm text-gray-900">{{ $movement->masjidSurauDestinasi->nama }}</div>
+                            <div class="text-xs text-gray-500">{{ $movement->lokasi_terperinci_destinasi }}</div>
+                            <div class="mt-1">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $movement->status_kelulusan_destinasi === 'diluluskan' ? 'bg-green-100 text-green-800' : ($movement->status_kelulusan_destinasi === 'menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                    {{ ucfirst($movement->status_kelulusan_destinasi) }}
+                                </span>
+                            </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $movement->tarikh_pergerakan ? $movement->tarikh_pergerakan->format('d/m/Y') : '-' }}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $movement->tarikh_pergerakan ? $movement->tarikh_pergerakan->format('d/m/Y') : '-' }}</div>
+                            <div class="text-xs text-gray-500">{{ $movement->tarikh_pergerakan ? $movement->tarikh_pergerakan->diffForHumans() : '' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $movement->status_pergerakan === 'diluluskan' ? 'bg-green-100 text-green-800' : ($movement->status_pergerakan === 'menunggu_kelulusan' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                {{ ucfirst(str_replace('_', ' ', $movement->status_pergerakan)) }}
+                            </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex items-center justify-end space-x-3">
+                            <div class="flex items-center space-x-2">
                                 <a href="{{ route('admin.asset-movements.show', $movement) }}" 
-                                   class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-colors"
-                                   title="Lihat">
-                                    <i class='bx bx-show text-sm'></i>
+                                   class="text-emerald-600 hover:text-emerald-900">
+                                    <i class='bx bx-show'></i>
                                 </a>
-                                <a href="{{ route('admin.asset-movements.edit', $movement) }}" 
-                                   class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
-                                   title="Edit">
-                                    <i class='bx bx-edit text-sm'></i>
-                                </a>
-                                
                                 @if($movement->status_pergerakan === 'menunggu_kelulusan')
-                                <form action="{{ route('admin.asset-movements.approve', $movement) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" 
-                                            class="w-8 h-8 bg-green-100 hover:bg-green-200 text-green-600 rounded-lg flex items-center justify-center transition-colors"
-                                            title="Luluskan"
-                                            onclick="return confirm('Luluskan pergerakan ini?')">
-                                        <i class='bx bx-check text-sm'></i>
-                                    </button>
-                                </form>
-
-                                <button onclick="showRejectModal({{ $movement->id }})" 
-                                        class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
-                                        title="Tolak">
-                                    <i class='bx bx-x text-sm'></i>
-                                </button>
+                                <a href="{{ route('admin.asset-movements.edit', $movement) }}" 
+                                   class="text-blue-600 hover:text-blue-900">
+                                    <i class='bx bx-edit'></i>
+                                </a>
                                 @endif
-
-                                <form action="{{ route('admin.asset-movements.destroy', $movement) }}" method="POST" class="inline" 
-                                      onsubmit="return confirm('Adakah anda pasti ingin memadamkan pergerakan ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            class="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center transition-colors"
-                                            title="Padamkan">
-                                        <i class='bx bx-trash text-sm'></i>
-                                    </button>
-                                </form>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center">
-                                <i class='bx bx-transfer text-5xl text-gray-400 mb-4'></i>
-                                <p class="text-gray-500 text-lg">Tiada pergerakan dijumpai</p>
-                                <p class="text-gray-400 text-sm">Cuba tukar kriteria carian anda</p>
-                            </div>
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                            Tiada pergerakan aset dijumpai
                         </td>
                     </tr>
                     @endforelse
@@ -330,11 +324,9 @@
         </div>
 
         <!-- Pagination -->
-        @if($assetMovements->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div class="p-6 border-t border-gray-200">
             {{ $assetMovements->links() }}
         </div>
-        @endif
     </div>
 </div>
 

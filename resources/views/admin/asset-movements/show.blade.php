@@ -167,6 +167,50 @@
                         </dd>
                     </div>
 
+                    <!-- Source Masjid/Surau -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-building-house text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Masjid/Surau Asal</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $assetMovement->masjidSurauAsal->nama ?? 'Tidak Ditetapkan' }}</dd>
+                        <p class="text-sm text-gray-600">{{ $assetMovement->lokasi_terperinci_asal }}</p>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $assetMovement->status_kelulusan_asal === 'diluluskan' ? 'bg-green-100 text-green-800' : ($assetMovement->status_kelulusan_asal === 'menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                {{ ucfirst($assetMovement->status_kelulusan_asal ?? 'Menunggu') }}
+                            </span>
+                        </div>
+                        @if($assetMovement->diluluskan_oleh_asal && $assetMovement->approvedByAsal)
+                            <p class="text-xs text-gray-500 mt-1">
+                                Diluluskan oleh: {{ $assetMovement->approvedByAsal->name }}
+                                <br>
+                                Pada: {{ $assetMovement->tarikh_kelulusan_asal ? $assetMovement->tarikh_kelulusan_asal->format('d/m/Y H:i') : '-' }}
+                            </p>
+                        @endif
+                    </div>
+
+                    <!-- Destination Masjid/Surau -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-building-house text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Masjid/Surau Destinasi</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $assetMovement->masjidSurauDestinasi->nama ?? 'Tidak Ditetapkan' }}</dd>
+                        <p class="text-sm text-gray-600">{{ $assetMovement->lokasi_terperinci_destinasi }}</p>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $assetMovement->status_kelulusan_destinasi === 'diluluskan' ? 'bg-green-100 text-green-800' : ($assetMovement->status_kelulusan_destinasi === 'menunggu' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                {{ ucfirst($assetMovement->status_kelulusan_destinasi ?? 'Menunggu') }}
+                            </span>
+                        </div>
+                        @if($assetMovement->diluluskan_oleh_destinasi && $assetMovement->approvedByDestinasi)
+                            <p class="text-xs text-gray-500 mt-1">
+                                Diluluskan oleh: {{ $assetMovement->approvedByDestinasi->name }}
+                                <br>
+                                Pada: {{ $assetMovement->tarikh_kelulusan_destinasi ? $assetMovement->tarikh_kelulusan_destinasi->format('d/m/Y H:i') : '-' }}
+                            </p>
+                        @endif
+                    </div>
+
                     <!-- Application Date -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
@@ -202,7 +246,7 @@
                             <i class='bx bx-user text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Pegawai Bertanggungjawab</dt>
                         </div>
-                        <dd class="text-lg font-semibold text-gray-900">{{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab ?: '-' }}</dd>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab }}</dd>
                     </div>
                 </div>
             </div>
