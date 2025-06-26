@@ -77,6 +77,8 @@ class AssetMovementController extends Controller
             'jenis_pergerakan' => 'required|in:Pemindahan,Peminjaman,Pulangan',
             'masjid_surau_asal_id' => 'required|exists:masjid_surau,id',
             'masjid_surau_destinasi_id' => 'required|exists:masjid_surau,id|different:masjid_surau_asal_id',
+            'lokasi_asal' => 'required|string|max:255',
+            'lokasi_destinasi' => 'required|string|max:255',
             'lokasi_terperinci_asal' => 'required|string|max:255',
             'lokasi_terperinci_destinasi' => 'required|string|max:255',
             'tarikh_permohonan' => 'required|date',
@@ -145,6 +147,8 @@ class AssetMovementController extends Controller
             'jenis_pergerakan' => 'required|in:Pemindahan,Peminjaman,Pulangan',
             'masjid_surau_asal_id' => 'required|exists:masjid_surau,id',
             'masjid_surau_destinasi_id' => 'required|exists:masjid_surau,id|different:masjid_surau_asal_id',
+            'lokasi_asal' => 'required|string|max:255',
+            'lokasi_destinasi' => 'required|string|max:255',
             'lokasi_terperinci_asal' => 'required|string|max:255',
             'lokasi_terperinci_destinasi' => 'required|string|max:255',
             'tarikh_permohonan' => 'required|date',
@@ -276,13 +280,21 @@ class AssetMovementController extends Controller
     /**
      * rekodPulanganAset(id): Record return of borrowed or transferred assets
      */
-    public function recordReturn(AssetMovement $assetMovement)
+    public function recordReturn(Request $request, AssetMovement $assetMovement)
     {
         if ($assetMovement->status_pergerakan !== 'diluluskan') {
             abort(403, 'Hanya pergerakan yang diluluskan boleh dikembalikan.');
         }
 
+        $validated = $request->validate([
+            'tarikh_pulang_sebenar' => 'required|date',
+            'catatan_pergerakan' => 'nullable|string'
+        ]);
+
         $assetMovement->update([
+            'status_pergerakan' => 'selesai',
+            'tarikh_pulang_sebenar' => $validated['tarikh_pulang_sebenar'],
+            'catatan_pergerakan' => $validated['catatan_pergerakan'],
             'tarikh_kepulangan' => now()
         ]);
 

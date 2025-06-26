@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,6 +35,7 @@ class Asset extends Model
         'nilai_perolehan' => 'decimal:2',
         'susut_nilai_tahunan' => 'decimal:2',
         'gambar_aset' => 'array',
+        'id' => 'int',
     ];
 
     /**
@@ -90,5 +92,95 @@ class Asset extends Model
     public function lossWriteoffs(): HasMany
     {
         return $this->hasMany(LossWriteoff::class);
+    }
+
+    /**
+     * Calculate the current value of the asset after depreciation.
+     */
+    public function getCurrentValue(): float
+    {
+        if (!$this->nilai_perolehan || !$this->susut_nilai_tahunan || !$this->tarikh_perolehan) {
+            return 0;
+        }
+
+        $years = $this->tarikh_perolehan->diffInYears(now());
+        $depreciation = $this->susut_nilai_tahunan * $years;
+        
+        return round(max(0, $this->nilai_perolehan - $depreciation), 2);
+    }
+
+    /**
+     * Determine if the asset needs inspection.
+     */
+    public function needsInspection(): bool
+    {
+        $lastInspection = $this->inspections()
+            ->orderBy('tarikh_pemeriksaan', 'desc')
+            ->first();
+
+        if (!$lastInspection) {
+            return true;
+        }
+
+        return $lastInspection->tarikh_pemeriksaan->addDays(90)->isPast();
+    }
+
+    /**
+     * Determine if the asset needs maintenance.
+     */
+    public function needsMaintenance(): bool
+    {
+        $lastMaintenance = $this->maintenanceRecords()
+            ->orderBy('tarikh_penyelenggaraan', 'desc')
+            ->first();
+
+        if (!$lastMaintenance) {
+            return true;
+        }
+
+        return $lastMaintenance->tarikh_penyelenggaraan->addDays(180)->isPast();
+    }
+
+    /**
+     * Get the latest movement record.
+     */
+    public function getLatestMovement(): ?AssetMovement
+    {
+        return $this->assetMovements()
+            ->orderBy('tarikh_pergerakan', 'desc')
+            ->first();
+    }
+
+    /**
+     * Get the current location of the asset.
+     */
+    public function getCurrentLocation(): string
+    {
+        $latestMovement = $this->assetMovements()
+            ->where('status_pergerakan', 'selesai')
+            ->orderBy('tarikh_pergerakan', 'desc')
+            ->first();
+
+        return $latestMovement ? $latestMovement->lokasi_destinasi : $this->lokasi_penempatan;
+    }
+
+    /**
+     * Determine if the asset is disposed.
+     */
+    public function isDisposed(): bool
+    {
+        return $this->disposals()
+            ->where('status_kelulusan', 'diluluskan')
+            ->exists();
+    }
+
+    /**
+     * Determine if the asset is written off.
+     */
+    public function isWrittenOff(): bool
+    {
+        return $this->lossWriteoffs()
+            ->where('status_kejadian', 'diluluskan')
+            ->exists();
     }
 }
