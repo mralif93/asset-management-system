@@ -106,7 +106,8 @@ class MaintenanceRecordController extends Controller
             'catatan_penyelenggaraan' => 'nullable|string',
             'tarikh_penyelenggaraan_akan_datang' => 'nullable|date|after:tarikh_penyelenggaraan',
             'gambar_penyelenggaraan' => 'nullable|array',
-            'gambar_penyelenggaraan.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'gambar_penyelenggaraan.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'status_penyelenggaraan' => 'required|string'
         ]);
 
         // Handle image uploads
