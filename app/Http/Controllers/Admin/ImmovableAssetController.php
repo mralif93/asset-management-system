@@ -15,7 +15,7 @@ class ImmovableAssetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ImmovableAsset::with('masjidSurau');
+        $query = ImmovableAsset::with(['masjidSurau.users', 'masjidSurau.assets']);
         
         // Filter by masjid/surau if user is not admin
         if (Auth::user()->role !== 'admin') {

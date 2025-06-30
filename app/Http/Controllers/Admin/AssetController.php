@@ -35,7 +35,7 @@ class AssetController extends Controller
             $query->where('status_aset', $request->status);
         }
         
-        $assets = $query->paginate(15);
+        $assets = $query->latest()->paginate(15);
         
         return view('admin.assets.index', compact('assets'));
     }

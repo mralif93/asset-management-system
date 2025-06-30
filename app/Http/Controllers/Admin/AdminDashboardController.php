@@ -38,20 +38,20 @@ class AdminDashboardController extends Controller
         ];
 
         // Recent activities across all masjids
-        $recentAssets = Asset::with('masjidSurau')
-                             ->orderBy('created_at', 'desc')
-                             ->limit(5)
-                             ->get();
+        $recentAssets = Asset::with(['masjidSurau', 'assetMovements'])
+                            ->latest()
+                            ->limit(5)
+                            ->get();
 
-        $recentUsers = User::with('masjidSurau')
-                          ->orderBy('created_at', 'desc')
+        $recentUsers = User::with(['masjidSurau'])
+                          ->latest()
                           ->limit(5)
                           ->get();
 
-        $recentMovements = AssetMovement::with(['asset.masjidSurau'])
-                                      ->orderBy('created_at', 'desc')
-                                      ->limit(5)
-                                      ->get();
+        $recentMovements = AssetMovement::with(['asset.masjidSurau', 'user', 'masjidSurauAsal', 'masjidSurauDestinasi'])
+                                     ->latest()
+                                     ->limit(5)
+                                     ->get();
 
         // Top performing masjids by asset count
         $topMasjidsByAssets = MasjidSurau::withCount('assets')

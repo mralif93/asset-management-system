@@ -41,7 +41,7 @@ class MasjidSurauController extends Controller
             $query->where('status', $request->get('status'));
         }
 
-        $masjidSuraus = $query->orderBy('created_at', 'desc')->paginate(10);
+        $masjidSuraus = $query->latest()->paginate(10);
 
         // Statistics for the index page
         $statistics = [
@@ -69,6 +69,7 @@ class MasjidSurauController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
+            'nama_rasmi' => 'nullable|string|max:255',
             'singkatan_nama' => 'nullable|string|max:20',
             'jenis' => 'required|in:Masjid,Surau',
             'kategori' => 'nullable|in:Kariah,Persekutuan,Negeri,Swasta,Wakaf',
@@ -80,6 +81,7 @@ class MasjidSurauController extends Controller
             'negeri' => 'nullable|string|max:100',
             'negara' => 'nullable|string|max:100',
             'daerah' => 'required|string|max:100',
+            'kawasan' => 'nullable|string|max:100',
             'no_telefon' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'imam_ketua' => 'nullable|string|max:255',
@@ -87,6 +89,7 @@ class MasjidSurauController extends Controller
             'tahun_dibina' => 'nullable|integer|min:1800|max:' . date('Y'),
             'status' => 'required|in:Aktif,Tidak Aktif',
             'catatan' => 'nullable|string|max:1000',
+            'pautan_peta' => 'nullable|string|max:1000|url',
         ]);
 
         MasjidSurau::create($validated);
@@ -133,6 +136,7 @@ class MasjidSurauController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
+            'nama_rasmi' => 'nullable|string|max:255',
             'singkatan_nama' => 'nullable|string|max:20',
             'jenis' => 'required|in:Masjid,Surau',
             'kategori' => 'nullable|in:Kariah,Persekutuan,Negeri,Swasta,Wakaf',
@@ -144,6 +148,7 @@ class MasjidSurauController extends Controller
             'negeri' => 'nullable|string|max:100',
             'negara' => 'nullable|string|max:100',
             'daerah' => 'required|string|max:100',
+            'kawasan' => 'nullable|string|max:100',
             'no_telefon' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'imam_ketua' => 'nullable|string|max:255',
@@ -151,6 +156,7 @@ class MasjidSurauController extends Controller
             'tahun_dibina' => 'nullable|integer|min:1800|max:' . date('Y'),
             'status' => 'required|in:Aktif,Tidak Aktif',
             'catatan' => 'nullable|string|max:1000',
+            'pautan_peta' => 'nullable|string|max:1000|url',
         ]);
 
         $masjidSurau->update($validated);
