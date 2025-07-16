@@ -66,6 +66,7 @@ class ImmovableAsset extends Model
             'pembelian' => 'Pembelian',
             'hadiah' => 'Hadiah',
             'hibah' => 'Hibah',
+            'infaq' => 'Infaq',
             'sumbangan' => 'Sumbangan',
             'wakaf' => 'Wakaf',
             'lain_lain' => 'Lain-lain',

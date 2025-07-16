@@ -324,6 +324,7 @@
                                         <option value="Pembelian" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
                                         <option value="Sumbangan" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Sumbangan' ? 'selected' : '' }}>Sumbangan</option>
                                         <option value="Hibah" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Hibah' ? 'selected' : '' }}>Hibah</option>
+                                        <option value="Infaq" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Infaq' ? 'selected' : '' }}>Infaq</option>
                                         <option value="Lain-lain" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
                                     </select>
                                     <i class='bx bx-transfer absolute left-3 top-3.5 text-gray-400'></i>
@@ -382,6 +383,32 @@
                                     <i class='bx bx-user absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('pegawai_bertanggungjawab_lokasi')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Officer Position -->
+                            <div>
+                                <label for="jawatan_pegawai" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-briefcase mr-1'></i>
+                                    Jawatan Pegawai
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-briefcase text-gray-400'></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="jawatan_pegawai" 
+                                           name="jawatan_pegawai" 
+                                           value="{{ old('jawatan_pegawai', $asset->jawatan_pegawai) }}"
+                                           x-model="form.jawatan_pegawai"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jawatan_pegawai') border-red-500 @enderror bg-white"
+                                           placeholder="Jawatan pegawai">
+                                </div>
+                                @error('jawatan_pegawai')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
@@ -724,6 +751,7 @@
                 kaedah_perolehan: '{{ old('kaedah_perolehan', $asset->kaedah_perolehan) }}',
                 nilai_perolehan: '{{ old('nilai_perolehan', $asset->nilai_perolehan) }}',
                 pegawai_bertanggungjawab_lokasi: '{{ old('pegawai_bertanggungjawab_lokasi', $asset->pegawai_bertanggungjawab_lokasi) }}',
+                jawatan_pegawai: '{{ old('jawatan_pegawai', $asset->jawatan_pegawai) }}',
                 umur_faedah_tahunan: '{{ old('umur_faedah_tahunan', $asset->umur_faedah_tahunan) }}',
                 susut_nilai_tahunan: '{{ old('susut_nilai_tahunan', $asset->susut_nilai_tahunan) }}',
                 catatan: '{{ old('catatan', $asset->catatan) }}'
