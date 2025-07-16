@@ -268,14 +268,27 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class='bx bx-map text-gray-400'></i>
                                     </div>
-                                    <input type="text" 
-                                           id="lokasi_penempatan" 
-                                           name="lokasi_penempatan" 
-                                           value="{{ old('lokasi_penempatan') }}"
-                                           required
-                                           x-model="form.lokasi_penempatan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror bg-white"
-                                           placeholder="Cth: Ruang Utama, Pejabat">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
+                                    <select id="lokasi_penempatan" 
+                                            name="lokasi_penempatan" 
+                                            required
+                                            x-model="form.lokasi_penempatan"
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Lokasi</option>
+                                        <option value="Anjung kiri" {{ old('lokasi_penempatan') === 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
+                                        <option value="Anjung kanan" {{ old('lokasi_penempatan') === 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
+                                        <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan') === 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
+                                        <option value="Ruang Utama (tingkat atas, tingkat bawah)" {{ old('lokasi_penempatan') === 'Ruang Utama (tingkat atas, tingkat bawah)' ? 'selected' : '' }}>Ruang Utama (tingkat atas, tingkat bawah)</option>
+                                        <option value="Bilik Mesyuarat" {{ old('lokasi_penempatan') === 'Bilik Mesyuarat' ? 'selected' : '' }}>Bilik Mesyuarat</option>
+                                        <option value="Bilik Kuliah" {{ old('lokasi_penempatan') === 'Bilik Kuliah' ? 'selected' : '' }}>Bilik Kuliah</option>
+                                        <option value="Bilik Bendahari" {{ old('lokasi_penempatan') === 'Bilik Bendahari' ? 'selected' : '' }}>Bilik Bendahari</option>
+                                        <option value="Bilik Setiausaha" {{ old('lokasi_penempatan') === 'Bilik Setiausaha' ? 'selected' : '' }}>Bilik Setiausaha</option>
+                                        <option value="Bilik Nazir & Imam" {{ old('lokasi_penempatan') === 'Bilik Nazir & Imam' ? 'selected' : '' }}>Bilik Nazir & Imam</option>
+                                        <option value="Bangunan Jenazah" {{ old('lokasi_penempatan') === 'Bangunan Jenazah' ? 'selected' : '' }}>Bangunan Jenazah</option>
+                                        <option value="Lain-lain" {{ old('lokasi_penempatan') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                    </select>
                                 </div>
                                 @error('lokasi_penempatan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">

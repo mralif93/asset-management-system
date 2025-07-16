@@ -34,6 +34,11 @@ class AssetController extends Controller
         if ($request->filled('kategori_aset')) {
             $query->where('kategori_aset', $request->kategori_aset);
         }
+
+        // Filter by location
+        if ($request->filled('lokasi_penempatan')) {
+            $query->where('lokasi_penempatan', $request->lokasi_penempatan);
+        }
         
         // Filter by status
         if ($request->filled('status')) {
@@ -72,7 +77,7 @@ class AssetController extends Controller
             'nilai_perolehan' => 'required|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => 'required|string|max:255',
+            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'status_aset' => 'required|string',
             'catatan' => 'nullable|string',
@@ -139,7 +144,7 @@ class AssetController extends Controller
             'nilai_perolehan' => 'required|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => 'required|string|max:255',
+            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'status_aset' => 'required|string',
             'catatan' => 'nullable|string',
@@ -195,7 +200,7 @@ class AssetController extends Controller
     public function updateLocation(Request $request, Asset $asset)
     {
         $validated = $request->validate([
-            'lokasi_penempatan' => 'required|string|max:255',
+            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
         ]);
 

@@ -179,6 +179,25 @@
                     </select>
                 </div>
 
+                <!-- Location Filter -->
+                <div>
+                    <label for="lokasi_penempatan" class="block text-sm font-medium text-gray-700 mb-2">Lokasi Penempatan</label>
+                    <select id="lokasi_penempatan" name="lokasi_penempatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Semua Lokasi</option>
+                        <option value="Anjung kiri" {{ request('lokasi_penempatan') === 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
+                        <option value="Anjung kanan" {{ request('lokasi_penempatan') === 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
+                        <option value="Anjung Depan(Ruang Pengantin)" {{ request('lokasi_penempatan') === 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
+                        <option value="Ruang Utama (tingkat atas, tingkat bawah)" {{ request('lokasi_penempatan') === 'Ruang Utama (tingkat atas, tingkat bawah)' ? 'selected' : '' }}>Ruang Utama (tingkat atas, tingkat bawah)</option>
+                        <option value="Bilik Mesyuarat" {{ request('lokasi_penempatan') === 'Bilik Mesyuarat' ? 'selected' : '' }}>Bilik Mesyuarat</option>
+                        <option value="Bilik Kuliah" {{ request('lokasi_penempatan') === 'Bilik Kuliah' ? 'selected' : '' }}>Bilik Kuliah</option>
+                        <option value="Bilik Bendahari" {{ request('lokasi_penempatan') === 'Bilik Bendahari' ? 'selected' : '' }}>Bilik Bendahari</option>
+                        <option value="Bilik Setiausaha" {{ request('lokasi_penempatan') === 'Bilik Setiausaha' ? 'selected' : '' }}>Bilik Setiausaha</option>
+                        <option value="Bilik Nazir & Imam" {{ request('lokasi_penempatan') === 'Bilik Nazir & Imam' ? 'selected' : '' }}>Bilik Nazir & Imam</option>
+                        <option value="Bangunan Jenazah" {{ request('lokasi_penempatan') === 'Bangunan Jenazah' ? 'selected' : '' }}>Bangunan Jenazah</option>
+                        <option value="Lain-lain" {{ request('lokasi_penempatan') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                    </select>
+                </div>
+
                 <!-- Status Filter -->
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
