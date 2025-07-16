@@ -402,6 +402,34 @@
                                 @enderror
                             </div>
 
+                            <!-- Discount -->
+                            <div>
+                                <label for="diskaun" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-discount mr-1'></i>
+                                    Diskaun (RM)
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-discount text-gray-400'></i>
+                                    </div>
+                                    <input type="number" 
+                                           id="diskaun" 
+                                           name="diskaun" 
+                                           value="{{ old('diskaun', '0.00') }}"
+                                           step="0.01"
+                                           min="0"
+                                           x-model="form.diskaun"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('diskaun') border-red-500 @enderror bg-white"
+                                           placeholder="0.00">
+                                </div>
+                                @error('diskaun')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             <!-- Responsible Officer -->
                             <div>
                                 <label for="pegawai_bertanggungjawab_lokasi" class="block text-sm font-medium text-gray-700 mb-2">
@@ -675,6 +703,10 @@
                                 <span class="font-medium text-gray-900" x-text="form.nilai_perolehan ? 'RM ' + parseFloat(form.nilai_perolehan).toFixed(2) : '-'"></span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Diskaun:</span>
+                                <span class="font-medium text-gray-900" x-text="form.diskaun ? 'RM ' + parseFloat(form.diskaun).toFixed(2) : 'RM 0.00'"></span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Pegawai:</span>
                                 <span class="font-medium text-gray-900" x-text="form.pegawai_bertanggungjawab_lokasi || '-'"></span>
                             </div>
@@ -733,6 +765,7 @@ function assetForm() {
             status_aset: '',
             lokasi_penempatan: '',
             nilai_perolehan: '',
+            diskaun: '',
             tarikh_perolehan: '',
             kaedah_perolehan: '',
             pegawai_bertanggungjawab_lokasi: '',

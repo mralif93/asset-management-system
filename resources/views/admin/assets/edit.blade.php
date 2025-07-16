@@ -365,6 +365,34 @@
                                 @enderror
                             </div>
 
+                            <!-- Discount -->
+                            <div>
+                                <label for="diskaun" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-discount mr-1'></i>
+                                    Diskaun (RM)
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-discount text-gray-400'></i>
+                                    </div>
+                                    <input type="number" 
+                                           id="diskaun" 
+                                           name="diskaun" 
+                                           value="{{ old('diskaun', $asset->diskaun ?? '0.00') }}"
+                                           step="0.01"
+                                           min="0"
+                                           x-model="form.diskaun"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('diskaun') border-red-500 @enderror bg-white"
+                                           placeholder="0.00">
+                                </div>
+                                @error('diskaun')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             <!-- Responsible Officer -->
                             <div>
                                 <label for="pegawai_bertanggungjawab_lokasi" class="block text-sm font-medium text-gray-700 mb-2">
@@ -750,6 +778,7 @@
                 tarikh_perolehan: '{{ old('tarikh_perolehan', $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '') }}',
                 kaedah_perolehan: '{{ old('kaedah_perolehan', $asset->kaedah_perolehan) }}',
                 nilai_perolehan: '{{ old('nilai_perolehan', $asset->nilai_perolehan) }}',
+                diskaun: '{{ old('diskaun', $asset->diskaun ?? '0.00') }}',
                 pegawai_bertanggungjawab_lokasi: '{{ old('pegawai_bertanggungjawab_lokasi', $asset->pegawai_bertanggungjawab_lokasi) }}',
                 jawatan_pegawai: '{{ old('jawatan_pegawai', $asset->jawatan_pegawai) }}',
                 umur_faedah_tahunan: '{{ old('umur_faedah_tahunan', $asset->umur_faedah_tahunan) }}',

@@ -258,6 +258,15 @@
                         <dd class="text-lg font-semibold text-gray-900">RM {{ number_format($asset->nilai_perolehan, 2) }}</dd>
                     </div>
 
+                    <!-- Discount -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-discount text-purple-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Diskaun</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">RM {{ number_format($asset->diskaun ?? 0, 2) }}</dd>
+                    </div>
+
                     <!-- Masjid/Surau -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
