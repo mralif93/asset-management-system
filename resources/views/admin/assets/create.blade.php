@@ -405,12 +405,12 @@
                             <!-- Discount -->
                             <div>
                                 <label for="diskaun" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-discount mr-1'></i>
+                                    <i class='bx bx-purchase-tag mr-1'></i>
                                     Diskaun (RM)
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class='bx bx-discount text-gray-400'></i>
+                                        <i class='bx bx-purchase-tag text-gray-400'></i>
                                     </div>
                                     <input type="number" 
                                            id="diskaun" 
