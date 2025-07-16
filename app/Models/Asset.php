@@ -27,6 +27,7 @@ class Asset extends Model
         'susut_nilai_tahunan',
         'lokasi_penempatan',
         'pegawai_bertanggungjawab_lokasi',
+        'jawatan_pegawai',
         'status_aset',
         'gambar_aset',
         'no_resit',

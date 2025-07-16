@@ -300,6 +300,15 @@
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->pegawai_bertanggungjawab_lokasi ?: '-' }}</dd>
                     </div>
 
+                    <!-- Officer Position -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-briefcase text-blue-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Jawatan Pegawai</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->jawatan_pegawai ?: '-' }}</dd>
+                    </div>
+
                     <!-- Useful Life -->
                     @if($asset->umur_faedah_tahunan)
                     <div class="bg-white rounded-lg p-4 border border-gray-200">

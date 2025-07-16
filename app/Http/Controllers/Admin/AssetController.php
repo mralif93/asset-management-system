@@ -79,6 +79,7 @@ class AssetController extends Controller
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
             'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
+            'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array',
@@ -146,6 +147,7 @@ class AssetController extends Controller
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
             'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
+            'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array',
@@ -202,6 +204,7 @@ class AssetController extends Controller
         $validated = $request->validate([
             'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
+            'jawatan_pegawai' => 'nullable|string|max:255',
         ]);
 
         $asset->update($validated);
