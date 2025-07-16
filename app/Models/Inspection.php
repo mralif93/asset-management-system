@@ -7,28 +7,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspection extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable, SoftDeletes;
 
     protected $fillable = [
         'asset_id',
         'tarikh_pemeriksaan',
-        'kondisi_aset',
-        'tarikh_pemeriksaan_akan_datang',
-        'nama_pemeriksa',
-        'catatan_pemeriksaan',
-        'tindakan_diperlukan',
-        'gambar_pemeriksaan',
+        'keadaan_aset',
+        'lokasi_semasa_pemeriksaan',
+        'cadangan_tindakan',
+        'pegawai_pemeriksa',
+        'catatan_pemeriksa'
     ];
 
     protected $casts = [
-        'tarikh_pemeriksaan' => 'date',
-        'tarikh_pemeriksaan_akan_datang' => 'date',
-        'gambar_pemeriksaan' => 'array',
-        'tindakan_diperlukan' => 'boolean',
-        'id' => 'int',
+        'tarikh_pemeriksaan' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -52,7 +50,7 @@ class Inspection extends Model
      */
     public function scopeByCondition(Builder $query, string $condition): Builder
     {
-        return $query->where('kondisi_aset', $condition);
+        return $query->where('keadaan_aset', $condition);
     }
 
     /**
@@ -68,7 +66,7 @@ class Inspection extends Model
      */
     public function scopeNeedsAction(Builder $query): Builder
     {
-        return $query->where('tindakan_diperlukan', true);
+        return $query->whereIn('cadangan_tindakan', ['Penyelenggaraan', 'Pelupusan', 'Hapus Kira']);
     }
 
     /**
@@ -86,11 +84,11 @@ class Inspection extends Model
     {
         $conditions = [
             'baik' => 'Baik',
-            'sederhana' => 'Sederhana',
-            'rosak' => 'Rosak',
+            'rosak_kecil' => 'Rosak Kecil',
+            'rosak_teruk' => 'Rosak Teruk',
         ];
 
-        return $conditions[strtolower($this->kondisi_aset)] ?? ucfirst($this->kondisi_aset);
+        return $conditions[strtolower($this->keadaan_aset)] ?? ucfirst($this->keadaan_aset);
     }
 
     /**

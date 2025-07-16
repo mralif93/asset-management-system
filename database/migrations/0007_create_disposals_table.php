@@ -13,16 +13,22 @@ return new class extends Migration
     {
         Schema::create('disposals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
-            $table->date('tarikh_permohonan');
-            $table->text('justifikasi_pelupusan');
+            $table->unsignedBigInteger('asset_id');
+            $table->timestamp('tarikh_permohonan');
+            $table->string('justifikasi_pelupusan');
             $table->string('kaedah_pelupusan_dicadang');
             $table->string('nombor_mesyuarat_jawatankuasa')->nullable();
-            $table->date('tarikh_kelulusan_pelupusan')->nullable();
+            $table->timestamp('tarikh_kelulusan_pelupusan')->nullable();
             $table->string('status_pelupusan')->default('Dimohon');
             $table->string('pegawai_pemohon');
             $table->text('catatan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('asset_id')
+                  ->references('id')
+                  ->on('assets')
+                  ->onDelete('cascade');
         });
     }
 
@@ -33,4 +39,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('disposals');
     }
-};
+}; 

@@ -54,7 +54,7 @@ class AuditTrailTest extends TestCase
             'additional_data' => 'array',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
-            'id' => 'int',
+            'deleted_at' => 'datetime',
         ];
 
         $this->assertEquals($expectedCasts, $auditTrail->getCasts());
@@ -68,6 +68,17 @@ class AuditTrailTest extends TestCase
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $auditTrail->user()
+        );
+    }
+
+    /** @test */
+    public function it_has_auditable_relationship()
+    {
+        $auditTrail = new AuditTrail();
+        
+        $this->assertInstanceOf(
+            \Illuminate\Database\Eloquent\Relations\MorphTo::class,
+            $auditTrail->auditable()
         );
     }
 
@@ -157,6 +168,9 @@ class AuditTrailTest extends TestCase
         
         $auditTrail->action = 'delete';
         $this->assertEquals('Dipadam', $auditTrail->formatAction());
+        
+        $auditTrail->action = 'custom_action';
+        $this->assertEquals('Custom action', $auditTrail->formatAction());
     }
 
     /** @test */
@@ -193,5 +207,77 @@ class AuditTrailTest extends TestCase
         ];
         
         $this->assertEquals($expected, $auditTrail->getChangesSummaryAttribute());
+    }
+    
+    /** @test */
+    public function it_detects_browser_correctly()
+    {
+        $auditTrail = new AuditTrail();
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+        $this->assertEquals('Chrome', $auditTrail->getBrowserName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0';
+        $this->assertEquals('Firefox', $auditTrail->getBrowserName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15';
+        $this->assertEquals('Safari', $auditTrail->getBrowserName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59';
+        $this->assertEquals('Edge', $auditTrail->getBrowserName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 OPR/77.0.4054.277';
+        $this->assertEquals('Opera', $auditTrail->getBrowserName());
+        
+        $auditTrail->user_agent = null;
+        $this->assertEquals('Unknown', $auditTrail->getBrowserName());
+        
+        $auditTrail->user_agent = 'Unknown Browser';
+        $this->assertEquals('Unknown', $auditTrail->getBrowserName());
+    }
+    
+    /** @test */
+    public function it_detects_platform_correctly()
+    {
+        $auditTrail = new AuditTrail();
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+        $this->assertEquals('Windows', $auditTrail->getPlatformName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15';
+        $this->assertEquals('macOS', $auditTrail->getPlatformName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+        $this->assertEquals('Linux', $auditTrail->getPlatformName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36';
+        $this->assertEquals('Android', $auditTrail->getPlatformName());
+        
+        $auditTrail->user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1';
+        $this->assertEquals('iOS', $auditTrail->getPlatformName());
+        
+        $auditTrail->user_agent = null;
+        $this->assertEquals('Unknown', $auditTrail->getPlatformName());
+        
+        $auditTrail->user_agent = 'Unknown Platform';
+        $this->assertEquals('Unknown', $auditTrail->getPlatformName());
+    }
+    
+    /** @test */
+    public function it_has_browser_attribute_accessor()
+    {
+        $auditTrail = new AuditTrail();
+        $auditTrail->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+        
+        $this->assertEquals('Chrome', $auditTrail->getBrowserAttribute());
+    }
+    
+    /** @test */
+    public function it_has_platform_attribute_accessor()
+    {
+        $auditTrail = new AuditTrail();
+        $auditTrail->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+        
+        $this->assertEquals('Windows', $auditTrail->getPlatformAttribute());
     }
 } 

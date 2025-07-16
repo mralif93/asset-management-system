@@ -13,20 +13,27 @@ return new class extends Migration
     {
         Schema::create('immovable_assets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('masjid_surau_id')->constrained('masjids_suraus')->onDelete('cascade');
+            $table->unsignedBigInteger('masjid_surau_id');
+            $table->string('no_siri_pendaftaran')->unique();
             $table->string('nama_aset');
             $table->string('jenis_aset');
             $table->text('alamat')->nullable();
             $table->string('no_hakmilik')->nullable();
             $table->string('no_lot')->nullable();
-            $table->decimal('luas_tanah_bangunan', 15, 2);
-            $table->date('tarikh_perolehan');
+            $table->decimal('luas_tanah_bangunan', 10, 2);
+            $table->timestamp('tarikh_perolehan');
             $table->string('sumber_perolehan');
-            $table->decimal('kos_perolehan', 15, 2);
+            $table->decimal('kos_perolehan', 10, 2);
             $table->string('keadaan_semasa');
             $table->json('gambar_aset')->nullable();
             $table->text('catatan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('masjid_surau_id')
+                  ->references('id')
+                  ->on('masjid_surau')
+                  ->onDelete('cascade');
         });
     }
 
@@ -37,4 +44,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('immovable_assets');
     }
-};
+}; 

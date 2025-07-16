@@ -39,12 +39,13 @@ return new class extends Migration
             $table->string('status')->default('Aktif');
             $table->text('catatan')->nullable();
             
-            // New fields for scraped data
+            // Official information
             $table->string('nama_rasmi')->nullable()->comment('Official registered name');
             $table->string('kawasan')->nullable()->comment('Sub-district/local area');
             $table->text('pautan_peta')->nullable()->comment('Google Maps link');
             
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -55,4 +56,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('masjid_surau');
     }
-};
+}; 

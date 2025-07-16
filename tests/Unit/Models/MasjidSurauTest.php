@@ -21,11 +21,26 @@ class MasjidSurauTest extends TestCase
     }
 
     /** @test */
+    public function it_uses_string_key_type()
+    {
+        $masjidSurau = new MasjidSurau();
+        $this->assertEquals('string', $masjidSurau->getKeyType());
+    }
+
+    /** @test */
+    public function it_does_not_auto_increment()
+    {
+        $masjidSurau = new MasjidSurau();
+        $this->assertFalse($masjidSurau->getIncrementing());
+    }
+
+    /** @test */
     public function it_has_fillable_attributes()
     {
         $masjidSurau = new MasjidSurau();
         
         $fillable = [
+            'id',
             'nama',
             'singkatan_nama',
             'jenis',
@@ -51,6 +66,20 @@ class MasjidSurauTest extends TestCase
         ];
 
         $this->assertEquals($fillable, $masjidSurau->getFillable());
+    }
+
+    /** @test */
+    public function it_casts_attributes_correctly()
+    {
+        $masjidSurau = new MasjidSurau();
+        
+        $expectedCasts = [
+            'tahun_dibina' => 'integer',
+            'bilangan_jemaah' => 'integer',
+            'deleted_at' => 'datetime',
+        ];
+
+        $this->assertEquals($expectedCasts, $masjidSurau->getCasts());
     }
 
     /** @test */
@@ -91,5 +120,57 @@ class MasjidSurauTest extends TestCase
     {
         $masjidSurau = new MasjidSurau();
         $this->assertContains('App\Traits\Auditable', class_uses_recursive($masjidSurau));
+    }
+
+    /** @test */
+    public function it_uses_soft_deletes()
+    {
+        $masjidSurau = new MasjidSurau();
+        $this->assertContains('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive($masjidSurau));
+    }
+
+    /** @test */
+    public function it_can_be_soft_deleted_and_restored()
+    {
+        $masjidSurau = MasjidSurau::create([
+            'id' => 'MS001',
+            'nama' => 'Test Masjid',
+            'jenis' => 'Masjid',
+            'status' => 'Aktif',
+        ]);
+        
+        $this->assertDatabaseHas('masjid_surau', ['id' => 'MS001']);
+        
+        $masjidSurau->delete();
+        $this->assertSoftDeleted('masjid_surau', ['id' => 'MS001']);
+        
+        $masjidSurau->restore();
+        $this->assertDatabaseHas('masjid_surau', ['id' => 'MS001', 'deleted_at' => null]);
+    }
+
+    /** @test */
+    public function it_can_create_masjid_surau_with_valid_attributes()
+    {
+        $masjidData = [
+            'id' => 'MS002',
+            'nama' => 'Masjid Test',
+            'jenis' => 'Masjid',
+            'kategori' => 'Daerah',
+            'alamat_baris_1' => 'Jalan Test 123',
+            'poskod' => '12345',
+            'bandar' => 'Test City',
+            'negeri' => 'Test State',
+            'negara' => 'Malaysia',
+            'status' => 'Aktif',
+        ];
+        
+        $masjidSurau = MasjidSurau::create($masjidData);
+        
+        $this->assertDatabaseHas('masjid_surau', [
+            'id' => 'MS002',
+            'nama' => 'Masjid Test',
+            'jenis' => 'Masjid',
+            'kategori' => 'Daerah',
+        ]);
     }
 } 

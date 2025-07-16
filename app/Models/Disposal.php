@@ -5,26 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Disposal extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable, SoftDeletes;
 
     protected $fillable = [
         'asset_id',
-        'user_id',
-        'tarikh_pelupusan',
-        'sebab_pelupusan',
-        'kaedah_pelupusan',
-        'nilai_pelupusan',
-        'nilai_baki',
-        'catatan',
-        'status_kelulusan',
-        'tarikh_kelulusan',
-        'diluluskan_oleh',
-        'sebab_penolakan',
-        'gambar_pelupusan',
-        // Legacy fields for backward compatibility
         'tarikh_permohonan',
         'justifikasi_pelupusan',
         'kaedah_pelupusan_dicadang',
@@ -32,17 +21,13 @@ class Disposal extends Model
         'tarikh_kelulusan_pelupusan',
         'status_pelupusan',
         'pegawai_pemohon',
-        'catatan_pelupusan',
+        'catatan',
     ];
 
     protected $casts = [
-        'tarikh_permohonan' => 'date',
-        'tarikh_kelulusan_pelupusan' => 'date',
-        'tarikh_pelupusan' => 'date',
-        'tarikh_kelulusan' => 'date',
-        'nilai_pelupusan' => 'decimal:2',
-        'nilai_baki' => 'decimal:2',
-        'gambar_pelupusan' => 'array',
+        'tarikh_permohonan' => 'datetime',
+        'tarikh_kelulusan_pelupusan' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -54,18 +39,49 @@ class Disposal extends Model
     }
 
     /**
-     * Get the user who created the disposal request.
+     * Get formatted justification attribute.
      */
-    public function user(): BelongsTo
+    public function getFormattedJustificationAttribute(): string
     {
-        return $this->belongsTo(User::class);
+        $justifications = [
+            'rosak_teruk' => 'Rosak Teruk',
+            'usang' => 'Usang',
+            'tidak_ekonomi' => 'Tidak Ekonomi',
+            'tiada_penggunaan' => 'Tiada Penggunaan',
+            'lain_lain' => 'Lain-lain',
+        ];
+
+        return $justifications[strtolower($this->justifikasi_pelupusan)] ?? ucfirst(str_replace('_', ' ', $this->justifikasi_pelupusan));
     }
 
     /**
-     * Get the user who approved/rejected the disposal.
+     * Get formatted disposal method attribute.
      */
-    public function approver(): BelongsTo
+    public function getFormattedDisposalMethodAttribute(): string
     {
-        return $this->belongsTo(User::class, 'diluluskan_oleh');
+        $methods = [
+            'jualan' => 'Jualan',
+            'buangan' => 'Buangan',
+            'hadiah' => 'Hadiah',
+            'tukar_beli' => 'Tukar Beli',
+            'hapus_kira' => 'Hapus Kira',
+        ];
+
+        return $methods[strtolower($this->kaedah_pelupusan_dicadang)] ?? ucfirst(str_replace('_', ' ', $this->kaedah_pelupusan_dicadang));
+    }
+
+    /**
+     * Get formatted status attribute.
+     */
+    public function getFormattedStatusAttribute(): string
+    {
+        $statuses = [
+            'dimohon' => 'Dimohon',
+            'diluluskan' => 'Diluluskan',
+            'ditolak' => 'Ditolak',
+            'selesai_dilupus' => 'Selesai Dilupus',
+        ];
+
+        return $statuses[strtolower($this->status_pelupusan)] ?? ucfirst(str_replace('_', ' ', $this->status_pelupusan));
     }
 }

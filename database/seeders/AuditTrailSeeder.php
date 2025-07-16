@@ -8,6 +8,7 @@ use App\Models\AuditTrail;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\MasjidSurau;
+use Illuminate\Support\Str;
 
 class AuditTrailSeeder extends Seeder
 {
@@ -88,6 +89,7 @@ class AuditTrailSeeder extends Seeder
                 
                 // Asset created
                 $activities[] = [
+                    'id' => 'AUD-' . Str::random(8),
                     'user_id' => $user->id,
                     'user_name' => $user->name,
                     'user_email' => $user->email,
@@ -142,6 +144,7 @@ class AuditTrailSeeder extends Seeder
                     $newValues['status_aset'] = 'Diselenggara';
                     
                     $activities[] = [
+                        'id' => 'AUD-' . Str::random(8),
                         'user_id' => $updateUser->id,
                         'user_name' => $updateUser->name,
                         'user_email' => $updateUser->email,
@@ -173,6 +176,7 @@ class AuditTrailSeeder extends Seeder
                 $user = $users->where('role', 'admin')->first() ?? $users->first();
                 
                 $activities[] = [
+                    'id' => 'AUD-' . Str::random(8),
                     'user_id' => $user->id,
                     'user_name' => $user->name,
                     'user_email' => $user->email,

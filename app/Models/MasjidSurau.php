@@ -6,14 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MasjidSurau extends Model
 {
-    use HasFactory, Auditable;
+    use HasFactory, Auditable, SoftDeletes;
 
     protected $table = 'masjid_surau';
 
     protected $fillable = [
+        'id',
         'nama',
         'singkatan_nama',
         'jenis',
@@ -36,6 +38,12 @@ class MasjidSurau extends Model
         'nama_rasmi',
         'kawasan',
         'pautan_peta',
+    ];
+
+    protected $casts = [
+        'tahun_dibina' => 'integer',
+        'bilangan_jemaah' => 'integer',
+        'deleted_at' => 'datetime',
     ];
 
     /**

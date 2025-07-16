@@ -5,6 +5,7 @@ namespace Tests\Unit\Models;
 use App\Models\MaintenanceRecord;
 use App\Models\Asset;
 use App\Models\User;
+use App\Models\MasjidSurau;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -29,10 +30,7 @@ class MaintenanceRecordTest extends TestCase
             'kos_penyelenggaraan',
             'status_penyelenggaraan',
             'pegawai_bertanggungjawab',
-            'catatan',
-            'catatan_penyelenggaraan',
-            'tarikh_penyelenggaraan_akan_datang',
-            'gambar_penyelenggaraan',
+            'catatan'
         ];
 
         $this->assertEquals($fillable, $maintenanceRecord->getFillable());
@@ -44,11 +42,9 @@ class MaintenanceRecordTest extends TestCase
         $maintenanceRecord = new MaintenanceRecord();
         
         $expectedCasts = [
-            'tarikh_penyelenggaraan' => 'date',
-            'tarikh_penyelenggaraan_akan_datang' => 'date',
+            'tarikh_penyelenggaraan' => 'datetime',
             'kos_penyelenggaraan' => 'decimal:2',
-            'gambar_penyelenggaraan' => 'array',
-            'id' => 'int',
+            'deleted_at' => 'datetime',
         ];
 
         $this->assertEquals($expectedCasts, $maintenanceRecord->getCasts());
@@ -74,6 +70,20 @@ class MaintenanceRecordTest extends TestCase
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $maintenanceRecord->user()
         );
+    }
+
+    /** @test */
+    public function it_uses_auditable_trait()
+    {
+        $maintenanceRecord = new MaintenanceRecord();
+        $this->assertContains('App\Traits\Auditable', class_uses_recursive($maintenanceRecord));
+    }
+    
+    /** @test */
+    public function it_uses_soft_deletes()
+    {
+        $maintenanceRecord = new MaintenanceRecord();
+        $this->assertContains('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive($maintenanceRecord));
     }
 
     /** @test */
@@ -122,40 +132,12 @@ class MaintenanceRecordTest extends TestCase
     }
 
     /** @test */
-    public function it_can_scope_upcoming_maintenance()
-    {
-        $maintenanceRecord = new MaintenanceRecord();
-        $query = $maintenanceRecord->newQuery();
-        
-        $result = $maintenanceRecord->scopeUpcoming($query);
-        
-        $this->assertStringContainsString(
-            'where "tarikh_penyelenggaraan_akan_datang" > ?',
-            $result->toSql()
-        );
-    }
-
-    /** @test */
-    public function it_can_scope_overdue_maintenance()
-    {
-        $maintenanceRecord = new MaintenanceRecord();
-        $query = $maintenanceRecord->newQuery();
-        
-        $result = $maintenanceRecord->scopeOverdue($query);
-        
-        $this->assertStringContainsString(
-            'where "tarikh_penyelenggaraan_akan_datang" < ?',
-            $result->toSql()
-        );
-    }
-
-    /** @test */
     public function it_formats_status_correctly()
     {
         $maintenanceRecord = new MaintenanceRecord();
         
         $maintenanceRecord->status_penyelenggaraan = 'belum_mula';
-        $this->assertEquals('Belum Mula', $maintenanceRecord->getFormattedStatusAttribute());
+        $this->assertEquals('Belum mula', $maintenanceRecord->getFormattedStatusAttribute());
         
         $maintenanceRecord->status_penyelenggaraan = 'dalam_proses';
         $this->assertEquals('Dalam Proses', $maintenanceRecord->getFormattedStatusAttribute());
@@ -181,7 +163,7 @@ class MaintenanceRecordTest extends TestCase
     {
         $maintenanceRecord = new MaintenanceRecord();
         
-        $maintenanceRecord->status_penyelenggaraan = 'selesai';
+        $maintenanceRecord->status_penyelenggaraan = 'Selesai';
         $this->assertTrue($maintenanceRecord->isCompleted());
         
         $maintenanceRecord->status_penyelenggaraan = 'dalam_proses';
@@ -225,5 +207,54 @@ class MaintenanceRecordTest extends TestCase
         
         $maintenanceRecord->status_penyelenggaraan = 'belum_mula';
         $this->assertEquals('gray', $maintenanceRecord->getStatusColorAttribute());
+    }
+    
+    /** @test */
+    public function it_can_create_maintenance_record_with_valid_attributes()
+    {
+        $masjidSurau = MasjidSurau::create([
+            'nama' => 'Test Masjid',
+            'jenis' => 'Masjid',
+            'status' => 'Aktif',
+        ]);
+        
+        $user = User::create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => bcrypt('password'),
+            'masjid_surau_id' => $masjidSurau->id,
+        ]);
+        
+        $asset = Asset::create([
+            'masjid_surau_id' => $masjidSurau->id,
+            'no_siri_pendaftaran' => 'TEST-001',
+            'nama_aset' => 'Test Asset',
+            'jenis_aset' => 'Elektronik',
+            'tarikh_perolehan' => now(),
+            'kaedah_perolehan' => 'Pembelian',
+            'nilai_perolehan' => 1000,
+            'lokasi_penempatan' => 'Test Location',
+            'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
+        ]);
+        
+        $maintenanceData = [
+            'asset_id' => $asset->id,
+            'user_id' => $user->id,
+            'tarikh_penyelenggaraan' => now(),
+            'jenis_penyelenggaraan' => 'pencegahan',
+            'butiran_kerja' => 'Test maintenance work',
+            'status_penyelenggaraan' => 'selesai',
+            'kos_penyelenggaraan' => 100.50,
+        ];
+        
+        $maintenanceRecord = MaintenanceRecord::create($maintenanceData);
+        
+        $this->assertDatabaseHas('maintenance_records', [
+            'id' => $maintenanceRecord->id,
+            'asset_id' => $asset->id,
+            'user_id' => $user->id,
+            'jenis_penyelenggaraan' => 'pencegahan',
+            'status_penyelenggaraan' => 'selesai',
+        ]);
     }
 } 

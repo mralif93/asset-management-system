@@ -21,183 +21,242 @@ class LossWriteoffSeeder extends Seeder
         // Sample loss/writeoff records
         $lossWriteoffs = [
             [
-                'tarikh_laporan' => Carbon::now()->subDays(120),
+                'tarikh_laporan' => Carbon::now()->subDays(30),
                 'jenis_kejadian' => 'Kecurian',
-                'sebab_kejadian' => 'Pecah Rumah',
+                'sebab_kejadian' => 'Pecah Masuk',
                 'butiran_kejadian' => 'Komputer hilang setelah pecah rumah pada waktu malam. Kaca tingkap dipecahkan dan komputer dicuri.',
                 'pegawai_pelapor' => 'Ustaz Ahmad bin Ali',
-                'nilai_kehilangan' => 2500.00,
+                'status_kejadian' => 'Dilaporkan',
                 'laporan_polis' => 'IPD Shah Alam No: SA2024081500123',
-                'tarikh_kelulusan_hapus_kira' => Carbon::now()->subDays(100),
-                'status_kejadian' => 'Diluluskan',
-                'catatan' => 'Kes pecah rumah pada 15/8/2024, laporan polis dibuat, sistem keselamatan dipertingkatkan. Tindakan: Laporan polis dibuat, sistem keselamatan dipertingkatkan. Status tuntutan insurans: Dituntut.',
+                'nilai_kehilangan' => 2500.00,
+                'catatan' => 'Kes pecah rumah pada 15/8/2024, laporan polis dibuat, sistem keselamatan dipertingkatkan. Status tuntutan insurans: Dituntut.',
             ],
             [
-                'tarikh_laporan' => Carbon::now()->subDays(80),
+                'tarikh_laporan' => Carbon::now()->subDays(25),
                 'jenis_kejadian' => 'Kerosakan',
-                'sebab_kejadian' => 'Kebakaran',
-                'butiran_kejadian' => 'Kebakaran kecil di dewan solat menyebabkan 10 unit kerusi musnah sepenuhnya akibat litar pintas elektrik.',
+                'sebab_kejadian' => 'Kerosakan Tidak Boleh Dibaiki',
+                'butiran_kejadian' => 'Kerusi rosak teruk selepas digunakan untuk majlis. Struktur kerusi patah dan tidak boleh dibaiki.',
                 'pegawai_pelapor' => 'Encik Mahmud bin Hassan',
+                'status_kejadian' => 'Dilaporkan',
                 'nilai_kehilangan' => 150.00,
-                'laporan_polis' => null,
-                'tarikh_kelulusan_hapus_kira' => Carbon::now()->subDays(70),
-                'status_kejadian' => 'Diluluskan',
-                'catatan' => 'Lokasi: Dewan Solat Utama. Tindakan: Bomba dipanggil, kerusi yang rosak dibuang. Status tuntutan insurans: Tidak Dituntut.',
+                'catatan' => 'Kerusi telah mencapai jangka hayat penggunaan, perlu diganti dengan yang baru.',
             ],
             [
-                'tarikh_laporan' => Carbon::now()->subDays(45),
-                'jenis_kejadian' => 'Kemalangan',
-                'sebab_kejadian' => 'Kegagalan Pemasangan',
-                'butiran_kejadian' => 'Unit penyaman udara terjatuh semasa kerja penyelenggaraan dan rosak teruk.',
+                'tarikh_laporan' => Carbon::now()->subDays(20),
+                'jenis_kejadian' => 'Kerosakan',
+                'sebab_kejadian' => 'Kerosakan Elektrik',
+                'butiran_kejadian' => 'Penyaman udara rosak teruk selepas kilat sambar. Sistem elektrik terbakar.',
                 'pegawai_pelapor' => 'Ustaz Ahmad bin Ali',
+                'status_kejadian' => 'Dilaporkan',
                 'nilai_kehilangan' => 3200.00,
-                'laporan_polis' => null,
-                'tarikh_kelulusan_hapus_kira' => Carbon::now()->subDays(30),
-                'status_kejadian' => 'Diluluskan',
-                'catatan' => 'Lokasi: Dewan Solat Utama. Tindakan: Kontraktor bertanggungjawab, claim insurance. Status tuntutan insurans: Diluluskan.',
+                'catatan' => 'Menunggu laporan teknikal dan anggaran pembaikan. Status tuntutan insurans: Dalam proses.',
             ],
         ];
 
         // Create loss/writeoff records
-        foreach ($lossWriteoffs as $index => $lossData) {
+        foreach ($lossWriteoffs as $index => $recordData) {
             if ($index < $assets->count()) {
                 $asset = $assets[$index];
-                $approver = $users->where('role', 'admin')->first() ?? $users->first();
                 
-                LossWriteoff::create(array_merge($lossData, [
+                LossWriteoff::create(array_merge($recordData, [
                     'asset_id' => $asset->id,
-                    'diluluskan_oleh' => $approver->id,
                 ]));
 
-                // Update asset status to lost/written off
-                $asset->update(['status_aset' => 'Hilang/Dihapus Kira']);
+                // Update asset status if approved
+                if ($recordData['status_kejadian'] === 'Diluluskan') {
+                    $asset->update(['status_aset' => 'Dilupuskan']);
+                }
             }
         }
 
-        // Create additional sample loss/writeoffs
-        $this->createAdditionalLossWriteoffs();
+        // Create additional sample records
+        $this->createAdditionalRecords();
 
         $this->command->info('Loss/writeoff records seeded successfully!');
     }
 
-    private function createAdditionalLossWriteoffs()
+    private function createAdditionalRecords()
     {
-        $additionalAssets = Asset::where('status_aset', 'Sedang Digunakan')->limit(2)->get();
-        $users = User::all();
+        // Get some assets for additional records
+        $assets = Asset::where('status_aset', '!=', 'Dilupuskan')
+                      ->limit(5)
+                      ->get();
 
         $jenisKejadian = [
             'Kecurian',
-            'Kehilangan',
             'Kerosakan',
-            'Kemalangan',
+            'Kebakaran',
+            'Bencana Alam',
+            'Vandalisme',
+            'Kemalangan'
         ];
 
         $sebabKejadian = [
-            'Pecah Rumah', 'Kegagalan Keselamatan', 'Kebakaran', 'Kegagalan Pemasangan',
+            'Kecurian' => [
+                'Pecah Masuk',
+                'Kecurian Semasa Operasi',
+                'Kecurian Waktu Malam',
+                'Rompakan'
+            ],
+            'Kerosakan' => [
+                'Usia',
+                'Penyelenggaraan',
+                'Salah Guna',
+                'Kerosakan Tidak Boleh Dibaiki'
+            ],
+            'Kebakaran' => [
+                'Litar Pintas',
+                'Kebakaran Berdekatan',
+                'Kebakaran Kecil',
+                'Kerosakan Elektrik'
+            ],
+            'Bencana Alam' => [
+                'Banjir',
+                'Ribut',
+                'Tanah Runtuh',
+                'Hujan Lebat'
+            ],
+            'Vandalisme' => [
+                'Kerosakan Sengaja',
+                'Vandalisme',
+                'Penyalahgunaan',
+                'Kerosakan Disengajakan'
+            ],
+            'Kemalangan' => [
+                'Terjatuh',
+                'Kemalangan Pengendalian',
+                'Kemalangan Penggunaan',
+                'Kerosakan Tidak Sengaja'
+            ]
         ];
 
-        $statusKejadian = ['Menunggu', 'Diluluskan', 'Ditolak'];
+        $pegawaiPelapor = [
+            'Ustaz Ahmad bin Ali',
+            'Haji Ibrahim bin Yusof',
+            'Encik Mahmud bin Hassan',
+            'Encik Rosli bin Ahmad',
+            'Ustaz Rahman bin Omar'
+        ];
 
-        foreach ($additionalAssets as $asset) {
+        $statusKejadian = ['Dilaporkan', 'Dalam Siasatan', 'Diluluskan'];
+
+        foreach ($assets as $asset) {
             $jenis = $jenisKejadian[array_rand($jenisKejadian)];
-            $sebab = $sebabKejadian[array_rand($sebabKejadian)];
             $status = $statusKejadian[array_rand($statusKejadian)];
-            
-            $tarikhLaporan = Carbon::now()->subDays(rand(1, 365));
-            $tarikhKelulusan = null;
-            $diluluskanOleh = null;
-            
-            if ($status === 'Diluluskan') {
-                $tarikhKelulusan = $tarikhLaporan->copy()->addDays(rand(7, 30));
-                $diluluskanOleh = $users->where('role', 'admin')->first()?->id ?? $users->first()->id;
-            }
+            $tarikhLaporan = Carbon::now()->subDays(rand(5, 180));
 
-            $nilaiKehilangan = $asset->nilai_perolehan ?? rand(100, 5000);
-
-            LossWriteoff::create([
+            $record = [
                 'asset_id' => $asset->id,
                 'tarikh_laporan' => $tarikhLaporan,
                 'jenis_kejadian' => $jenis,
-                'sebab_kejadian' => $sebab,
-                'butiran_kejadian' => $this->generateChronology($jenis),
-                'pegawai_pelapor' => 'Pegawai ' . $users->random()->name,
-                'nilai_kehilangan' => $nilaiKehilangan,
-                'laporan_polis' => $jenis === 'Kecurian' ? 'LP/' . rand(1000, 9999) . '/' . date('Y') : null,
-                'dokumen_kehilangan' => null,
-                'tarikh_kelulusan_hapus_kira' => $tarikhKelulusan,
+                'sebab_kejadian' => $sebabKejadian[$jenis][array_rand($sebabKejadian[$jenis])],
+                'butiran_kejadian' => $this->generateButiranKejadian($jenis),
+                'pegawai_pelapor' => $pegawaiPelapor[array_rand($pegawaiPelapor)],
                 'status_kejadian' => $status,
-                'diluluskan_oleh' => $diluluskanOleh,
-                'sebab_penolakan' => $status === 'Ditolak' ? 'Maklumat tidak mencukupi' : null,
-                'catatan' => $this->generateLossNote($jenis, $sebab, $nilaiKehilangan),
-            ]);
+                'nilai_kehilangan' => rand(100, 5000),
+                'catatan' => $this->generateCatatan($jenis, $status),
+            ];
 
-            // Update asset status if approved for writeoff
+            // Add police report for theft cases
+            if ($jenis === 'Kecurian') {
+                $record['laporan_polis'] = 'IPD/'. date('Y') . '/' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
+            }
+
+            // Add approval date if status is approved
             if ($status === 'Diluluskan') {
-                $asset->update(['status_aset' => 'Hilang/Dihapus Kira']);
+                $record['tarikh_kelulusan_hapus_kira'] = Carbon::parse($tarikhLaporan)->addDays(rand(1, 30));
+            }
+
+            LossWriteoff::create($record);
+
+            // Update asset status if approved
+            if ($status === 'Diluluskan') {
+                $asset->update(['status_aset' => 'Dilupuskan']);
             }
         }
     }
 
-    private function generateChronology($jenis)
+    private function generateButiranKejadian($jenis)
     {
-        $chronologies = [
+        $butiranTemplate = [
             'Kecurian' => [
-                'Aset dicuri dalam insiden pecah rumah pada waktu malam',
-                'Kecurian berlaku semasa tiada orang di premis',
-                'Dicuri oleh individu yang tidak dikenali semasa majlis',
-                'Kecurian berlaku pada waktu siang semasa premis sepi'
-            ],
-            'Kehilangan' => [
-                'Aset hilang semasa proses pemindahan ke lokasi lain',
-                'Tidak dapat ditemui setelah majlis selesai',
-                'Hilang tanpa kesan setelah aktiviti pembersihan',
-                'Tidak diketahui bila dan bagaimana aset hilang'
+                'Aset hilang semasa waktu operasi. Tiada tanda-tanda kekerasan.',
+                'Aset dicuri semasa premis kosong. Terdapat tanda-tanda pecah masuk.',
+                'Kehilangan dilaporkan oleh staf selepas waktu operasi.',
+                'Kecurian berlaku semasa pecah masuk pada waktu malam.'
             ],
             'Kerosakan' => [
-                'Rosak teruk akibat kebakaran kecil di premis',
-                'Kerosakan total akibat kecuaian air bumbung',
-                'Musnah akibat litar pintas elektrik',
-                'Rosak sepenuhnya tidak boleh digunakan lagi'
+                'Kerosakan disebabkan penggunaan biasa dan usia aset.',
+                'Kerosakan akibat penyelenggaraan yang tidak mencukupi.',
+                'Rosak akibat salah pengendalian oleh pengguna.',
+                'Kerosakan tidak boleh dibaiki dan memerlukan penggantian.'
             ],
-            'Kemalangan' => [
-                'Terjatuh dan pecah semasa proses pemindahan',
-                'Terlanggar dan rosak semasa kerja pembinaan',
-                'Kemalangan semasa kerja penyelenggaraan',
-                'Rosak akibat terjatuh objek lain'
+            'Kebakaran' => [
+                'Terbakar akibat litar pintas pada sistem elektrik.',
+                'Kerosakan akibat kebakaran yang berlaku berdekatan.',
+                'Musnah dalam kebakaran kecil di bahagian stor.',
+                'Kerosakan akibat asap dan haba dari kebakaran.'
             ],
             'Bencana Alam' => [
-                'Rosak akibat ribut petir yang kuat',
-                'Kerosakan akibat banjir kilat',
-                'Musnah dalam kebakaran hutan berdekatan',
-                'Rosak akibat angin kencang'
+                'Kerosakan akibat banjir yang melanda kawasan.',
+                'Kerosakan akibat ribut kuat dan hujan lebat.',
+                'Kerosakan akibat tanah runtuh di kawasan belakang.',
+                'Kerosakan akibat hujan lebat dan banjir kilat.'
             ],
             'Vandalisme' => [
-                'Dirosakkan oleh pihak yang tidak bertanggungjawab',
-                'Akti vandalisme oleh individu tidak dikenali',
-                'Diconteng dan dirosakkan secara sengaja',
-                'Dipecahkan dengan sengaja oleh orang yang tidak dikenali'
+                'Kerosakan disengajakan oleh pihak tidak dikenali.',
+                'Vandalisme dilaporkan oleh staf keselamatan.',
+                'Kerosakan akibat penyalahgunaan oleh orang awam.',
+                'Kerosakan disengajakan dikesan pada waktu pagi.'
             ],
-            'Hapus Kira' => [
-                'Aset sudah mencapai akhir hayat berguna',
-                'Tidak ekonomik untuk diselenggara lagi',
-                'Sudah usang dan tidak sesuai digunakan',
-                'Diganti dengan teknologi yang lebih baru'
+            'Kemalangan' => [
+                'Kerosakan akibat terjatuh semasa pengendalian.',
+                'Kerosakan semasa aktiviti penyelenggaraan.',
+                'Kemalangan semasa penggunaan normal.',
+                'Kerosakan tidak sengaja semasa penggunaan.'
             ]
         ];
 
-        $options = $chronologies[$jenis] ?? ['Tiada butiran khusus'];
-        return $options[array_rand($options)];
+        return $butiranTemplate[$jenis][array_rand($butiranTemplate[$jenis])];
     }
 
-    private function generateLossNote($jenis, $sebab, $nilaiKerugian)
+    private function generateCatatan($jenis, $status)
     {
-        $notes = [
-            "Jenis: {$jenis}. Sebab: {$sebab}. Nilai kerugian: RM" . number_format($nilaiKerugian, 2),
-            "Insiden {$jenis} disebabkan {$sebab}. Tindakan susulan telah diambil.",
-            "Laporan {$jenis} - {$sebab}. Nilai aset yang terlibat: RM" . number_format($nilaiKerugian, 2),
-            "Kejadian {$jenis} akibat {$sebab}. Langkah pencegahan akan dilaksanakan."
-        ];
+        $catatan = '';
+        
+        switch ($status) {
+            case 'Dilaporkan':
+                $catatan = 'Laporan awal diterima. ';
+                break;
+            case 'Dalam Siasatan':
+                $catatan = 'Siasatan sedang dijalankan. ';
+                break;
+            case 'Diluluskan':
+                $catatan = 'Permohonan hapus kira telah diluluskan. ';
+                break;
+        }
 
-        return $notes[array_rand($notes)];
+        switch ($jenis) {
+            case 'Kecurian':
+                $catatan .= 'Status siasatan polis: Dalam siasatan. ';
+                break;
+            case 'Kerosakan':
+                $catatan .= 'Menunggu laporan teknikal lengkap. ';
+                break;
+            case 'Kebakaran':
+                $catatan .= 'Tuntutan insurans dalam proses. ';
+                break;
+            case 'Bencana Alam':
+                $catatan .= 'Dokumentasi untuk insurans sedang disediakan. ';
+                break;
+            case 'Vandalisme':
+                $catatan .= 'Langkah keselamatan tambahan akan dilaksanakan. ';
+                break;
+            case 'Kemalangan':
+                $catatan .= 'Prosedur pengendalian akan dikaji semula. ';
+                break;
+        }
+
+        return $catatan;
     }
 }

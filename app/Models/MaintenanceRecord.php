@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MaintenanceRecord extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable, SoftDeletes;
 
     protected $fillable = [
         'asset_id',
@@ -23,18 +25,13 @@ class MaintenanceRecord extends Model
         'kos_penyelenggaraan',
         'status_penyelenggaraan',
         'pegawai_bertanggungjawab',
-        'catatan',
-        'catatan_penyelenggaraan',
-        'tarikh_penyelenggaraan_akan_datang',
-        'gambar_penyelenggaraan',
+        'catatan'
     ];
 
     protected $casts = [
-        'tarikh_penyelenggaraan' => 'date',
-        'tarikh_penyelenggaraan_akan_datang' => 'date',
+        'tarikh_penyelenggaraan' => 'datetime',
         'kos_penyelenggaraan' => 'decimal:2',
-        'gambar_penyelenggaraan' => 'array',
-        'id' => 'int',
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -43,14 +40,6 @@ class MaintenanceRecord extends Model
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
-    }
-
-    /**
-     * Get the user who created the maintenance record.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 
     /**
@@ -78,30 +67,13 @@ class MaintenanceRecord extends Model
     }
 
     /**
-     * Scope upcoming maintenance records.
-     */
-    public function scopeUpcoming(Builder $query): Builder
-    {
-        return $query->where('tarikh_penyelenggaraan_akan_datang', '>', now());
-    }
-
-    /**
-     * Scope overdue maintenance records.
-     */
-    public function scopeOverdue(Builder $query): Builder
-    {
-        return $query->where('tarikh_penyelenggaraan_akan_datang', '<', now());
-    }
-
-    /**
      * Get formatted status attribute.
      */
     public function getFormattedStatusAttribute(): string
     {
         $statuses = [
-            'belum_mula' => 'Belum Mula',
-            'dalam_proses' => 'Dalam Proses',
             'selesai' => 'Selesai',
+            'dalam_proses' => 'Dalam Proses',
         ];
 
         return $statuses[strtolower($this->status_penyelenggaraan)] ?? ucfirst(str_replace('_', ' ', $this->status_penyelenggaraan));
@@ -125,7 +97,7 @@ class MaintenanceRecord extends Model
      */
     public function isCompleted(): bool
     {
-        return $this->status_penyelenggaraan === 'selesai';
+        return $this->status_penyelenggaraan === 'Selesai';
     }
 
     /**

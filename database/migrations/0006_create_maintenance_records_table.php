@@ -13,16 +13,29 @@ return new class extends Migration
     {
         Schema::create('maintenance_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
-            $table->date('tarikh_penyelenggaraan');
+            $table->unsignedBigInteger('asset_id');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->timestamp('tarikh_penyelenggaraan');
             $table->string('jenis_penyelenggaraan');
-            $table->text('butiran_kerja');
+            $table->string('butiran_kerja');
             $table->string('nama_syarikat_kontraktor')->nullable();
-            $table->decimal('kos_penyelenggaraan', 15, 2);
+            $table->string('penyedia_perkhidmatan')->nullable();
+            $table->decimal('kos_penyelenggaraan', 10, 2);
             $table->string('status_penyelenggaraan')->default('Dalam Proses');
             $table->string('pegawai_bertanggungjawab');
             $table->text('catatan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('asset_id')
+                  ->references('id')
+                  ->on('assets')
+                  ->onDelete('cascade');
+
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('set null');
         });
     }
 
@@ -33,4 +46,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('maintenance_records');
     }
-};
+}; 

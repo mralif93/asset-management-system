@@ -5,54 +5,38 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AssetMovement extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable, SoftDeletes;
 
     protected $fillable = [
         'asset_id',
         'user_id',
-        'masjid_surau_asal_id',
-        'masjid_surau_destinasi_id',
+        'origin_masjid_surau_id',
+        'destination_masjid_surau_id',
         'tarikh_permohonan',
         'jenis_pergerakan',
-        'lokasi_asal',
-        'lokasi_terperinci_asal',
-        'lokasi_destinasi',
-        'lokasi_terperinci_destinasi',
-        'tarikh_pergerakan',
-        'tarikh_jangka_pulangan',
+        'lokasi_asal_spesifik',
+        'lokasi_destinasi_spesifik',
         'nama_peminjam_pegawai_bertanggungjawab',
-        'sebab_pergerakan',
-        'catatan_pergerakan',
+        'tujuan_pergerakan',
+        'tarikh_pergerakan',
         'tarikh_jangka_pulang',
         'tarikh_pulang_sebenar',
         'status_pergerakan',
-        'status_kelulusan_asal',
-        'status_kelulusan_destinasi',
         'pegawai_meluluskan',
-        'diluluskan_oleh',
-        'diluluskan_oleh_asal',
-        'diluluskan_oleh_destinasi',
-        'tarikh_kelulusan',
-        'tarikh_kelulusan_asal',
-        'tarikh_kelulusan_destinasi',
-        'sebab_penolakan',
-        'tarikh_kepulangan',
-        'catatan',
+        'catatan'
     ];
 
     protected $casts = [
-        'tarikh_permohonan' => 'date',
-        'tarikh_pergerakan' => 'date',
-        'tarikh_jangka_pulangan' => 'date',
-        'tarikh_jangka_pulang' => 'date',
-        'tarikh_pulang_sebenar' => 'date',
-        'tarikh_kelulusan' => 'datetime',
-        'tarikh_kelulusan_asal' => 'datetime',
-        'tarikh_kelulusan_destinasi' => 'datetime',
-        'tarikh_kepulangan' => 'datetime',
+        'tarikh_permohonan' => 'datetime',
+        'tarikh_pergerakan' => 'datetime',
+        'tarikh_jangka_pulang' => 'datetime',
+        'tarikh_pulang_sebenar' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -84,7 +68,7 @@ class AssetMovement extends Model
      */
     public function masjidSurauAsal(): BelongsTo
     {
-        return $this->belongsTo(MasjidSurau::class, 'masjid_surau_asal_id');
+        return $this->belongsTo(MasjidSurau::class, 'origin_masjid_surau_id');
     }
 
     /**
@@ -92,7 +76,7 @@ class AssetMovement extends Model
      */
     public function masjidSurauDestinasi(): BelongsTo
     {
-        return $this->belongsTo(MasjidSurau::class, 'masjid_surau_destinasi_id');
+        return $this->belongsTo(MasjidSurau::class, 'destination_masjid_surau_id');
     }
 
     /**

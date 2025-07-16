@@ -25,7 +25,6 @@ class UserTest extends TestCase
             'masjid_surau_id',
             'phone',
             'position',
-            'email_verified_at',
         ];
 
         $this->assertEquals($fillable, $user->getFillable());
@@ -52,6 +51,7 @@ class UserTest extends TestCase
         $expectedCasts = [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'deleted_at' => 'datetime',
             'id' => 'int',
         ];
 
@@ -92,5 +92,72 @@ class UserTest extends TestCase
     {
         $user = new User();
         $this->assertContains('Illuminate\Notifications\Notifiable', class_uses_recursive($user));
+    }
+    
+    /** @test */
+    public function it_uses_soft_deletes()
+    {
+        $user = new User();
+        $this->assertContains('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive($user));
+    }
+    
+    /** @test */
+    public function it_can_be_soft_deleted_and_restored()
+    {
+        $masjidSurau = MasjidSurau::create([
+            'nama' => 'Test Masjid',
+            'jenis' => 'Masjid',
+            'status' => 'Aktif',
+        ]);
+        
+        $user = User::create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'user',
+            'masjid_surau_id' => $masjidSurau->id,
+            'phone' => '0123456789',
+            'position' => 'Staff',
+        ]);
+        
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+        
+        $user->delete();
+        $this->assertSoftDeleted('users', ['id' => $user->id]);
+        
+        $user->restore();
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'deleted_at' => null]);
+    }
+    
+    /** @test */
+    public function it_can_create_user_with_valid_attributes()
+    {
+        $masjidSurau = MasjidSurau::create([
+            'nama' => 'Test Masjid',
+            'jenis' => 'Masjid',
+            'status' => 'Aktif',
+        ]);
+        
+        $userData = [
+            'name' => 'New Test User',
+            'email' => 'newtest@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'masjid_surau_id' => $masjidSurau->id,
+            'phone' => '0123456789',
+            'position' => 'Manager',
+        ];
+        
+        $user = User::create($userData);
+        
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'New Test User',
+            'email' => 'newtest@example.com',
+            'role' => 'admin',
+            'masjid_surau_id' => $masjidSurau->id,
+            'phone' => '0123456789',
+            'position' => 'Manager',
+        ]);
     }
 } 

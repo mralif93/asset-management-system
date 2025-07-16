@@ -13,14 +13,20 @@ return new class extends Migration
     {
         Schema::create('inspections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
-            $table->date('tarikh_pemeriksaan');
+            $table->unsignedBigInteger('asset_id');
+            $table->timestamp('tarikh_pemeriksaan');
             $table->string('keadaan_aset');
             $table->string('lokasi_semasa_pemeriksaan');
             $table->string('cadangan_tindakan');
             $table->string('pegawai_pemeriksa');
             $table->text('catatan_pemeriksa')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('asset_id')
+                  ->references('id')
+                  ->on('assets')
+                  ->onDelete('cascade');
         });
     }
 
@@ -31,4 +37,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('inspections');
     }
-};
+}; 

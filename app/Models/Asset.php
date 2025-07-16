@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Asset extends Model
 {
-    use HasFactory, Auditable;
+    use HasFactory, Auditable, SoftDeletes;
 
     protected $fillable = [
         'masjid_surau_id',
@@ -27,15 +28,26 @@ class Asset extends Model
         'pegawai_bertanggungjawab_lokasi',
         'status_aset',
         'gambar_aset',
-        'catatan',
+        'no_resit',
+        'tarikh_resit',
+        'dokumen_resit_url',
+        'pembekal',
+        'jenama',
+        'no_pesanan_kerajaan',
+        'no_rujukan_kontrak',
+        'tempoh_jaminan',
+        'tarikh_tamat_jaminan',
+        'catatan'
     ];
 
     protected $casts = [
         'tarikh_perolehan' => 'date',
+        'tarikh_resit' => 'datetime',
+        'tarikh_tamat_jaminan' => 'date',
         'nilai_perolehan' => 'decimal:2',
         'susut_nilai_tahunan' => 'decimal:2',
         'gambar_aset' => 'array',
-        'id' => 'int',
+        'deleted_at' => 'datetime',
     ];
 
     /**

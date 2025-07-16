@@ -24,9 +24,13 @@ class DatabaseSeeder extends Seeder
             InspectionSeeder::class,
             MaintenanceRecordSeeder::class,
             DisposalSeeder::class,
-            LossWriteoffSeeder::class, // Fixed column name issues
+            LossWriteoffSeeder::class,
             ImmovableAssetSeeder::class,
         ]);
+
+        // Note: AuditTrailSeeder is available but not included by default
+        // Audit trails are typically generated through natural system usage
+        // Use 'php artisan db:seed --class=AuditTrailSeeder' if sample audit data is needed
 
         $this->command->info('🎉 All asset management seeders completed successfully!');
         $this->command->line('');

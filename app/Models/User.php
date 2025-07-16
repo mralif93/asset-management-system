@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, Auditable;
+    use HasFactory, Notifiable, Auditable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -28,7 +28,6 @@ class User extends Authenticatable
         'masjid_surau_id',
         'phone',
         'position',
-        'email_verified_at',
     ];
 
     /**
@@ -42,24 +41,22 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'deleted_at' => 'datetime',
+    ];
 
     /**
      * Get the masjid/surau that owns the user.
      */
     public function masjidSurau(): BelongsTo
     {
-        return $this->belongsTo(MasjidSurau::class);
+        return $this->belongsTo(MasjidSurau::class, 'masjid_surau_id', 'id');
     }
 
     /**

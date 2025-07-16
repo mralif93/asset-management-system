@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ImmovableAsset extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable, SoftDeletes;
 
     protected $fillable = [
         'masjid_surau_id',
@@ -27,10 +29,11 @@ class ImmovableAsset extends Model
     ];
 
     protected $casts = [
-        'tarikh_perolehan' => 'date',
         'luas_tanah_bangunan' => 'decimal:2',
         'kos_perolehan' => 'decimal:2',
+        'tarikh_perolehan' => 'datetime',
         'gambar_aset' => 'array',
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -39,5 +42,43 @@ class ImmovableAsset extends Model
     public function masjidSurau(): BelongsTo
     {
         return $this->belongsTo(MasjidSurau::class);
+    }
+
+    /**
+     * Get formatted asset type attribute.
+     */
+    public function getFormattedAssetTypeAttribute(): string
+    {
+        $types = [
+            'tanah' => 'Tanah',
+            'bangunan' => 'Bangunan',
+        ];
+
+        return $types[strtolower($this->jenis_aset)] ?? ucfirst($this->jenis_aset);
+    }
+
+    /**
+     * Get formatted acquisition source attribute.
+     */
+    public function getFormattedAcquisitionSourceAttribute(): string
+    {
+        $sources = [
+            'pembelian' => 'Pembelian',
+            'hadiah' => 'Hadiah',
+            'hibah' => 'Hibah',
+            'sumbangan' => 'Sumbangan',
+            'wakaf' => 'Wakaf',
+            'lain_lain' => 'Lain-lain',
+        ];
+
+        return $sources[strtolower($this->sumber_perolehan)] ?? ucfirst(str_replace('_', ' ', $this->sumber_perolehan));
+    }
+
+    /**
+     * Get formatted current condition attribute.
+     */
+    public function getFormattedCurrentConditionAttribute(): string
+    {
+        return ucfirst($this->keadaan_semasa);
     }
 }

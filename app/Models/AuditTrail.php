@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AuditTrail extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -30,7 +32,7 @@ class AuditTrail extends Model
         'event_type',
         'status',
         'error_message',
-        'additional_data',
+        'additional_data'
     ];
 
     protected $casts = [
@@ -39,6 +41,7 @@ class AuditTrail extends Model
         'additional_data' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -52,12 +55,9 @@ class AuditTrail extends Model
     /**
      * Get the auditable model instance
      */
-    public function auditable()
+    public function auditable(): MorphTo
     {
-        if ($this->model_type && $this->model_id) {
-            return $this->model_type::find($this->model_id);
-        }
-        return null;
+        return $this->morphTo();
     }
 
     /**
