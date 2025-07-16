@@ -142,7 +142,7 @@
         </div>
         
         <form method="GET" action="{{ route('admin.assets.index') }}" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <!-- Search -->
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Cari</label>
@@ -166,6 +166,16 @@
                         <option value="Perabot" {{ request('jenis_aset') === 'Perabot' ? 'selected' : '' }}>Perabot</option>
                         <option value="Kenderaan" {{ request('jenis_aset') === 'Kenderaan' ? 'selected' : '' }}>Kenderaan</option>
                         <option value="Lain-lain" {{ request('jenis_aset') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                    </select>
+                </div>
+
+                <!-- Type of Asset Filter -->
+                <div>
+                    <label for="kategori_aset" class="block text-sm font-medium text-gray-700 mb-2">Kategori Aset</label>
+                    <select id="kategori_aset" name="kategori_aset" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Semua Kategori</option>
+                        <option value="asset" {{ request('kategori_aset') === 'asset' ? 'selected' : '' }}>Asset</option>
+                        <option value="non-asset" {{ request('kategori_aset') === 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
                     </select>
                 </div>
 
@@ -221,6 +231,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aset</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
@@ -250,6 +261,13 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                 {{ $asset->jenis_aset }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
+                                @if($asset->kategori_aset === 'asset') bg-emerald-100 text-emerald-800
+                                @else bg-orange-100 text-orange-800 @endif">
+                                {{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -299,7 +317,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center">
+                        <td colspan="7" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <i class='bx bx-package text-5xl text-gray-400 mb-4'></i>
                                 <p class="text-gray-500 text-lg">Tiada aset dijumpai</p>

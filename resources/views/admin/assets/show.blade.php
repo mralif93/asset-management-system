@@ -175,6 +175,21 @@
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->jenis_aset }}</dd>
                     </div>
 
+                    <!-- Type of Asset -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-cube text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Kategori Aset</dt>
+                        </div>
+                        <dd class="flex items-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                @if($asset->kategori_aset === 'asset') bg-emerald-100 text-emerald-800
+                                @else bg-orange-100 text-orange-800 @endif">
+                                {{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}
+                            </span>
+                        </dd>
+                    </div>
+
                     <!-- Serial Number -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">

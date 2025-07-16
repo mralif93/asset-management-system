@@ -30,6 +30,11 @@ class AssetController extends Controller
             $query->where('jenis_aset', $request->jenis_aset);
         }
         
+        // Filter by type of asset
+        if ($request->filled('kategori_aset')) {
+            $query->where('kategori_aset', $request->kategori_aset);
+        }
+        
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status_aset', $request->status);
@@ -61,6 +66,7 @@ class AssetController extends Controller
             'masjid_surau_id' => 'required|exists:masjid_surau,id',
             'nama_aset' => 'required|string|max:255',
             'jenis_aset' => 'required|string',
+            'kategori_aset' => 'required|in:asset,non-asset',
             'tarikh_perolehan' => 'required|date',
             'kaedah_perolehan' => 'required|string',
             'nilai_perolehan' => 'required|numeric|min:0',
@@ -127,6 +133,7 @@ class AssetController extends Controller
         $validated = $request->validate([
             'nama_aset' => 'required|string|max:255',
             'jenis_aset' => 'required|string',
+            'kategori_aset' => 'required|in:asset,non-asset',
             'tarikh_perolehan' => 'required|date',
             'kaedah_perolehan' => 'required|string',
             'nilai_perolehan' => 'required|numeric|min:0',

@@ -175,6 +175,37 @@
                                 @enderror
                             </div>
 
+                            <!-- Type of Asset -->
+                            <div>
+                                <label for="kategori_aset" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-cube mr-1'></i>
+                                    Kategori Aset <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-cube text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
+                                    <select id="kategori_aset" 
+                                            name="kategori_aset" 
+                                            required
+                                            x-model="form.kategori_aset"
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kategori_aset') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Kategori</option>
+                                        <option value="asset" {{ old('kategori_aset') === 'asset' ? 'selected' : '' }}>Asset</option>
+                                        <option value="non-asset" {{ old('kategori_aset') === 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
+                                    </select>
+                                </div>
+                                @error('kategori_aset')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             <!-- Serial Number (Auto-generated) -->
                             <div class="md:col-span-2">
                                 <label for="no_siri_pendaftaran" class="block text-sm font-medium text-gray-700 mb-2">
@@ -588,6 +619,10 @@
                                 <span class="font-medium text-gray-900" x-text="form.jenis_aset || '-'"></span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Kategori:</span>
+                                <span class="font-medium text-gray-900" x-text="form.kategori_aset === 'asset' ? 'Asset' : (form.kategori_aset === 'non-asset' ? 'Non-Asset' : '-')"></span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Status:</span>
                                 <span class="font-medium text-gray-900" x-text="form.status_aset || '-'"></span>
                             </div>
@@ -646,6 +681,7 @@ function assetForm() {
         form: {
             nama_aset: '',
             jenis_aset: '',
+            kategori_aset: '',
             status_aset: '',
             lokasi_penempatan: '',
             nilai_perolehan: '',
