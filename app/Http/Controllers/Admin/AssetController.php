@@ -45,6 +45,11 @@ class AssetController extends Controller
             $query->where('status_aset', $request->status);
         }
         
+        // Filter by physical condition
+        if ($request->filled('keadaan_fizikal')) {
+            $query->where('keadaan_fizikal', $request->keadaan_fizikal);
+        }
+        
         $assets = $query->latest()->paginate(15);
         
         return view('admin.assets.index', compact('assets'));
@@ -57,8 +62,8 @@ class AssetController extends Controller
     {
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        
-        return view('admin.assets.create', compact('masjidSuraus', 'assetTypes'));
+        $default_masjid_surau_id = auth()->user()->masjid_surau_id ?? null;
+        return view('admin.assets.create', compact('masjidSuraus', 'assetTypes', 'default_masjid_surau_id'));
     }
 
     /**
@@ -82,6 +87,11 @@ class AssetController extends Controller
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
+            'keadaan_fizikal' => 'required|in:Cemerlang,Baik,Sederhana,Rosak,Tidak Boleh Digunakan',
+            'status_jaminan' => 'required|in:Aktif,Tamat,Tiada Jaminan',
+            'tarikh_pemeriksaan_terakhir' => 'nullable|date',
+            'tarikh_penyelenggaraan_akan_datang' => 'nullable|date',
+            'catatan_jaminan' => 'nullable|string',
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
@@ -151,6 +161,11 @@ class AssetController extends Controller
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
+            'keadaan_fizikal' => 'required|in:Cemerlang,Baik,Sederhana,Rosak,Tidak Boleh Digunakan',
+            'status_jaminan' => 'required|in:Aktif,Tamat,Tiada Jaminan',
+            'tarikh_pemeriksaan_terakhir' => 'nullable|date',
+            'tarikh_penyelenggaraan_akan_datang' => 'nullable|date',
+            'catatan_jaminan' => 'nullable|string',
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'

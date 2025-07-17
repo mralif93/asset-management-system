@@ -209,6 +209,19 @@
                     </select>
                 </div>
 
+                <!-- Physical Condition Filter -->
+                <div>
+                    <label for="keadaan_fizikal" class="block text-sm font-medium text-gray-700 mb-2">Keadaan Fizikal</label>
+                    <select id="keadaan_fizikal" name="keadaan_fizikal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Semua Keadaan</option>
+                        <option value="Cemerlang" {{ request('keadaan_fizikal') === 'Cemerlang' ? 'selected' : '' }}>Cemerlang</option>
+                        <option value="Baik" {{ request('keadaan_fizikal') === 'Baik' ? 'selected' : '' }}>Baik</option>
+                        <option value="Sederhana" {{ request('keadaan_fizikal') === 'Sederhana' ? 'selected' : '' }}>Sederhana</option>
+                        <option value="Rosak" {{ request('keadaan_fizikal') === 'Rosak' ? 'selected' : '' }}>Rosak</option>
+                        <option value="Tidak Boleh Digunakan" {{ request('keadaan_fizikal') === 'Tidak Boleh Digunakan' ? 'selected' : '' }}>Tidak Boleh Digunakan</option>
+                    </select>
+                </div>
+
                 <!-- Actions -->
                 <div class="flex items-end space-x-2">
                     <button type="submit" 
@@ -253,6 +266,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keadaan</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Tindakan</th>
                         </tr>
@@ -305,6 +319,16 @@
                                 {{ $asset->status_aset }}
                             </span>
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
+                                @if($asset->keadaan_fizikal === 'Cemerlang') bg-green-100 text-green-800
+                                @elseif($asset->keadaan_fizikal === 'Baik') bg-blue-100 text-blue-800
+                                @elseif($asset->keadaan_fizikal === 'Sederhana') bg-yellow-100 text-yellow-800
+                                @elseif($asset->keadaan_fizikal === 'Rosak') bg-orange-100 text-orange-800
+                                @else bg-red-100 text-red-800 @endif">
+                                {{ $asset->keadaan_fizikal ?? 'Baik' }}
+                            </span>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             RM {{ number_format($asset->nilai_perolehan, 2) }}
                         </td>
@@ -336,7 +360,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
+                        <td colspan="8" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <i class='bx bx-package text-5xl text-gray-400 mb-4'></i>
                                 <p class="text-gray-500 text-lg">Tiada aset dijumpai</p>

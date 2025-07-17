@@ -212,6 +212,40 @@
                             </span>
                         </dd>
                     </div>
+
+                    <!-- Physical Condition -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-health text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Keadaan Fizikal</dt>
+                        </div>
+                        <dd class="flex items-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                @if($asset->keadaan_fizikal === 'Cemerlang') bg-green-100 text-green-800
+                                @elseif($asset->keadaan_fizikal === 'Baik') bg-blue-100 text-blue-800
+                                @elseif($asset->keadaan_fizikal === 'Sederhana') bg-yellow-100 text-yellow-800
+                                @elseif($asset->keadaan_fizikal === 'Rosak') bg-orange-100 text-orange-800
+                                @else bg-red-100 text-red-800 @endif">
+                                {{ $asset->keadaan_fizikal ?? 'Baik' }}
+                            </span>
+                        </dd>
+                    </div>
+
+                    <!-- Warranty Status -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-shield-check text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Status Jaminan</dt>
+                        </div>
+                        <dd class="flex items-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                @if($asset->status_jaminan === 'Aktif') bg-green-100 text-green-800
+                                @elseif($asset->status_jaminan === 'Tamat') bg-red-100 text-red-800
+                                @else bg-gray-100 text-gray-800 @endif">
+                                {{ $asset->status_jaminan ?? 'Tiada Jaminan' }}
+                            </span>
+                        </dd>
+                    </div>
                 </div>
             </div>
 
@@ -323,9 +357,33 @@
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
                             <i class='bx bx-time text-blue-600 mr-2'></i>
-                            <dt class="text-sm font-medium text-gray-600">Umur Faedah</dt>
+                            <dt class="text-sm font-medium text-gray-600">Tahun Dibeli</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->umur_faedah_tahunan }} tahun</dd>
+                    </div>
+                    @endif
+
+                    <!-- Last Inspection Date -->
+                    @if($asset->tarikh_pemeriksaan_terakhir)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-calendar-check text-blue-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Pemeriksaan Terakhir</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->tarikh_pemeriksaan_terakhir->format('d/m/Y') }}</dd>
+                        <p class="text-xs text-gray-500 mt-1">{{ $asset->tarikh_pemeriksaan_terakhir->diffForHumans() }}</p>
+                    </div>
+                    @endif
+
+                    <!-- Next Maintenance Date -->
+                    @if($asset->tarikh_penyelenggaraan_akan_datang)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-calendar-plus text-blue-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Penyelenggaraan Akan Datang</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->tarikh_penyelenggaraan_akan_datang->format('d/m/Y') }}</dd>
+                        <p class="text-xs text-gray-500 mt-1">{{ $asset->tarikh_penyelenggaraan_akan_datang->diffForHumans() }}</p>
                     </div>
                     @endif
 
@@ -342,7 +400,7 @@
             </div>
 
             <!-- Notes Section -->
-            @if($asset->catatan)
+            @if($asset->catatan || $asset->catatan_jaminan)
             <div class="bg-gradient-to-br from-yellow-50 to-amber-100 rounded-xl p-6 border border-yellow-200">
                 <div class="flex items-center mb-6">
                     <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
@@ -354,8 +412,20 @@
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <p class="text-gray-900 leading-relaxed">{{ $asset->catatan }}</p>
+                <div class="space-y-4">
+                    @if($asset->catatan)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <h4 class="font-medium text-gray-900 mb-2">Catatan Umum</h4>
+                        <p class="text-gray-900 leading-relaxed">{{ $asset->catatan }}</p>
+                    </div>
+                    @endif
+
+                    @if($asset->catatan_jaminan)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <h4 class="font-medium text-gray-900 mb-2">Catatan Jaminan</h4>
+                        <p class="text-gray-900 leading-relaxed">{{ $asset->catatan_jaminan }}</p>
+                    </div>
+                    @endif
                 </div>
             </div>
             @endif

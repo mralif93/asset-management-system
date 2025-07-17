@@ -258,6 +258,122 @@
                                 @enderror
                             </div>
 
+                            <!-- Physical Condition -->
+                            <div>
+                                <label for="keadaan_fizikal" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-health mr-1'></i>
+                                    Keadaan Fizikal <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-health text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
+                                    <select id="keadaan_fizikal" 
+                                            name="keadaan_fizikal" 
+                                            required
+                                            x-model="form.keadaan_fizikal"
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_fizikal') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Keadaan</option>
+                                        <option value="Cemerlang" {{ old('keadaan_fizikal') === 'Cemerlang' ? 'selected' : '' }}>Cemerlang</option>
+                                        <option value="Baik" {{ old('keadaan_fizikal') === 'Baik' ? 'selected' : '' }}>Baik</option>
+                                        <option value="Sederhana" {{ old('keadaan_fizikal') === 'Sederhana' ? 'selected' : '' }}>Sederhana</option>
+                                        <option value="Rosak" {{ old('keadaan_fizikal') === 'Rosak' ? 'selected' : '' }}>Rosak</option>
+                                        <option value="Tidak Boleh Digunakan" {{ old('keadaan_fizikal') === 'Tidak Boleh Digunakan' ? 'selected' : '' }}>Tidak Boleh Digunakan</option>
+                                    </select>
+                                </div>
+                                @error('keadaan_fizikal')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Warranty Status -->
+                            <div>
+                                <label for="status_jaminan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-shield-check mr-1'></i>
+                                    Status Jaminan <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-shield-check text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
+                                    <select id="status_jaminan" 
+                                            name="status_jaminan" 
+                                            required
+                                            x-model="form.status_jaminan"
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_jaminan') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Status Jaminan</option>
+                                        <option value="Aktif" {{ old('status_jaminan') === 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="Tamat" {{ old('status_jaminan') === 'Tamat' ? 'selected' : '' }}>Tamat</option>
+                                        <option value="Tiada Jaminan" {{ old('status_jaminan') === 'Tiada Jaminan' ? 'selected' : '' }}>Tiada Jaminan</option>
+                                    </select>
+                                </div>
+                                @error('status_jaminan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Last Inspection Date -->
+                            <div>
+                                <label for="tarikh_pemeriksaan_terakhir" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-calendar-check mr-1'></i>
+                                    Tarikh Pemeriksaan Terakhir
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-calendar-check text-gray-400'></i>
+                                    </div>
+                                    <input type="date" 
+                                           id="tarikh_pemeriksaan_terakhir" 
+                                           name="tarikh_pemeriksaan_terakhir" 
+                                           value="{{ old('tarikh_pemeriksaan_terakhir') }}"
+                                           x-model="form.tarikh_pemeriksaan_terakhir"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_pemeriksaan_terakhir') border-red-500 @enderror bg-white">
+                                </div>
+                                @error('tarikh_pemeriksaan_terakhir')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Next Maintenance Date -->
+                            <div>
+                                <label for="tarikh_penyelenggaraan_akan_datang" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-calendar-plus mr-1'></i>
+                                    Tarikh Penyelenggaraan Akan Datang
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-calendar-plus text-gray-400'></i>
+                                    </div>
+                                    <input type="date" 
+                                           id="tarikh_penyelenggaraan_akan_datang" 
+                                           name="tarikh_penyelenggaraan_akan_datang" 
+                                           value="{{ old('tarikh_penyelenggaraan_akan_datang') }}"
+                                           x-model="form.tarikh_penyelenggaraan_akan_datang"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_penyelenggaraan_akan_datang') border-red-500 @enderror bg-white">
+                                </div>
+                                @error('tarikh_penyelenggaraan_akan_datang')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             <!-- Location -->
                             <div>
                                 <label for="lokasi_penempatan" class="block text-sm font-medium text-gray-700 mb-2">
@@ -501,7 +617,7 @@
                             <div>
                                 <label for="umur_faedah_tahunan" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-time mr-1'></i>
-                                    Umur Faedah (Tahun)
+                                    Tahun Dibeli
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -587,7 +703,7 @@
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjid)
-                                            <option value="{{ $masjid->id }}" {{ old('masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
+                                            <option value="{{ $masjid->id }}" {{ old('masjid_surau_id', $default_masjid_surau_id ?? '') == $masjid->id ? 'selected' : '' }}>
                                                 {{ $masjid->nama }}
                                             </option>
                                         @endforeach
@@ -629,6 +745,26 @@
                                           class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
                                           placeholder="Catatan tambahan tentang aset ini...">{{ old('catatan') }}</textarea>
                                 @error('catatan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Warranty Notes -->
+                            <div>
+                                <label for="catatan_jaminan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-shield mr-1'></i>
+                                    Catatan Jaminan
+                                </label>
+                                <textarea id="catatan_jaminan" 
+                                          name="catatan_jaminan" 
+                                          rows="3"
+                                          x-model="form.catatan_jaminan"
+                                          class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan_jaminan') border-red-500 @enderror bg-white"
+                                          placeholder="Catatan tentang jaminan aset...">{{ old('catatan_jaminan') }}</textarea>
+                                @error('catatan_jaminan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
@@ -714,6 +850,14 @@
                                 <span class="text-gray-600">Jawatan:</span>
                                 <span class="font-medium text-gray-900" x-text="form.jawatan_pegawai || '-'"></span>
                             </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Keadaan:</span>
+                                <span class="font-medium text-gray-900" x-text="form.keadaan_fizikal || '-'"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Jaminan:</span>
+                                <span class="font-medium text-gray-900" x-text="form.status_jaminan || '-'"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -763,6 +907,10 @@ function assetForm() {
             jenis_aset: '',
             kategori_aset: '',
             status_aset: '',
+            keadaan_fizikal: '',
+            status_jaminan: '',
+            tarikh_pemeriksaan_terakhir: '',
+            tarikh_penyelenggaraan_akan_datang: '',
             lokasi_penempatan: '',
             nilai_perolehan: '',
             diskaun: '',
@@ -773,7 +921,8 @@ function assetForm() {
             umur_faedah_tahunan: '',
             susut_nilai_tahunan: '',
             masjid_surau_id: '',
-            catatan: ''
+            catatan: '',
+            catatan_jaminan: ''
         }
     }
 }
