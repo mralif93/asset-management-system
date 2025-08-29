@@ -42,8 +42,6 @@
         <span class="text-emerald-600 font-medium">Tambah Aset</span>
     </div>
 
-
-
     <!-- Progress Steps -->
     <div class="mb-8">
         <div class="flex items-center justify-center">
@@ -112,7 +110,7 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 gap-6">
+                        <div class="grid grid-cols-1 gap-6 mb-">
                             <!-- Asset Name - Full Width -->
                             <div>
                                 <label for="nama_aset" class="block text-sm font-medium text-gray-700 mb-2">
@@ -902,6 +900,7 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 function assetForm() {
     return {
@@ -949,4 +948,5 @@ function updateWarrantyStatus(assetStatus) {
     }
 }
 </script>
+@endpush
 @endsection 
