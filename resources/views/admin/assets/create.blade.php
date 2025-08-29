@@ -98,10 +98,8 @@
 
             <!-- Form Content - Two Column Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6">
-                
                 <!-- Left Column - Main Form -->
                 <div class="lg:col-span-2 space-y-8">
-                    
                     <!-- Basic Asset Information Section -->
                     <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                         <div class="flex items-center mb-6">
@@ -114,8 +112,8 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Asset Name -->
+                        <div class="grid grid-cols-1 gap-6">
+                            <!-- Asset Name - Full Width -->
                             <div>
                                 <label for="nama_aset" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-package mr-1'></i>
@@ -141,7 +139,10 @@
                                     </p>
                                 @enderror
                             </div>
+                        </div>
 
+                        <!-- Asset Type and Category Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Asset Type -->
                             <div>
                                 <label for="jenis_aset" class="block text-sm font-medium text-gray-700 mb-2">
@@ -243,8 +244,10 @@
                                             name="status_aset" 
                                             required
                                             x-model="form.status_aset"
+                                            @change="updateWarrantyStatus($event.target.value)"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Status</option>
+                                        <option value="Baru" {{ old('status_aset') === 'Baru' ? 'selected' : '' }}>Baru</option>
                                         <option value="Sedang Digunakan" {{ old('status_aset') === 'Sedang Digunakan' ? 'selected' : '' }}>Sedang Digunakan</option>
                                         <option value="Dalam Penyelenggaraan" {{ old('status_aset') === 'Dalam Penyelenggaraan' ? 'selected' : '' }}>Dalam Penyelenggaraan</option>
                                         <option value="Rosak" {{ old('status_aset') === 'Rosak' ? 'selected' : '' }}>Rosak</option>
@@ -295,12 +298,12 @@
                             <!-- Warranty Status -->
                             <div>
                                 <label for="status_jaminan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-shield-check mr-1'></i>
-                                    Status Jaminan <span class="text-red-500">*</span>
+                                    <i class='bx bx-shield mr-1'></i>
+                                    Status Jaminan (Warranty)<span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class='bx bx-shield-check text-gray-400'></i>
+                                        <i class='bx bx-shield text-gray-400'></i>
                                     </div>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <i class='bx bx-chevron-down text-gray-400'></i>
@@ -317,6 +320,46 @@
                                     </select>
                                 </div>
                                 @error('status_jaminan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Location -->
+                            <div>
+                                <label for="lokasi_penempatan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-map mr-1'></i>
+                                    Lokasi Penempatan <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-map text-gray-400'></i>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-chevron-down text-gray-400'></i>
+                                    </div>
+                                    <select id="lokasi_penempatan" 
+                                            name="lokasi_penempatan" 
+                                            required
+                                            x-model="form.lokasi_penempatan"
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Lokasi</option>
+                                        <option value="Anjung kiri" {{ old('lokasi_penempatan') === 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
+                                        <option value="Anjung kanan" {{ old('lokasi_penempatan') === 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
+                                        <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan') === 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
+                                        <option value="Ruang Utama (tingkat atas, tingkat bawah)" {{ old('lokasi_penempatan') === 'Ruang Utama (tingkat atas, tingkat bawah)' ? 'selected' : '' }}>Ruang Utama (tingkat atas, tingkat bawah)</option>
+                                        <option value="Bilik Mesyuarat" {{ old('lokasi_penempatan') === 'Bilik Mesyuarat' ? 'selected' : '' }}>Bilik Mesyuarat</option>
+                                        <option value="Bilik Kuliah" {{ old('lokasi_penempatan') === 'Bilik Kuliah' ? 'selected' : '' }}>Bilik Kuliah</option>
+                                        <option value="Bilik Bendahari" {{ old('lokasi_penempatan') === 'Bilik Bendahari' ? 'selected' : '' }}>Bilik Bendahari</option>
+                                        <option value="Bilik Setiausaha" {{ old('lokasi_penempatan') === 'Bilik Setiausaha' ? 'selected' : '' }}>Bilik Setiausaha</option>
+                                        <option value="Bilik Nazir & Imam" {{ old('lokasi_penempatan') === 'Bilik Nazir & Imam' ? 'selected' : '' }}>Bilik Nazir & Imam</option>
+                                        <option value="Bangunan Jenazah" {{ old('lokasi_penempatan') === 'Bangunan Jenazah' ? 'selected' : '' }}>Bangunan Jenazah</option>
+                                        <option value="Lain-lain" {{ old('lokasi_penempatan') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                    </select>
+                                </div>
+                                @error('lokasi_penempatan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
@@ -373,40 +416,49 @@
                                     </p>
                                 @enderror
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Location -->
+                    <!-- Organization Assignment Section -->
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                <i class='bx bx-building text-white text-xl'></i>
+                            </div>
                             <div>
-                                <label for="lokasi_penempatan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-map mr-1'></i>
-                                    Lokasi Penempatan <span class="text-red-500">*</span>
+                                <h3 class="text-lg font-semibold text-gray-900">Organisasi</h3>
+                                <p class="text-sm text-blue-700">Maklumat organisasi dan penempatan</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-6">
+                            <!-- Masjid/Surau -->
+                            <div>
+                                <label for="masjid_surau_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-building mr-1'></i>
+                                    Masjid/Surau <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class='bx bx-map text-gray-400'></i>
+                                        <i class='bx bx-building text-gray-400'></i>
                                     </div>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <i class='bx bx-chevron-down text-gray-400'></i>
                                     </div>
-                                    <select id="lokasi_penempatan" 
-                                            name="lokasi_penempatan" 
+                                    <select id="masjid_surau_id" 
+                                            name="masjid_surau_id" 
                                             required
-                                            x-model="form.lokasi_penempatan"
-                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Lokasi</option>
-                                        <option value="Anjung kiri" {{ old('lokasi_penempatan') === 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
-                                        <option value="Anjung kanan" {{ old('lokasi_penempatan') === 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
-                                        <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan') === 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
-                                        <option value="Ruang Utama (tingkat atas, tingkat bawah)" {{ old('lokasi_penempatan') === 'Ruang Utama (tingkat atas, tingkat bawah)' ? 'selected' : '' }}>Ruang Utama (tingkat atas, tingkat bawah)</option>
-                                        <option value="Bilik Mesyuarat" {{ old('lokasi_penempatan') === 'Bilik Mesyuarat' ? 'selected' : '' }}>Bilik Mesyuarat</option>
-                                        <option value="Bilik Kuliah" {{ old('lokasi_penempatan') === 'Bilik Kuliah' ? 'selected' : '' }}>Bilik Kuliah</option>
-                                        <option value="Bilik Bendahari" {{ old('lokasi_penempatan') === 'Bilik Bendahari' ? 'selected' : '' }}>Bilik Bendahari</option>
-                                        <option value="Bilik Setiausaha" {{ old('lokasi_penempatan') === 'Bilik Setiausaha' ? 'selected' : '' }}>Bilik Setiausaha</option>
-                                        <option value="Bilik Nazir & Imam" {{ old('lokasi_penempatan') === 'Bilik Nazir & Imam' ? 'selected' : '' }}>Bilik Nazir & Imam</option>
-                                        <option value="Bangunan Jenazah" {{ old('lokasi_penempatan') === 'Bangunan Jenazah' ? 'selected' : '' }}>Bangunan Jenazah</option>
-                                        <option value="Lain-lain" {{ old('lokasi_penempatan') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                            x-model="form.masjid_surau_id"
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
+                                        <option value="">Pilih Masjid/Surau</option>
+                                        @foreach($masjidSuraus as $masjid)
+                                            <option value="{{ $masjid->id }}" {{ old('masjid_surau_id', $default_masjid_surau_id ?? '') == $masjid->id ? 'selected' : '' }}>
+                                                {{ $masjid->nama }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
-                                @error('lokasi_penempatan')
+                                @error('masjid_surau_id')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
@@ -670,55 +722,6 @@
                         </div>
                     </div>
 
-                    <!-- Organization Assignment Section -->
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-building text-white text-xl'></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Organisasi</h3>
-                                <p class="text-sm text-blue-700">Maklumat organisasi dan penempatan</p>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 gap-6">
-                            <!-- Masjid/Surau -->
-                            <div>
-                                <label for="masjid_surau_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-building mr-1'></i>
-                                    Masjid/Surau <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class='bx bx-building text-gray-400'></i>
-                                    </div>
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <i class='bx bx-chevron-down text-gray-400'></i>
-                                    </div>
-                                    <select id="masjid_surau_id" 
-                                            name="masjid_surau_id" 
-                                            required
-                                            x-model="form.masjid_surau_id"
-                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Masjid/Surau</option>
-                                        @foreach($masjidSuraus as $masjid)
-                                            <option value="{{ $masjid->id }}" {{ old('masjid_surau_id', $default_masjid_surau_id ?? '') == $masjid->id ? 'selected' : '' }}>
-                                                {{ $masjid->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @error('masjid_surau_id')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Additional Information Section -->
                     <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
                         <div class="flex items-center mb-6">
@@ -923,6 +926,25 @@ function assetForm() {
             masjid_surau_id: '',
             catatan: '',
             catatan_jaminan: ''
+        }
+    }
+}
+
+function updateWarrantyStatus(assetStatus) {
+    if (assetStatus === 'Baru') {
+        // Set the field values
+        document.getElementById('status_jaminan').value = 'Aktif';
+        document.getElementById('keadaan_fizikal').value = 'Cemerlang';
+        
+        // Update Alpine.js form model for summary section
+        // Get the form element and its Alpine.js component
+        const formElement = document.querySelector('form[x-data]');
+        if (formElement && formElement._x_dataStack && formElement._x_dataStack[0]) {
+            const alpineComponent = formElement._x_dataStack[0];
+            if (alpineComponent.form) {
+                alpineComponent.form.status_jaminan = 'Aktif';
+                alpineComponent.form.keadaan_fizikal = 'Cemerlang';
+            }
         }
     }
 }

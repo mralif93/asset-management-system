@@ -61,6 +61,27 @@ class Asset extends Model
         'deleted_at' => 'datetime',
     ];
 
+    // Asset status constants
+    public const STATUS_NEW = 'Baru';
+    public const STATUS_IN_USE = 'Sedang Digunakan';
+    public const STATUS_UNDER_MAINTENANCE = 'Dalam Penyelenggaraan';
+    public const STATUS_DAMAGED = 'Rosak';
+    public const STATUS_ACTIVE = 'Aktif';
+    public const STATUS_DISPOSED = 'Dilupuskan';
+
+    // Get all available statuses
+    public static function getAvailableStatuses(): array
+    {
+        return [
+            self::STATUS_NEW,
+            self::STATUS_IN_USE,
+            self::STATUS_UNDER_MAINTENANCE,
+            self::STATUS_DAMAGED,
+            self::STATUS_ACTIVE,
+            self::STATUS_DISPOSED,
+        ];
+    }
+
     /**
      * Get the masjid/surau that owns the asset.
      */

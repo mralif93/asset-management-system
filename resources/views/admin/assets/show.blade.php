@@ -18,7 +18,7 @@
                         <span class="text-emerald-100">{{ $asset->jenis_aset }}</span>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <div class="w-3 h-3 {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-400' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-400' : 'bg-red-400') }} rounded-full"></div>
+                        <div class="w-3 h-3 {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-400' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-400' : ($asset->status_aset === 'Baru' ? 'bg-blue-400' : 'bg-red-400')) }} rounded-full"></div>
                         <span class="text-emerald-100">{{ $asset->status_aset }}</span>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -206,8 +206,8 @@
                             <dt class="text-sm font-medium text-gray-600">Status</dt>
                         </div>
                         <dd class="flex items-center">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-100 text-green-800' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                <div class="w-2 h-2 {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-500' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-500' : 'bg-red-500') }} rounded-full mr-2"></div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-100 text-green-800' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-100 text-yellow-800' : ($asset->status_aset === 'Baru' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800')) }}">
+                                <div class="w-2 h-2 {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-500' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-500' : ($asset->status_aset === 'Baru' ? 'bg-blue-500' : 'bg-red-500')) }} rounded-full mr-2"></div>
                                 {{ $asset->status_aset }}
                             </span>
                         </dd>
@@ -447,7 +447,7 @@
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 {{ $asset->jenis_aset }}
                             </span>
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-100 text-green-800' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $asset->status_aset === 'Sedang Digunakan' ? 'bg-green-100 text-green-800' : ($asset->status_aset === 'Dalam Penyelenggaraan' ? 'bg-yellow-100 text-yellow-800' : ($asset->status_aset === 'Baru' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800')) }}">
                                 {{ $asset->status_aset }}
                             </span>
                         </div>

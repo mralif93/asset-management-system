@@ -310,10 +310,12 @@
                             <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
                                 @if($asset->status_aset === 'Sedang Digunakan') bg-green-100 text-green-800
                                 @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-100 text-yellow-800
+                                @elseif($asset->status_aset === 'Baru') bg-blue-100 text-blue-800
                                 @else bg-red-100 text-red-800 @endif">
                                 <div class="w-2 h-2 
                                     @if($asset->status_aset === 'Sedang Digunakan') bg-green-500
                                     @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-500
+                                    @elseif($asset->status_aset === 'Baru') bg-blue-500
                                     @else bg-red-500 @endif 
                                     rounded-full mr-2"></div>
                                 {{ $asset->status_aset }}
