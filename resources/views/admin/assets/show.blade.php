@@ -72,66 +72,66 @@
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <!-- Asset Value -->
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-blue-700">Nilai Aset</p>
-                    <p class="text-2xl font-bold text-blue-900">RM {{ number_format($asset->nilai_perolehan, 2) }}</p>
-                    <p class="text-xs text-blue-600 mt-1">Nilai Perolehan</p>
+                    <p class="text-sm font-medium text-emerald-700">Nilai Aset</p>
+                    <p class="text-2xl font-bold text-emerald-900">RM {{ number_format($asset->nilai_perolehan, 2) }}</p>
+                    <p class="text-xs text-emerald-600 mt-1">Nilai Perolehan</p>
                 </div>
-                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
                     <i class='bx bx-dollar text-white text-xl'></i>
                 </div>
             </div>
         </div>
 
         <!-- Asset Age -->
-        <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border border-amber-200">
+        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-amber-700">Umur Aset</p>
-                    <p class="text-2xl font-bold text-amber-900">
-                        {{ $asset->tarikh_perolehan ? $asset->tarikh_perolehan->diffInYears(now()) : 0 }}
+                    <p class="text-sm font-medium text-emerald-700">Umur Aset</p>
+                    <p class="text-2xl font-bold text-emerald-900">
+                        {{ $asset->tarikh_perolehan ? (int)$asset->tarikh_perolehan->diffInYears(now()) : 0 }}
                     </p>
-                    <p class="text-xs text-amber-600 mt-1">Tahun</p>
+                    <p class="text-xs text-emerald-600 mt-1">Tahun</p>
                 </div>
-                <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
                     <i class='bx bx-time text-white text-xl'></i>
                 </div>
             </div>
         </div>
 
         <!-- Depreciation -->
-        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-green-700">Susut Nilai</p>
-                    <p class="text-2xl font-bold text-green-900">RM {{ number_format($asset->susut_nilai_tahunan ?? 0, 2) }}</p>
-                    <p class="text-xs text-green-600 mt-1">Tahunan</p>
+                    <p class="text-sm font-medium text-emerald-700">Susut Nilai</p>
+                    <p class="text-2xl font-bold text-emerald-900">RM {{ number_format($asset->susut_nilai_tahunan ?? 0, 2) }}</p>
+                    <p class="text-xs text-emerald-600 mt-1">Tahunan</p>
                 </div>
-                <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
                     <i class='bx bx-trending-down text-white text-xl'></i>
                 </div>
             </div>
         </div>
 
         <!-- Current Value -->
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-purple-700">Nilai Semasa</p>
+                    <p class="text-sm font-medium text-emerald-700">Nilai Semasa</p>
                     @php
                         $currentValue = $asset->nilai_perolehan;
                         if ($asset->tarikh_perolehan && $asset->susut_nilai_tahunan) {
-                            $yearsDepreciated = $asset->tarikh_perolehan->diffInYears(now());
+                            $yearsDepreciated = (int)$asset->tarikh_perolehan->diffInYears(now());
                             $totalDepreciation = $asset->susut_nilai_tahunan * $yearsDepreciated;
                             $currentValue = max(0, $asset->nilai_perolehan - $totalDepreciation);
                         }
                     @endphp
-                    <p class="text-2xl font-bold text-purple-900">RM {{ number_format($currentValue, 2) }}</p>
-                    <p class="text-xs text-purple-600 mt-1">Anggaran</p>
+                    <p class="text-2xl font-bold text-emerald-900">RM {{ number_format($currentValue, 2) }}</p>
+                    <p class="text-xs text-emerald-600 mt-1">Anggaran</p>
                 </div>
-                <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
                     <i class='bx bx-calculator text-white text-xl'></i>
                 </div>
             </div>
@@ -250,14 +250,14 @@
             </div>
 
             <!-- Acquisition Information Section -->
-            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                 <div class="flex items-center mb-6">
-                    <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                         <i class='bx bx-receipt text-white text-xl'></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900">Maklumat Perolehan</h3>
-                        <p class="text-sm text-purple-700">Butiran cara dan masa perolehan aset</p>
+                        <p class="text-sm text-emerald-700">Butiran cara dan masa perolehan aset</p>
                     </div>
                 </div>
                 
@@ -265,7 +265,7 @@
                     <!-- Acquisition Date -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-calendar text-purple-600 mr-2'></i>
+                            <i class='bx bx-calendar text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Tarikh Perolehan</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('d/m/Y') : '-' }}</dd>
@@ -277,7 +277,7 @@
                     <!-- Acquisition Method -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-transfer text-purple-600 mr-2'></i>
+                            <i class='bx bx-transfer text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Kaedah Perolehan</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->kaedah_perolehan }}</dd>
@@ -286,7 +286,7 @@
                     <!-- Acquisition Value -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-dollar text-purple-600 mr-2'></i>
+                            <i class='bx bx-dollar text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Nilai Perolehan</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">RM {{ number_format($asset->nilai_perolehan, 2) }}</dd>
@@ -295,16 +295,39 @@
                     <!-- Discount -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-purchase-tag text-purple-600 mr-2'></i>
+                            <i class='bx bx-purchase-tag text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Diskaun</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">RM {{ number_format($asset->diskaun ?? 0, 2) }}</dd>
                     </div>
 
+                    <!-- Receipt Number -->
+                    @if($asset->no_resit)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-receipt text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">No. Resit</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->no_resit }}</dd>
+                    </div>
+                    @endif
+
+                    <!-- Receipt Date -->
+                    @if($asset->tarikh_resit)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-calendar text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Tarikh Resit</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->tarikh_resit->format('d/m/Y') }}</dd>
+                        <p class="text-xs text-gray-500 mt-1">{{ $asset->tarikh_resit->diffForHumans() }}</p>
+                    </div>
+                    @endif
+
                     <!-- Masjid/Surau -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-building text-purple-600 mr-2'></i>
+                            <i class='bx bx-building text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Masjid/Surau</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->masjidSurau->nama ?? '-' }}</dd>
@@ -313,14 +336,14 @@
             </div>
 
             <!-- Location & Management Section -->
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                 <div class="flex items-center mb-6">
-                    <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                         <i class='bx bx-map text-white text-xl'></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900">Lokasi & Pengurusan</h3>
-                        <p class="text-sm text-blue-700">Penempatan dan tanggungjawab aset</p>
+                        <p class="text-sm text-emerald-700">Penempatan dan tanggungjawab aset</p>
                     </div>
                 </div>
                 
@@ -328,7 +351,7 @@
                     <!-- Location -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-map-pin text-blue-600 mr-2'></i>
+                            <i class='bx bx-map-pin text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Lokasi Penempatan</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->lokasi_penempatan }}</dd>
@@ -337,7 +360,7 @@
                     <!-- Responsible Officer -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-user text-blue-600 mr-2'></i>
+                            <i class='bx bx-user text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Pegawai Bertanggungjawab</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->pegawai_bertanggungjawab_lokasi ?: '-' }}</dd>
@@ -346,7 +369,7 @@
                     <!-- Officer Position -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-briefcase text-blue-600 mr-2'></i>
+                            <i class='bx bx-briefcase text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Jawatan Pegawai</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->jawatan_pegawai ?: '-' }}</dd>
@@ -356,7 +379,7 @@
                     @if($asset->umur_faedah_tahunan)
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-time text-blue-600 mr-2'></i>
+                            <i class='bx bx-time text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Tahun Dibeli</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->umur_faedah_tahunan }} tahun</dd>
@@ -367,7 +390,7 @@
                     @if($asset->tarikh_pemeriksaan_terakhir)
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-calendar-check text-blue-600 mr-2'></i>
+                            <i class='bx bx-calendar-check text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Pemeriksaan Terakhir</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->tarikh_pemeriksaan_terakhir->format('d/m/Y') }}</dd>
@@ -379,7 +402,7 @@
                     @if($asset->tarikh_penyelenggaraan_akan_datang)
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-calendar-plus text-blue-600 mr-2'></i>
+                            <i class='bx bx-calendar-plus text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Penyelenggaraan Akan Datang</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->tarikh_penyelenggaraan_akan_datang->format('d/m/Y') }}</dd>
@@ -390,7 +413,7 @@
                     <!-- Asset Record Updated -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center mb-2">
-                            <i class='bx bx-edit text-blue-600 mr-2'></i>
+                            <i class='bx bx-edit text-emerald-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Kemaskini Terakhir</dt>
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->updated_at->format('d/m/Y') }}</dd>
@@ -401,14 +424,14 @@
 
             <!-- Notes Section -->
             @if($asset->catatan || $asset->catatan_jaminan)
-            <div class="bg-gradient-to-br from-yellow-50 to-amber-100 rounded-xl p-6 border border-yellow-200">
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                 <div class="flex items-center mb-6">
-                    <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                         <i class='bx bx-note text-white text-xl'></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900">Catatan</h3>
-                        <p class="text-sm text-amber-700">Nota dan maklumat tambahan</p>
+                        <p class="text-sm text-emerald-700">Nota dan maklumat tambahan</p>
                     </div>
                 </div>
                 
@@ -436,7 +459,7 @@
             <div class="sticky top-6 space-y-6">
                 
                 <!-- Asset Card -->
-                <div class="bg-gradient-to-br from-indigo-50 to-purple-100 rounded-xl p-6 border border-indigo-200">
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                     <div class="text-center">
                         <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i class='bx bx-package text-emerald-700 text-3xl'></i>
@@ -455,34 +478,39 @@
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="bg-white rounded-xl p-6 border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Tindakan Pantas</h3>
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                            <i class='bx bx-bolt-circle text-white'></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Tindakan Pantas</h3>
+                    </div>
                     
                     <div class="space-y-3">
                         <a href="{{ route('admin.assets.edit', $asset) }}" 
-                           class="w-full flex items-center justify-center px-4 py-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg transition-colors">
-                            <i class='bx bx-edit mr-2'></i>
-                            Edit Maklumat
+                           class="group w-full flex items-center justify-center px-4 py-3 bg-white hover:bg-emerald-50 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
+                            <i class='bx bx-edit mr-2 text-lg group-hover:scale-110 transition-transform duration-200'></i>
+                            <span class="font-medium">Edit Maklumat</span>
                         </a>
                         
                         <button onclick="window.print()" 
-                                class="w-full flex items-center justify-center px-4 py-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors">
-                            <i class='bx bx-printer mr-2'></i>
-                            Cetak Maklumat
+                                class="group w-full flex items-center justify-center px-4 py-3 bg-white hover:bg-emerald-50 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
+                            <i class='bx bx-printer mr-2 text-lg group-hover:scale-110 transition-transform duration-200'></i>
+                            <span class="font-medium">Cetak Maklumat</span>
                         </button>
                         
                         <a href="{{ route('admin.assets.index') }}" 
-                           class="w-full flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                            <i class='bx bx-list-ul mr-2'></i>
-                            Senarai Aset
+                           class="group w-full flex items-center justify-center px-4 py-3 bg-white hover:bg-emerald-50 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
+                            <i class='bx bx-list-ul mr-2 text-lg group-hover:scale-110 transition-transform duration-200'></i>
+                            <span class="font-medium">Senarai Aset</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Quick Stats -->
-                <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 border border-green-200">
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                     <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
                             <i class='bx bx-bar-chart text-white'></i>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900">Statistik Ringkas</h3>
@@ -491,20 +519,20 @@
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Umur Aset:</span>
-                            <span class="font-semibold text-green-700">{{ $asset->tarikh_perolehan ? $asset->tarikh_perolehan->diffInYears(now()) : 0 }} tahun</span>
+                            <span class="font-semibold text-emerald-700">{{ $asset->tarikh_perolehan ? (int)$asset->tarikh_perolehan->diffInYears(now()) : 0 }} tahun</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Nilai Perolehan:</span>
-                            <span class="font-semibold text-green-700">RM {{ number_format($asset->nilai_perolehan, 0) }}</span>
+                            <span class="font-semibold text-emerald-700">RM {{ number_format($asset->nilai_perolehan, 2) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Nilai Semasa:</span>
-                            <span class="font-semibold text-green-700">RM {{ number_format($currentValue, 0) }}</span>
+                            <span class="font-semibold text-emerald-700">RM {{ number_format($currentValue, 2) }}</span>
                         </div>
                         @if($asset->susut_nilai_tahunan)
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Susut Nilai:</span>
-                            <span class="font-semibold text-green-700">RM {{ number_format($asset->susut_nilai_tahunan, 0) }}/tahun</span>
+                            <span class="font-semibold text-emerald-700">RM {{ number_format($asset->susut_nilai_tahunan, 2) }}/tahun</span>
                         </div>
                         @endif
                     </div>
@@ -512,9 +540,9 @@
 
                 <!-- Asset Images -->
                 @if($asset->gambar_aset && count($asset->gambar_aset) > 0)
-                <div class="bg-gradient-to-br from-amber-50 to-orange-100 rounded-xl p-6 border border-amber-200">
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                     <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center mr-3">
+                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
                             <i class='bx bx-image text-white'></i>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900">Gambar Aset</h3>
@@ -533,7 +561,7 @@
                     </div>
                     
                     @if(count($asset->gambar_aset) > 4)
-                    <p class="text-center text-sm text-amber-600 mt-3">
+                                            <p class="text-center text-sm text-emerald-600 mt-3">
                         +{{ count($asset->gambar_aset) - 4 }} gambar lagi
                     </p>
                     @endif
@@ -541,9 +569,9 @@
                 @endif
 
                 <!-- System Info -->
-                <div class="bg-gradient-to-br from-gray-50 to-slate-100 rounded-xl p-6 border border-gray-200">
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                     <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center mr-3">
+                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
                             <i class='bx bx-info-circle text-white'></i>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900">Info Sistem</h3>

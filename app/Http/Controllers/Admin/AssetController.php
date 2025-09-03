@@ -62,7 +62,12 @@ class AssetController extends Controller
     {
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        $default_masjid_surau_id = auth()->user()->masjid_surau_id ?? null;
+        
+        // Set default to Masjid Al-Hidayah, Taman Melawati
+        $defaultMasjid = MasjidSurau::where('nama', 'like', '%Al-Hidayah%')
+                                   ->where('nama', 'like', '%Taman Melawati%')
+                                   ->first();
+        $default_masjid_surau_id = $defaultMasjid ? $defaultMasjid->id : (auth()->user()->masjid_surau_id ?? null);
         return view('admin.assets.create', compact('masjidSuraus', 'assetTypes', 'default_masjid_surau_id'));
     }
 
@@ -80,6 +85,8 @@ class AssetController extends Controller
             'tarikh_perolehan' => 'required|date',
             'kaedah_perolehan' => 'required|string',
             'nilai_perolehan' => 'required|numeric|min:0',
+            'no_resit' => 'nullable|string|max:255',
+            'tarikh_resit' => 'nullable|date',
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
@@ -154,6 +161,8 @@ class AssetController extends Controller
             'tarikh_perolehan' => 'required|date',
             'kaedah_perolehan' => 'required|string',
             'nilai_perolehan' => 'required|numeric|min:0',
+            'no_resit' => 'nullable|string|max:255',
+            'tarikh_resit' => 'nullable|date',
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',

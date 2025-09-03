@@ -31,6 +31,8 @@
             }
         }
     </script>
+
+    @stack('styles')
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">
     <div class="flex h-screen overflow-hidden">
@@ -385,5 +387,7 @@
             </div>
         </main>
     </div>
+
+    @stack('scripts')
 </body>
 </html> 

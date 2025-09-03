@@ -130,7 +130,7 @@
                                             name="jenis_aset" 
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Jenis Aset</option>
+                                        <option value="">-- Pilih --</option>
                                         @foreach($assetTypes as $type)
                                             <option value="{{ $type }}" {{ old('jenis_aset', $asset->jenis_aset) == $type ? 'selected' : '' }}>{{ $type }}</option>
                                         @endforeach
@@ -161,7 +161,7 @@
                                             name="kategori_aset" 
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kategori_aset') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Kategori</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="asset" {{ old('kategori_aset', $asset->kategori_aset) == 'asset' ? 'selected' : '' }}>Asset</option>
                                         <option value="non-asset" {{ old('kategori_aset', $asset->kategori_aset) == 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
                                     </select>
@@ -211,7 +211,7 @@
                                             required
                                             onchange="updateWarrantyStatus(this.value)"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_aset') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Status</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Baru" {{ old('status_aset', $asset->status_aset) == 'Baru' ? 'selected' : '' }}>Baru</option>
                                         <option value="Aktif" {{ old('status_aset', $asset->status_aset) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                         <option value="Sedang Digunakan" {{ old('status_aset', $asset->status_aset) == 'Sedang Digunakan' ? 'selected' : '' }}>Sedang Digunakan</option>
@@ -245,7 +245,7 @@
                                             name="keadaan_fizikal" 
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_fizikal') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Keadaan</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Cemerlang" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Cemerlang' ? 'selected' : '' }}>Cemerlang</option>
                                         <option value="Baik" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Baik' ? 'selected' : '' }}>Baik</option>
                                         <option value="Sederhana" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Sederhana' ? 'selected' : '' }}>Sederhana</option>
@@ -278,7 +278,7 @@
                                             name="status_jaminan" 
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_jaminan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Status Jaminan</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Aktif" {{ old('status_jaminan', $asset->status_jaminan) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                         <option value="Tamat" {{ old('status_jaminan', $asset->status_jaminan) == 'Tamat' ? 'selected' : '' }}>Tamat</option>
                                         <option value="Tiada Jaminan" {{ old('status_jaminan', $asset->status_jaminan) == 'Tiada Jaminan' ? 'selected' : '' }}>Tiada Jaminan</option>
@@ -357,7 +357,7 @@
                                             name="lokasi_penempatan" 
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Lokasi</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Anjung kiri" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
                                         <option value="Anjung kanan" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
                                         <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
@@ -411,7 +411,7 @@
                                             name="masjid_surau_id" 
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Masjid/Surau</option>
+                                        <option value="">-- Pilih --</option>
                                         @foreach($masjidSuraus as $masjid)
                                             <option value="{{ $masjid->id }}" {{ old('masjid_surau_id', $asset->masjid_surau_id) == $masjid->id ? 'selected' : '' }}>
                                                 {{ $masjid->nama }}
@@ -476,7 +476,7 @@
                                             name="kaedah_perolehan" 
                                             required
                                             class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kaedah_perolehan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Kaedah</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Pembelian" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
                                         <option value="Sumbangan" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Sumbangan' ? 'selected' : '' }}>Sumbangan</option>
                                         <option value="Hibah" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Hibah' ? 'selected' : '' }}>Hibah</option>
@@ -513,6 +513,55 @@
                                     <i class='bx bx-dollar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nilai_perolehan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Receipt Number -->
+                            <div>
+                                <label for="no_resit" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-receipt mr-1'></i>
+                                    No. Resit
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-receipt text-gray-400'></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="no_resit" 
+                                           name="no_resit" 
+                                           value="{{ old('no_resit', $asset->no_resit) }}"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_resit') border-red-500 @enderror bg-white"
+                                           placeholder="Masukkan no. resit">
+                                </div>
+                                @error('no_resit')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Receipt Date -->
+                            <div>
+                                <label for="tarikh_resit" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-calendar mr-1'></i>
+                                    Tarikh Resit
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-calendar text-gray-400'></i>
+                                    </div>
+                                    <input type="date" 
+                                           id="tarikh_resit" 
+                                           name="tarikh_resit" 
+                                           value="{{ old('tarikh_resit', $asset->tarikh_resit ? $asset->tarikh_resit->format('Y-m-d') : '') }}"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_resit') border-red-500 @enderror bg-white">
+                                </div>
+                                @error('tarikh_resit')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}

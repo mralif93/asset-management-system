@@ -159,7 +159,7 @@
                                             required
                                             x-model="form.jenis_aset"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Jenis Aset</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Elektronik" {{ old('jenis_aset') === 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
                                         <option value="Perabot" {{ old('jenis_aset') === 'Perabot' ? 'selected' : '' }}>Perabot</option>
                                         <option value="Kenderaan" {{ old('jenis_aset') === 'Kenderaan' ? 'selected' : '' }}>Kenderaan</option>
@@ -192,7 +192,7 @@
                                             required
                                             x-model="form.kategori_aset"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kategori_aset') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Kategori</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="asset" {{ old('kategori_aset') === 'asset' ? 'selected' : '' }}>Asset</option>
                                         <option value="non-asset" {{ old('kategori_aset') === 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
                                     </select>
@@ -244,7 +244,7 @@
                                             x-model="form.status_aset"
                                             @change="updateWarrantyStatus($event.target.value)"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_aset') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Status</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Baru" {{ old('status_aset') === 'Baru' ? 'selected' : '' }}>Baru</option>
                                         <option value="Sedang Digunakan" {{ old('status_aset') === 'Sedang Digunakan' ? 'selected' : '' }}>Sedang Digunakan</option>
                                         <option value="Dalam Penyelenggaraan" {{ old('status_aset') === 'Dalam Penyelenggaraan' ? 'selected' : '' }}>Dalam Penyelenggaraan</option>
@@ -277,7 +277,7 @@
                                             required
                                             x-model="form.keadaan_fizikal"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_fizikal') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Keadaan</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Cemerlang" {{ old('keadaan_fizikal') === 'Cemerlang' ? 'selected' : '' }}>Cemerlang</option>
                                         <option value="Baik" {{ old('keadaan_fizikal') === 'Baik' ? 'selected' : '' }}>Baik</option>
                                         <option value="Sederhana" {{ old('keadaan_fizikal') === 'Sederhana' ? 'selected' : '' }}>Sederhana</option>
@@ -311,7 +311,7 @@
                                             required
                                             x-model="form.status_jaminan"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_jaminan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Status Jaminan</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Aktif" {{ old('status_jaminan') === 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                         <option value="Tamat" {{ old('status_jaminan') === 'Tamat' ? 'selected' : '' }}>Tamat</option>
                                         <option value="Tiada Jaminan" {{ old('status_jaminan') === 'Tiada Jaminan' ? 'selected' : '' }}>Tiada Jaminan</option>
@@ -343,7 +343,7 @@
                                             required
                                             x-model="form.lokasi_penempatan"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Lokasi</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Anjung kiri" {{ old('lokasi_penempatan') === 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
                                         <option value="Anjung kanan" {{ old('lokasi_penempatan') === 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
                                         <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan') === 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
@@ -448,7 +448,7 @@
                                             required
                                             x-model="form.masjid_surau_id"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Masjid/Surau</option>
+                                        <option value="">-- Pilih --</option>
                                         @foreach($masjidSuraus as $masjid)
                                             <option value="{{ $masjid->id }}" {{ old('masjid_surau_id', $default_masjid_surau_id ?? '') == $masjid->id ? 'selected' : '' }}>
                                                 {{ $masjid->nama }}
@@ -523,7 +523,7 @@
                                             required
                                             x-model="form.kaedah_perolehan"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kaedah_perolehan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Kaedah</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Pembelian" {{ old('kaedah_perolehan') === 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
                                         <option value="Sumbangan" {{ old('kaedah_perolehan') === 'Sumbangan' ? 'selected' : '' }}>Sumbangan</option>
                                         <option value="Hibah" {{ old('kaedah_perolehan') === 'Hibah' ? 'selected' : '' }}>Hibah</option>
@@ -589,6 +589,58 @@
                                            placeholder="0.00">
                                 </div>
                                 @error('diskaun')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Receipt Number -->
+                            <div>
+                                <label for="no_resit" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-receipt mr-1'></i>
+                                    No. Resit
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-receipt text-gray-400'></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="no_resit" 
+                                           name="no_resit" 
+                                           value="{{ old('no_resit') }}"
+                                           x-model="form.no_resit"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_resit') border-red-500 @enderror bg-white"
+                                           placeholder="Masukkan no. resit">
+                                </div>
+                                @error('no_resit')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Receipt Date -->
+                            <div>
+                                <label for="tarikh_resit" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-calendar mr-1'></i>
+                                    Tarikh Resit
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-calendar text-gray-400'></i>
+                                    </div>
+                                    <input type="date" 
+                                           id="tarikh_resit" 
+                                           name="tarikh_resit" 
+                                           value="{{ old('tarikh_resit') }}"
+                                           x-model="form.tarikh_resit"
+                                           @change="setInspectionDate($event.target.value)"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_resit') border-red-500 @enderror bg-white">
+                                </div>
+                                @error('tarikh_resit')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
@@ -859,6 +911,50 @@
                                 <span class="text-gray-600">Jaminan:</span>
                                 <span class="font-medium text-gray-900" x-text="form.status_jaminan || '-'"></span>
                             </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tarikh Perolehan:</span>
+                                <span class="font-medium text-gray-900" x-text="formatDate(form.tarikh_perolehan)"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Kaedah Perolehan:</span>
+                                <span class="font-medium text-gray-900" x-text="form.kaedah_perolehan || '-'"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">No. Resit:</span>
+                                <span class="font-medium text-gray-900" x-text="form.no_resit || '-'"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tarikh Resit:</span>
+                                <span class="font-medium text-gray-900" x-text="formatDate(form.tarikh_resit)"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Umur Faedah:</span>
+                                <span class="font-medium text-gray-900" x-text="form.umur_faedah_tahunan ? form.umur_faedah_tahunan + ' tahun' : '-'"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Susut Nilai:</span>
+                                <span class="font-medium text-gray-900" x-text="form.susut_nilai_tahunan ? 'RM ' + parseFloat(form.susut_nilai_tahunan).toFixed(2) + '/tahun' : '-'"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Masjid/Surau:</span>
+                                <span class="font-medium text-gray-900" x-text="getMasjidName(form.masjid_surau_id)"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Pemeriksaan Terakhir:</span>
+                                <span class="font-medium text-gray-900" x-text="formatDate(form.tarikh_pemeriksaan_terakhir)"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Penyelenggaraan Akan Datang:</span>
+                                <span class="font-medium text-gray-900" x-text="formatDate(form.tarikh_penyelenggaraan_akan_datang)"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Catatan:</span>
+                                <span class="font-medium text-gray-900" x-text="form.catatan || '-'"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Catatan Jaminan:</span>
+                                <span class="font-medium text-gray-900" x-text="form.catatan_jaminan || '-'"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -905,46 +1001,70 @@
 function assetForm() {
     return {
         form: {
-            nama_aset: '',
-            jenis_aset: '',
-            kategori_aset: '',
-            status_aset: '',
-            keadaan_fizikal: '',
-            status_jaminan: '',
-            tarikh_pemeriksaan_terakhir: '',
-            tarikh_penyelenggaraan_akan_datang: '',
-            lokasi_penempatan: '',
-            nilai_perolehan: '',
-            diskaun: '',
-            tarikh_perolehan: '',
-            kaedah_perolehan: '',
-            pegawai_bertanggungjawab_lokasi: '',
-            jawatan_pegawai: '',
-            umur_faedah_tahunan: '',
-            susut_nilai_tahunan: '',
-            masjid_surau_id: '',
-            catatan: '',
-            catatan_jaminan: ''
-        }
-    }
-}
-
-function updateWarrantyStatus(assetStatus) {
-    if (assetStatus === 'Baru') {
-        // Set the field values
-        document.getElementById('status_jaminan').value = 'Aktif';
-        document.getElementById('keadaan_fizikal').value = 'Cemerlang';
+            nama_aset: '{{ old("nama_aset") }}',
+            jenis_aset: '{{ old("jenis_aset") }}',
+            kategori_aset: '{{ old("kategori_aset") }}',
+            status_aset: '{{ old("status_aset") }}',
+            keadaan_fizikal: '{{ old("keadaan_fizikal") }}',
+            status_jaminan: '{{ old("status_jaminan") }}',
+            lokasi_penempatan: '{{ old("lokasi_penempatan") }}',
+            tarikh_pemeriksaan_terakhir: '{{ old("tarikh_pemeriksaan_terakhir") }}',
+            tarikh_penyelenggaraan_akan_datang: '{{ old("tarikh_penyelenggaraan_akan_datang") }}',
+            masjid_surau_id: '{{ old("masjid_surau_id", $default_masjid_surau_id) }}',
+            tarikh_perolehan: '{{ old("tarikh_perolehan") }}',
+            kaedah_perolehan: '{{ old("kaedah_perolehan") }}',
+            nilai_perolehan: '{{ old("nilai_perolehan") }}',
+            diskaun: '{{ old("diskaun", "0.00") }}',
+            no_resit: '{{ old("no_resit") }}',
+            tarikh_resit: '{{ old("tarikh_resit") }}',
+            pegawai_bertanggungjawab_lokasi: '{{ old("pegawai_bertanggungjawab_lokasi") }}',
+            jawatan_pegawai: '{{ old("jawatan_pegawai") }}',
+            umur_faedah_tahunan: '{{ old("umur_faedah_tahunan") }}',
+            susut_nilai_tahunan: '{{ old("susut_nilai_tahunan") }}',
+            catatan: '{{ old("catatan") }}',
+            catatan_jaminan: '{{ old("catatan_jaminan") }}'
+        },
         
-        // Update Alpine.js form model for summary section
-        // Get the form element and its Alpine.js component
-        const formElement = document.querySelector('form[x-data]');
-        if (formElement && formElement._x_dataStack && formElement._x_dataStack[0]) {
-            const alpineComponent = formElement._x_dataStack[0];
-            if (alpineComponent.form) {
-                alpineComponent.form.status_jaminan = 'Aktif';
-                alpineComponent.form.keadaan_fizikal = 'Cemerlang';
-            }
-        }
+                        updateWarrantyStatus(status) {
+                    if (status === 'Baru') {
+                        this.form.keadaan_fizikal = 'Cemerlang';
+                        this.form.status_jaminan = 'Aktif';
+                    }
+                },
+                setInspectionDate(receiptDate) {
+                    if (receiptDate) {
+                        // Create a new date from the receipt date
+                        const date = new Date(receiptDate);
+                        // Add 1 year
+                        date.setFullYear(date.getFullYear() + 1);
+                        // Format as YYYY-MM-DD for the date input
+                        const inspectionDate = date.toISOString().split('T')[0];
+                        // Set the inspection date
+                        this.form.tarikh_pemeriksaan_terakhir = inspectionDate;
+                    }
+                },
+                getMasjidName(masjidId) {
+                    if (!masjidId) return '-';
+                    
+                    // Get the masjid data from the select options
+                    const selectElement = document.getElementById('masjid_surau_id');
+                    const selectedOption = selectElement.querySelector(`option[value="${masjidId}"]`);
+                    
+                    return selectedOption ? selectedOption.textContent : masjidId;
+                },
+                formatDate(dateString) {
+                    if (!dateString) return '-';
+                    
+                    // Convert yyyy-mm-dd to dd/mm/yyyy
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) return dateString; // Return original if invalid
+                    
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    
+                    return `${day}/${month}/${year}`;
+                }
     }
 }
 </script>
