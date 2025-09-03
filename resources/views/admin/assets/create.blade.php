@@ -829,27 +829,105 @@
                             <div>
                                 <label for="gambar_aset" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-image mr-1'></i>
-                                    Gambar Aset
+                                    Gambar Aset <span class="text-red-500">*</span>
                                 </label>
-                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-emerald-400 transition-colors">
-                                    <div class="space-y-1 text-center">
-                                        <i class='bx bx-image text-4xl text-gray-400 mb-4'></i>
-                                        <div class="flex text-sm text-gray-600">
-                                            <label for="gambar_aset" class="relative cursor-pointer bg-white rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500">
-                                                <span>Upload gambar</span>
-                                                <input id="gambar_aset" name="gambar_aset[]" type="file" class="sr-only" multiple accept="image/*">
-                                            </label>
-                                            <p class="pl-1">atau drag and drop</p>
+                                <div class="mt-1 flex justify-center px-8 pt-8 pb-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-emerald-400 transition-all duration-300 bg-gradient-to-br from-gray-50 to-emerald-50 hover:from-emerald-50 hover:to-emerald-100 group cursor-pointer" id="dropZone">
+                                    <div class="space-y-4 text-center">
+                                        <div class="relative">
+                                            <i class='bx bx-cloud-upload text-5xl text-gray-400 mb-4 group-hover:text-emerald-500 transition-all duration-300 transform group-hover:scale-110'></i>
+                                            <div class="absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
+                                                <i class='bx bx-plus text-white text-lg'></i>
+                                            </div>
                                         </div>
-                                        <p class="text-xs text-gray-500">PNG, JPG, GIF hingga 10MB</p>
+                                        <div class="space-y-2">
+                                            <div class="flex text-sm text-gray-600 group-hover:text-emerald-700 transition-colors duration-300 justify-center items-center">
+                                                <label for="gambar_aset" class="relative cursor-pointer bg-white rounded-lg px-4 py-2 font-medium text-emerald-600 hover:text-emerald-500 hover:bg-emerald-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                                                    <span class="flex items-center">
+                                                        <i class='bx bx-upload mr-2'></i>
+                                                        Upload gambar
+                                                    </span>
+                                                    <input id="gambar_aset" name="gambar_aset[]" type="file" class="sr-only" multiple accept="image/*" required>
+                                                </label>
+                                                <p class="pl-3 text-gray-500 group-hover:text-emerald-600">atau drag and drop di sini</p>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <p class="text-xs text-gray-500 flex items-center justify-center">
+                                                <i class='bx bx-file-blank mr-1'></i>
+                                                PNG, JPG, GIF hingga 2MB setiap gambar
+                                            </p>
+                                            <p class="text-xs text-emerald-600 font-medium flex items-center justify-center">
+                                                <i class='bx bx-check-circle mr-1'></i>
+                                                Sekurang-kurangnya 1 gambar diperlukan, maksimum 5 gambar
+                                            </p>
+                                            <p class="text-xs text-blue-600 flex items-center justify-center">
+                                                <i class='bx bx-info-circle mr-1'></i>
+                                                Anda boleh menambah gambar lagi kemudian
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
+                                
+                                <!-- Image Preview Area -->
+                                <div id="imagePreview" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                                    <!-- Preview images will be inserted here -->
+                                </div>
+                                
+                                <!-- Image Modal -->
+                                <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+                                    <div class="relative max-w-6xl max-h-full bg-white rounded-xl shadow-2xl overflow-hidden">
+                                        <button id="closeModal" class="absolute top-4 right-4 z-10 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all duration-200">
+                                            <i class='bx bx-x text-2xl'></i>
+                                        </button>
+                                        <div class="p-4">
+                                            <img id="modalImage" src="" alt="Full size image" class="max-w-full max-h-[80vh] object-contain mx-auto">
+                                        </div>
+                                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg">
+                                            <p id="modalImageName" class="text-sm font-medium"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Upload Progress -->
+                                <div id="uploadProgress" class="mt-4 hidden">
+                                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-600 mr-3"></div>
+                                            <span class="text-sm text-emerald-700 font-medium">Memproses gambar...</span>
+                                        </div>
+                                        <div class="mt-2 bg-emerald-200 rounded-full h-2">
+                                            <div id="progressBar" class="bg-emerald-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 @error('gambar_aset')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
                                     </p>
                                 @enderror
+                                @error('gambar_aset.*')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                                
+                                <!-- Helpful Info -->
+                                <div class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <i class='bx bx-bulb text-blue-600 text-lg'></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <p class="font-semibold text-blue-800 mb-1">💡 Tip Berguna:</p>
+                                            <p class="text-blue-700 leading-relaxed">Anda boleh upload 1 gambar sekarang dan menambah gambar lagi kemudian melalui halaman edit aset. Ini memberikan fleksibiliti untuk melengkapkan maklumat aset secara berperingkat.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -997,6 +1075,58 @@
 </div>
 
 @push('scripts')
+<style>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideIn {
+    animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse-slow {
+    animation: pulse 2s infinite;
+}
+
+/* Enhanced hover effects */
+.group:hover .group-hover\:animate-pulse {
+    animation: pulse 1s infinite;
+}
+
+/* Custom scrollbar for image preview */
+#imagePreview::-webkit-scrollbar {
+    width: 6px;
+}
+
+#imagePreview::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+#imagePreview::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+#imagePreview::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+</style>
 <script>
 function assetForm() {
     return {
@@ -1067,6 +1197,187 @@ function assetForm() {
                 }
     }
 }
+
+// Image upload handling
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('gambar_aset');
+    const dropZone = document.getElementById('dropZone');
+    const imagePreview = document.getElementById('imagePreview');
+    const maxFiles = 5;
+    const minFiles = 1;
+
+    // Handle file selection
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+
+    // Handle drag and drop
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.classList.add('border-emerald-400', 'bg-emerald-50');
+    });
+
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        // Clear previous previews
+        imagePreview.innerHTML = '';
+        imagePreview.classList.add('hidden');
+
+        if (files.length === 0) return;
+
+        // Validate file count
+        if (files.length > maxFiles) {
+            alert(`Maksimum ${maxFiles} gambar sahaja dibenarkan.`);
+            return;
+        }
+
+        // Note: We don't enforce minimum here as user can add more later
+
+        // Validate file types and sizes
+        const validFiles = [];
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                alert(`${file.name} bukan fail gambar yang sah.`);
+                continue;
+            }
+
+            // Check file size (2MB = 2 * 1024 * 1024 bytes)
+            if (file.size > 2 * 1024 * 1024) {
+                alert(`${file.name} terlalu besar. Maksimum 2MB setiap gambar.`);
+                continue;
+            }
+
+            validFiles.push(file);
+        }
+
+        if (validFiles.length === 0) return;
+
+        // Update file input
+        const dataTransfer = new DataTransfer();
+        validFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+
+        // Show upload progress
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        if (uploadProgress && progressBar) {
+            uploadProgress.classList.remove('hidden');
+        }
+
+        // Show previews with enhanced animations
+        if (validFiles.length > 0) {
+            imagePreview.classList.remove('hidden');
+            validFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'relative group animate-fadeIn';
+                    previewDiv.innerHTML = `
+                        <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
+                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                        <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
+                            <i class='bx bx-x text-lg'></i>
+                        </button>
+                        <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                            <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
+                            <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        </div>
+                    `;
+                    imagePreview.appendChild(previewDiv);
+                    
+                    // Update progress
+                    if (progressBar) {
+                        const progress = ((index + 1) / validFiles.length) * 100;
+                        progressBar.style.width = progress + '%';
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            // Hide progress after all images are loaded
+            setTimeout(() => {
+                if (uploadProgress) {
+                    uploadProgress.classList.add('hidden');
+                }
+                if (progressBar) {
+                    progressBar.style.width = '0%';
+                }
+            }, 1000);
+        }
+    }
+
+    // Global function to remove image
+    window.removeImage = function(index) {
+        const fileInput = document.getElementById('gambar_aset');
+        const files = Array.from(fileInput.files);
+        files.splice(index, 1);
+        
+        const dataTransfer = new DataTransfer();
+        files.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+        
+        handleFiles(fileInput.files);
+    };
+
+    // Global function to open image modal
+    window.openImageModal = function(imageSrc, imageName) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalImageName = document.getElementById('modalImageName');
+        
+        modalImage.src = imageSrc;
+        modalImageName.textContent = imageName;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    };
+
+    // Close modal functionality
+    document.getElementById('closeModal').addEventListener('click', function() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('imageModal');
+            if (!modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+    });
+});
 </script>
 @endpush
-@endsection 
+@endsection
