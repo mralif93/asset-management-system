@@ -110,7 +110,7 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 gap-6 mb-">
+                        <div class="grid grid-cols-1 gap-6 mb-6">
                             <!-- Asset Name - Full Width -->
                             <div>
                                 <label for="nama_aset" class="block text-sm font-medium text-gray-700 mb-2">

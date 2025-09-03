@@ -79,7 +79,7 @@
 
     <!-- Form Card - Full Width -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <form action="{{ route('admin.immovable-assets.store') }}" method="POST" enctype="multipart/form-data" x-data="assetForm()" class="space-y-0">
+        <form action="{{ route('admin.immovable-assets.store') }}" method="POST" enctype="multipart/form-data" class="space-y-0">
             @csrf
 
             <!-- Form Header -->
@@ -130,7 +130,6 @@
                                            name="nama_aset" 
                                            value="{{ old('nama_aset') }}"
                                            required
-                                           x-model="form.nama_aset"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_aset') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama aset">
                                 </div>
@@ -158,7 +157,7 @@
                                     <select id="jenis_aset" 
                                             name="jenis_aset" 
                                             required
-                                            x-model="form.jenis_aset"
+                                            
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Jenis Aset</option>
                                         <option value="Tanah" {{ old('jenis_aset') === 'Tanah' ? 'selected' : '' }}>Tanah</option>
@@ -190,7 +189,7 @@
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
-                                            x-model="form.masjid_surau_id"
+                                            
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjidSurau)
@@ -221,7 +220,7 @@
                                     <textarea id="alamat" 
                                               name="alamat" 
                                               rows="3"
-                                              x-model="form.alamat"
+                                              
                                               class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat') border-red-500 @enderror bg-white"
                                               placeholder="Masukkan alamat lengkap aset">{{ old('alamat') }}</textarea>
                                 </div>
@@ -262,7 +261,7 @@
                                            id="no_hakmilik" 
                                            name="no_hakmilik" 
                                            value="{{ old('no_hakmilik') }}"
-                                           x-model="form.no_hakmilik"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_hakmilik') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. hakmilik">
                                 </div>
@@ -288,7 +287,7 @@
                                            id="no_lot" 
                                            name="no_lot" 
                                            value="{{ old('no_lot') }}"
-                                           x-model="form.no_lot"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_lot') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. lot">
                                 </div>
@@ -314,7 +313,7 @@
                                            id="keluasan_tanah" 
                                            name="keluasan_tanah" 
                                            value="{{ old('keluasan_tanah') }}"
-                                           x-model="form.keluasan_tanah"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_tanah') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan keluasan tanah">
                                 </div>
@@ -340,7 +339,7 @@
                                            id="keluasan_bangunan" 
                                            name="keluasan_bangunan" 
                                            value="{{ old('keluasan_bangunan') }}"
-                                           x-model="form.keluasan_bangunan"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_bangunan') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan keluasan bangunan">
                                 </div>
@@ -382,7 +381,7 @@
                                            name="tarikh_perolehan" 
                                            value="{{ old('tarikh_perolehan') }}"
                                            required
-                                           x-model="form.tarikh_perolehan"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_perolehan') border-red-500 @enderror bg-white">
                                 </div>
                                 @error('tarikh_perolehan')
@@ -409,7 +408,7 @@
                                     <select id="sumber_perolehan" 
                                             name="sumber_perolehan" 
                                             required
-                                            x-model="form.sumber_perolehan"
+                                            
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('sumber_perolehan') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Sumber Perolehan</option>
                                         <option value="Pembelian" {{ old('sumber_perolehan') === 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
@@ -443,7 +442,7 @@
                                            name="kos_perolehan" 
                                            value="{{ old('kos_perolehan') }}"
                                            required
-                                           x-model="form.kos_perolehan"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_perolehan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
                                 </div>
@@ -471,7 +470,7 @@
                                     <select id="keadaan_semasa" 
                                             name="keadaan_semasa" 
                                             required
-                                            x-model="form.keadaan_semasa"
+                                            
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_semasa') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Keadaan Semasa</option>
                                         <option value="Sangat Baik" {{ old('keadaan_semasa') === 'Sangat Baik' ? 'selected' : '' }}>Sangat Baik</option>
@@ -533,7 +532,7 @@
                                 <textarea id="catatan" 
                                           name="catatan" 
                                           rows="4"
-                                          x-model="form.catatan"
+                                          
                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
                                           placeholder="Masukkan catatan tambahan jika ada">{{ old('catatan') }}</textarea>
                             </div>
@@ -566,27 +565,27 @@
                                         <i class='bx bx-buildings text-emerald-700 text-lg'></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900" x-text="form.nama_aset || 'Nama Aset'">Nama Aset</p>
-                                        <p class="text-sm text-gray-500" x-text="form.jenis_aset || 'Jenis Aset'">Jenis Aset</p>
+                                        <p class="font-medium text-gray-900">Nama Aset</p>
+                                        <p class="text-sm text-gray-500">Jenis Aset</p>
                                     </div>
                                 </div>
                                 
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Luas:</span>
-                                        <span class="text-sm font-medium" x-text="form.keluasan_tanah ? form.keluasan_tanah + ' m²' : '-'">-</span>
+                                        <span class="text-sm font-medium">-</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Kos:</span>
-                                        <span class="text-sm font-medium" x-text="form.kos_perolehan ? 'RM ' + parseFloat(form.kos_perolehan).toLocaleString() : '-'">-</span>
+                                        <span class="text-sm font-medium">-</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Keadaan:</span>
-                                        <span class="text-sm font-medium" x-text="form.keadaan_semasa || '-'">-</span>
+                                        <span class="text-sm font-medium">-</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Sumber:</span>
-                                        <span class="text-sm font-medium" x-text="form.sumber_perolehan || '-'">-</span>
+                                        <span class="text-sm font-medium">-</span>
                                     </div>
                                 </div>
                             </div>
@@ -604,19 +603,19 @@
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Maklumat Aset</span>
-                                    <div class="flex items-center" x-show="form.nama_aset && form.jenis_aset && form.masjid_surau_id">
+                                    <div class="flex items-center" >
                                         <i class='bx bx-check text-green-500'></i>
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Hakmilik & Ukuran</span>
-                                    <div class="flex items-center" x-show="form.keluasan_tanah">
+                                    <div class="flex items-center" >
                                         <i class='bx bx-check text-green-500'></i>
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Perolehan & Keadaan</span>
-                                    <div class="flex items-center" x-show="form.tarikh_perolehan && form.sumber_perolehan && form.kos_perolehan && form.keadaan_semasa">
+                                    <div class="flex items-center" >
                                         <i class='bx bx-check text-green-500'></i>
                                     </div>
                                 </div>
@@ -679,26 +678,6 @@
 
 @push('scripts')
 <script>
-    function assetForm() {
-        return {
-            form: {
-                nama_aset: '{{ old('nama_aset') }}',
-                jenis_aset: '{{ old('jenis_aset') }}',
-                masjid_surau_id: '{{ old('masjid_surau_id') }}',
-                alamat: '{{ old('alamat') }}',
-                no_hakmilik: '{{ old('no_hakmilik') }}',
-                no_lot: '{{ old('no_lot') }}',
-                keluasan_tanah: '{{ old('keluasan_tanah') }}',
-                keluasan_bangunan: '{{ old('keluasan_bangunan') }}',
-                tarikh_perolehan: '{{ old('tarikh_perolehan') }}',
-                sumber_perolehan: '{{ old('sumber_perolehan') }}',
-                kos_perolehan: '{{ old('kos_perolehan') }}',
-                keadaan_semasa: '{{ old('keadaan_semasa') }}',
-                catatan: '{{ old('catatan') }}'
-            }
-        }
-    }
-
     // Form validation
     document.getElementById('keluasan_tanah').addEventListener('input', function() {
         const value = parseFloat(this.value);

@@ -44,7 +44,7 @@
 
     <!-- Form Card - Full Width -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <form action="{{ route('admin.assets.update', $asset) }}" method="POST" enctype="multipart/form-data" x-data="editAssetForm()" class="space-y-0">
+        <form action="{{ route('admin.assets.update', $asset) }}" method="POST" enctype="multipart/form-data" class="space-y-0">
             @csrf
             @method('PUT')
 
@@ -97,9 +97,8 @@
                                     <input type="text" 
                                             id="nama_aset" 
                                             name="nama_aset" 
-                                            value="{{ old('nama_aset', $asset->nama_aset) }}"
                                             required
-                                            x-model="form.nama_aset"
+                                            value="{{ old('nama_aset', $asset->nama_aset) }}"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_aset') border-red-500 @enderror bg-white"
                                             placeholder="Masukkan nama aset">
                                 </div>
@@ -130,11 +129,10 @@
                                     <select id="jenis_aset" 
                                             name="jenis_aset" 
                                             required
-                                            x-model="form.jenis_aset"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Jenis Aset</option>
                                         @foreach($assetTypes as $type)
-                                            <option value="{{ $type }}" {{ old('jenis_aset', $asset->jenis_aset) === $type ? 'selected' : '' }}>{{ $type }}</option>
+                                            <option value="{{ $type }}" {{ old('jenis_aset', $asset->jenis_aset) == $type ? 'selected' : '' }}>{{ $type }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -162,11 +160,10 @@
                                     <select id="kategori_aset" 
                                             name="kategori_aset" 
                                             required
-                                            x-model="form.kategori_aset"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kategori_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Kategori</option>
-                                        <option value="asset" {{ old('kategori_aset', $asset->kategori_aset) === 'asset' ? 'selected' : '' }}>Asset</option>
-                                        <option value="non-asset" {{ old('kategori_aset', $asset->kategori_aset) === 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
+                                        <option value="asset" {{ old('kategori_aset', $asset->kategori_aset) == 'asset' ? 'selected' : '' }}>Asset</option>
+                                        <option value="non-asset" {{ old('kategori_aset', $asset->kategori_aset) == 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
                                     </select>
                                 </div>
                                 @error('kategori_aset')
@@ -212,14 +209,15 @@
                                     <select id="status_aset" 
                                             name="status_aset" 
                                             required
-                                            x-model="form.status_aset"
-                                            @change="updateWarrantyStatus($event.target.value)"
+                                            onchange="updateWarrantyStatus(this.value)"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Status</option>
-                                        <option value="Baru" {{ old('status_aset', $asset->status_aset) === 'Baru' ? 'selected' : '' }}>Baru</option>
-                                        <option value="Sedang Digunakan" {{ old('status_aset', $asset->status_aset) === 'Sedang Digunakan' ? 'selected' : '' }}>Sedang Digunakan</option>
-                                        <option value="Dalam Penyelenggaraan" {{ old('status_aset', $asset->status_aset) === 'Dalam Penyelenggaraan' ? 'selected' : '' }}>Dalam Penyelenggaraan</option>
-                                        <option value="Rosak" {{ old('status_aset', $asset->status_aset) === 'Rosak' ? 'selected' : '' }}>Rosak</option>
+                                        <option value="Baru" {{ old('status_aset', $asset->status_aset) == 'Baru' ? 'selected' : '' }}>Baru</option>
+                                        <option value="Aktif" {{ old('status_aset', $asset->status_aset) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="Sedang Digunakan" {{ old('status_aset', $asset->status_aset) == 'Sedang Digunakan' ? 'selected' : '' }}>Sedang Digunakan</option>
+                                        <option value="Dalam Penyelenggaraan" {{ old('status_aset', $asset->status_aset) == 'Dalam Penyelenggaraan' ? 'selected' : '' }}>Dalam Penyelenggaraan</option>
+                                        <option value="Rosak" {{ old('status_aset', $asset->status_aset) == 'Rosak' ? 'selected' : '' }}>Rosak</option>
+                                        <option value="Dilupuskan" {{ old('status_aset', $asset->status_aset) == 'Dilupuskan' ? 'selected' : '' }}>Dilupuskan</option>
                                     </select>
                                 </div>
                                 @error('status_aset')
@@ -246,14 +244,13 @@
                                     <select id="keadaan_fizikal" 
                                             name="keadaan_fizikal" 
                                             required
-                                            x-model="form.keadaan_fizikal"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_fizikal') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Keadaan</option>
-                                        <option value="Cemerlang" {{ old('keadaan_fizikal', $asset->keadaan_fizikal ?? 'Baik') === 'Cemerlang' ? 'selected' : '' }}>Cemerlang</option>
-                                        <option value="Baik" {{ old('keadaan_fizikal', $asset->keadaan_fizikal ?? 'Baik') === 'Baik' ? 'selected' : '' }}>Baik</option>
-                                        <option value="Sederhana" {{ old('keadaan_fizikal', $asset->keadaan_fizikal ?? 'Baik') === 'Sederhana' ? 'selected' : '' }}>Sederhana</option>
-                                        <option value="Rosak" {{ old('keadaan_fizikal', $asset->keadaan_fizikal ?? 'Baik') === 'Rosak' ? 'selected' : '' }}>Rosak</option>
-                                        <option value="Tidak Boleh Digunakan" {{ old('keadaan_fizikal', $asset->keadaan_fizikal ?? 'Baik') === 'Tidak Boleh Digunakan' ? 'selected' : '' }}>Tidak Boleh Digunakan</option>
+                                        <option value="Cemerlang" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Cemerlang' ? 'selected' : '' }}>Cemerlang</option>
+                                        <option value="Baik" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Baik' ? 'selected' : '' }}>Baik</option>
+                                        <option value="Sederhana" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Sederhana' ? 'selected' : '' }}>Sederhana</option>
+                                        <option value="Rosak" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Rosak' ? 'selected' : '' }}>Rosak</option>
+                                        <option value="Tidak Boleh Digunakan" {{ old('keadaan_fizikal', $asset->keadaan_fizikal) == 'Tidak Boleh Digunakan' ? 'selected' : '' }}>Tidak Boleh Digunakan</option>
                                     </select>
                                 </div>
                                 @error('keadaan_fizikal')
@@ -267,12 +264,12 @@
                             <!-- Warranty Status -->
                             <div>
                                 <label for="status_jaminan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-shield-check mr-1'></i>
+                                    <i class='bx bx-shield mr-1'></i>
                                     Status Jaminan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class='bx bx-shield-check text-gray-400'></i>
+                                        <i class='bx bx-shield text-gray-400'></i>
                                     </div>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <i class='bx bx-chevron-down text-gray-400'></i>
@@ -280,12 +277,11 @@
                                     <select id="status_jaminan" 
                                             name="status_jaminan" 
                                             required
-                                            x-model="form.status_jaminan"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('status_jaminan') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Status Jaminan</option>
-                                        <option value="Aktif" {{ old('status_jaminan', $asset->status_jaminan ?? 'Tiada Jaminan') === 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                                        <option value="Tamat" {{ old('status_jaminan', $asset->status_jaminan ?? 'Tiada Jaminan') === 'Tamat' ? 'selected' : '' }}>Tamat</option>
-                                        <option value="Tiada Jaminan" {{ old('status_jaminan', $asset->status_jaminan ?? 'Tiada Jaminan') === 'Tiada Jaminan' ? 'selected' : '' }}>Tiada Jaminan</option>
+                                        <option value="Aktif" {{ old('status_jaminan', $asset->status_jaminan) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="Tamat" {{ old('status_jaminan', $asset->status_jaminan) == 'Tamat' ? 'selected' : '' }}>Tamat</option>
+                                        <option value="Tiada Jaminan" {{ old('status_jaminan', $asset->status_jaminan) == 'Tiada Jaminan' ? 'selected' : '' }}>Tiada Jaminan</option>
                                     </select>
                                 </div>
                                 @error('status_jaminan')
@@ -307,11 +303,10 @@
                                         <i class='bx bx-calendar-check text-gray-400'></i>
                                     </div>
                                     <input type="date" 
-                                            id="tarikh_pemeriksaan_terakhir" 
-                                            name="tarikh_pemeriksaan_terakhir" 
-                                            value="{{ old('tarikh_pemeriksaan_terakhir', $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('Y-m-d') : '') }}"
-                                            x-model="form.tarikh_pemeriksaan_terakhir"
-                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_pemeriksaan_terakhir') border-red-500 @enderror bg-white">
+                                           id="tarikh_pemeriksaan_terakhir" 
+                                           name="tarikh_pemeriksaan_terakhir" 
+                                           value="{{ old('tarikh_pemeriksaan_terakhir', $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('Y-m-d') : '') }}"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_pemeriksaan_terakhir') border-red-500 @enderror bg-white">
                                 </div>
                                 @error('tarikh_pemeriksaan_terakhir')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -332,11 +327,10 @@
                                         <i class='bx bx-calendar-plus text-gray-400'></i>
                                     </div>
                                     <input type="date" 
-                                            id="tarikh_penyelenggaraan_akan_datang" 
-                                            name="tarikh_penyelenggaraan_akan_datang" 
-                                            value="{{ old('tarikh_penyelenggaraan_akan_datang', $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('Y-m-d') : '') }}"
-                                            x-model="form.tarikh_penyelenggaraan_akan_datang"
-                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_penyelenggaraan_akan_datang') border-red-500 @enderror bg-white">
+                                           id="tarikh_penyelenggaraan_akan_datang" 
+                                           name="tarikh_penyelenggaraan_akan_datang" 
+                                           value="{{ old('tarikh_penyelenggaraan_akan_datang', $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('Y-m-d') : '') }}"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_penyelenggaraan_akan_datang') border-red-500 @enderror bg-white">
                                 </div>
                                 @error('tarikh_penyelenggaraan_akan_datang')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -362,20 +356,19 @@
                                     <select id="lokasi_penempatan" 
                                             name="lokasi_penempatan" 
                                             required
-                                            x-model="form.lokasi_penempatan"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Lokasi</option>
-                                        <option value="Anjung kiri" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
-                                        <option value="Anjung kanan" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
-                                        <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
-                                        <option value="Ruang Utama (tingkat atas, tingkat bawah)" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Ruang Utama (tingkat atas, tingkat bawah)' ? 'selected' : '' }}>Ruang Utama (tingkat atas, tingkat bawah)</option>
-                                        <option value="Bilik Mesyuarat" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Bilik Mesyuarat' ? 'selected' : '' }}>Bilik Mesyuarat</option>
-                                        <option value="Bilik Kuliah" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Bilik Kuliah' ? 'selected' : '' }}>Bilik Kuliah</option>
-                                        <option value="Bilik Bendahari" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Bilik Bendahari' ? 'selected' : '' }}>Bilik Bendahari</option>
-                                        <option value="Bilik Setiausaha" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Bilik Setiausaha' ? 'selected' : '' }}>Bilik Setiausaha</option>
-                                        <option value="Bilik Nazir & Imam" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Bilik Nazir & Imam' ? 'selected' : '' }}>Bilik Nazir & Imam</option>
-                                        <option value="Bangunan Jenazah" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Bangunan Jenazah' ? 'selected' : '' }}>Bangunan Jenazah</option>
-                                        <option value="Lain-lain" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                        <option value="Anjung kiri" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
+                                        <option value="Anjung kanan" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
+                                        <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
+                                        <option value="Ruang Utama (tingkat atas, tingkat bawah)" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Ruang Utama (tingkat atas, tingkat bawah)' ? 'selected' : '' }}>Ruang Utama (tingkat atas, tingkat bawah)</option>
+                                        <option value="Bilik Mesyuarat" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Bilik Mesyuarat' ? 'selected' : '' }}>Bilik Mesyuarat</option>
+                                        <option value="Bilik Kuliah" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Bilik Kuliah' ? 'selected' : '' }}>Bilik Kuliah</option>
+                                        <option value="Bilik Bendahari" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Bilik Bendahari' ? 'selected' : '' }}>Bilik Bendahari</option>
+                                        <option value="Bilik Setiausaha" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Bilik Setiausaha' ? 'selected' : '' }}>Bilik Setiausaha</option>
+                                        <option value="Bilik Nazir & Imam" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Bilik Nazir & Imam' ? 'selected' : '' }}>Bilik Nazir & Imam</option>
+                                        <option value="Bangunan Jenazah" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Bangunan Jenazah' ? 'selected' : '' }}>Bangunan Jenazah</option>
+                                        <option value="Lain-lain" {{ old('lokasi_penempatan', $asset->lokasi_penempatan) == 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
                                     </select>
                                 </div>
                                 @error('lokasi_penempatan')
@@ -417,7 +410,6 @@
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
-                                            x-model="form.masjid_surau_id"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjid)
@@ -460,9 +452,8 @@
                                     <input type="date" 
                                            id="tarikh_perolehan" 
                                            name="tarikh_perolehan" 
-                                           value="{{ old('tarikh_perolehan', $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '') }}"
                                            required
-                                           x-model="form.tarikh_perolehan"
+                                           value="{{ old('tarikh_perolehan', $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '') }}"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_perolehan') border-red-500 @enderror bg-white">
                                     <i class='bx bx-calendar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
@@ -484,14 +475,13 @@
                                     <select id="kaedah_perolehan" 
                                             name="kaedah_perolehan" 
                                             required
-                                            x-model="form.kaedah_perolehan"
                                             class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kaedah_perolehan') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Kaedah</option>
-                                        <option value="Pembelian" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
-                                        <option value="Sumbangan" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Sumbangan' ? 'selected' : '' }}>Sumbangan</option>
-                                        <option value="Hibah" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Hibah' ? 'selected' : '' }}>Hibah</option>
-                                        <option value="Infaq" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Infaq' ? 'selected' : '' }}>Infaq</option>
-                                        <option value="Lain-lain" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                        <option value="Pembelian" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
+                                        <option value="Sumbangan" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Sumbangan' ? 'selected' : '' }}>Sumbangan</option>
+                                        <option value="Hibah" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Hibah' ? 'selected' : '' }}>Hibah</option>
+                                        <option value="Infaq" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Infaq' ? 'selected' : '' }}>Infaq</option>
+                                        <option value="Lain-lain" {{ old('kaedah_perolehan', $asset->kaedah_perolehan) == 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
                                     </select>
                                     <i class='bx bx-transfer absolute left-3 top-3.5 text-gray-400'></i>
                                     <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
@@ -514,11 +504,10 @@
                                     <input type="number" 
                                            id="nilai_perolehan" 
                                            name="nilai_perolehan" 
-                                           value="{{ old('nilai_perolehan', $asset->nilai_perolehan) }}"
                                            required
                                            step="0.01"
                                            min="0"
-                                           x-model="form.nilai_perolehan"
+                                           value="{{ old('nilai_perolehan', $asset->nilai_perolehan) }}"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_perolehan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
                                     <i class='bx bx-dollar absolute left-3 top-3.5 text-gray-400'></i>
@@ -544,10 +533,9 @@
                                     <input type="number" 
                                            id="diskaun" 
                                            name="diskaun" 
-                                           value="{{ old('diskaun', $asset->diskaun ?? '0.00') }}"
                                            step="0.01"
                                            min="0"
-                                           x-model="form.diskaun"
+                                           value="{{ old('diskaun', $asset->diskaun ?? '0.00') }}"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('diskaun') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
                                 </div>
@@ -569,9 +557,8 @@
                                     <input type="text" 
                                            id="pegawai_bertanggungjawab_lokasi" 
                                            name="pegawai_bertanggungjawab_lokasi" 
-                                           value="{{ old('pegawai_bertanggungjawab_lokasi', $asset->pegawai_bertanggungjawab_lokasi) }}"
                                            required
-                                           x-model="form.pegawai_bertanggungjawab_lokasi"
+                                           value="{{ old('pegawai_bertanggungjawab_lokasi', $asset->pegawai_bertanggungjawab_lokasi) }}"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('pegawai_bertanggungjawab_lokasi') border-red-500 @enderror bg-white"
                                            placeholder="Nama pegawai">
                                     <i class='bx bx-user absolute left-3 top-3.5 text-gray-400'></i>
@@ -598,7 +585,6 @@
                                            id="jawatan_pegawai" 
                                            name="jawatan_pegawai" 
                                            value="{{ old('jawatan_pegawai', $asset->jawatan_pegawai) }}"
-                                           x-model="form.jawatan_pegawai"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jawatan_pegawai') border-red-500 @enderror bg-white"
                                            placeholder="Jawatan pegawai">
                                 </div>
@@ -638,9 +624,8 @@
                                     <input type="number" 
                                            id="umur_faedah_tahunan" 
                                            name="umur_faedah_tahunan" 
-                                           value="{{ old('umur_faedah_tahunan', $asset->umur_faedah_tahunan) }}"
                                            min="1"
-                                           x-model="form.umur_faedah_tahunan"
+                                           value="{{ old('umur_faedah_tahunan', $asset->umur_faedah_tahunan) }}"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('umur_faedah_tahunan') border-red-500 @enderror bg-white"
                                            placeholder="Cth: 5">
                                 </div>
@@ -665,10 +650,9 @@
                                     <input type="number" 
                                            id="susut_nilai_tahunan" 
                                            name="susut_nilai_tahunan" 
-                                           value="{{ old('susut_nilai_tahunan', $asset->susut_nilai_tahunan) }}"
                                            step="0.01"
                                            min="0"
-                                           x-model="form.susut_nilai_tahunan"
+                                           value="{{ old('susut_nilai_tahunan', $asset->susut_nilai_tahunan) }}"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('susut_nilai_tahunan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
                                 </div>
@@ -704,7 +688,6 @@
                                 <textarea id="catatan" 
                                           name="catatan" 
                                           rows="4"
-                                          x-model="form.catatan"
                                           class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
                                           placeholder="Catatan tambahan tentang aset ini...">{{ old('catatan', $asset->catatan) }}</textarea>
                                 @error('catatan')
@@ -724,7 +707,6 @@
                                 <textarea id="catatan_jaminan" 
                                           name="catatan_jaminan" 
                                           rows="3"
-                                          x-model="form.catatan_jaminan"
                                           class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan_jaminan') border-red-500 @enderror bg-white"
                                           placeholder="Catatan tentang jaminan aset...">{{ old('catatan_jaminan', $asset->catatan_jaminan) }}</textarea>
                                 @error('catatan_jaminan')
@@ -797,47 +779,47 @@
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Nama Aset:</span>
-                                <span class="font-medium text-gray-900" x-text="form.nama_aset || '{{ $asset->nama_aset }}'">{{ $asset->nama_aset }}</span>
+                                <span class="font-medium text-gray-900">{{ $asset->nama_aset }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Jenis:</span>
-                                <span class="font-medium text-gray-900" x-text="form.jenis_aset || '{{ $asset->jenis_aset }}'">{{ $asset->jenis_aset }}</span>
+                                <span class="font-medium text-gray-900">{{ $asset->jenis_aset }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Kategori:</span>
-                                <span class="text-sm font-medium" x-text="form.kategori_aset === 'asset' ? 'Asset' : (form.kategori_aset === 'non-asset' ? 'Non-Asset' : '{{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}')"></span>
+                                <span class="text-sm font-medium">{{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Status:</span>
-                                <span class="font-medium text-gray-900" x-text="form.status_aset || '{{ $asset->status_aset }}'">{{ $asset->status_aset }}</span>
+                                <span class="font-medium text-gray-900">{{ $asset->status_aset }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Lokasi:</span>
-                                <span class="font-medium text-gray-900" x-text="form.lokasi_penempatan || '{{ $asset->lokasi_penempatan }}'">{{ $asset->lokasi_penempatan }}</span>
+                                <span class="font-medium text-gray-900">{{ $asset->lokasi_penempatan }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Nilai:</span>
-                                <span class="font-medium text-gray-900" x-text="form.nilai_perolehan ? 'RM ' + parseFloat(form.nilai_perolehan).toFixed(2) : 'RM {{ number_format($asset->nilai_perolehan, 2) }}'"></span>
+                                <span class="font-medium text-gray-900">RM {{ number_format($asset->nilai_perolehan, 2) }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Diskaun:</span>
-                                <span class="font-medium text-gray-900" x-text="form.diskaun ? 'RM ' + parseFloat(form.diskaun).toFixed(2) : 'RM {{ number_format($asset->diskaun ?? 0, 2) }}'"></span>
+                                <span class="font-medium text-gray-900">RM {{ number_format($asset->diskaun ?? 0, 2) }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Pegawai:</span>
-                                <span class="font-medium text-gray-900" x-text="form.pegawai_bertanggungjawab_lokasi || '{{ $asset->pegawai_bertanggungjawab_lokasi ?? '-' }}'"></span>
+                                <span class="font-medium text-gray-900">{{ $asset->pegawai_bertanggungjawab_lokasi ?? '-' }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Jawatan:</span>
-                                <span class="font-medium text-gray-900" x-text="form.jawatan_pegawai || '{{ $asset->jawatan_pegawai ?? '-' }}'"></span>
+                                <span class="font-medium text-gray-900">{{ $asset->jawatan_pegawai ?? '-' }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Keadaan:</span>
-                                <span class="font-medium text-gray-900" x-text="form.keadaan_fizikal || '{{ $asset->keadaan_fizikal ?? 'Baik' }}'"></span>
+                                <span class="font-medium text-gray-900">{{ $asset->keadaan_fizikal ?? 'Baik' }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Jaminan:</span>
-                                <span class="font-medium text-gray-900" x-text="form.status_jaminan || '{{ $asset->status_jaminan ?? 'Tiada Jaminan' }}'"></span>
+                                <span class="font-medium text-gray-900">{{ $asset->status_jaminan ?? 'Tiada Jaminan' }}</span>
                             </div>
                         </div>
                     </div>
@@ -882,47 +864,11 @@
 
 @push('scripts')
 <script>
-    function editAssetForm() {
-        return {
-            form: {
-                nama_aset: '{{ old('nama_aset', $asset->nama_aset) }}',
-                jenis_aset: '{{ old('jenis_aset', $asset->jenis_aset) }}',
-                kategori_aset: '{{ old('kategori_aset', $asset->kategori_aset) }}',
-                status_aset: '{{ old('status_aset', $asset->status_aset) }}',
-                status_jaminan: '{{ old('status_jaminan', $asset->status_jaminan ?? 'Tiada Jaminan') }}',
-                keadaan_fizikal: '{{ old('keadaan_fizikal', $asset->keadaan_fizikal ?? 'Baik') }}',
-                lokasi_penempatan: '{{ old('lokasi_penempatan', $asset->lokasi_penempatan) }}',
-                tarikh_perolehan: '{{ old('tarikh_perolehan', $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '') }}',
-                kaedah_perolehan: '{{ old('kaedah_perolehan', $asset->kaedah_perolehan) }}',
-                nilai_perolehan: '{{ old('nilai_perolehan', $asset->nilai_perolehan) }}',
-                diskaun: '{{ old('diskaun', $asset->diskaun ?? '0.00') }}',
-                pegawai_bertanggungjawab_lokasi: '{{ old('pegawai_bertanggungjawab_lokasi', $asset->pegawai_bertanggungjawab_lokasi) }}',
-                jawatan_pegawai: '{{ old('jawatan_pegawai', $asset->jawatan_pegawai) }}',
-                umur_faedah_tahunan: '{{ old('umur_faedah_tahunan', $asset->umur_faedah_tahunan) }}',
-                susut_nilai_tahunan: '{{ old('susut_nilai_tahunan', $asset->susut_nilai_tahunan) }}',
-                catatan: '{{ old('catatan', $asset->catatan) }}',
-                catatan_jaminan: '{{ old('catatan_jaminan', $asset->catatan_jaminan) }}'
-            }
-        }
-    }
-
     function updateWarrantyStatus(assetStatus) {
         if (assetStatus === 'Baru') {
             // Set the field values
             document.getElementById('status_jaminan').value = 'Aktif';
             document.getElementById('keadaan_fizikal').value = 'Cemerlang';
-            
-            // Update Alpine.js form model for summary section
-            const formElement = document.querySelector('form[x-data]');
-            
-            if (formElement && formElement._x_dataStack && formElement._x_dataStack[0]) {
-                const alpineComponent = formElement._x_dataStack[0];
-                
-                if (alpineComponent.form) {
-                    alpineComponent.form.status_jaminan = 'Aktif';
-                    alpineComponent.form.keadaan_fizikal = 'Cemerlang';
-                }
-            }
         }
     }
 

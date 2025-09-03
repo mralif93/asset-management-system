@@ -49,7 +49,7 @@
 
     <!-- Form Card - Full Width -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <form action="{{ route('admin.immovable-assets.update', $immovableAsset) }}" method="POST" enctype="multipart/form-data" x-data="editAssetForm()" class="space-y-0">
+        <form action="{{ route('admin.immovable-assets.update', $immovableAsset) }}" method="POST" enctype="multipart/form-data" class="space-y-0">
             @csrf
             @method('PUT')
 
@@ -112,7 +112,7 @@
                                            name="nama_aset" 
                                            value="{{ old('nama_aset', $immovableAsset->nama_aset) }}"
                                            required
-                                           x-model="form.nama_aset"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_aset') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama aset">
                                 </div>
@@ -140,7 +140,7 @@
                                     <select id="jenis_aset" 
                                             name="jenis_aset" 
                                             required
-                                            x-model="form.jenis_aset"
+                                            
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Jenis Aset</option>
                                         <option value="Tanah" {{ old('jenis_aset', $immovableAsset->jenis_aset) === 'Tanah' ? 'selected' : '' }}>Tanah</option>
@@ -172,7 +172,7 @@
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
-                                            x-model="form.masjid_surau_id"
+                                            
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjidSurau)
@@ -203,7 +203,7 @@
                                     <textarea id="alamat" 
                                               name="alamat" 
                                               rows="3"
-                                              x-model="form.alamat"
+                                              
                                               class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('alamat') border-red-500 @enderror bg-white"
                                               placeholder="Masukkan alamat lengkap aset">{{ old('alamat', $immovableAsset->alamat) }}</textarea>
                                 </div>
@@ -244,7 +244,7 @@
                                            id="no_hakmilik" 
                                            name="no_hakmilik" 
                                            value="{{ old('no_hakmilik', $immovableAsset->no_hakmilik) }}"
-                                           x-model="form.no_hakmilik"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_hakmilik') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. hakmilik">
                                 </div>
@@ -270,7 +270,7 @@
                                            id="no_lot" 
                                            name="no_lot" 
                                            value="{{ old('no_lot', $immovableAsset->no_lot) }}"
-                                           x-model="form.no_lot"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('no_lot') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan no. lot">
                                 </div>
@@ -296,7 +296,7 @@
                                            id="keluasan_tanah" 
                                            name="keluasan_tanah" 
                                            value="{{ old('keluasan_tanah', $immovableAsset->keluasan_tanah) }}"
-                                           x-model="form.keluasan_tanah"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_tanah') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan keluasan tanah">
                                 </div>
@@ -322,7 +322,7 @@
                                            id="keluasan_bangunan" 
                                            name="keluasan_bangunan" 
                                            value="{{ old('keluasan_bangunan', $immovableAsset->keluasan_bangunan) }}"
-                                           x-model="form.keluasan_bangunan"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_bangunan') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan keluasan bangunan">
                                 </div>
@@ -361,7 +361,7 @@
                                            name="tarikh_perolehan" 
                                            value="{{ old('tarikh_perolehan', $immovableAsset->tarikh_perolehan ? $immovableAsset->tarikh_perolehan->format('Y-m-d') : '') }}"
                                            required
-                                           x-model="form.tarikh_perolehan"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_perolehan') border-red-500 @enderror bg-white">
                                     <i class='bx bx-calendar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
@@ -383,7 +383,7 @@
                                     <select id="sumber_perolehan" 
                                             name="sumber_perolehan" 
                                             required
-                                            x-model="form.sumber_perolehan"
+                                            
                                             class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('sumber_perolehan') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Sumber Perolehan</option>
                                         <option value="Pembelian" {{ old('sumber_perolehan', $immovableAsset->sumber_perolehan) === 'Pembelian' ? 'selected' : '' }}>Pembelian</option>
@@ -416,7 +416,7 @@
                                            name="kos_perolehan" 
                                            value="{{ old('kos_perolehan', $immovableAsset->kos_perolehan) }}"
                                            required
-                                           x-model="form.kos_perolehan"
+                                           
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_perolehan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
                                     <i class='bx bx-dollar absolute left-3 top-3.5 text-gray-400'></i>
@@ -439,7 +439,7 @@
                                     <select id="keadaan_semasa" 
                                             name="keadaan_semasa" 
                                             required
-                                            x-model="form.keadaan_semasa"
+                                            
                                             class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keadaan_semasa') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Keadaan Semasa</option>
                                         <option value="Sangat Baik" {{ old('keadaan_semasa', $immovableAsset->keadaan_semasa) === 'Sangat Baik' ? 'selected' : '' }}>Sangat Baik</option>
@@ -520,7 +520,7 @@
                                 <textarea id="catatan" 
                                           name="catatan" 
                                           rows="4"
-                                          x-model="form.catatan"
+                                          
                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
                                           placeholder="Masukkan catatan tambahan jika ada">{{ old('catatan', $immovableAsset->catatan) }}</textarea>
                                 <i class='bx bx-note absolute left-3 top-3.5 text-gray-400'></i>
@@ -554,23 +554,23 @@
                                         <i class='bx bx-buildings text-emerald-700 text-xl'></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900" x-text="form.nama_aset || '{{ $immovableAsset->nama_aset }}'">{{ $immovableAsset->nama_aset }}</p>
-                                        <p class="text-sm text-gray-500" x-text="form.jenis_aset || '{{ $immovableAsset->jenis_aset }}'">{{ $immovableAsset->jenis_aset }}</p>
+                                        <p class="font-medium text-gray-900" >{{ $immovableAsset->nama_aset }}</p>
+                                        <p class="text-sm text-gray-500" >{{ $immovableAsset->jenis_aset }}</p>
                                     </div>
                                 </div>
                                 
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Luas:</span>
-                                        <span class="text-sm font-medium" x-text="(form.keluasan_tanah || '{{ $immovableAsset->keluasan_tanah }}') + ' m²'">{{ $immovableAsset->keluasan_tanah }} m²</span>
+                                        <span class="text-sm font-medium" >{{ $immovableAsset->keluasan_tanah }} m²</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Keadaan:</span>
-                                        <span class="text-sm font-medium" x-text="form.keadaan_semasa || '{{ $immovableAsset->keadaan_semasa }}'">{{ $immovableAsset->keadaan_semasa }}</span>
+                                        <span class="text-sm font-medium" >{{ $immovableAsset->keadaan_semasa }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Kos Perolehan:</span>
-                                        <span class="text-sm font-medium" x-text="'RM ' + (form.kos_perolehan || '{{ number_format($immovableAsset->kos_perolehan, 2) }}')">RM {{ number_format($immovableAsset->kos_perolehan, 2) }}</span>
+                                        <span class="text-sm font-medium" >RM {{ number_format($immovableAsset->kos_perolehan, 2) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -662,26 +662,6 @@
 
 @push('scripts')
 <script>
-    function editAssetForm() {
-        return {
-            form: {
-                nama_aset: '{{ old('nama_aset', $immovableAsset->nama_aset) }}',
-                jenis_aset: '{{ old('jenis_aset', $immovableAsset->jenis_aset) }}',
-                masjid_surau_id: '{{ old('masjid_surau_id', $immovableAsset->masjid_surau_id) }}',
-                alamat: '{{ old('alamat', $immovableAsset->alamat) }}',
-                no_hakmilik: '{{ old('no_hakmilik', $immovableAsset->no_hakmilik) }}',
-                no_lot: '{{ old('no_lot', $immovableAsset->no_lot) }}',
-                keluasan_tanah: '{{ old('keluasan_tanah', $immovableAsset->keluasan_tanah) }}',
-                keluasan_bangunan: '{{ old('keluasan_bangunan', $immovableAsset->keluasan_bangunan) }}',
-                tarikh_perolehan: '{{ old('tarikh_perolehan', $immovableAsset->tarikh_perolehan ? $immovableAsset->tarikh_perolehan->format('Y-m-d') : '') }}',
-                sumber_perolehan: '{{ old('sumber_perolehan', $immovableAsset->sumber_perolehan) }}',
-                kos_perolehan: '{{ old('kos_perolehan', $immovableAsset->kos_perolehan) }}',
-                keadaan_semasa: '{{ old('keadaan_semasa', $immovableAsset->keadaan_semasa) }}',
-                catatan: '{{ old('catatan', $immovableAsset->catatan) }}'
-            }
-        }
-    }
-
     // Image removal function
     function removeImage(index) {
         if (confirm('Adakah anda pasti mahu membuang gambar ini?')) {

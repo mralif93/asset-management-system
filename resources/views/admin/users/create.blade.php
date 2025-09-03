@@ -79,7 +79,7 @@
 
     <!-- Form Card - Full Width -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <form action="{{ route('admin.users.store') }}" method="POST" x-data="userForm()" class="space-y-0">
+        <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-0">
             @csrf
 
             <!-- Form Header -->
@@ -130,7 +130,6 @@
                                            name="name" 
                                            value="{{ old('name') }}"
                                            required
-                                           x-model="form.name"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-500 @enderror bg-white"
                                            placeholder="Masukkan nama penuh">
                                 </div>
@@ -157,7 +156,6 @@
                                            name="email" 
                                            value="{{ old('email') }}"
                                            required
-                                           x-model="form.email"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('email') border-red-500 @enderror bg-white"
                                            placeholder="contoh@email.com">
                                 </div>
@@ -183,7 +181,6 @@
                                            id="phone" 
                                            name="phone" 
                                            value="{{ old('phone') }}"
-                                           x-model="form.phone"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('phone') border-red-500 @enderror bg-white"
                                            placeholder="010-1234567">
                                 </div>
@@ -209,7 +206,6 @@
                                            id="position" 
                                            name="position" 
                                            value="{{ old('position') }}"
-                                           x-model="form.position"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('position') border-red-500 @enderror bg-white"
                                            placeholder="Cth: Setiausaha, Bendahari">
                                 </div>
@@ -252,7 +248,6 @@
                                     <select id="role" 
                                             name="role" 
                                             required
-                                            x-model="form.role"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('role') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Peranan</option>
                                         <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Pentadbir</option>
@@ -287,7 +282,6 @@
                                     <select id="masjid_surau_id" 
                                             name="masjid_surau_id" 
                                             required
-                                            x-model="form.masjid_surau_id"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjid)
@@ -335,7 +329,6 @@
                                            name="password" 
                                            required
                                            minlength="8"
-                                           x-model="form.password"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('password') border-red-500 @enderror bg-white"
                                            placeholder="Minimum 8 aksara">
                                 </div>
@@ -362,7 +355,6 @@
                                            name="password_confirmation" 
                                            required
                                            minlength="8"
-                                           x-model="form.password_confirmation"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
                                            placeholder="Sahkan kata laluan">
                                 </div>
@@ -373,7 +365,6 @@
                         <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
                             <label class="flex items-center">
                                 <input type="checkbox" name="email_verified_at" value="1" 
-                                       x-model="form.email_verified_at"
                                        class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
                                 <div class="ml-3">
                                     <span class="text-sm font-medium text-gray-700">Sahkan email secara automatik</span>
@@ -412,26 +403,26 @@
                             <div class="space-y-4">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                                        <span class="text-emerald-700 font-medium" x-text="form.name ? form.name.charAt(0).toUpperCase() : '?'">?</span>
+                                        <span class="text-emerald-700 font-medium">?</span>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900" x-text="form.name || 'Nama Pengguna'">Nama Pengguna</p>
-                                        <p class="text-sm text-gray-500" x-text="form.email || 'email@example.com'">email@example.com</p>
+                                        <p class="font-medium text-gray-900">Nama Pengguna</p>
+                                        <p class="text-sm text-gray-500">email@example.com</p>
                                     </div>
                                 </div>
                                 
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Telefon:</span>
-                                        <span class="text-sm font-medium" x-text="form.phone || '-'">-</span>
+                                        <span class="text-sm font-medium">-</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Jawatan:</span>
-                                        <span class="text-sm font-medium" x-text="form.position || '-'">-</span>
+                                        <span class="text-sm font-medium">-</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Peranan:</span>
-                                        <span class="text-sm font-medium" x-text="form.role || '-'">-</span>
+                                        <span class="text-sm font-medium">-</span>
                                     </div>
                                 </div>
                             </div>
@@ -449,19 +440,19 @@
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Maklumat Peribadi</span>
-                                    <div class="flex items-center" x-show="form.name && form.email">
+                                    <div class="flex items-center">
                                         <i class='bx bx-check text-green-500'></i>
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Peranan & Organisasi</span>
-                                    <div class="flex items-center" x-show="form.role && form.masjid_surau_id">
+                                    <div class="flex items-center">
                                         <i class='bx bx-check text-green-500'></i>
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Kata Laluan</span>
-                                    <div class="flex items-center" x-show="form.password && form.password_confirmation">
+                                    <div class="flex items-center">
                                         <i class='bx bx-check text-green-500'></i>
                                     </div>
                                 </div>
@@ -524,22 +515,6 @@
 
 @push('scripts')
 <script>
-    function userForm() {
-        return {
-            form: {
-                name: '{{ old('name') }}',
-                email: '{{ old('email') }}',
-                phone: '{{ old('phone') }}',
-                position: '{{ old('position') }}',
-                role: '{{ old('role') }}',
-                masjid_surau_id: '{{ old('masjid_surau_id') }}',
-                password: '',
-                password_confirmation: '',
-                email_verified_at: false
-            }
-        }
-    }
-
     // Password strength and validation
     document.getElementById('password').addEventListener('input', function() {
         const password = this.value;
