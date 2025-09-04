@@ -15,18 +15,18 @@
                 <div class="flex items-center space-x-4 mt-4">
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-error-circle text-emerald-200'></i>
-                        <span class="text-emerald-100">{{ $lossWriteoff->jenis_kehilangan }}</span>
+                        <span class="text-emerald-100">{{ $lossWriteoff->jenis_kejadian }}</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <div class="w-3 h-3 
-                            @if($lossWriteoff->status_kelulusan === 'menunggu') bg-amber-400
-                            @elseif($lossWriteoff->status_kelulusan === 'diluluskan') bg-green-400
+                            @if($lossWriteoff->status_kejadian === 'Dilaporkan') bg-amber-400
+                            @elseif($lossWriteoff->status_kejadian === 'Diluluskan') bg-green-400
                             @else bg-red-400 @endif rounded-full"></div>
-                        <span class="text-emerald-100">{{ ucfirst($lossWriteoff->status_kelulusan) }}</span>
+                        <span class="text-emerald-100">{{ $lossWriteoff->status_kejadian }}</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-calendar text-emerald-200'></i>
-                        <span class="text-emerald-100">{{ $lossWriteoff->tarikh_kehilangan->diffForHumans() }}</span>
+                        <span class="text-emerald-100">{{ $lossWriteoff->tarikh_laporan->diffForHumans() }}</span>
                     </div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                 Edit Laporan
             </a>
             
-            @if($lossWriteoff->status_kelulusan === 'menunggu' && auth()->user()->role === 'admin')
+            @if($lossWriteoff->status_kejadian === 'Dilaporkan' && auth()->user()->role === 'admin')
             <form action="{{ route('admin.loss-writeoffs.approve', $lossWriteoff) }}" method="POST" class="inline">
                 @csrf
                 <button type="submit" 
@@ -136,7 +136,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-purple-700">Hari Berlalu</p>
-                    <p class="text-2xl font-bold text-purple-900">{{ $lossWriteoff->tarikh_kehilangan->diffInDays(now()) }}</p>
+                    <p class="text-2xl font-bold text-purple-900">{{ $lossWriteoff->tarikh_laporan->diffInDays(now()) }}</p>
                     <p class="text-xs text-purple-600 mt-1">Sejak kehilangan</p>
                 </div>
                 <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
@@ -173,11 +173,10 @@
                         </div>
                         <dd class="flex items-center">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-                                @if($lossWriteoff->jenis_kehilangan === 'Kehilangan') bg-yellow-100 text-yellow-800
-                                @elseif($lossWriteoff->jenis_kehilangan === 'Kecurian') bg-red-100 text-red-800
-                                @elseif($lossWriteoff->jenis_kehilangan === 'Kerosakan') bg-orange-100 text-orange-800
+                                @if($lossWriteoff->jenis_kejadian === 'hilang') bg-yellow-100 text-yellow-800
+                                @elseif($lossWriteoff->jenis_kejadian === 'hapus_kira') bg-red-100 text-red-800
                                 @else bg-gray-100 text-gray-800 @endif">
-                                {{ $lossWriteoff->jenis_kehilangan }}
+                                {{ $lossWriteoff->formatted_incident_type }}
                             </span>
                         </dd>
                     </div>
@@ -188,8 +187,8 @@
                             <i class='bx bx-calendar text-red-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Tarikh Kehilangan</dt>
                         </div>
-                        <dd class="text-lg font-semibold text-gray-900">{{ $lossWriteoff->tarikh_kehilangan->format('d/m/Y') }}</dd>
-                        <p class="text-xs text-gray-500 mt-1">{{ $lossWriteoff->tarikh_kehilangan->diffForHumans() }}</p>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $lossWriteoff->tarikh_laporan->format('d/m/Y') }}</dd>
+                        <p class="text-xs text-gray-500 mt-1">{{ $lossWriteoff->tarikh_laporan->diffForHumans() }}</p>
                     </div>
 
                     <!-- Loss Reason -->
@@ -198,7 +197,7 @@
                             <i class='bx bx-message-detail text-red-600 mr-2'></i>
                             <dt class="text-sm font-medium text-gray-600">Sebab Kehilangan</dt>
                         </div>
-                        <dd class="text-lg font-semibold text-gray-900">{{ $lossWriteoff->sebab_kehilangan }}</dd>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $lossWriteoff->formatted_incident_reason }}</dd>
                     </div>
 
                     <!-- Loss Value -->
@@ -210,16 +209,7 @@
                         <dd class="text-lg font-semibold text-red-600">RM {{ number_format($lossWriteoff->nilai_kehilangan, 2) }}</dd>
                     </div>
 
-                    <!-- Loss Location -->
-                    @if($lossWriteoff->lokasi_kehilangan)
-                    <div class="bg-white rounded-lg p-4 border border-gray-200">
-                        <div class="flex items-center mb-2">
-                            <i class='bx bx-map text-red-600 mr-2'></i>
-                            <dt class="text-sm font-medium text-gray-600">Lokasi Kehilangan</dt>
-                        </div>
-                        <dd class="text-lg font-semibold text-gray-900">{{ $lossWriteoff->lokasi_kehilangan }}</dd>
-                    </div>
-                    @endif
+
 
                     <!-- Police Report -->
                     @if($lossWriteoff->laporan_polis)
@@ -364,17 +354,16 @@
                         <p class="text-sm text-gray-600">{{ $lossWriteoff->asset->no_siri_pendaftaran }}</p>
                         <div class="flex items-center justify-center space-x-2 mt-3">
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-                                @if($lossWriteoff->jenis_kehilangan === 'Kehilangan') bg-yellow-100 text-yellow-800
-                                @elseif($lossWriteoff->jenis_kehilangan === 'Kecurian') bg-red-100 text-red-800
-                                @elseif($lossWriteoff->jenis_kehilangan === 'Kerosakan') bg-orange-100 text-orange-800
+                                @if($lossWriteoff->jenis_kejadian === 'hilang') bg-yellow-100 text-yellow-800
+                                @elseif($lossWriteoff->jenis_kejadian === 'hapus_kira') bg-red-100 text-red-800
                                 @else bg-gray-100 text-gray-800 @endif">
-                                {{ $lossWriteoff->jenis_kehilangan }}
+                                {{ $lossWriteoff->formatted_incident_type }}
                             </span>
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-                                @if($lossWriteoff->status_kelulusan === 'menunggu') bg-amber-100 text-amber-800
-                                @elseif($lossWriteoff->status_kelulusan === 'diluluskan') bg-green-100 text-green-800
+                                @if($lossWriteoff->status_kejadian === 'Dilaporkan') bg-amber-100 text-amber-800
+                                @elseif($lossWriteoff->status_kejadian === 'Diluluskan') bg-green-100 text-green-800
                                 @else bg-red-100 text-red-800 @endif">
-                                {{ ucfirst($lossWriteoff->status_kelulusan) }}
+                                {{ $lossWriteoff->status_kejadian }}
                             </span>
                         </div>
                     </div>
@@ -391,7 +380,7 @@
                             Edit Laporan
                         </a>
                         
-                        @if($lossWriteoff->status_kelulusan === 'menunggu' && auth()->user()->role === 'admin')
+                        @if($lossWriteoff->status_kejadian === 'Dilaporkan' && auth()->user()->role === 'admin')
                         <form action="{{ route('admin.loss-writeoffs.approve', $lossWriteoff) }}" method="POST" class="w-full">
                             @csrf
                             <button type="submit" 
@@ -492,7 +481,7 @@
 </div>
 
 <!-- Reject Modal -->
-@if($lossWriteoff->status_kelulusan === 'menunggu' && auth()->user()->role === 'admin')
+@if($lossWriteoff->status_kejadian === 'Dilaporkan' && auth()->user()->role === 'admin')
 <div id="rejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-xl bg-white">
         <div class="mt-3">

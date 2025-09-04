@@ -185,15 +185,15 @@
                                 </label>
                                 <div class="relative">
                                     <input type="date" 
-                                           name="tarikh_kehilangan" 
-                                           id="tarikh_kehilangan" 
-                                           value="{{ old('tarikh_kehilangan', $lossWriteoff->tarikh_kehilangan->format('Y-m-d')) }}" 
+                                           name="tarikh_laporan" 
+                                           id="tarikh_laporan" 
+                                           value="{{ old('tarikh_laporan', $lossWriteoff->tarikh_laporan->format('Y-m-d')) }}" 
                                            required
-                                           x-model="form.tarikh_kehilangan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_kehilangan') border-red-500 @enderror bg-white">
+                                           x-model="form.tarikh_laporan"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_laporan') border-red-500 @enderror bg-white">
                                     <i class='bx bx-calendar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
-                                @error('tarikh_kehilangan')
+                                @error('tarikh_laporan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}

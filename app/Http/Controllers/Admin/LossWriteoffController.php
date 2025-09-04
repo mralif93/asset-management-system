@@ -37,8 +37,8 @@ class LossWriteoffController extends Controller
         }
         
         $totalLosses = $statsQuery->count();
-        $pendingLosses = $statsQuery->where('status_kelulusan', 'menunggu')->count();
-        $approvedLosses = $statsQuery->where('status_kelulusan', 'diluluskan')->count();
+        $pendingLosses = $statsQuery->where('status_kejadian', 'Dilaporkan')->count();
+        $approvedLosses = $statsQuery->where('status_kejadian', 'Diluluskan')->count();
         $totalLossValue = $statsQuery->sum('nilai_kehilangan');
         
         return view('admin.loss-writeoffs.index', compact(
@@ -74,12 +74,12 @@ class LossWriteoffController extends Controller
     {
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
-            'jenis_kehilangan' => 'required|string',
-            'sebab_kehilangan' => 'required|string',
-            'tarikh_kehilangan' => 'required|date',
+            'jenis_kejadian' => 'required|string',
+            'sebab_kejadian' => 'required|string',
+            'tarikh_laporan' => 'required|date',
             'nilai_kehilangan' => 'required|numeric|min:0',
             'laporan_polis' => 'nullable|string',
-            'catatan_kehilangan' => 'nullable|string',
+            'catatan' => 'nullable|string',
             'dokumen_kehilangan' => 'nullable|array',
             'dokumen_kehilangan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120'
         ]);
@@ -95,7 +95,7 @@ class LossWriteoffController extends Controller
         }
 
         $validated['user_id'] = Auth::id();
-        $validated['status_kelulusan'] = 'menunggu';
+        $validated['status_kejadian'] = 'Dilaporkan';
 
         $lossWriteoff = LossWriteoff::create($validated);
 
@@ -119,7 +119,7 @@ class LossWriteoffController extends Controller
     public function edit(LossWriteoff $lossWriteoff)
     {
         // Only allow editing if pending approval
-        if ($lossWriteoff->status_kelulusan !== 'menunggu') {
+        if ($lossWriteoff->status_kejadian !== 'Dilaporkan') {
             abort(403, 'Laporan yang telah diluluskan atau ditolak tidak boleh diedit.');
         }
 
@@ -141,18 +141,18 @@ class LossWriteoffController extends Controller
     public function update(Request $request, LossWriteoff $lossWriteoff)
     {
         // Only allow editing if pending approval
-        if ($lossWriteoff->status_kelulusan !== 'menunggu') {
+        if ($lossWriteoff->status_kejadian !== 'Dilaporkan') {
             abort(403, 'Laporan yang telah diluluskan atau ditolak tidak boleh diedit.');
         }
 
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
-            'jenis_kehilangan' => 'required|string',
-            'sebab_kehilangan' => 'required|string',
-            'tarikh_kehilangan' => 'required|date',
+            'jenis_kejadian' => 'required|string',
+            'sebab_kejadian' => 'required|string',
+            'tarikh_laporan' => 'required|date',
             'nilai_kehilangan' => 'required|numeric|min:0',
             'laporan_polis' => 'nullable|string',
-            'catatan_kehilangan' => 'nullable|string',
+            'catatan' => 'nullable|string',
             'dokumen_kehilangan' => 'nullable|array',
             'dokumen_kehilangan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120'
         ]);
@@ -199,7 +199,7 @@ class LossWriteoffController extends Controller
         }
 
         $lossWriteoff->update([
-            'status_kelulusan' => 'diluluskan',
+            'status_kejadian' => 'Diluluskan',
             'tarikh_kelulusan' => now(),
             'diluluskan_oleh' => Auth::id()
         ]);
@@ -222,7 +222,7 @@ class LossWriteoffController extends Controller
         ]);
 
         $lossWriteoff->update([
-            'status_kelulusan' => 'ditolak',
+            'status_kejadian' => 'Ditolak',
             'tarikh_kelulusan' => now(),
             'diluluskan_oleh' => Auth::id(),
             'sebab_penolakan' => $request->sebab_penolakan

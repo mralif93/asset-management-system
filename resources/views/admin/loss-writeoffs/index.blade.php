@@ -175,12 +175,12 @@
 
                 <!-- Status Filter -->
                 <div>
-                    <label for="status_kelulusan" class="block text-sm font-medium text-gray-700 mb-2">Status Kelulusan</label>
-                    <select id="status_kelulusan" name="status_kelulusan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                    <label for="status_kejadian" class="block text-sm font-medium text-gray-700 mb-2">Status Kejadian</label>
+                    <select id="status_kejadian" name="status_kejadian" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
                         <option value="">Semua Status</option>
-                        <option value="menunggu" {{ request('status_kelulusan') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
-                        <option value="diluluskan" {{ request('status_kelulusan') == 'diluluskan' ? 'selected' : '' }}>Diluluskan</option>
-                        <option value="ditolak" {{ request('status_kelulusan') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                        <option value="Dilaporkan" {{ request('status_kejadian') == 'Dilaporkan' ? 'selected' : '' }}>Dilaporkan</option>
+                        <option value="Diluluskan" {{ request('status_kejadian') == 'Diluluskan' ? 'selected' : '' }}>Diluluskan</option>
+                        <option value="Ditolak" {{ request('status_kejadian') == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                     </select>
                 </div>
 
@@ -279,14 +279,14 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                @if($loss->status_kelulusan === 'menunggu') bg-amber-100 text-amber-800
-                                @elseif($loss->status_kelulusan === 'diluluskan') bg-green-100 text-green-800
+                                @if($loss->status_kejadian === 'Dilaporkan') bg-amber-100 text-amber-800
+                                @elseif($loss->status_kejadian === 'Diluluskan') bg-green-100 text-green-800
                                 @else bg-red-100 text-red-800 @endif">
                                 <div class="w-2 h-2 
-                                    @if($loss->status_kelulusan === 'menunggu') bg-amber-500
-                                    @elseif($loss->status_kelulusan === 'diluluskan') bg-green-500
+                                    @if($loss->status_kejadian === 'Dilaporkan') bg-amber-500
+                                    @elseif($loss->status_kejadian === 'Diluluskan') bg-green-500
                                     @else bg-red-500 @endif rounded-full mr-2"></div>
-                                {{ ucfirst($loss->status_kelulusan) }}
+                                {{ $loss->status_kejadian }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -303,7 +303,7 @@
                                     <i class='bx bx-edit text-sm'></i>
                                 </a>
                                 
-                                @if($loss->status_kelulusan === 'menunggu')
+                                @if($loss->status_kejadian === 'Dilaporkan')
                                 <form action="{{ route('admin.loss-writeoffs.approve', $loss) }}" method="POST" class="inline">
                                     @csrf
                                     <button type="submit" 

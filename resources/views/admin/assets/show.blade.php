@@ -598,36 +598,57 @@
 </div>
 
 <!-- Image Modal -->
-<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="max-w-4xl max-h-screen p-4">
-        <div class="bg-white rounded-lg overflow-hidden">
-            <div class="flex items-center justify-between p-4 border-b">
-                <h3 class="text-lg font-semibold">Gambar Aset</h3>
-                <button onclick="closeImageModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class='bx bx-x text-2xl'></i>
-                </button>
-            </div>
-            <div class="p-4">
-                <img id="modalImage" src="" alt="Gambar Aset" class="max-w-full max-h-96 mx-auto">
-            </div>
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-6xl max-h-full bg-white rounded-xl shadow-2xl overflow-hidden">
+        <button id="closeModal" class="absolute top-4 right-4 z-10 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all duration-200">
+            <i class='bx bx-x text-2xl'></i>
+        </button>
+        <div class="p-4">
+            <img id="modalImage" src="" alt="Full size image" class="max-w-full max-h-[80vh] object-contain mx-auto">
+        </div>
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg">
+            <p id="modalImageName" class="text-sm font-medium">Gambar Aset</p>
         </div>
     </div>
 </div>
 
 <script>
 function openImageModal(imageSrc) {
-    document.getElementById('modalImage').src = imageSrc;
-    document.getElementById('imageModal').classList.remove('hidden');
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalImageName = document.getElementById('modalImageName');
+    
+    modalImage.src = imageSrc;
+    modalImageName.textContent = 'Gambar Aset';
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
 }
 
 function closeImageModal() {
-    document.getElementById('imageModal').classList.add('hidden');
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Restore scrolling
 }
+
+// Close modal functionality
+document.getElementById('closeModal').addEventListener('click', function() {
+    closeImageModal();
+});
 
 // Close modal when clicking outside
 document.getElementById('imageModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('imageModal');
+        if (!modal.classList.contains('hidden')) {
+            closeImageModal();
+        }
     }
 });
 </script>

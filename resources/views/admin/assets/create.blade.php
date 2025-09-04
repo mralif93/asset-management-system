@@ -847,10 +847,10 @@
                                                         Upload gambar
                                                     </span>
                                                     <input id="gambar_aset" name="gambar_aset[]" type="file" class="sr-only" multiple accept="image/*" required>
-                                                </label>
+                                            </label>
                                                 <p class="pl-3 text-gray-500 group-hover:text-emerald-600">atau drag and drop di sini</p>
-                                            </div>
                                         </div>
+                                    </div>
                                         <div class="space-y-2">
                                             <p class="text-xs text-gray-500 flex items-center justify-center">
                                                 <i class='bx bx-file-blank mr-1'></i>
@@ -864,7 +864,7 @@
                                                 <i class='bx bx-info-circle mr-1'></i>
                                                 Anda boleh menambah gambar lagi kemudian
                                             </p>
-                                        </div>
+                                </div>
                                     </div>
                                 </div>
                                 
@@ -1380,4 +1380,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-@endsection
+@endsection 

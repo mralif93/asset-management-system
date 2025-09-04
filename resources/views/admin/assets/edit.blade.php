@@ -520,6 +520,33 @@
                                 @enderror
                             </div>
 
+                            <!-- Discount -->
+                            <div>
+                                <label for="diskaun" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-purchase-tag mr-1'></i>
+                                    Diskaun (RM)
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class='bx bx-purchase-tag text-gray-400'></i>
+                                    </div>
+                                    <input type="number" 
+                                           id="diskaun" 
+                                           name="diskaun" 
+                                           step="0.01"
+                                           min="0"
+                                           value="{{ old('diskaun', $asset->diskaun ?? '0.00') }}"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('diskaun') border-red-500 @enderror bg-white"
+                                           placeholder="0.00">
+                                </div>
+                                @error('diskaun')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             <!-- Receipt Number -->
                             <div>
                                 <label for="no_resit" class="block text-sm font-medium text-gray-700 mb-2">
@@ -562,33 +589,6 @@
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_resit') border-red-500 @enderror bg-white">
                                 </div>
                                 @error('tarikh_resit')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Discount -->
-                            <div>
-                                <label for="diskaun" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-purchase-tag mr-1'></i>
-                                    Diskaun (RM)
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class='bx bx-purchase-tag text-gray-400'></i>
-                                    </div>
-                                    <input type="number" 
-                                           id="diskaun" 
-                                           name="diskaun" 
-                                           step="0.01"
-                                           min="0"
-                                           value="{{ old('diskaun', $asset->diskaun ?? '0.00') }}"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('diskaun') border-red-500 @enderror bg-white"
-                                           placeholder="0.00">
-                                </div>
-                                @error('diskaun')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
