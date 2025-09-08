@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Laporan Sistem')
-@section('page-title', 'Laporan Sistem')
-@section('page-description', 'Analisis dan statistik sistem pengurusan aset')
+@section('title', 'Laporan Sistem BR-AMS')
+@section('page-title', 'Laporan Sistem BR-AMS')
+@section('page-description', 'Borang Aset Masjid dan Surau (BR-AMS) - Garis Panduan Negeri Selangor')
 
 @section('content')
 <div class="p-6">
@@ -10,457 +10,383 @@
     <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white mb-8 shadow-lg">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold mb-2">Pusat Laporan Sistem</h1>
-                <p class="text-emerald-100 text-lg">Analisis komprehensif dan statistik sistem pengurusan aset</p>
+                <h1 class="text-3xl font-bold mb-2">Borang Aset Masjid dan Surau (BR-AMS)</h1>
+                <p class="text-emerald-100 text-lg">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor</p>
                 <div class="flex items-center space-x-4 mt-4">
                     <div class="flex items-center space-x-2">
-                        <i class='bx bx-chart text-emerald-200'></i>
-                        <span class="text-emerald-100">{{ $totalAssets ?? 0 }} aset</span>
+                        <i class='bx bx-file-blank text-emerald-200'></i>
+                        <span class="text-emerald-100">11 Borang Tersedia</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-shield-check text-emerald-200'></i>
-                        <span class="text-emerald-100">Sistem Aktif</span>
+                        <span class="text-emerald-100">Rasmi Negeri Selangor</span>
                     </div>
                 </div>
             </div>
             <div class="hidden md:block">
-                <i class='bx bx-chart text-6xl text-emerald-200 opacity-80'></i>
+                <i class='bx bx-file-blank text-6xl text-emerald-200 opacity-80'></i>
             </div>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Assets -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-200">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i class='bx bx-box text-blue-600 text-xl'></i>
-                </div>
-                <span class="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full font-medium">Total</span>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $totalAssets ?? 0 }}</h3>
-            <p class="text-sm text-gray-600">Jumlah Aset</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <i class='bx bx-trending-up mr-1'></i>
-                <span>Keseluruhan sistem</span>
-            </div>
-        </div>
 
-        <!-- Total Value -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-green-200">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i class='bx bx-dollar text-green-600 text-xl'></i>
-                </div>
-                <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">RM</span>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ number_format($totalValue ?? 0, 0) }}</h3>
-            <p class="text-sm text-gray-600">Nilai Keseluruhan</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <i class='bx bx-wallet mr-1'></i>
-                <span>Nilai aset terkini</span>
-            </div>
-        </div>
-
-        <!-- Maintenance Needed -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-orange-200">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <i class='bx bx-wrench text-orange-600 text-xl'></i>
-                </div>
-                <span class="text-sm text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium">Perlu</span>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $totalMaintenance ?? 0 }}</h3>
-            <p class="text-sm text-gray-600">Penyelenggaraan</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <i class='bx bx-time mr-1'></i>
-                <span>Perlu tindakan</span>
-            </div>
-        </div>
-
-        <!-- Pending Approvals -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-red-200">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                    <i class='bx bx-time text-red-600 text-xl'></i>
-                </div>
-                <span class="text-sm text-red-600 bg-red-100 px-2 py-1 rounded-full font-medium">Menunggu</span>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $pendingApprovals ?? 0 }}</h3>
-            <p class="text-sm text-gray-600">Kelulusan</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <i class='bx bx-hourglass mr-1'></i>
-                <span>Perlu kelulusan</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Generate Report -->
-        <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200 cursor-pointer" onclick="window.print()">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
-                    <i class='bx bx-printer text-emerald-600 text-xl'></i>
-                </div>
-                <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-emerald-600 transition-colors'></i>
-            </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Cetak Laporan</h3>
-            <p class="text-sm text-gray-600">Cetak ringkasan keseluruhan</p>
-        </div>
-
-        <!-- Export Data -->
-        <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-200 cursor-pointer" onclick="exportToCSV()">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                    <i class='bx bx-download text-blue-600 text-xl'></i>
-                </div>
-                <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-blue-600 transition-colors'></i>
-            </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Eksport Data</h3>
-            <p class="text-sm text-gray-600">Muat turun data CSV</p>
-        </div>
-
-        <!-- Analytics Dashboard -->
-        <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-purple-200 cursor-pointer">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                    <i class='bx bx-bar-chart text-purple-600 text-xl'></i>
-                </div>
-                <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-purple-600 transition-colors'></i>
-            </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Dashboard Analitik</h3>
-            <p class="text-sm text-gray-600">Visualisasi data interaktif</p>
-        </div>
-
-        <!-- Scheduled Reports -->
-        <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-amber-200 cursor-pointer">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition-colors">
-                    <i class='bx bx-calendar text-amber-600 text-xl'></i>
-                </div>
-                <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-amber-600 transition-colors'></i>
-            </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Laporan Terjadual</h3>
-            <p class="text-sm text-gray-600">Jadual laporan automatik</p>
-        </div>
-    </div>
-
-    <!-- BR-AMS Forms Section -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-8 mb-8">
+    <!-- BR-AMS Reports Grid -->
+    <div class="mb-8">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Borang Aset Masjid dan Surau (BR-AMS)</h2>
-                <p class="text-gray-600">Borang rasmi mengikut garis panduan Negeri Selangor</p>
+                <h2 class="text-2xl font-bold text-gray-900">Semua Borang BR-AMS</h2>
+                <p class="text-gray-600">Klik pada borang untuk mengakses dan menjana laporan</p>
             </div>
-            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
-                <i class='bx bx-file-blank text-blue-600 text-3xl'></i>
+            <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+        </div>
+
+        <!-- BR-AMS Reports Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- BR-AMS 001 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-list-ul text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 001</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Senarai Daftar Harta Modal</h4>
+                        <p class="text-sm text-gray-600 mb-3">List of Capital Asset Register</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-001') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 002 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-package text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 002</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Senarai Daftar Inventori</h4>
+                        <p class="text-sm text-gray-600 mb-3">List of Inventory Register</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-002') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 003 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-map text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 003</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Senarai Aset Alih di Lokasi</h4>
+                        <p class="text-sm text-gray-600 mb-3">List of Movable Assets at Location</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-003') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 004 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-transfer text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 004</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Borang Permohonan Pergerakan/ Pinjaman Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Movable Asset Movement/Loan Application Form</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-004') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 005 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-search text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 005</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Borang Pemeriksaan Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Movable Asset Inspection Form</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-005') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 006 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-wrench text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 006</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Rekod Penyelenggaraan Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Movable Asset Maintenance Record</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-006') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 007 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-trash text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 007</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Rekod Pelupusan Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Record of Disposal of Movable Assets</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-007') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 008 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-file-blank text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 008</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Laporan Tindakan Pelupusan Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Asset Disposal Action Report</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-008') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 009 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-x-circle text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 009</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Laporan Kehilangan / Hapus Kira Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Report of Loss / Write-off of Movable Assets</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-009') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 010 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-calendar text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 010</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Laporan Tahunan Pengurusan Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Annual Report on Movable Asset Management</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-010') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
+            </div>
+
+            <!-- BR-AMS 011 -->
+            <div class="group bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <i class='bx bx-building text-emerald-600 text-xl'></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-lg">BR-AMS 011</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    <i class='bx bx-check-circle text-xs mr-1'></i>
+                                    Tersedia
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Senarai Rekod Aset Tak Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">List of Immovable Asset Records</p>
+                    </div>
+                    <a href="{{ route('admin.reports.br-ams-011') }}" 
+                       class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
+                        Akses Borang
+                    </a>
+                </div>
             </div>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-lg p-4 border border-blue-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-list-ul text-blue-600'></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">11 Borang</p>
-                        <p class="text-xs text-gray-600">BR-AMS 001-011</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg p-4 border border-blue-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-check-circle text-green-600'></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">Tersedia</p>
-                        <p class="text-xs text-gray-600">Semua borang aktif</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg p-4 border border-blue-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-shield-check text-purple-600'></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">Rasmi</p>
-                        <p class="text-xs text-gray-600">Negeri Selangor</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <a href="{{ route('admin.reports.br-ams-forms') }}" 
-           class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-            <i class='bx bx-right-arrow-alt text-lg mr-2'></i>
-            Lihat Semua Borang BR-AMS
-        </a>
     </div>
 
-    <!-- Report Categories -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Asset Reports -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-900">Laporan Aset</h2>
-                    <p class="text-sm text-gray-600">Analisis komprehensif aset dan nilai</p>
-                </div>
-                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i class='bx bx-box text-blue-600 text-xl'></i>
-                </div>
+    <!-- Additional Information -->
+    <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-2xl p-8 border border-emerald-200">
+        <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class='bx bx-info-circle text-emerald-600 text-xl'></i>
             </div>
-            <div class="space-y-3">
-                <a href="{{ route('admin.reports.annual-summary') }}" 
-                   class="group block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-200 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <i class='bx bx-calendar text-blue-600 text-sm'></i>
-                            </div>
-                            <div>
-                                <h3 class="font-medium text-gray-900">Ringkasan Tahunan</h3>
-                                <p class="text-sm text-gray-600">Analisis lengkap prestasi aset tahunan</p>
-                            </div>
-                        </div>
-                        <i class='bx bx-chevron-right text-gray-400 group-hover:text-blue-600 transition-colors'></i>
-                    </div>
-                </a>
-                
-                <a href="{{ route('admin.reports.movements-summary') }}" 
-                   class="group block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-200 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <i class='bx bx-transfer text-blue-600 text-sm'></i>
-                            </div>
-                            <div>
-                                <h3 class="font-medium text-gray-900">Pergerakan Aset</h3>
-                                <p class="text-sm text-gray-600">Senarai pergerakan dan pemindahan aset</p>
-                            </div>
-                        </div>
-                        <i class='bx bx-chevron-right text-gray-400 group-hover:text-blue-600 transition-colors'></i>
-                    </div>
-                </a>
-                
-                <a href="{{ route('admin.reports.asset-depreciation') }}" 
-                   class="group block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-200 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <i class='bx bx-trending-down text-blue-600 text-sm'></i>
-                            </div>
-                            <div>
-                                <h3 class="font-medium text-gray-900">Susut Nilai Aset</h3>
-                                <p class="text-sm text-gray-600">Analisis susut nilai dan nilai semasa</p>
-                            </div>
-                        </div>
-                        <i class='bx bx-chevron-right text-gray-400 group-hover:text-blue-600 transition-colors'></i>
-                    </div>
-                </a>
-
-                <a href="{{ route('admin.reports.assets-by-location') }}" 
-                   class="group block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-200 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <i class='bx bx-map text-blue-600 text-sm'></i>
-                            </div>
-                            <div>
-                                <h3 class="font-medium text-gray-900">Aset Mengikut Lokasi</h3>
-                                <p class="text-sm text-gray-600">Analisis distribusi aset mengikut lokasi</p>
-                            </div>
-                        </div>
-                        <i class='bx bx-chevron-right text-gray-400 group-hover:text-blue-600 transition-colors'></i>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Maintenance Reports -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-900">Laporan Penyelenggaraan</h2>
-                    <p class="text-sm text-gray-600">Jadual dan analisis penyelenggaraan</p>
-                </div>
-                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <i class='bx bx-wrench text-orange-600 text-xl'></i>
-                </div>
-            </div>
-            <div class="space-y-3">
-                <a href="{{ route('admin.reports.inspection-schedule') }}" 
-                   class="group block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-orange-200 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
-                                <i class='bx bx-search text-orange-600 text-sm'></i>
-                            </div>
-                            <div>
-                                <h3 class="font-medium text-gray-900">Jadual Pemeriksaan</h3>
-                                <p class="text-sm text-gray-600">Senarai pemeriksaan yang perlu dilakukan</p>
-                            </div>
-                        </div>
-                        <i class='bx bx-chevron-right text-gray-400 group-hover:text-orange-600 transition-colors'></i>
-                    </div>
-                </a>
-                
-                <a href="{{ route('admin.reports.maintenance-schedule') }}" 
-                   class="group block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-orange-200 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
-                                <i class='bx bx-calendar-check text-orange-600 text-sm'></i>
-                            </div>
-                            <div>
-                                <h3 class="font-medium text-gray-900">Jadual Penyelenggaraan</h3>
-                                <p class="text-sm text-gray-600">Senarai penyelenggaraan yang dijadualkan</p>
-                            </div>
-                        </div>
-                        <i class='bx bx-chevron-right text-gray-400 group-hover:text-orange-600 transition-colors'></i>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Analytics Overview -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Asset Status Chart -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900">Status Aset</h3>
-                    <p class="text-sm text-gray-600">Distribusi status aset semasa</p>
-                </div>
-                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-            </div>
-            <div class="space-y-4">
-                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-4 h-4 bg-green-500 rounded-full"></div>
-                        <span class="text-gray-700 font-medium">Aktif</span>
-                    </div>
-                    <span class="font-bold text-green-600">{{ $statusCounts['aktif'] ?? 0 }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
-                        <span class="text-gray-700 font-medium">Dalam Penyelenggaraan</span>
-                    </div>
-                    <span class="font-bold text-yellow-600">{{ $statusCounts['maintenance'] ?? 0 }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-4 h-4 bg-red-500 rounded-full"></div>
-                        <span class="text-gray-700 font-medium">Rosak</span>
-                    </div>
-                    <span class="font-bold text-red-600">{{ $statusCounts['rosak'] ?? 0 }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Asset Types Chart -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900">Jenis Aset</h3>
-                    <p class="text-sm text-gray-600">Kategori aset dalam sistem</p>
-                </div>
-                <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-            </div>
-            <div class="space-y-4">
-                @if(isset($assetTypes) && count($assetTypes) > 0)
-                    @foreach($assetTypes as $type => $count)
-                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <span class="text-gray-700 font-medium">{{ $type }}</span>
-                        <span class="font-bold text-blue-600">{{ $count }}</span>
-                    </div>
-                    @endforeach
-                @else
-                    <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class='bx bx-chart text-3xl text-gray-400'></i>
-                        </div>
-                        <p class="text-gray-500">Tiada data kategori tersedia</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Activities -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <div class="flex items-center justify-between mb-6">
             <div>
-                <h3 class="text-lg font-semibold text-gray-900">Aktiviti Terkini</h3>
-                <p class="text-sm text-gray-600">Aktiviti sistem dan transaksi terbaru</p>
-            </div>
-            <div class="flex items-center space-x-3">
-                <span class="text-sm text-gray-500">Masa nyata</span>
-                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-            </div>
-        </div>
-        <div class="space-y-4">
-            @if(isset($recentActivities) && count($recentActivities) > 0)
-                @foreach($recentActivities as $activity)
-                <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                        <i class='bx {{ $activity['icon'] ?? "bx-box" }} text-emerald-600'></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-gray-900 font-medium">{{ $activity['description'] ?? 'Aktiviti sistem' }}</p>
-                        <p class="text-sm text-gray-600">{{ $activity['time'] ?? 'Masa tidak diketahui' }}</p>
-                    </div>
-                    <div class="text-xs text-gray-400">
-                        <i class='bx bx-time'></i>
-                    </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Maklumat Penting</h3>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <p>• Semua borang BR-AMS mengikut garis panduan rasmi Negeri Selangor</p>
+                    <p>• Borang ini digunakan untuk pengurusan aset masjid dan surau di seluruh Selangor</p>
+                    <p>• Setiap borang mempunyai fungsi dan kegunaan yang spesifik dalam kitaran hayat aset</p>
+                    <p>• Pastikan data yang dimasukkan adalah tepat dan lengkap mengikut keperluan</p>
                 </div>
-                @endforeach
-            @else
-                <div class="text-center py-12">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class='bx bx-history text-3xl text-gray-400'></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Tiada Aktiviti Terkini</h3>
-                    <p class="text-gray-500 text-sm">Aktiviti sistem akan dipaparkan di sini apabila tersedia</p>
-                </div>
-            @endif
+            </div>
         </div>
     </div>
 </div>
 
 @push('scripts')
 <script>
-function exportToCSV() {
-    // Show loading state
-    const button = event.target.closest('.group');
-    const originalContent = button.innerHTML;
-    
-    // Simulate export process
-    button.innerHTML = `
-        <div class="flex items-center justify-center">
-            <i class='bx bx-loader-alt animate-spin text-blue-600 text-xl mr-2'></i>
-            <span>Memproses...</span>
-        </div>
-    `;
-    
-    setTimeout(() => {
-        button.innerHTML = originalContent;
-        alert('Fungsi export akan dilaksanakan - CSV akan dimuat turun');
-    }, 2000);
-}
-
 // Add some interactive effects
 document.addEventListener('DOMContentLoaded', function() {
-    // Animate statistics cards on load
+    // Animate form cards on load
     const cards = document.querySelectorAll('.grid > div');
     cards.forEach((card, index) => {
         setTimeout(() => {
@@ -473,6 +399,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.style.transform = 'translateY(0)';
             }, 100);
         }, index * 100);
+    });
+
+    // Add hover effects for better UX
+    const formCards = document.querySelectorAll('.group');
+    formCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Add click animation to buttons
+    const buttons = document.querySelectorAll('a[href*="br-ams"]');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Add loading state
+            const originalContent = this.innerHTML;
+            this.innerHTML = `
+                <i class='bx bx-loader-alt animate-spin text-lg mr-2'></i>
+                Memproses...
+            `;
+            this.classList.add('opacity-75', 'cursor-not-allowed');
+            
+            // Reset after a short delay (in case of navigation issues)
+            setTimeout(() => {
+                this.innerHTML = originalContent;
+                this.classList.remove('opacity-75', 'cursor-not-allowed');
+            }, 3000);
+        });
     });
 });
 </script>
