@@ -42,6 +42,7 @@ class DisposalTest extends TestCase
             'tarikh_permohonan' => 'datetime',
             'tarikh_kelulusan_pelupusan' => 'datetime',
             'deleted_at' => 'datetime',
+            'id' => 'int',
         ];
 
         $this->assertEquals($expectedCasts, $disposal->getCasts());
@@ -59,25 +60,19 @@ class DisposalTest extends TestCase
     }
 
     /** @test */
-    public function it_belongs_to_user()
+    public function it_does_not_have_user_relationship()
     {
         $disposal = new Disposal();
         
-        $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-            $disposal->user()
-        );
+        $this->assertFalse(method_exists($disposal, 'user'));
     }
 
     /** @test */
-    public function it_belongs_to_approver()
+    public function it_does_not_have_approver_relationship()
     {
         $disposal = new Disposal();
         
-        $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-            $disposal->approver()
-        );
+        $this->assertFalse(method_exists($disposal, 'approver'));
     }
 
     /** @test */

@@ -45,6 +45,7 @@ class MaintenanceRecordTest extends TestCase
             'tarikh_penyelenggaraan' => 'datetime',
             'kos_penyelenggaraan' => 'decimal:2',
             'deleted_at' => 'datetime',
+            'id' => 'int',
         ];
 
         $this->assertEquals($expectedCasts, $maintenanceRecord->getCasts());
@@ -62,14 +63,11 @@ class MaintenanceRecordTest extends TestCase
     }
 
     /** @test */
-    public function it_belongs_to_user()
+    public function it_does_not_have_user_relationship()
     {
         $maintenanceRecord = new MaintenanceRecord();
         
-        $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-            $maintenanceRecord->user()
-        );
+        $this->assertFalse(method_exists($maintenanceRecord, 'user'));
     }
 
     /** @test */
@@ -245,6 +243,7 @@ class MaintenanceRecordTest extends TestCase
             'butiran_kerja' => 'Test maintenance work',
             'status_penyelenggaraan' => 'selesai',
             'kos_penyelenggaraan' => 100.50,
+            'pegawai_bertanggungjawab' => 'Test Officer',
         ];
         
         $maintenanceRecord = MaintenanceRecord::create($maintenanceData);

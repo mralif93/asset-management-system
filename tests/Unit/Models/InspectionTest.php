@@ -20,12 +20,11 @@ class InspectionTest extends TestCase
         $fillable = [
             'asset_id',
             'tarikh_pemeriksaan',
-            'kondisi_aset',
-            'tarikh_pemeriksaan_akan_datang',
-            'nama_pemeriksa',
-            'catatan_pemeriksaan',
-            'tindakan_diperlukan',
-            'gambar_pemeriksaan',
+            'keadaan_aset',
+            'lokasi_semasa_pemeriksaan',
+            'cadangan_tindakan',
+            'pegawai_pemeriksa',
+            'catatan_pemeriksa'
         ];
 
         $this->assertEquals($fillable, $inspection->getFillable());
@@ -37,11 +36,9 @@ class InspectionTest extends TestCase
         $inspection = new Inspection();
         
         $expectedCasts = [
-            'tarikh_pemeriksaan' => 'date',
-            'tarikh_pemeriksaan_akan_datang' => 'date',
-            'gambar_pemeriksaan' => 'array',
+            'tarikh_pemeriksaan' => 'datetime',
             'id' => 'int',
-            'tindakan_diperlukan' => 'boolean',
+            'deleted_at' => 'datetime',
         ];
 
         $this->assertEquals($expectedCasts, $inspection->getCasts());
@@ -78,7 +75,7 @@ class InspectionTest extends TestCase
         $result = $inspection->scopeByCondition($query, 'baik');
         
         $this->assertStringContainsString(
-            'where "kondisi_aset" = ?',
+            'where "keadaan_aset" = ?',
             $result->toSql()
         );
     }
@@ -109,7 +106,7 @@ class InspectionTest extends TestCase
         $result = $inspection->scopeNeedsAction($query);
         
         $this->assertStringContainsString(
-            'where "tindakan_diperlukan" = ?',
+            'where "cadangan_tindakan" in (?, ?, ?)',
             $result->toSql()
         );
     }
@@ -133,14 +130,14 @@ class InspectionTest extends TestCase
     {
         $inspection = new Inspection();
         
-        $inspection->kondisi_aset = 'baik';
+        $inspection->keadaan_aset = 'baik';
         $this->assertEquals('Baik', $inspection->getFormattedConditionAttribute());
         
-        $inspection->kondisi_aset = 'sederhana';
-        $this->assertEquals('Sederhana', $inspection->getFormattedConditionAttribute());
+        $inspection->keadaan_aset = 'rosak_kecil';
+        $this->assertEquals('Rosak Kecil', $inspection->getFormattedConditionAttribute());
         
-        $inspection->kondisi_aset = 'rosak';
-        $this->assertEquals('Rosak', $inspection->getFormattedConditionAttribute());
+        $inspection->keadaan_aset = 'rosak_teruk';
+        $this->assertEquals('Rosak Teruk', $inspection->getFormattedConditionAttribute());
     }
 
     /** @test */

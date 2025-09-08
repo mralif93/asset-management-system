@@ -34,11 +34,6 @@ class LossWriteoffTest extends TestCase
             'tarikh_kelulusan_hapus_kira',
             'status_kejadian',
             'catatan',
-            'nilai_kehilangan',
-            'laporan_polis',
-            'dokumen_kehilangan',
-            'diluluskan_oleh',
-            'sebab_penolakan',
         ];
 
         $this->assertEquals($fillable, $lossWriteoff->getFillable());
@@ -50,10 +45,9 @@ class LossWriteoffTest extends TestCase
         $lossWriteoff = new LossWriteoff();
         
         $expectedCasts = [
-            'tarikh_laporan' => 'date',
-            'tarikh_kelulusan_hapus_kira' => 'date',
-            'nilai_kehilangan' => 'decimal:2',
-            'dokumen_kehilangan' => 'array',
+            'tarikh_laporan' => 'datetime',
+            'tarikh_kelulusan_hapus_kira' => 'datetime',
+            'deleted_at' => 'datetime',
             'id' => 'int',
         ];
 

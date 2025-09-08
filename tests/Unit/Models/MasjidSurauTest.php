@@ -21,17 +21,17 @@ class MasjidSurauTest extends TestCase
     }
 
     /** @test */
-    public function it_uses_string_key_type()
+    public function it_uses_integer_key_type()
     {
         $masjidSurau = new MasjidSurau();
-        $this->assertEquals('string', $masjidSurau->getKeyType());
+        $this->assertEquals('int', $masjidSurau->getKeyType());
     }
 
     /** @test */
-    public function it_does_not_auto_increment()
+    public function it_does_auto_increment()
     {
         $masjidSurau = new MasjidSurau();
-        $this->assertFalse($masjidSurau->getIncrementing());
+        $this->assertTrue($masjidSurau->getIncrementing());
     }
 
     /** @test */
@@ -77,6 +77,7 @@ class MasjidSurauTest extends TestCase
             'tahun_dibina' => 'integer',
             'bilangan_jemaah' => 'integer',
             'deleted_at' => 'datetime',
+            'id' => 'int',
         ];
 
         $this->assertEquals($expectedCasts, $masjidSurau->getCasts());
@@ -133,26 +134,24 @@ class MasjidSurauTest extends TestCase
     public function it_can_be_soft_deleted_and_restored()
     {
         $masjidSurau = MasjidSurau::create([
-            'id' => 'MS001',
             'nama' => 'Test Masjid',
             'jenis' => 'Masjid',
             'status' => 'Aktif',
         ]);
         
-        $this->assertDatabaseHas('masjid_surau', ['id' => 'MS001']);
+        $this->assertDatabaseHas('masjid_surau', ['id' => $masjidSurau->id]);
         
         $masjidSurau->delete();
-        $this->assertSoftDeleted('masjid_surau', ['id' => 'MS001']);
+        $this->assertSoftDeleted('masjid_surau', ['id' => $masjidSurau->id]);
         
         $masjidSurau->restore();
-        $this->assertDatabaseHas('masjid_surau', ['id' => 'MS001', 'deleted_at' => null]);
+        $this->assertDatabaseHas('masjid_surau', ['id' => $masjidSurau->id, 'deleted_at' => null]);
     }
 
     /** @test */
     public function it_can_create_masjid_surau_with_valid_attributes()
     {
         $masjidData = [
-            'id' => 'MS002',
             'nama' => 'Masjid Test',
             'jenis' => 'Masjid',
             'kategori' => 'Daerah',
@@ -167,7 +166,7 @@ class MasjidSurauTest extends TestCase
         $masjidSurau = MasjidSurau::create($masjidData);
         
         $this->assertDatabaseHas('masjid_surau', [
-            'id' => 'MS002',
+            'id' => $masjidSurau->id,
             'nama' => 'Masjid Test',
             'jenis' => 'Masjid',
             'kategori' => 'Daerah',

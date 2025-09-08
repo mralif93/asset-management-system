@@ -205,7 +205,7 @@ class Asset extends Model
             ->orderBy('tarikh_pergerakan', 'desc')
             ->first();
 
-        return $latestMovement ? $latestMovement->lokasi_destinasi : $this->lokasi_penempatan;
+        return $latestMovement ? $latestMovement->lokasi_destinasi_spesifik : $this->lokasi_penempatan;
     }
 
     /**
@@ -214,7 +214,7 @@ class Asset extends Model
     public function isDisposed(): bool
     {
         return $this->disposals()
-            ->where('status_kelulusan', 'diluluskan')
+            ->where('status_pelupusan', 'diluluskan')
             ->exists();
     }
 

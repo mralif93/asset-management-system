@@ -18,6 +18,7 @@ class ImmovableAssetTest extends TestCase
         
         $fillable = [
             'masjid_surau_id',
+            'no_siri_pendaftaran',
             'nama_aset',
             'jenis_aset',
             'alamat',
@@ -46,6 +47,7 @@ class ImmovableAssetTest extends TestCase
             'tarikh_perolehan' => 'datetime',
             'gambar_aset' => 'array',
             'deleted_at' => 'datetime',
+            'id' => 'int',
         ];
 
         $this->assertEquals($expectedCasts, $immovableAsset->getCasts());
@@ -129,6 +131,7 @@ class ImmovableAssetTest extends TestCase
         
         $assetData = [
             'masjid_surau_id' => $masjidSurau->id,
+            'no_siri_pendaftaran' => 'IM-2025-001',
             'nama_aset' => 'Tanah Masjid',
             'jenis_aset' => 'tanah',
             'alamat' => 'Jalan Test 123',

@@ -288,20 +288,23 @@ class AuditTrailServiceTest extends TestCase
     /** @test */
     public function it_can_cleanup_old_audit_trails()
     {
+        // Clear existing audit trails from setup
+        AuditTrail::query()->delete();
+        
         // Create old audit trails
         $oldDate = now()->subDays(100);
         
-        AuditTrail::create([
+        $oldTrail = AuditTrail::create([
             'user_id' => $this->user->id,
-            'action' => 'TEST',
-            'created_at' => $oldDate,
+            'action' => 'OLD_TEST',
         ]);
+        $oldTrail->created_at = $oldDate;
+        $oldTrail->save();
         
         // Create recent audit trail
         AuditTrail::create([
             'user_id' => $this->user->id,
-            'action' => 'TEST',
-            'created_at' => now(),
+            'action' => 'RECENT_TEST',
         ]);
         
         $deletedCount = AuditTrailService::cleanup(30);
@@ -318,11 +321,12 @@ class AuditTrailServiceTest extends TestCase
         
         // Create multiple audit trails
         for ($i = 1; $i <= 5; $i++) {
-            AuditTrail::create([
+            $trail = AuditTrail::create([
                 'user_id' => $this->user->id,
                 'action' => "TEST{$i}",
-                'created_at' => now()->subDays(6 - $i),
             ]);
+            $trail->created_at = now()->subMinutes(6 - $i);
+            $trail->save();
         }
         
         $recentActivities = AuditTrailService::getRecentActivities($this->user->id, 3);
@@ -356,8 +360,11 @@ class AuditTrailServiceTest extends TestCase
         $stats = AuditTrailService::getSystemStats();
         
         $this->assertArrayHasKey('total_activities', $stats);
-        $this->assertArrayHasKey('activities_by_type', $stats);
-        $this->assertArrayHasKey('recent_logins', $stats);
+        $this->assertArrayHasKey('today_activities', $stats);
+        $this->assertArrayHasKey('week_activities', $stats);
+        $this->assertArrayHasKey('month_activities', $stats);
+        $this->assertArrayHasKey('failed_activities', $stats);
+        $this->assertArrayHasKey('unique_users', $stats);
         $this->assertEquals(3, $stats['total_activities']);
     }
 } 

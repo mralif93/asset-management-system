@@ -14,6 +14,7 @@ class ImmovableAsset extends Model
 
     protected $fillable = [
         'masjid_surau_id',
+        'no_siri_pendaftaran',
         'nama_aset',
         'jenis_aset',
         'alamat',
