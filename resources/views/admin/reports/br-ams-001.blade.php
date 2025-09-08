@@ -6,87 +6,115 @@
 
 @section('content')
 <div class="p-6">
-    <!-- Header Section -->
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
-        <!-- Official Header -->
-        <div class="text-right text-sm text-gray-600 mb-4">
-            Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor
-        </div>
-        
-        <!-- Form Title -->
-        <div class="text-center mb-8">
-            <div class="text-left text-sm text-gray-600 mb-2">BR-AMS 001</div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">SENARAI DAFTAR HARTA MODAL</h1>
-            
-            <!-- Filter Section -->
-            <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Masjid/Surau:</label>
-                        <select name="masjid_surau_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Semua Masjid/Surau</option>
-                            @foreach($masjidSurauList as $ms)
-                                <option value="{{ $ms->id }}" {{ $masjidSurauId == $ms->id ? 'selected' : '' }}>
-                                    {{ $ms->nama }}
-                                </option>
-                            @endforeach
-                        </select>
+    <!-- Welcome Header -->
+    <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white mb-8 shadow-lg">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">BR-AMS 001 - Senarai Daftar Harta Modal</h1>
+                <p class="text-emerald-100 text-lg">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor</p>
+                <div class="flex items-center space-x-4 mt-4">
+                    <div class="flex items-center space-x-2">
+                        <i class='bx bx-list-ul text-emerald-200'></i>
+                        <span class="text-emerald-100">Borang Rasmi</span>
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Daerah:</label>
-                        <select name="daerah" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Semua Daerah</option>
-                            @foreach($daerahList as $d)
-                                <option value="{{ $d }}" {{ $daerah == $d ? 'selected' : '' }}>
-                                    {{ $d }}
-                                </option>
-                            @endforeach
-                        </select>
+                    <div class="flex items-center space-x-2">
+                        <i class='bx bx-shield-check text-emerald-200'></i>
+                        <span class="text-emerald-100">Negeri Selangor</span>
                     </div>
-                    
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                            <i class='bx bx-search mr-2'></i>Filter
-                        </button>
-                    </div>
-                </form>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <i class='bx bx-list-ul text-6xl text-emerald-200 opacity-80'></i>
             </div>
         </div>
     </div>
 
+    <!-- Filter Section -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Penapis Laporan</h2>
+            <p class="text-sm text-gray-600">Pilih kriteria untuk menapis data laporan</p>
+        </div>
+        
+        <form method="GET" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class='bx bx-building mr-1'></i>
+                        Masjid/Surau
+                    </label>
+                    <select name="masjid_surau_id" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                        <option value="">Semua Masjid/Surau</option>
+                        @foreach($masjidSurauList as $ms)
+                            <option value="{{ $ms->id }}" {{ $masjidSurauId == $ms->id ? 'selected' : '' }}>
+                                {{ $ms->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class='bx bx-map mr-1'></i>
+                        Daerah
+                    </label>
+                    <select name="daerah" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                        <option value="">Semua Daerah</option>
+                        @foreach($daerahList as $d)
+                            <option value="{{ $d }}" {{ $daerah == $d ? 'selected' : '' }}>
+                                {{ $d }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                        <i class='bx bx-search mr-2'></i>
+                        Terapkan Penapis
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <!-- Main Table -->
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-900">Senarai Aset</h3>
+            <p class="text-sm text-gray-600">Data aset mengikut kriteria yang dipilih</p>
+        </div>
+        
         <div class="overflow-x-auto">
             <table class="w-full">
                 <!-- Table Header -->
-                <thead class="bg-gray-100">
+                <thead class="bg-emerald-50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                             BIL.
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                             NOMBOR SIRI PENDAFTARAN
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                             KETERANGAN ASET
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                             CARA ASET DIPEROLEHI
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                             TARIKH PEMBELIAN
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                             HARGA PEMBELIAN (RM)
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                             PENEMPATAN
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                            STATUS ASET (PELUPUSAN/HAPUS KIRA)
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
+                            STATUS ASET
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider">
                             JUMLAH (RM)
                         </th>
                     </tr>
@@ -95,21 +123,23 @@
                 <!-- Table Body -->
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($assets as $index => $asset)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                    <tr class="hover:bg-emerald-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
                             {{ $index + 1 }}
                         </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
-                            <div class="font-medium">{{ $asset->nombor_siri_pendaftaran ?? 'N/A' }}</div>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                            <div class="font-medium text-gray-900">{{ $asset->nombor_siri_pendaftaran ?? 'N/A' }}</div>
                         </td>
-                        <td class="px-4 py-4 text-sm text-gray-900 border-r border-gray-200">
-                            <div class="font-medium">{{ $asset->nama_aset }}</div>
-                            <div class="text-gray-500 text-xs">{{ $asset->jenis_aset }}</div>
+                        <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200">
+                            <div class="font-medium text-gray-900">{{ $asset->nama_aset }}</div>
+                            <div class="text-gray-500 text-xs mt-1">{{ $asset->jenis_aset }}</div>
                         </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
-                            {{ ucfirst(str_replace('_', ' ', $asset->cara_perolehan ?? 'N/A')) }}
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ ucfirst(str_replace('_', ' ', $asset->cara_perolehan ?? 'N/A')) }}
+                            </span>
                         </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
                             {{ $asset->tarikh_perolehan ? \Carbon\Carbon::parse($asset->tarikh_perolehan)->format('d/m/Y') : 'N/A' }}
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 text-right">
@@ -178,27 +208,35 @@
         </div>
     </div>
 
-    <!-- Footer Note -->
-    <div class="mt-6 text-right text-sm text-gray-600">
-        <p>*NOTA: Laporan ini melaporkan kedudukan keseluruhan aset alih yang dimiliki oleh masjid/surau merangkumi penerimaan serta maklumat pelupusan dan hapus kira yang telah dikemaskini</p>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="mt-8 flex flex-wrap gap-4 justify-center">
-        <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-            <i class='bx bx-printer mr-2'></i>
-            Cetak Laporan
-        </button>
-        
-        <button onclick="exportToPDF()" class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-            <i class='bx bx-download mr-2'></i>
-            Muat Turun PDF
-        </button>
-        
-        <a href="{{ route('admin.reports.br-ams-forms') }}" class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
-            <i class='bx bx-arrow-back mr-2'></i>
-            Kembali ke Senarai Borang
-        </a>
+    <!-- Note and Action Buttons -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <!-- Note -->
+            <div class="flex-1">
+                <p class="text-sm text-gray-600">
+                    <i class='bx bx-info-circle text-blue-500 mr-1'></i>
+                    *NOTA: Laporan ini melaporkan kedudukan keseluruhan aset alih yang dimiliki oleh masjid/surau merangkumi penerimaan serta maklumat pelupusan dan hapus kira yang telah dikemaskini
+                </p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="window.print()" class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                    <i class='bx bx-printer mr-2'></i>
+                    Cetak
+                </button>
+                
+                <button onclick="exportToPDF()" class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
+                    <i class='bx bx-download mr-2'></i>
+                    PDF
+                </button>
+                
+                <a href="{{ route('admin.reports.br-ams-forms') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+                    <i class='bx bx-arrow-back mr-2'></i>
+                    Kembali
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
