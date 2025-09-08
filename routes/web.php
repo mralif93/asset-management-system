@@ -105,6 +105,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Reports
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/br-ams-forms', [ReportController::class, 'brAmsForms'])->name('br-ams-forms');
+        Route::get('/br-ams-001', [ReportController::class, 'brAms001'])->name('br-ams-001');
+        Route::get('/br-ams-002', [ReportController::class, 'brAms002'])->name('br-ams-002');
+        Route::get('/br-ams-003', [ReportController::class, 'brAms003'])->name('br-ams-003');
+        Route::get('/br-ams-004', [ReportController::class, 'brAms004'])->name('br-ams-004');
+        Route::get('/br-ams-005', [ReportController::class, 'brAms005'])->name('br-ams-005');
+        Route::get('/br-ams-006', [ReportController::class, 'brAms006'])->name('br-ams-006');
+        Route::get('/br-ams-007', [ReportController::class, 'brAms007'])->name('br-ams-007');
+        Route::get('/br-ams-008', [ReportController::class, 'brAms008'])->name('br-ams-008');
+        Route::get('/br-ams-009', [ReportController::class, 'brAms009'])->name('br-ams-009');
+        Route::get('/br-ams-010', [ReportController::class, 'brAms010'])->name('br-ams-010');
+        Route::get('/br-ams-011', [ReportController::class, 'brAms011'])->name('br-ams-011');
         Route::get('/assets-by-location/{lokasi?}', [ReportController::class, 'assetsByLocation'])->name('assets-by-location');
         Route::get('/disposal/{id}', [ReportController::class, 'disposalReport'])->name('disposal');
         Route::get('/annual-summary/{year?}', [ReportController::class, 'annualSummary'])->name('annual-summary');

@@ -147,6 +147,63 @@
         </div>
     </div>
 
+    <!-- BR-AMS Forms Section -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-8 mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Borang Aset Masjid dan Surau (BR-AMS)</h2>
+                <p class="text-gray-600">Borang rasmi mengikut garis panduan Negeri Selangor</p>
+            </div>
+            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
+                <i class='bx bx-file-blank text-blue-600 text-3xl'></i>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-lg p-4 border border-blue-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class='bx bx-list-ul text-blue-600'></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">11 Borang</p>
+                        <p class="text-xs text-gray-600">BR-AMS 001-011</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 border border-blue-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class='bx bx-check-circle text-green-600'></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Tersedia</p>
+                        <p class="text-xs text-gray-600">Semua borang aktif</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 border border-blue-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class='bx bx-shield-check text-purple-600'></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Rasmi</p>
+                        <p class="text-xs text-gray-600">Negeri Selangor</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <a href="{{ route('admin.reports.br-ams-forms') }}" 
+           class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+            <i class='bx bx-right-arrow-alt text-lg mr-2'></i>
+            Lihat Semua Borang BR-AMS
+        </a>
+    </div>
+
     <!-- Report Categories -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Asset Reports -->
