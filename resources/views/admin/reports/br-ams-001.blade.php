@@ -231,7 +231,7 @@
                     PDF
                 </button>
                 
-                <a href="{{ route('admin.reports.br-ams-forms') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+                <a href="{{ route('admin.reports.index') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
                     <i class='bx bx-arrow-back mr-2'></i>
                     Kembali
                 </a>
