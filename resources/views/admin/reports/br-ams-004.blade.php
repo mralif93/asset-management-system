@@ -6,53 +6,76 @@
 
 @section('content')
 <div class="p-6">
-    <!-- Header Section -->
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
-        <!-- Official Header -->
-        <div class="text-right text-sm text-gray-600 mb-4">
-            Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor
-        </div>
-        
-        <!-- Form Title -->
-        <div class="text-center mb-8">
-            <div class="text-left text-sm text-gray-600 mb-2">BR-AMS 004</div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-6">BORANG PERMOHONAN PERGERAKAN / PINJAMAN ASET ALIH</h1>
-            
-            <!-- Filter Section -->
-            <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Masjid/Surau:</label>
-                        <select name="masjid_surau_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Semua Masjid/Surau</option>
-                            @foreach($masjidSurauList as $ms)
-                                <option value="{{ $ms->id }}" {{ $masjidSurauId == $ms->id ? 'selected' : '' }}>
-                                    {{ $ms->nama }}
-                                </option>
-                            @endforeach
-                        </select>
+    <!-- Welcome Header -->
+    <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white mb-8 shadow-lg">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">BR-AMS 004 - Borang Permohonan Pergerakan / Pinjaman Aset Alih</h1>
+                <p class="text-emerald-100 text-lg">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor</p>
+                <div class="flex items-center space-x-4 mt-4">
+                    <div class="flex items-center space-x-2">
+                        <i class='bx bx-transfer text-emerald-200'></i>
+                        <span class="text-emerald-100">Borang Rasmi</span>
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Status:</label>
-                        <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Semua Status</option>
-                            @foreach($statusOptions as $key => $label)
-                                <option value="{{ $key }}" {{ $status == $key ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
+                    <div class="flex items-center space-x-2">
+                        <i class='bx bx-shield-check text-emerald-200'></i>
+                        <span class="text-emerald-100">Negeri Selangor</span>
                     </div>
-                    
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                            <i class='bx bx-search mr-2'></i>Filter
-                        </button>
-                    </div>
-                </form>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <i class='bx bx-transfer text-6xl text-emerald-200 opacity-80'></i>
             </div>
         </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Penapis Laporan</h2>
+            <p class="text-sm text-gray-600">Pilih kriteria untuk menapis data laporan</p>
+        </div>
+        
+        <form method="GET" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class='bx bx-building mr-1'></i>
+                        Masjid/Surau
+                    </label>
+                    <select name="masjid_surau_id" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                        <option value="">Semua Masjid/Surau</option>
+                        @foreach($masjidSurauList as $ms)
+                            <option value="{{ $ms->id }}" {{ $masjidSurauId == $ms->id ? 'selected' : '' }}>
+                                {{ $ms->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class='bx bx-check-circle mr-1'></i>
+                        Status
+                    </label>
+                    <select name="status" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                        <option value="">Semua Status</option>
+                        @foreach($statusOptions as $key => $label)
+                            <option value="{{ $key }}" {{ $status == $key ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                        <i class='bx bx-search mr-2'></i>
+                        Terapkan Penapis
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <!-- Main Table -->

@@ -6,18 +6,28 @@
 
 @section('content')
 <div class="p-6">
-    <!-- Header Section -->
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
-        <!-- Official Header -->
-        <div class="text-right text-sm text-gray-600 mb-4">
-            Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor
+    <!-- Welcome Header -->
+    <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white mb-8 shadow-lg">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">BR-AMS 007 - Rekod Pelupusan Aset Alih</h1>
+                <p class="text-emerald-100 text-lg">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor</p>
+                <div class="flex items-center space-x-4 mt-4">
+                    <div class="flex items-center space-x-2">
+                        <i class='bx bx-trash text-emerald-200'></i>
+                        <span class="text-emerald-100">Borang Rasmi</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class='bx bx-shield-check text-emerald-200'></i>
+                        <span class="text-emerald-100">Negeri Selangor</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <i class='bx bx-trash text-6xl text-emerald-200 opacity-80'></i>
+            </div>
         </div>
-        
-        <!-- Form Title -->
-        <div class="text-center mb-8">
-            <div class="text-left text-sm text-gray-600 mb-2">BR-AMS 007</div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-6">REKOD PELUPUSAN ASET ALIH</h1>
-        </div>
+    </div>
 
         <!-- Filter Section -->
         <div class="bg-gray-50 rounded-lg p-6 mb-8">

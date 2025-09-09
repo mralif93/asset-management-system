@@ -221,19 +221,19 @@
             
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-3">
-                <button onclick="window.print()" class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
                     <i class='bx bx-printer mr-2'></i>
-                    Cetak
+                    Cetak Laporan
                 </button>
                 
-                <button onclick="exportToPDF()" class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
+                <button onclick="exportToPDF()" class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
                     <i class='bx bx-download mr-2'></i>
-                    PDF
+                    Muat Turun PDF
                 </button>
                 
-                <a href="{{ route('admin.reports.index') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+                <a href="{{ route('admin.reports.index') }}" class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
                     <i class='bx bx-arrow-back mr-2'></i>
-                    Kembali
+                    Kembali ke Senarai Borang
                 </a>
             </div>
         </div>
