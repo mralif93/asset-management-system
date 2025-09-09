@@ -192,7 +192,7 @@
                             <div>
                                 <label for="kondisi_aset" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-check-circle mr-1'></i>
-                                    Kondisi Aset <span class="text-red-500">*</span>
+                                    Status Aset <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <select id="kondisi_aset" 
@@ -200,12 +200,12 @@
                                             required
                                             x-model="form.kondisi_aset"
                                             class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kondisi_aset') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Kondisi</option>
-                                        <option value="Sangat Baik" {{ old('kondisi_aset') == 'Sangat Baik' ? 'selected' : '' }}>Sangat Baik</option>
-                                        <option value="Baik" {{ old('kondisi_aset') == 'Baik' ? 'selected' : '' }}>Baik</option>
-                                        <option value="Sederhana" {{ old('kondisi_aset') == 'Sederhana' ? 'selected' : '' }}>Sederhana</option>
-                                        <option value="Perlu Penyelenggaraan" {{ old('kondisi_aset') == 'Perlu Penyelenggaraan' ? 'selected' : '' }}>Perlu Penyelenggaraan</option>
+                                        <option value="">Pilih Status Aset</option>
+                                        <option value="Sedang Digunakan" {{ old('kondisi_aset') == 'Sedang Digunakan' ? 'selected' : '' }}>Sedang Digunakan</option>
+                                        <option value="Tidak Digunakan" {{ old('kondisi_aset') == 'Tidak Digunakan' ? 'selected' : '' }}>Tidak Digunakan</option>
                                         <option value="Rosak" {{ old('kondisi_aset') == 'Rosak' ? 'selected' : '' }}>Rosak</option>
+                                        <option value="Sedang Diselenggara" {{ old('kondisi_aset') == 'Sedang Diselenggara' ? 'selected' : '' }}>Sedang Diselenggara</option>
+                                        <option value="Hilang" {{ old('kondisi_aset') == 'Hilang' ? 'selected' : '' }}>Hilang</option>
                                     </select>
                                     <i class='bx bx-check-circle absolute left-3 top-3.5 text-gray-400'></i>
                                     <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>

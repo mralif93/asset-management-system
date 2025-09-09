@@ -161,7 +161,7 @@
                             {{ $movement->tujuan_pergerakan ?? 'N/A' }}
                         </td>
                         <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                            <div class="font-medium">{{ $movement->asset->nombor_siri_pendaftaran ?? 'N/A' }}</div>
+                            <div class="font-medium">{{ $movement->asset->no_siri_pendaftaran ?? 'N/A' }}</div>
                         </td>
                         <td class="px-4 py-4 text-sm text-gray-900 border-r border-gray-300">
                             <div class="font-medium">{{ $movement->asset->nama_aset ?? 'N/A' }}</div>

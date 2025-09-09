@@ -22,7 +22,7 @@ class InspectionSeeder extends Seeder
             [
                 'tarikh_pemeriksaan' => Carbon::now()->subDays(30),
                 'pegawai_pemeriksa' => 'Ustaz Ahmad bin Ali',
-                'keadaan_aset' => 'Baik',
+                'kondisi_aset' => 'Sedang Digunakan',
                 'lokasi_semasa_pemeriksaan' => 'Pejabat Pentadbiran',
                 'cadangan_tindakan' => 'Kemas kini antivirus',
                 'catatan_pemeriksa' => 'Komputer berfungsi dengan baik, perlu kemas kini antivirus',
@@ -30,7 +30,7 @@ class InspectionSeeder extends Seeder
             [
                 'tarikh_pemeriksaan' => Carbon::now()->subDays(25),
                 'pegawai_pemeriksa' => 'Encik Mahmud bin Hassan',
-                'keadaan_aset' => 'Baik',
+                'kondisi_aset' => 'Sedang Digunakan',
                 'lokasi_semasa_pemeriksaan' => 'Stor Peralatan',
                 'cadangan_tindakan' => 'Tiada tindakan diperlukan',
                 'catatan_pemeriksa' => 'Kerusi dalam keadaan baik dan bersih',
@@ -38,7 +38,7 @@ class InspectionSeeder extends Seeder
             [
                 'tarikh_pemeriksaan' => Carbon::now()->subDays(20),
                 'pegawai_pemeriksa' => 'Ustaz Ahmad bin Ali',
-                'keadaan_aset' => 'Rosak Kecil',
+                'kondisi_aset' => 'Rosak',
                 'lokasi_semasa_pemeriksaan' => 'Dewan Solat Utama',
                 'cadangan_tindakan' => 'Servis pembersihan filter',
                 'catatan_pemeriksa' => 'Penyaman udara perlu servis filter, bunyi agak bising',
@@ -46,7 +46,7 @@ class InspectionSeeder extends Seeder
             [
                 'tarikh_pemeriksaan' => Carbon::now()->subDays(15),
                 'pegawai_pemeriksa' => 'Haji Ibrahim bin Yusof',
-                'keadaan_aset' => 'Baik',
+                'kondisi_aset' => 'Sedang Digunakan',
                 'lokasi_semasa_pemeriksaan' => 'Bilik Mesyuarat',
                 'cadangan_tindakan' => 'Tiada tindakan diperlukan',
                 'catatan_pemeriksa' => 'Meja dalam keadaan baik, permukaannya licin dan bersih',
@@ -54,7 +54,7 @@ class InspectionSeeder extends Seeder
             [
                 'tarikh_pemeriksaan' => Carbon::now()->subDays(10),
                 'pegawai_pemeriksa' => 'Encik Rosli bin Ahmad',
-                'keadaan_aset' => 'Baik',
+                'kondisi_aset' => 'Sedang Digunakan',
                 'lokasi_semasa_pemeriksaan' => 'Dewan Solat',
                 'cadangan_tindakan' => 'Pembersihan berkala',
                 'catatan_pemeriksa' => 'Kipas berfungsi dengan baik, perlu dibersihkan',
@@ -80,7 +80,7 @@ class InspectionSeeder extends Seeder
 
     private function createAdditionalInspections($assets)
     {
-        $keadaanAset = ['Baik', 'Rosak Kecil', 'Rosak Teruk'];
+        $kondisiAset = ['Sedang Digunakan', 'Tidak Digunakan', 'Rosak', 'Sedang Diselenggara', 'Hilang'];
         $pegawaiPemeriksa = [
             'Ustaz Ahmad bin Ali',
             'Haji Ibrahim bin Yusof',
@@ -110,44 +110,68 @@ class InspectionSeeder extends Seeder
         ];
 
         $cadanganTindakan = [
-            'Baik' => [
+            'Sedang Digunakan' => [
                 'Tiada tindakan diperlukan',
                 'Pembersihan berkala',
                 'Penjagaan rutin',
                 'Simpan di tempat selamat'
             ],
-            'Rosak Kecil' => [
-                'Servis pembersihan',
-                'Pemeriksaan lanjut diperlukan',
-                'Baik pulih kecil',
-                'Ganti bahagian kecil'
+            'Tidak Digunakan' => [
+                'Pindahkan ke lokasi yang sesuai',
+                'Pemeriksaan berkala',
+                'Simpan dengan selamat',
+                'Tidak memerlukan tindakan segera'
             ],
-            'Rosak Teruk' => [
+            'Rosak' => [
                 'Baik pulih segera',
                 'Hantar ke kedai pembaikan',
-                'Ganti bahagian utama',
+                'Ganti bahagian yang rosak',
                 'Pemeriksaan pakar'
+            ],
+            'Sedang Diselenggara' => [
+                'Selesaikan penyelenggaraan',
+                'Pemeriksaan selepas penyelenggaraan',
+                'Ujian fungsi',
+                'Dokumentasi penyelenggaraan'
+            ],
+            'Hilang' => [
+                'Laporan kehilangan',
+                'Pemeriksaan keselamatan',
+                'Ganti aset jika perlu',
+                'Kemaskini rekod aset'
             ]
         ];
 
         $catatanTemplate = [
-            'Baik' => [
+            'Sedang Digunakan' => [
                 'Aset dalam keadaan baik dan berfungsi normal',
                 'Tiada masalah ditemui semasa pemeriksaan',
                 'Aset well-maintained dan bersih',
                 'Prestasi aset memuaskan'
             ],
-            'Rosak Kecil' => [
-                'Terdapat masalah yang perlu diberi perhatian',
-                'Aset masih boleh digunakan tetapi perlu servis',
-                'Beberapa bahagian menunjukkan tanda-tanda haus',
-                'Perlu pemantauan berkala'
+            'Tidak Digunakan' => [
+                'Aset tidak digunakan pada masa ini',
+                'Disimpan dengan selamat di lokasi yang sesuai',
+                'Tidak memerlukan tindakan segera',
+                'Boleh digunakan apabila diperlukan'
             ],
-            'Rosak Teruk' => [
+            'Rosak' => [
                 'Aset mengalami kerosakan dan tidak boleh digunakan',
                 'Memerlukan pembaikan segera sebelum boleh digunakan',
                 'Kerosakan menjejaskan fungsi utama aset',
                 'Perlu tindakan pembaikan profesional'
+            ],
+            'Sedang Diselenggara' => [
+                'Aset sedang dalam proses penyelenggaraan',
+                'Penyelenggaraan dijalankan mengikut jadual',
+                'Dijangka siap dalam masa terdekat',
+                'Pemeriksaan berkala dijalankan'
+            ],
+            'Hilang' => [
+                'Aset tidak ditemui di lokasi yang sepatutnya',
+                'Laporan kehilangan telah dibuat',
+                'Pemeriksaan keselamatan dijalankan',
+                'Rekod aset perlu dikemaskini'
             ]
         ];
 
@@ -156,17 +180,17 @@ class InspectionSeeder extends Seeder
             $numInspections = rand(1, 3); // 1-3 additional inspections per asset
             
             for ($i = 0; $i < $numInspections; $i++) {
-                $keadaan = $keadaanAset[array_rand($keadaanAset)];
+                $kondisi = $kondisiAset[array_rand($kondisiAset)];
                 $tarikhPemeriksaan = Carbon::now()->subDays(rand(5, 180));
                 
                 $inspection = [
                     'asset_id' => $asset->id,
                     'tarikh_pemeriksaan' => $tarikhPemeriksaan,
                     'pegawai_pemeriksa' => $pegawaiPemeriksa[array_rand($pegawaiPemeriksa)],
-                    'keadaan_aset' => $keadaan,
+                    'kondisi_aset' => $kondisi,
                     'lokasi_semasa_pemeriksaan' => $lokasiPemeriksaan[array_rand($lokasiPemeriksaan)],
-                    'cadangan_tindakan' => $cadanganTindakan[$keadaan][array_rand($cadanganTindakan[$keadaan])],
-                    'catatan_pemeriksa' => $catatanTemplate[$keadaan][array_rand($catatanTemplate[$keadaan])],
+                    'cadangan_tindakan' => $cadanganTindakan[$kondisi][array_rand($cadanganTindakan[$kondisi])],
+                    'catatan_pemeriksa' => $catatanTemplate[$kondisi][array_rand($catatanTemplate[$kondisi])],
                 ];
 
                 Inspection::create($inspection);

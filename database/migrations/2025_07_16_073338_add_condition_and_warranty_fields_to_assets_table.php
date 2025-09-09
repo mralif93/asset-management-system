@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('assets', function (Blueprint $table) {
-            $table->enum('keadaan_fizikal', ['Cemerlang', 'Baik', 'Sederhana', 'Rosak', 'Tidak Boleh Digunakan'])->default('Baik')->after('status_aset');
+            $table->enum('keadaan_fizikal', ['Sedang Digunakan', 'Tidak Digunakan', 'Rosak', 'Sedang Diselenggara', 'Hilang'])->default('Sedang Digunakan')->after('status_aset');
             $table->enum('status_jaminan', ['Aktif', 'Tamat', 'Tiada Jaminan'])->default('Tiada Jaminan')->after('keadaan_fizikal');
             $table->date('tarikh_pemeriksaan_terakhir')->nullable()->after('status_jaminan');
             $table->date('tarikh_penyelenggaraan_akan_datang')->nullable()->after('tarikh_pemeriksaan_terakhir');

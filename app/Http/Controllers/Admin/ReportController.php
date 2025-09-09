@@ -499,12 +499,35 @@ class ReportController extends Controller
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
         $tahun = $request->get('tahun', date('Y')); // Default to current year
+        $status = $request->get('status'); // Filter by asset status
+        $needsInspection = $request->get('needs_inspection'); // Filter assets that need inspection
         
-        // Build query for assets to be inspected
-        $query = Asset::with('masjidSurau');
+        // Build query for assets to be inspected with related data
+        $query = Asset::with([
+            'masjidSurau',
+            'assetMovements' => function($q) {
+                $q->latest()->limit(3); // Get last 3 movements
+            },
+            'inspections' => function($q) {
+                $q->latest()->limit(1); // Get latest inspection
+            },
+            'maintenanceRecords' => function($q) {
+                $q->latest()->limit(1); // Get latest maintenance
+            }
+        ]);
         
         if ($masjidSurauId) {
             $query->where('masjid_surau_id', $masjidSurauId);
+        }
+        
+        if ($status) {
+            $query->where('status_aset', $status);
+        }
+        
+        if ($needsInspection) {
+            $query->whereDoesntHave('inspections', function($q) {
+                $q->where('tarikh_pemeriksaan', '>=', now()->subDays(90));
+            });
         }
         
         // Get assets for inspection
@@ -513,11 +536,21 @@ class ReportController extends Controller
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
         
+        // Get immovable assets for context (if needed)
+        $immovableAssets = ImmovableAsset::where('masjid_surau_id', $masjidSurauId)->get();
+        
+        // Get asset status options
+        $assetStatuses = Asset::getAvailableStatuses();
+        
         return view('admin.reports.br-ams-005', compact(
             'assets', 
             'masjidSurauList', 
             'masjidSurauId',
-            'tahun'
+            'tahun',
+            'status',
+            'needsInspection',
+            'immovableAssets',
+            'assetStatuses'
         ));
     }
 

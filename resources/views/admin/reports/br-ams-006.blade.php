@@ -101,7 +101,7 @@
                             {{ $record->tarikh_penyelenggaraan ? \Carbon\Carbon::parse($record->tarikh_penyelenggaraan)->format('d/m/Y') : 'N/A' }}
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-300">
-                            <div class="font-medium">{{ $record->asset->nombor_siri_pendaftaran ?? 'N/A' }}</div>
+                            <div class="font-medium">{{ $record->asset->no_siri_pendaftaran ?? 'N/A' }}</div>
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-900 border-r border-gray-300">
                             <div class="font-medium">{{ $record->butiran_penyelenggaraan ?? 'N/A' }}</div>

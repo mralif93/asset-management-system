@@ -49,10 +49,10 @@
                 <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     <i class='bx bx-check-circle text-green-600 text-xl'></i>
                 </div>
-                <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">Baik</span>
+                <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">A</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $inspections->where('kondisi_aset', 'Baik')->count() }}</h3>
-            <p class="text-sm text-gray-600">Kondisi Baik</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $inspections->where('kondisi_aset', 'Sedang Digunakan')->count() }}</h3>
+            <p class="text-sm text-gray-600">Sedang Digunakan</p>
         </div>
 
         <!-- Moderate Condition -->
@@ -61,10 +61,10 @@
                 <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                     <i class='bx bx-error-circle text-yellow-600 text-xl'></i>
                 </div>
-                <span class="text-sm text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full font-medium">Sederhana</span>
+                <span class="text-sm text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full font-medium">B</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $inspections->where('kondisi_aset', 'Sederhana')->count() }}</h3>
-            <p class="text-sm text-gray-600">Kondisi Sederhana</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $inspections->where('kondisi_aset', 'Tidak Digunakan')->count() }}</h3>
+            <p class="text-sm text-gray-600">Tidak Digunakan</p>
         </div>
 
         <!-- Poor Condition -->
@@ -73,10 +73,10 @@
                 <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                     <i class='bx bx-x-circle text-red-600 text-xl'></i>
                 </div>
-                <span class="text-sm text-red-600 bg-red-100 px-2 py-1 rounded-full font-medium">Buruk</span>
+                <span class="text-sm text-red-600 bg-red-100 px-2 py-1 rounded-full font-medium">C</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $inspections->where('kondisi_aset', 'Buruk')->count() }}</h3>
-            <p class="text-sm text-gray-600">Kondisi Buruk</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $inspections->where('kondisi_aset', 'Rosak')->count() }}</h3>
+            <p class="text-sm text-gray-600">Rosak</p>
         </div>
     </div>
 
@@ -248,13 +248,19 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                @if($inspection->kondisi_aset === 'Baik') bg-green-100 text-green-800
-                                @elseif($inspection->kondisi_aset === 'Sederhana') bg-yellow-100 text-yellow-800
-                                @else bg-red-100 text-red-800 @endif">
+                                @if($inspection->kondisi_aset === 'Sedang Digunakan') bg-green-100 text-green-800
+                                @elseif($inspection->kondisi_aset === 'Tidak Digunakan') bg-yellow-100 text-yellow-800
+                                @elseif($inspection->kondisi_aset === 'Rosak') bg-red-100 text-red-800
+                                @elseif($inspection->kondisi_aset === 'Sedang Diselenggara') bg-blue-100 text-blue-800
+                                @elseif($inspection->kondisi_aset === 'Hilang') bg-gray-100 text-gray-800
+                                @else bg-gray-100 text-gray-800 @endif">
                                 <div class="w-2 h-2 
-                                    @if($inspection->kondisi_aset === 'Baik') bg-green-500
-                                    @elseif($inspection->kondisi_aset === 'Sederhana') bg-yellow-500
-                                    @else bg-red-500 @endif rounded-full mr-2"></div>
+                                    @if($inspection->kondisi_aset === 'Sedang Digunakan') bg-green-500
+                                    @elseif($inspection->kondisi_aset === 'Tidak Digunakan') bg-yellow-500
+                                    @elseif($inspection->kondisi_aset === 'Rosak') bg-red-500
+                                    @elseif($inspection->kondisi_aset === 'Sedang Diselenggara') bg-blue-500
+                                    @elseif($inspection->kondisi_aset === 'Hilang') bg-gray-500
+                                    @else bg-gray-500 @endif rounded-full mr-2"></div>
                                 {{ $inspection->kondisi_aset }}
                             </span>
                         </td>

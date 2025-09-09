@@ -17,7 +17,7 @@ class Inspection extends Model
     protected $fillable = [
         'asset_id',
         'tarikh_pemeriksaan',
-        'keadaan_aset',
+        'kondisi_aset',
         'lokasi_semasa_pemeriksaan',
         'cadangan_tindakan',
         'pegawai_pemeriksa',
@@ -50,7 +50,7 @@ class Inspection extends Model
      */
     public function scopeByCondition(Builder $query, string $condition): Builder
     {
-        return $query->where('keadaan_aset', $condition);
+        return $query->where('kondisi_aset', $condition);
     }
 
     /**
@@ -83,12 +83,14 @@ class Inspection extends Model
     public function getFormattedConditionAttribute(): string
     {
         $conditions = [
-            'baik' => 'Baik',
-            'rosak_kecil' => 'Rosak Kecil',
-            'rosak_teruk' => 'Rosak Teruk',
+            'sedang_digunakan' => 'Sedang Digunakan',
+            'tidak_digunakan' => 'Tidak Digunakan',
+            'rosak' => 'Rosak',
+            'sedang_diselenggara' => 'Sedang Diselenggara',
+            'hilang' => 'Hilang',
         ];
 
-        return $conditions[strtolower($this->keadaan_aset)] ?? ucfirst($this->keadaan_aset);
+        return $conditions[strtolower($this->kondisi_aset)] ?? ucfirst($this->kondisi_aset);
     }
 
     /**

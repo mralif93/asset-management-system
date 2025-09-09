@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('asset_id');
             $table->timestamp('tarikh_pemeriksaan');
-            $table->string('keadaan_aset');
+            $table->string('kondisi_aset');
             $table->string('lokasi_semasa_pemeriksaan');
             $table->string('cadangan_tindakan');
             $table->string('pegawai_pemeriksa');

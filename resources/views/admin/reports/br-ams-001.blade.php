@@ -128,7 +128,7 @@
                             {{ $index + 1 }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
-                            <div class="font-medium text-gray-900">{{ $asset->nombor_siri_pendaftaran ?? 'N/A' }}</div>
+                            <div class="font-medium text-gray-900">{{ $asset->no_siri_pendaftaran ?? 'N/A' }}</div>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200">
                             <div class="font-medium text-gray-900">{{ $asset->nama_aset }}</div>

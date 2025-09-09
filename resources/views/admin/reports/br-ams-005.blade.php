@@ -37,7 +37,7 @@
         </div>
         
         <form method="GET" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class='bx bx-building mr-1'></i>
@@ -62,20 +62,46 @@
                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                            placeholder="Cth: 2024">
                 </div>
-                
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
-                        <i class='bx bx-search mr-2'></i>
-                        Terapkan Penapis
-                    </button>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class='bx bx-check-circle mr-1'></i>
+                        Status Aset
+                    </label>
+                    <select name="status" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                        <option value="">Semua Status</option>
+                        @foreach($assetStatuses as $statusOption)
+                            <option value="{{ $statusOption }}" {{ $status == $statusOption ? 'selected' : '' }}>
+                                {{ $statusOption }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class='bx bx-search-alt mr-1'></i>
+                        Perlu Pemeriksaan
+                    </label>
+                    <select name="needs_inspection" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                        <option value="">Semua Aset</option>
+                        <option value="1" {{ $needsInspection == '1' ? 'selected' : '' }}>Perlu Pemeriksaan</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center">
+                    <i class='bx bx-search mr-2'></i>
+                    Terapkan Penapis
+                </button>
             </div>
         </form>
     </div>
 
     <!-- Main Table -->
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden mb-8">
-        <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-blue-50">
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8">
+        <div class="px-6 py-5 border-b border-gray-200">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xl font-bold text-gray-900 flex items-center">
@@ -96,45 +122,45 @@
                 <!-- Table Header -->
                 <thead class="bg-emerald-50">
                     <tr>
-                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 border-b border-emerald-200 w-12">
+                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-b border-grey-200 w-12">
                             BIL
                         </th>
-                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 border-b border-emerald-200 w-32">
+                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-b border-grey-200 w-32">
                             NOMBOR SIRI PENDAFTARAN
                         </th>
-                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 border-b border-emerald-200 w-24">
+                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-b border-grey-200 w-24">
                             KETERANGAN ASET
                         </th>
-                        <th colspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 border-b border-emerald-200">
+                        <th colspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-b border-grey-200">
                             LOKASI
                         </th>
-                        <th colspan="5" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 border-b border-emerald-200">
+                        <th colspan="5" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-b border-grey-200">
                             STATUS ASET
                         </th>
-                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-b border-emerald-200 w-40">
+                        <th rowspan="2" class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-b border-grey-200 w-40">
                             CATATAN
                         </th>
                     </tr>
-                    <tr class="bg-emerald-50">
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 w-40">
+                    <tr class="bg-grey-50">
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-grey-200 border-b w-40">
                             MENGIKUT BR-AMS 001/BR-AMS 002
                         </th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 w-40">
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-grey-200 border-b w-40">
                             SEBENAR
                         </th>
-                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 w-12">
+                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-grey-200 border-b w-12">
                             A
                         </th>
-                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 w-12">
+                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-grey-200 border-b w-12">
                             B
                         </th>
-                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 w-12">
+                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-grey-200 border-b w-12">
                             C
                         </th>
-                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 w-12">
+                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-grey-200 border-b w-12">
                             D
                         </th>
-                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200 w-12">
+                        <th class="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-grey-200 border-grey-200 border-b w-12">
                             E
                         </th>
                     </tr>
@@ -149,7 +175,7 @@
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-32">
                             <div class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                                {{ $asset->nombor_siri_pendaftaran ?? 'N/A' }}
+                                {{ $asset->no_siri_pendaftaran ?? 'N/A' }}
                             </div>
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-24">
@@ -165,38 +191,66 @@
                             </div>
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-40">
-                            <div class="text-xs text-gray-500 italic">
-                                Lokasi Sebenar
+                            <div class="text-xs text-gray-600 flex items-center justify-center">
+                                <i class='bx bx-map-pin mr-1 text-emerald-500'></i>
+                                {{ $asset->getCurrentLocation() }}
                             </div>
                         </td>
                         <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
                             <div class="flex justify-center">
-                                <div class="h-4 w-4 border-2 border-gray-300 rounded"></div>
+                                <div class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Sedang Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                    @if($asset->keadaan_fizikal === 'Sedang Digunakan')
+                                        <i class='bx bx-check text-emerald-600 text-xs'></i>
+                                    @endif
+                                </div>
                             </div>
                         </td>
                         <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
                             <div class="flex justify-center">
-                                <div class="h-4 w-4 border-2 border-gray-300 rounded"></div>
+                                <div class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Tidak Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                    @if($asset->keadaan_fizikal === 'Tidak Digunakan')
+                                        <i class='bx bx-check text-emerald-600 text-xs'></i>
+                                    @endif
+                                </div>
                             </div>
                         </td>
                         <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
                             <div class="flex justify-center">
-                                <div class="h-4 w-4 border-2 border-gray-300 rounded"></div>
+                                <div class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Rosak' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                    @if($asset->keadaan_fizikal === 'Rosak')
+                                        <i class='bx bx-check text-emerald-600 text-xs'></i>
+                                    @endif
+                                </div>
                             </div>
                         </td>
                         <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
                             <div class="flex justify-center">
-                                <div class="h-4 w-4 border-2 border-gray-300 rounded"></div>
+                                <div class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Sedang Diselenggara' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                    @if($asset->keadaan_fizikal === 'Sedang Diselenggara')
+                                        <i class='bx bx-check text-emerald-600 text-xs'></i>
+                                    @endif
+                                </div>
                             </div>
                         </td>
                         <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
                             <div class="flex justify-center">
-                                <div class="h-4 w-4 border-2 border-gray-300 rounded"></div>
+                                <div class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Hilang' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                    @if($asset->keadaan_fizikal === 'Hilang')
+                                        <i class='bx bx-check text-emerald-600 text-xs'></i>
+                                    @endif
+                                </div>
                             </div>
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-900 w-40">
-                            <div class="text-xs text-gray-500 italic">
-                                Catatan
+                            <div class="text-xs text-gray-600">
+                                @if($asset->inspections->count() > 0)
+                                    <div class="flex items-center justify-center space-x-1">
+                                        <i class='bx bx-search text-emerald-500'></i>
+                                        <span>Pemeriksaan: {{ $asset->inspections->first()->tarikh_pemeriksaan->format('d/m/Y') }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-gray-500 italic">Tiada pemeriksaan</span>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -230,7 +284,7 @@
                 <p><strong>Lokasi:</strong> Nyatakan lokasi aset mengikut Senarai Daftar Harta Modal (GPA-1) / Senarai Daftar Inventori (GPA-2) dan lokasi aset semasa pemeriksaan (sebenar).</p>
             </div>
             <div>
-                <p><strong>Status Aset:</strong> Tandakan (✔) pada yang berkenaan.</p>
+                <p><strong>Status Aset:</strong> Tandakan (✔) pada yang berkenaan. Status dipaparkan berdasarkan data terkini dari sistem.</p>
                 <ul class="mt-3 space-y-2">
                     <li class="flex items-center space-x-2">
                         <span class="font-medium text-emerald-600">A.</span>
@@ -252,6 +306,15 @@
                         <span class="font-medium text-emerald-600">E.</span>
                         <span>Hilang</span>
                     </li>
+                </ul>
+            </div>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                <p><strong>Maklumat Tambahan:</strong></p>
+                <ul class="mt-2 space-y-1 text-xs">
+                    <li>• <strong>Lokasi Sebenar:</strong> Diambil dari rekod pergerakan aset terkini</li>
+                    <li>• <strong>Catatan:</strong> Menunjukkan tarikh pemeriksaan terakhir jika ada</li>
+                    <li>• <strong>Status:</strong> Dipaparkan berdasarkan status aset dalam sistem</li>
+                    <li>• <strong>Pergerakan:</strong> Data lokasi diambil dari modul pergerakan aset</li>
                 </ul>
             </div>
             <div>
