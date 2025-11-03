@@ -10,15 +10,25 @@ use Carbon\Carbon;
 class AssetRegistrationNumber
 {
     private static $assetTypeAbbreviations = [
+        // Asset Categories
         'Harta Modal' => 'HM',
         'Inventori' => 'I',
         'Peralatan' => 'P',
-        'Kenderaan' => 'K',
-        'Perabot' => 'PR',
-        'Elektronik' => 'E',
+        'Jentera' => 'J',  // Machinery
+        'Kenderaan' => 'K',  // Motor Vehicle
+        'Perabot' => 'PR',  // Furniture
+        'Elektrikal' => 'E',  // Electrical (updated from Elektronik)
+        'Elektronik' => 'E',  // Keep for backward compatibility
+        'Peralatan Pejabat' => 'PP',  // Office Equipment
         'Buku' => 'B',
         'Pakaian' => 'PK',
         'Harta Tak Alih' => 'HTA',
+        // Non-Asset Categories
+        'Barang-barang Dapur' => 'BD',  // Kitchen items
+        'Peralatan Pejabat - Alat tulis' => 'AT',  // Office Equipment - Stationery
+        'Alat-alat Pertukangan' => 'AP',  // Carpentry tools
+        // Common Option
+        'Lain-lain' => 'LL',  // Other (for both assets and non-assets)
     ];
 
     /**

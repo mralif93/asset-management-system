@@ -51,8 +51,9 @@ class AssetController extends Controller
         }
         
         $assets = $query->latest()->paginate(15);
+        $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
         
-        return view('admin.assets.index', compact('assets'));
+        return view('admin.assets.index', compact('assets', 'assetTypes'));
     }
 
     /**
@@ -77,10 +78,12 @@ class AssetController extends Controller
      */
     public function store(Request $request)
     {
+        $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
+        
         $validated = $request->validate([
             'masjid_surau_id' => 'required|exists:masjid_surau,id',
             'nama_aset' => 'required|string|max:255',
-            'jenis_aset' => 'required|string',
+            'jenis_aset' => 'required|string|in:' . implode(',', $availableAssetTypes),
             'kategori_aset' => 'required|in:asset,non-asset',
             'tarikh_perolehan' => 'required|date',
             'kaedah_perolehan' => 'required|string',
@@ -159,9 +162,11 @@ class AssetController extends Controller
      */
     public function update(Request $request, Asset $asset)
     {
+        $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
+        
         $validated = $request->validate([
             'nama_aset' => 'required|string|max:255',
-            'jenis_aset' => 'required|string',
+            'jenis_aset' => 'required|string|in:' . implode(',', $availableAssetTypes),
             'kategori_aset' => 'required|in:asset,non-asset',
             'tarikh_perolehan' => 'required|date',
             'kaedah_perolehan' => 'required|string',

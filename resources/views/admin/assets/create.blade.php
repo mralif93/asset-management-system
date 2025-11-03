@@ -160,10 +160,9 @@
                                             x-model="form.jenis_aset"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_aset') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">-- Pilih --</option>
-                                        <option value="Elektronik" {{ old('jenis_aset') === 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
-                                        <option value="Perabot" {{ old('jenis_aset') === 'Perabot' ? 'selected' : '' }}>Perabot</option>
-                                        <option value="Kenderaan" {{ old('jenis_aset') === 'Kenderaan' ? 'selected' : '' }}>Kenderaan</option>
-                                        <option value="Lain-lain" {{ old('jenis_aset') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                        @foreach($assetTypes as $type)
+                                            <option value="{{ $type }}" {{ old('jenis_aset') === $type ? 'selected' : '' }}>{{ $type }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 @error('jenis_aset')

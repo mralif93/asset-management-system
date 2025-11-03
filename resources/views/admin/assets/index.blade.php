@@ -162,10 +162,9 @@
                     <label for="jenis_aset" class="block text-sm font-medium text-gray-700 mb-2">Jenis Aset</label>
                     <select id="jenis_aset" name="jenis_aset" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                         <option value="">Semua Jenis</option>
-                        <option value="Elektronik" {{ request('jenis_aset') === 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
-                        <option value="Perabot" {{ request('jenis_aset') === 'Perabot' ? 'selected' : '' }}>Perabot</option>
-                        <option value="Kenderaan" {{ request('jenis_aset') === 'Kenderaan' ? 'selected' : '' }}>Kenderaan</option>
-                        <option value="Lain-lain" {{ request('jenis_aset') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                        @foreach($assetTypes as $type)
+                            <option value="{{ $type }}" {{ request('jenis_aset') === $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @endforeach
                     </select>
                 </div>
 
