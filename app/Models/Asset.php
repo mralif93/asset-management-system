@@ -139,18 +139,134 @@ class Asset extends Model
     }
 
     /**
-     * Calculate the current value of the asset after depreciation.
+     * Calculate the annual depreciation using straight-line method.
+     * Formula: (Cost - Discount) / Useful Life
+     */
+    public function calculateAnnualDepreciation(): ?float
+    {
+        $cost = $this->nilai_perolehan ?? 0;
+        $discount = $this->diskaun ?? 0;
+        $usefulLife = $this->umur_faedah_tahunan;
+        
+        if ($cost <= 0 || !$usefulLife || $usefulLife <= 0) {
+            return null;
+        }
+        
+        $depreciableBase = $cost - $discount;
+        return round($depreciableBase / $usefulLife, 2);
+    }
+
+    /**
+     * Get the annual depreciation amount.
+     * Uses manual entry if available, otherwise calculates automatically.
+     */
+    public function getAnnualDepreciation(): ?float
+    {
+        // If manual annual depreciation is set, use it
+        if ($this->susut_nilai_tahunan && $this->susut_nilai_tahunan > 0) {
+            return $this->susut_nilai_tahunan;
+        }
+        
+        // Otherwise, calculate using straight-line method
+        return $this->calculateAnnualDepreciation();
+    }
+
+    /**
+     * Calculate the current value of the asset after depreciation using straight-line method.
+     * Formula: Cost - Discount - (Annual Depreciation × Years Elapsed)
+     * Depreciation stops at the end of useful life period.
      */
     public function getCurrentValue(): float
     {
-        if (!$this->nilai_perolehan || !$this->susut_nilai_tahunan || !$this->tarikh_perolehan) {
+        if (!$this->nilai_perolehan || !$this->tarikh_perolehan) {
             return 0;
         }
 
-        $years = $this->tarikh_perolehan->diffInYears(now());
-        $depreciation = $this->susut_nilai_tahunan * $years;
+        $cost = $this->nilai_perolehan;
+        $discount = $this->diskaun ?? 0;
+        $depreciableBase = $cost - $discount;
         
-        return round(max(0, $this->nilai_perolehan - $depreciation), 2);
+        // Get annual depreciation amount
+        $annualDepreciation = $this->getAnnualDepreciation();
+        
+        if (!$annualDepreciation || $annualDepreciation <= 0) {
+            return round($depreciableBase, 2);
+        }
+
+        // Calculate years elapsed (only full years)
+        $yearsElapsed = (int) $this->tarikh_perolehan->diffInYears(now());
+        
+        // Get useful life period
+        $usefulLife = $this->umur_faedah_tahunan;
+        
+        // Don't depreciate beyond useful life
+        if ($usefulLife && $yearsElapsed > $usefulLife) {
+            $yearsElapsed = $usefulLife;
+        }
+        
+        // Calculate total depreciation
+        $totalDepreciation = $annualDepreciation * $yearsElapsed;
+        
+        // Current value = Depreciable Base - Total Depreciation
+        $currentValue = $depreciableBase - $totalDepreciation;
+        
+        return round(max(0, $currentValue), 2);
+    }
+
+    /**
+     * Get total accumulated depreciation to date.
+     */
+    public function getTotalDepreciation(): float
+    {
+        $annualDepreciation = $this->getAnnualDepreciation();
+        
+        if (!$annualDepreciation || $annualDepreciation <= 0) {
+            return 0;
+        }
+
+        $yearsElapsed = (int) $this->tarikh_perolehan->diffInYears(now());
+        $usefulLife = $this->umur_faedah_tahunan;
+        
+        // Don't depreciate beyond useful life
+        if ($usefulLife && $yearsElapsed > $usefulLife) {
+            $yearsElapsed = $usefulLife;
+        }
+        
+        return round($annualDepreciation * $yearsElapsed, 2);
+    }
+
+    /**
+     * Get depreciation schedule (year-by-year breakdown).
+     */
+    public function getDepreciationSchedule(): array
+    {
+        $schedule = [];
+        $cost = $this->nilai_perolehan ?? 0;
+        $discount = $this->diskaun ?? 0;
+        $depreciableBase = $cost - $discount;
+        $annualDepreciation = $this->getAnnualDepreciation();
+        $usefulLife = $this->umur_faedah_tahunan;
+        
+        if (!$annualDepreciation || !$usefulLife) {
+            return $schedule;
+        }
+        
+        $startingNBV = $depreciableBase;
+        
+        for ($year = 1; $year <= $usefulLife; $year++) {
+            $endingNBV = max(0, $startingNBV - $annualDepreciation);
+            
+            $schedule[] = [
+                'year' => $year,
+                'starting_nbv' => round($startingNBV, 2),
+                'annual_depreciation' => round($annualDepreciation, 2),
+                'ending_nbv' => round($endingNBV, 2),
+            ];
+            
+            $startingNBV = $endingNBV;
+        }
+        
+        return $schedule;
     }
 
     /**

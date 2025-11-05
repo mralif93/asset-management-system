@@ -171,17 +171,27 @@ class ReportController extends Controller
     public function assetDepreciation()
     {
         $assets = Asset::with('masjidSurau')
-                      ->whereNotNull('susut_nilai_tahunan')
-                      ->where('susut_nilai_tahunan', '>', 0)
+                      ->whereNotNull('tarikh_perolehan')
+                      ->whereNotNull('nilai_perolehan')
                       ->get()
+                      ->filter(function ($asset) {
+                          // Only include assets that have depreciation info (manual or auto-calculable)
+                          return $asset->getAnnualDepreciation() !== null;
+                      })
                       ->map(function ($asset) {
-                          $yearsElapsed = now()->diffInYears($asset->tarikh_perolehan);
-                          $totalDepreciation = $asset->susut_nilai_tahunan * $yearsElapsed;
-                          $currentValue = max(0, $asset->nilai_perolehan - $totalDepreciation);
+                          $yearsElapsed = (int) $asset->tarikh_perolehan->diffInYears(now());
+                          $usefulLife = $asset->umur_faedah_tahunan;
+                          
+                          // Don't depreciate beyond useful life
+                          if ($usefulLife && $yearsElapsed > $usefulLife) {
+                              $yearsElapsed = $usefulLife;
+                          }
                           
                           $asset->years_elapsed = $yearsElapsed;
-                          $asset->total_depreciation = $totalDepreciation;
-                          $asset->current_value = $currentValue;
+                          $asset->total_depreciation = $asset->getTotalDepreciation();
+                          $asset->current_value = $asset->getCurrentValue();
+                          $asset->annual_depreciation = $asset->getAnnualDepreciation();
+                          $asset->depreciable_base = ($asset->nilai_perolehan ?? 0) - ($asset->diskaun ?? 0);
                           
                           return $asset;
                       });

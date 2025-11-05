@@ -556,6 +556,7 @@
                                            step="0.01"
                                            min="0"
                                            x-model="form.nilai_perolehan"
+                                           @input="calculateAnnualDepreciation()"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_perolehan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
                                 </div>
@@ -584,6 +585,7 @@
                                            step="0.01"
                                            min="0"
                                            x-model="form.diskaun"
+                                           @input="calculateAnnualDepreciation()"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('diskaun') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
                                 </div>
@@ -730,6 +732,7 @@
                                            value="{{ old('umur_faedah_tahunan') }}"
                                            min="1"
                                            x-model="form.umur_faedah_tahunan"
+                                           @input="calculateAnnualDepreciation()"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('umur_faedah_tahunan') border-red-500 @enderror bg-white"
                                            placeholder="Cth: 5">
                                 </div>
@@ -746,6 +749,7 @@
                                 <label for="susut_nilai_tahunan" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-trending-down mr-1'></i>
                                     Susut Nilai Tahunan (RM)
+                                    <span class="text-gray-500 text-xs ml-1">(akan dikira automatik jika kosong)</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -758,9 +762,17 @@
                                            step="0.01"
                                            min="0"
                                            x-model="form.susut_nilai_tahunan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('susut_nilai_tahunan') border-red-500 @enderror bg-white"
-                                           placeholder="0.00">
+                                           @input="calculateAnnualDepreciation()"
+                                           class="w-full pl-10 pr-20 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('susut_nilai_tahunan') border-red-500 @enderror bg-white"
+                                           placeholder="Auto-calculate">
+                                    <button type="button" 
+                                            @click="calculateAnnualDepreciation()"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-emerald-600 hover:text-emerald-700"
+                                            title="Kira semula">
+                                        <i class='bx bx-calculator text-lg'></i>
+                                    </button>
                                 </div>
+                                <p class="mt-1 text-xs text-emerald-600" x-show="calculatedDepreciation" x-text="'Dikira: RM ' + parseFloat(calculatedDepreciation || 0).toFixed(2) + ' (Straight-Line Method)'"></p>
                                 @error('susut_nilai_tahunan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
@@ -1152,6 +1164,26 @@ function assetForm() {
             susut_nilai_tahunan: '{{ old("susut_nilai_tahunan") }}',
             catatan: '{{ old("catatan") }}',
             catatan_jaminan: '{{ old("catatan_jaminan") }}'
+        },
+        calculatedDepreciation: null,
+        calculateAnnualDepreciation() {
+            // Straight-line method: (Cost - Discount) / Useful Life
+            const cost = parseFloat(this.form.nilai_perolehan) || 0;
+            const discount = parseFloat(this.form.diskaun) || 0;
+            const usefulLife = parseFloat(this.form.umur_faedah_tahunan) || 0;
+            
+            if (cost > 0 && usefulLife > 0) {
+                const depreciableBase = cost - discount;
+                const annualDepreciation = depreciableBase / usefulLife;
+                this.calculatedDepreciation = annualDepreciation.toFixed(2);
+                
+                // Auto-fill if field is empty
+                if (!this.form.susut_nilai_tahunan || this.form.susut_nilai_tahunan === '') {
+                    this.form.susut_nilai_tahunan = annualDepreciation.toFixed(2);
+                }
+            } else {
+                this.calculatedDepreciation = null;
+            }
         },
         
                         updateWarrantyStatus(status) {

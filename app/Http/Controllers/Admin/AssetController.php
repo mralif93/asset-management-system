@@ -594,6 +594,51 @@ class AssetController extends Controller
                     continue;
                 }
 
+                // Validate date format
+                try {
+                    $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                } catch (\Exception $e) {
+                    $errors[] = "Baris {$rowNumber}: Format tarikh perolehan tidak sah. Gunakan format YYYY-MM-DD";
+                    continue;
+                }
+
+                // Validate and parse other date fields if provided
+                if (!empty($assetData['tarikh_pemeriksaan_terakhir'])) {
+                    try {
+                        \Carbon\Carbon::parse($assetData['tarikh_pemeriksaan_terakhir']);
+                    } catch (\Exception $e) {
+                        $errors[] = "Baris {$rowNumber}: Format tarikh pemeriksaan terakhir tidak sah. Gunakan format YYYY-MM-DD";
+                        continue;
+                    }
+                }
+
+                if (!empty($assetData['tarikh_penyelenggaraan_akan_datang'])) {
+                    try {
+                        \Carbon\Carbon::parse($assetData['tarikh_penyelenggaraan_akan_datang']);
+                    } catch (\Exception $e) {
+                        $errors[] = "Baris {$rowNumber}: Format tarikh penyelenggaraan akan datang tidak sah. Gunakan format YYYY-MM-DD";
+                        continue;
+                    }
+                }
+
+                if (!empty($assetData['tarikh_resit'])) {
+                    try {
+                        \Carbon\Carbon::parse($assetData['tarikh_resit']);
+                    } catch (\Exception $e) {
+                        $errors[] = "Baris {$rowNumber}: Format tarikh resit tidak sah. Gunakan format YYYY-MM-DD";
+                        continue;
+                    }
+                }
+
+                if (!empty($assetData['tarikh_tamat_jaminan'])) {
+                    try {
+                        \Carbon\Carbon::parse($assetData['tarikh_tamat_jaminan']);
+                    } catch (\Exception $e) {
+                        $errors[] = "Baris {$rowNumber}: Format tarikh tamat jaminan tidak sah. Gunakan format YYYY-MM-DD";
+                        continue;
+                    }
+                }
+
                 // Validate location
                 $validLocations = ['Anjung kiri', 'Anjung kanan', 'Anjung Depan(Ruang Pengantin)', 'Ruang Utama (tingkat atas, tingkat bawah)', 'Bilik Mesyuarat', 'Bilik Kuliah', 'Bilik Bendahari', 'Bilik Setiausaha', 'Bilik Nazir & Imam', 'Bangunan Jenazah', 'Lain-lain'];
                 if (empty($assetData['lokasi_penempatan']) || !in_array($assetData['lokasi_penempatan'], $validLocations)) {
@@ -611,8 +656,7 @@ class AssetController extends Controller
                     continue;
                 }
 
-                // Generate registration number
-                $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                // Generate registration number (tarikh already validated above)
                 $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
                     $assetData['masjid_surau_id'],
                     $assetData['jenis_aset'],
@@ -630,6 +674,12 @@ class AssetController extends Controller
                 $assetData['diskaun'] = (float) ($assetData['diskaun'] ?? 0);
                 $assetData['umur_faedah_tahunan'] = !empty($assetData['umur_faedah_tahunan']) ? (int) $assetData['umur_faedah_tahunan'] : null;
                 $assetData['susut_nilai_tahunan'] = !empty($assetData['susut_nilai_tahunan']) ? (float) $assetData['susut_nilai_tahunan'] : null;
+
+                // Ensure date fields are properly formatted (set to null if empty)
+                $assetData['tarikh_pemeriksaan_terakhir'] = !empty($assetData['tarikh_pemeriksaan_terakhir']) ? $assetData['tarikh_pemeriksaan_terakhir'] : null;
+                $assetData['tarikh_penyelenggaraan_akan_datang'] = !empty($assetData['tarikh_penyelenggaraan_akan_datang']) ? $assetData['tarikh_penyelenggaraan_akan_datang'] : null;
+                $assetData['tarikh_resit'] = !empty($assetData['tarikh_resit']) ? $assetData['tarikh_resit'] : null;
+                $assetData['tarikh_tamat_jaminan'] = !empty($assetData['tarikh_tamat_jaminan']) ? $assetData['tarikh_tamat_jaminan'] : null;
 
                 // Create asset
                 Asset::create($assetData);

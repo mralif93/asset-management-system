@@ -101,13 +101,19 @@
             </div>
         </div>
 
-        <!-- Depreciation -->
+                        <!-- Depreciation -->
         <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-emerald-700">Susut Nilai</p>
-                    <p class="text-2xl font-bold text-emerald-900">RM {{ number_format($asset->susut_nilai_tahunan ?? 0, 2) }}</p>
-                    <p class="text-xs text-emerald-600 mt-1">Tahunan</p>
+                    <p class="text-sm font-medium text-emerald-700">Susut Nilai Tahunan</p>
+                    <p class="text-2xl font-bold text-emerald-900">RM {{ number_format($asset->getAnnualDepreciation() ?? 0, 2) }}</p>
+                    <p class="text-xs text-emerald-600 mt-1">
+                        @if($asset->susut_nilai_tahunan)
+                            Manual
+                        @else
+                            Auto (Straight-Line)
+                        @endif
+                    </p>
                 </div>
                 <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
                     <i class='bx bx-trending-down text-white text-xl'></i>
@@ -121,15 +127,13 @@
                 <div>
                     <p class="text-sm font-medium text-emerald-700">Nilai Semasa</p>
                     @php
-                        $currentValue = $asset->nilai_perolehan;
-                        if ($asset->tarikh_perolehan && $asset->susut_nilai_tahunan) {
-                            $yearsDepreciated = (int)$asset->tarikh_perolehan->diffInYears(now());
-                            $totalDepreciation = $asset->susut_nilai_tahunan * $yearsDepreciated;
-                            $currentValue = max(0, $asset->nilai_perolehan - $totalDepreciation);
-                        }
+                        $currentValue = $asset->getCurrentValue();
+                        $totalDepreciation = $asset->getTotalDepreciation();
                     @endphp
                     <p class="text-2xl font-bold text-emerald-900">RM {{ number_format($currentValue, 2) }}</p>
-                    <p class="text-xs text-emerald-600 mt-1">Anggaran</p>
+                    <p class="text-xs text-emerald-600 mt-1">
+                        Susut nilai terkumpul: RM {{ number_format($totalDepreciation, 2) }}
+                    </p>
                 </div>
                 <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
                     <i class='bx bx-calculator text-white text-xl'></i>
@@ -421,6 +425,87 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Depreciation Schedule Section -->
+            @php
+                $depreciationSchedule = $asset->getDepreciationSchedule();
+                $annualDepreciation = $asset->getAnnualDepreciation();
+                $depreciableBase = ($asset->nilai_perolehan ?? 0) - ($asset->diskaun ?? 0);
+            @endphp
+            @if(count($depreciationSchedule) > 0)
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                        <i class='bx bx-trending-down text-white text-xl'></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Jadual Susut Nilai (Straight-Line Method)</h3>
+                        <p class="text-sm text-emerald-700">Breakdown susut nilai tahun demi tahun</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-600">Nilai Perolehan (Cost)</p>
+                            <p class="font-semibold text-gray-900">RM {{ number_format($asset->nilai_perolehan ?? 0, 2) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Diskaun</p>
+                            <p class="font-semibold text-gray-900">RM {{ number_format($asset->diskaun ?? 0, 2) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Nilai Boleh Susut (Depreciable Base)</p>
+                            <p class="font-semibold text-emerald-600">RM {{ number_format($depreciableBase, 2) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Umur Faedah</p>
+                            <p class="font-semibold text-gray-900">{{ $asset->umur_faedah_tahunan ?? '-' }} tahun</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Susut Nilai Tahunan</p>
+                            <p class="font-semibold text-emerald-600">RM {{ number_format($annualDepreciation ?? 0, 2) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Tahun Berlalu</p>
+                            <p class="font-semibold text-gray-900">
+                                {{ $asset->tarikh_perolehan ? (int)$asset->tarikh_perolehan->diffInYears(now()) : 0 }} tahun
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full bg-white rounded-lg border border-gray-200">
+                        <thead class="bg-emerald-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tahun</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Starting NBV (RM)</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Annual Depreciation (RM)</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Ending NBV (RM)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @foreach($depreciationSchedule as $entry)
+                            <tr class="hover:bg-emerald-50 transition-colors">
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">Tahun {{ $entry['year'] }}</td>
+                                <td class="px-4 py-3 text-sm text-right text-gray-700">{{ number_format($entry['starting_nbv'], 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right text-emerald-600 font-medium">{{ number_format($entry['annual_depreciation'], 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right text-gray-900 font-semibold">{{ number_format($entry['ending_nbv'], 2) }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="bg-gray-50">
+                            <tr>
+                                <td class="px-4 py-3 text-sm font-semibold text-gray-900" colspan="2">Total Susut Nilai</td>
+                                <td class="px-4 py-3 text-sm text-right text-emerald-600 font-bold">{{ number_format($asset->getTotalDepreciation(), 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right text-gray-900 font-bold">{{ number_format($asset->getCurrentValue(), 2) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            @endif
 
             <!-- Notes Section -->
             @if($asset->catatan || $asset->catatan_jaminan)
