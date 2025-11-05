@@ -72,10 +72,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulk-delete');
     
     // Assets Management
-    Route::resource('assets', AssetController::class);
+    // Define specific routes BEFORE resource route to avoid conflicts
+    Route::get('assets/export', [AssetController::class, 'export'])->name('assets.export');
+    Route::get('assets/import', [AssetController::class, 'showImport'])->name('assets.import');
+    Route::post('assets/import', [AssetController::class, 'import'])->name('assets.import.store');
+    Route::get('assets/import/template', [AssetController::class, 'downloadTemplate'])->name('assets.import.template');
     Route::get('assets/location/{lokasi}', [AssetController::class, 'byLocation'])->name('assets.by-location');
-    Route::patch('assets/{asset}/location', [AssetController::class, 'updateLocation'])->name('assets.update-location');
     Route::post('assets/bulk-delete', [AssetController::class, 'bulkDelete'])->name('assets.bulk-delete');
+    Route::resource('assets', AssetController::class);
+    Route::patch('assets/{asset}/location', [AssetController::class, 'updateLocation'])->name('assets.update-location');
     
     // Asset Movements
     Route::resource('asset-movements', AssetMovementController::class);

@@ -264,4 +264,398 @@ class AssetController extends Controller
         return redirect()->route('admin.assets.index')
                         ->with('success', "Berjaya memadamkan {$deletedCount} aset yang dipilih.");
     }
+
+    /**
+     * Export assets to CSV
+     */
+    public function export(Request $request)
+    {
+        $query = Asset::with('masjidSurau');
+        
+        // Apply same filters as index
+        if ($request->filled('lokasi')) {
+            $query->where('lokasi_penempatan', 'like', '%' . $request->lokasi . '%');
+        }
+        
+        if ($request->filled('jenis_aset')) {
+            $query->where('jenis_aset', $request->jenis_aset);
+        }
+        
+        if ($request->filled('kategori_aset')) {
+            $query->where('kategori_aset', $request->kategori_aset);
+        }
+
+        if ($request->filled('lokasi_penempatan')) {
+            $query->where('lokasi_penempatan', $request->lokasi_penempatan);
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('status_aset', $request->status);
+        }
+        
+        if ($request->filled('keadaan_fizikal')) {
+            $query->where('keadaan_fizikal', $request->keadaan_fizikal);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_aset', 'like', '%' . $search . '%')
+                  ->orWhere('no_siri_pendaftaran', 'like', '%' . $search . '%')
+                  ->orWhere('jenis_aset', 'like', '%' . $search . '%');
+            });
+        }
+
+        $assets = $query->latest()->limit(10000)->get(); // Limit to prevent memory issues
+
+        $filename = 'assets_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($assets) {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for UTF-8 to support Malay characters
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Write CSV headers
+            fputcsv($file, [
+                'No. Siri Pendaftaran',
+                'Nama Aset',
+                'Jenis Aset',
+                'Kategori Aset',
+                'Masjid/Surau',
+                'Tarikh Perolehan',
+                'Kaedah Perolehan',
+                'Nilai Perolehan (RM)',
+                'Diskaun (RM)',
+                'Umur Faedah (Tahun)',
+                'Susut Nilai Tahunan (RM)',
+                'Lokasi Penempatan',
+                'Pegawai Bertanggungjawab',
+                'Jawatan Pegawai',
+                'Status Aset',
+                'Keadaan Fizikal',
+                'Status Jaminan',
+                'Tarikh Pemeriksaan Terakhir',
+                'Tarikh Penyelenggaraan Akan Datang',
+                'No. Resit',
+                'Tarikh Resit',
+                'Pembekal',
+                'Jenama',
+                'No. Pesanan Kerajaan',
+                'No. Rujukan Kontrak',
+                'Tempoh Jaminan',
+                'Tarikh Tamat Jaminan',
+                'Catatan',
+                'Catatan Jaminan',
+                'Dicipta Pada',
+                'Dikemaskini Pada'
+            ]);
+
+            // Write data rows
+            foreach ($assets as $asset) {
+                fputcsv($file, [
+                    $asset->no_siri_pendaftaran,
+                    $asset->nama_aset,
+                    $asset->jenis_aset,
+                    $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset',
+                    $asset->masjidSurau->nama ?? '',
+                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '',
+                    $asset->kaedah_perolehan,
+                    number_format($asset->nilai_perolehan, 2),
+                    number_format($asset->diskaun ?? 0, 2),
+                    $asset->umur_faedah_tahunan ?? '',
+                    number_format($asset->susut_nilai_tahunan ?? 0, 2),
+                    $asset->lokasi_penempatan,
+                    $asset->pegawai_bertanggungjawab_lokasi,
+                    $asset->jawatan_pegawai ?? '',
+                    $asset->status_aset,
+                    $asset->keadaan_fizikal ?? '',
+                    $asset->status_jaminan ?? '',
+                    $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('Y-m-d') : '',
+                    $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('Y-m-d') : '',
+                    $asset->no_resit ?? '',
+                    $asset->tarikh_resit ? $asset->tarikh_resit->format('Y-m-d H:i:s') : '',
+                    $asset->pembekal ?? '',
+                    $asset->jenama ?? '',
+                    $asset->no_pesanan_kerajaan ?? '',
+                    $asset->no_rujukan_kontrak ?? '',
+                    $asset->tempoh_jaminan ?? '',
+                    $asset->tarikh_tamat_jaminan ? $asset->tarikh_tamat_jaminan->format('Y-m-d') : '',
+                    $asset->catatan ?? '',
+                    $asset->catatan_jaminan ?? '',
+                    $asset->created_at->format('Y-m-d H:i:s'),
+                    $asset->updated_at->format('Y-m-d H:i:s')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Download import template
+     */
+    public function downloadTemplate()
+    {
+        $filename = 'assets_import_template_' . now()->format('Y-m-d') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for UTF-8
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Write CSV headers
+            fputcsv($file, [
+                'Masjid/Surau ID',
+                'Nama Aset',
+                'Jenis Aset',
+                'Kategori Aset (asset/non-asset)',
+                'Tarikh Perolehan (YYYY-MM-DD)',
+                'Kaedah Perolehan',
+                'Nilai Perolehan (RM)',
+                'Diskaun (RM)',
+                'Umur Faedah (Tahun)',
+                'Susut Nilai Tahunan (RM)',
+                'Lokasi Penempatan',
+                'Pegawai Bertanggungjawab',
+                'Jawatan Pegawai',
+                'Status Aset',
+                'Keadaan Fizikal',
+                'Status Jaminan',
+                'Tarikh Pemeriksaan Terakhir (YYYY-MM-DD)',
+                'Tarikh Penyelenggaraan Akan Datang (YYYY-MM-DD)',
+                'No. Resit',
+                'Tarikh Resit (YYYY-MM-DD)',
+                'Pembekal',
+                'Jenama',
+                'No. Pesanan Kerajaan',
+                'No. Rujukan Kontrak',
+                'Tempoh Jaminan',
+                'Tarikh Tamat Jaminan (YYYY-MM-DD)',
+                'Catatan',
+                'Catatan Jaminan'
+            ]);
+
+            // Add example row
+            $masjidSuraus = MasjidSurau::limit(1)->first();
+            $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
+            
+            fputcsv($file, [
+                $masjidSuraus->id ?? '1',
+                'Contoh: Komputer Desktop',
+                $assetTypes[0] ?? 'Perabot',
+                'asset',
+                date('Y-m-d'),
+                'Pembelian',
+                '2500.00',
+                '0.00',
+                '5',
+                '500.00',
+                'Bilik Setiausaha',
+                'Ahmad bin Abdullah',
+                'Setiausaha',
+                'Sedang Digunakan',
+                'Baik',
+                'Aktif',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                'Contoh catatan',
+                ''
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Show import form
+     */
+    public function showImport()
+    {
+        $masjidSuraus = MasjidSurau::all();
+        $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
+        
+        return view('admin.assets.import', compact('masjidSuraus', 'assetTypes'));
+    }
+
+    /**
+     * Import assets from CSV
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:10240', // 10MB max
+        ]);
+
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+        
+        $data = array_map('str_getcsv', file($path));
+        
+        // Remove BOM if present and skip header row
+        $header = array_shift($data);
+        if (isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
+            $header[0] = substr($header[0], 3);
+        }
+
+        $errors = [];
+        $successCount = 0;
+        $skipCount = 0;
+        $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
+        
+        foreach ($data as $rowIndex => $row) {
+            $rowNumber = $rowIndex + 2; // +2 because header is row 1, and array is 0-indexed
+            
+            // Skip empty rows
+            if (empty(array_filter($row))) {
+                $skipCount++;
+                continue;
+            }
+
+            try {
+                // Map CSV columns to asset fields
+                $assetData = [
+                    'masjid_surau_id' => $row[0] ?? null,
+                    'nama_aset' => $row[1] ?? null,
+                    'jenis_aset' => $row[2] ?? null,
+                    'kategori_aset' => $row[3] ?? null,
+                    'tarikh_perolehan' => $row[4] ?? null,
+                    'kaedah_perolehan' => $row[5] ?? null,
+                    'nilai_perolehan' => $row[6] ?? null,
+                    'diskaun' => $row[7] ?? 0,
+                    'umur_faedah_tahunan' => $row[8] ?? null,
+                    'susut_nilai_tahunan' => $row[9] ?? null,
+                    'lokasi_penempatan' => $row[10] ?? null,
+                    'pegawai_bertanggungjawab_lokasi' => $row[11] ?? null,
+                    'jawatan_pegawai' => $row[12] ?? null,
+                    'status_aset' => $row[13] ?? 'Sedang Digunakan',
+                    'keadaan_fizikal' => $row[14] ?? 'Baik',
+                    'status_jaminan' => $row[15] ?? 'Tiada Jaminan',
+                    'tarikh_pemeriksaan_terakhir' => !empty($row[16]) ? $row[16] : null,
+                    'tarikh_penyelenggaraan_akan_datang' => !empty($row[17]) ? $row[17] : null,
+                    'no_resit' => $row[18] ?? null,
+                    'tarikh_resit' => !empty($row[19]) ? $row[19] : null,
+                    'pembekal' => $row[20] ?? null,
+                    'jenama' => $row[21] ?? null,
+                    'no_pesanan_kerajaan' => $row[22] ?? null,
+                    'no_rujukan_kontrak' => $row[23] ?? null,
+                    'tempoh_jaminan' => $row[24] ?? null,
+                    'tarikh_tamat_jaminan' => !empty($row[25]) ? $row[25] : null,
+                    'catatan' => $row[26] ?? null,
+                    'catatan_jaminan' => $row[27] ?? null,
+                ];
+
+                // Validate required fields
+                if (empty($assetData['nama_aset'])) {
+                    $errors[] = "Baris {$rowNumber}: Nama Aset diperlukan";
+                    continue;
+                }
+
+                if (empty($assetData['masjid_surau_id']) || !MasjidSurau::find($assetData['masjid_surau_id'])) {
+                    $errors[] = "Baris {$rowNumber}: Masjid/Surau ID tidak sah";
+                    continue;
+                }
+
+                if (empty($assetData['jenis_aset']) || !in_array($assetData['jenis_aset'], $availableAssetTypes)) {
+                    $errors[] = "Baris {$rowNumber}: Jenis Aset tidak sah. Sila gunakan salah satu: " . implode(', ', $availableAssetTypes);
+                    continue;
+                }
+
+                if (empty($assetData['kategori_aset']) || !in_array($assetData['kategori_aset'], ['asset', 'non-asset'])) {
+                    $errors[] = "Baris {$rowNumber}: Kategori Aset mesti 'asset' atau 'non-asset'";
+                    continue;
+                }
+
+                if (empty($assetData['tarikh_perolehan'])) {
+                    $errors[] = "Baris {$rowNumber}: Tarikh Perolehan diperlukan";
+                    continue;
+                }
+
+                // Validate location
+                $validLocations = ['Anjung kiri', 'Anjung kanan', 'Anjung Depan(Ruang Pengantin)', 'Ruang Utama (tingkat atas, tingkat bawah)', 'Bilik Mesyuarat', 'Bilik Kuliah', 'Bilik Bendahari', 'Bilik Setiausaha', 'Bilik Nazir & Imam', 'Bangunan Jenazah', 'Lain-lain'];
+                if (empty($assetData['lokasi_penempatan']) || !in_array($assetData['lokasi_penempatan'], $validLocations)) {
+                    $errors[] = "Baris {$rowNumber}: Lokasi Penempatan tidak sah";
+                    continue;
+                }
+
+                if (empty($assetData['pegawai_bertanggungjawab_lokasi'])) {
+                    $errors[] = "Baris {$rowNumber}: Pegawai Bertanggungjawab diperlukan";
+                    continue;
+                }
+
+                if (empty($assetData['kaedah_perolehan'])) {
+                    $errors[] = "Baris {$rowNumber}: Kaedah Perolehan diperlukan";
+                    continue;
+                }
+
+                // Generate registration number
+                $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
+                    $assetData['masjid_surau_id'],
+                    $assetData['jenis_aset'],
+                    $tarikhPerolehan->format('y')
+                );
+
+                // Check if registration number already exists (duplicate check)
+                if (Asset::where('no_siri_pendaftaran', $assetData['no_siri_pendaftaran'])->exists()) {
+                    $errors[] = "Baris {$rowNumber}: Nombor siri pendaftaran sudah wujud: {$assetData['no_siri_pendaftaran']}";
+                    continue;
+                }
+
+                // Convert numeric fields
+                $assetData['nilai_perolehan'] = (float) ($assetData['nilai_perolehan'] ?? 0);
+                $assetData['diskaun'] = (float) ($assetData['diskaun'] ?? 0);
+                $assetData['umur_faedah_tahunan'] = !empty($assetData['umur_faedah_tahunan']) ? (int) $assetData['umur_faedah_tahunan'] : null;
+                $assetData['susut_nilai_tahunan'] = !empty($assetData['susut_nilai_tahunan']) ? (float) $assetData['susut_nilai_tahunan'] : null;
+
+                // Create asset
+                Asset::create($assetData);
+                $successCount++;
+
+            } catch (\Exception $e) {
+                $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
+            }
+        }
+
+        $message = "Import selesai. {$successCount} aset berjaya diimport.";
+        if ($skipCount > 0) {
+            $message .= " {$skipCount} baris kosong dilangkau.";
+        }
+        if (count($errors) > 0) {
+            $message .= " " . count($errors) . " ralat ditemui.";
+        }
+
+        if (count($errors) > 0) {
+            return redirect()->route('admin.assets.import')
+                            ->with('errors', $errors)
+                            ->with('success', $message)
+                            ->withInput();
+        }
+
+        return redirect()->route('admin.assets.index')
+                        ->with('success', $message);
+    }
 }

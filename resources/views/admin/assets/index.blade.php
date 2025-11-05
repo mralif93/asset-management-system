@@ -95,7 +95,7 @@
         </a>
 
         <!-- Export Assets -->
-        <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
+        <a href="{{ route('admin.assets.export', request()->query()) }}" class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                     <i class='bx bx-download text-blue-600 text-xl'></i>
@@ -104,7 +104,7 @@
             </div>
             <h3 class="font-semibold text-gray-900 mb-2">Eksport Data</h3>
             <p class="text-sm text-gray-600">Muat turun senarai aset</p>
-        </div>
+        </a>
 
         <!-- Asset Reports -->
         <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
@@ -118,17 +118,17 @@
             <p class="text-sm text-gray-600">Analitik dan statistik</p>
         </div>
 
-        <!-- Backup Assets -->
-        <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
+        <!-- Import Assets -->
+        <a href="{{ route('admin.assets.import') }}" class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition-colors">
                     <i class='bx bx-cloud-upload text-amber-600 text-xl'></i>
                 </div>
                 <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-amber-600 transition-colors'></i>
             </div>
-            <h3 class="font-semibold text-gray-900 mb-2">Sandaran Data</h3>
-            <p class="text-sm text-gray-600">Backup maklumat aset</p>
-        </div>
+            <h3 class="font-semibold text-gray-900 mb-2">Import Data</h3>
+            <p class="text-sm text-gray-600">Muat naik senarai aset</p>
+        </a>
     </div>
 
     <!-- Search and Filters Card -->
