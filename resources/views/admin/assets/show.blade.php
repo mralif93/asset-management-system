@@ -624,7 +624,7 @@
                 </div>
 
                 <!-- Asset Images -->
-                @if($asset->gambar_aset && count($asset->gambar_aset) > 0)
+                @if($asset->gambar_aset && is_array($asset->gambar_aset) && count($asset->gambar_aset) > 0)
                 <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                     <div class="flex items-center mb-4">
                         <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
@@ -645,9 +645,9 @@
                         @endforeach
                     </div>
                     
-                    @if(count($asset->gambar_aset) > 4)
+                    @if(is_array($asset->gambar_aset) && count($asset->gambar_aset) > 4)
                                             <p class="text-center text-sm text-emerald-600 mt-3">
-                        +{{ count($asset->gambar_aset) - 4 }} gambar lagi
+                        +{{ is_array($asset->gambar_aset) ? count($asset->gambar_aset) - 4 : 0 }} gambar lagi
                     </p>
                     @endif
                 </div>
