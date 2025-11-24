@@ -8,6 +8,7 @@ use App\Models\MasjidSurau;
 use App\Helpers\AssetRegistrationNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AssetController extends Controller
 {
@@ -103,6 +104,12 @@ class AssetController extends Controller
             'tarikh_penyelenggaraan_akan_datang' => 'nullable|date',
             'catatan_jaminan' => 'nullable|string',
             'catatan' => 'nullable|string',
+            'pembekal' => 'nullable|string|max:255',
+            'jenama' => 'nullable|string|max:255',
+            'no_pesanan_kerajaan' => 'nullable|string|max:255',
+            'no_rujukan_kontrak' => 'nullable|string|max:255',
+            'tempoh_jaminan' => 'nullable|string|max:255',
+            'tarikh_tamat_jaminan' => 'nullable|date',
             'gambar_aset' => 'nullable|array|max:5',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
@@ -186,13 +193,36 @@ class AssetController extends Controller
             'tarikh_penyelenggaraan_akan_datang' => 'nullable|date',
             'catatan_jaminan' => 'nullable|string',
             'catatan' => 'nullable|string',
+            'pembekal' => 'nullable|string|max:255',
+            'jenama' => 'nullable|string|max:255',
+            'no_pesanan_kerajaan' => 'nullable|string|max:255',
+            'no_rujukan_kontrak' => 'nullable|string|max:255',
+            'tempoh_jaminan' => 'nullable|string|max:255',
+            'tarikh_tamat_jaminan' => 'nullable|date',
             'gambar_aset' => 'nullable|array|max:5',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
+        // Handle image deletions
+        if ($request->has('delete_images')) {
+            $imagesToDelete = is_array($request->delete_images) ? $request->delete_images : [$request->delete_images];
+            $currentImages = $asset->gambar_aset ?? [];
+            $remainingImages = array_filter($currentImages, function($image) use ($imagesToDelete) {
+                return !in_array($image, $imagesToDelete);
+            });
+            $validated['gambar_aset'] = array_values($remainingImages);
+            
+            // Delete files from storage
+            foreach ($imagesToDelete as $imagePath) {
+                if (Storage::disk('public')->exists($imagePath)) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+            }
+        }
+
         // Handle image uploads
         if ($request->hasFile('gambar_aset')) {
-            $images = $asset->gambar_aset ?? [];
+            $images = $validated['gambar_aset'] ?? ($asset->gambar_aset ?? []);
             foreach ($request->file('gambar_aset') as $image) {
                 $path = $image->store('assets', 'public');
                 $images[] = $path;
@@ -365,8 +395,8 @@ class AssetController extends Controller
                     $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset',
                     $asset->masjidSurau->nama ?? '',
                     $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '',
-                    $asset->kaedah_perolehan,
-                    number_format($asset->nilai_perolehan, 2),
+                    $asset->kaedah_perolehan ?? '',
+                    number_format($asset->nilai_perolehan ?? 0, 2),
                     number_format($asset->diskaun ?? 0, 2),
                     $asset->umur_faedah_tahunan ?? '',
                     number_format($asset->susut_nilai_tahunan ?? 0, 2),
@@ -507,17 +537,22 @@ class AssetController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:10240', // 10MB max
+            'csv_file' => 'required|file|mimes:csv,txt|max:51200', // 50MB max (increased for large imports)
         ]);
 
         $file = $request->file('csv_file');
         $path = $file->getRealPath();
         
-        $data = array_map('str_getcsv', file($path));
+        // Read file line by line to handle large files efficiently
+        $handle = fopen($path, 'r');
+        if (!$handle) {
+            return redirect()->route('admin.assets.import')
+                ->with('error', 'Tidak dapat membaca fail CSV.');
+        }
         
-        // Remove BOM if present and skip header row
-        $header = array_shift($data);
-        if (isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
+        // Read and skip header row
+        $header = fgetcsv($handle);
+        if ($header && isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
             $header[0] = substr($header[0], 3);
         }
 
@@ -525,9 +560,15 @@ class AssetController extends Controller
         $successCount = 0;
         $skipCount = 0;
         $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
+        $rowIndex = 0;
         
-        foreach ($data as $rowIndex => $row) {
-            $rowNumber = $rowIndex + 2; // +2 because header is row 1, and array is 0-indexed
+        // Process rows in batches for better performance
+        $batchSize = 100;
+        $batch = [];
+        
+        while (($row = fgetcsv($handle)) !== false) {
+            $rowIndex++;
+            $rowNumber = $rowIndex + 1; // +1 because header is row 1
             
             // Skip empty rows
             if (empty(array_filter($row))) {
@@ -689,6 +730,9 @@ class AssetController extends Controller
                 $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
             }
         }
+        
+        // Close file handle
+        fclose($handle);
 
         $message = "Import selesai. {$successCount} aset berjaya diimport.";
         if ($skipCount > 0) {
