@@ -242,8 +242,6 @@ class ImmovableAssetCreateEditShowTest extends TestCase
             'masjid_surau_id' => $this->masjidSurau->id,
             'nama_aset' => 'Tanah dan Bangunan',
             'jenis_aset' => 'Tanah dan Bangunan',
-            'keluasan_tanah' => '300.00',
-            'keluasan_bangunan' => '200.00',
             'tarikh_perolehan' => '2024-01-15',
             'sumber_perolehan' => 'Pembelian',
             'kos_perolehan' => '500000.00',
