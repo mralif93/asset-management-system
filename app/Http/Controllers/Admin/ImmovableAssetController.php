@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ImmovableAsset;
 use App\Models\MasjidSurau;
+use App\Helpers\AssetRegistrationNumber;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ImmovableAssetController extends Controller
 {
@@ -15,18 +16,16 @@ class ImmovableAssetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ImmovableAsset::with(['masjidSurau.users', 'masjidSurau.assets']);
+        $query = ImmovableAsset::with('masjidSurau');
         
-        // Filter by masjid/surau if user is not admin
-        if (Auth::user()->role !== 'admin') {
-            $query->where('masjid_surau_id', Auth::user()->masjid_surau_id);
-        }
-
+        // Admin can see all assets
+        
         // Search functionality
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('nama_aset', 'like', "%{$searchTerm}%")
+                  ->orWhere('no_siri_pendaftaran', 'like', "%{$searchTerm}%")
                   ->orWhere('alamat', 'like', "%{$searchTerm}%")
                   ->orWhere('no_hakmilik', 'like', "%{$searchTerm}%")
                   ->orWhere('no_lot', 'like', "%{$searchTerm}%");
@@ -58,7 +57,13 @@ class ImmovableAssetController extends Controller
     {
         $masjidSuraus = MasjidSurau::all();
         
-        return view('admin.immovable-assets.create', compact('masjidSuraus'));
+        // Set default to Masjid Al-Hidayah, Taman Melawati
+        $defaultMasjid = MasjidSurau::where('nama', 'like', '%Al-Hidayah%')
+                                   ->where('nama', 'like', '%Taman Melawati%')
+                                   ->first();
+        $default_masjid_surau_id = $defaultMasjid ? $defaultMasjid->id : (auth()->user()->masjid_surau_id ?? null);
+        
+        return view('admin.immovable-assets.create', compact('masjidSuraus', 'default_masjid_surau_id'));
     }
 
     /**
@@ -73,20 +78,42 @@ class ImmovableAssetController extends Controller
             'alamat' => 'nullable|string',
             'no_hakmilik' => 'nullable|string|max:255',
             'no_lot' => 'nullable|string|max:255',
-            'luas_tanah_bangunan' => 'required|numeric|min:0',
+            'luas_tanah_bangunan' => 'nullable|numeric|min:0',
+            'keluasan_tanah' => 'nullable|numeric|min:0',
+            'keluasan_bangunan' => 'nullable|numeric|min:0',
             'tarikh_perolehan' => 'required|date',
             'sumber_perolehan' => 'required|string',
             'kos_perolehan' => 'required|numeric|min:0',
             'keadaan_semasa' => 'required|string',
             'catatan' => 'nullable|string',
-            'gambar_aset' => 'nullable|array',
+            'gambar_aset' => 'nullable|array|max:5',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        // Set masjid_surau_id based on user role
-        if (Auth::user()->role !== 'admin') {
-            $validated['masjid_surau_id'] = Auth::user()->masjid_surau_id;
+        // Combine keluasan_tanah and keluasan_bangunan if provided separately
+        if (!$validated['luas_tanah_bangunan'] && ($validated['keluasan_tanah'] || $validated['keluasan_bangunan'])) {
+            $validated['luas_tanah_bangunan'] = ($validated['keluasan_tanah'] ?? 0) + ($validated['keluasan_bangunan'] ?? 0);
         }
+
+        // Ensure luas_tanah_bangunan is set
+        if (!$validated['luas_tanah_bangunan']) {
+            $validated['luas_tanah_bangunan'] = 0;
+        }
+
+        // Remove the separate fields
+        unset($validated['keluasan_tanah'], $validated['keluasan_bangunan']);
+
+        // Custom validation: Ensure at least 1 image for new assets
+        if (!$request->hasFile('gambar_aset') || count($request->file('gambar_aset')) < 1) {
+            return back()->withErrors(['gambar_aset' => 'Sekurang-kurangnya 1 gambar diperlukan untuk aset baru.'])->withInput();
+        }
+
+        // Generate registration number
+        $tarikhPerolehan = new \Carbon\Carbon($validated['tarikh_perolehan']);
+        $validated['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable(
+            $validated['masjid_surau_id'],
+            $tarikhPerolehan->format('y')
+        );
 
         // Handle image uploads
         if ($request->hasFile('gambar_aset')) {
@@ -101,7 +128,7 @@ class ImmovableAssetController extends Controller
         $immovableAsset = ImmovableAsset::create($validated);
 
         return redirect()->route('admin.immovable-assets.show', $immovableAsset)
-                        ->with('success', 'Aset tak alih berjaya didaftarkan.');
+                        ->with('success', 'Aset tak alih berjaya didaftarkan dengan nombor siri: ' . $immovableAsset->no_siri_pendaftaran);
     }
 
     /**
@@ -141,13 +168,30 @@ class ImmovableAssetController extends Controller
             'kos_perolehan' => 'required|numeric|min:0',
             'keadaan_semasa' => 'required|string',
             'catatan' => 'nullable|string',
-            'gambar_aset' => 'nullable|array',
+            'gambar_aset' => 'nullable|array|max:5',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
+        // Handle image deletions
+        if ($request->has('delete_images')) {
+            $imagesToDelete = is_array($request->delete_images) ? $request->delete_images : [$request->delete_images];
+            $currentImages = $immovableAsset->gambar_aset ?? [];
+            $remainingImages = array_filter($currentImages, function($image) use ($imagesToDelete) {
+                return !in_array($image, $imagesToDelete);
+            });
+            $validated['gambar_aset'] = array_values($remainingImages);
+            
+            // Delete files from storage
+            foreach ($imagesToDelete as $imagePath) {
+                if (Storage::disk('public')->exists($imagePath)) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+            }
+        }
+
         // Handle image uploads
         if ($request->hasFile('gambar_aset')) {
-            $images = $immovableAsset->gambar_aset ?? [];
+            $images = $validated['gambar_aset'] ?? ($immovableAsset->gambar_aset ?? []);
             foreach ($request->file('gambar_aset') as $image) {
                 $path = $image->store('immovable-assets', 'public');
                 $images[] = $path;
@@ -166,14 +210,332 @@ class ImmovableAssetController extends Controller
      */
     public function destroy(ImmovableAsset $immovableAsset)
     {
-        // Only admin can delete immovable assets
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Unauthorized action.');
-        }
-
         $immovableAsset->delete();
 
         return redirect()->route('admin.immovable-assets.index')
                         ->with('success', 'Rekod aset tak alih berjaya dipadamkan.');
+    }
+
+    /**
+     * Export immovable assets to CSV
+     */
+    public function export(Request $request)
+    {
+        $query = ImmovableAsset::with('masjidSurau');
+        
+        // Apply same filters as index
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama_aset', 'like', "%{$searchTerm}%")
+                  ->orWhere('no_siri_pendaftaran', 'like', "%{$searchTerm}%")
+                  ->orWhere('alamat', 'like', "%{$searchTerm}%")
+                  ->orWhere('no_hakmilik', 'like', "%{$searchTerm}%")
+                  ->orWhere('no_lot', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        if ($request->filled('jenis_aset')) {
+            $query->where('jenis_aset', $request->jenis_aset);
+        }
+
+        if ($request->filled('keadaan_semasa')) {
+            $query->where('keadaan_semasa', $request->keadaan_semasa);
+        }
+
+        $immovableAssets = $query->latest()->limit(10000)->get(); // Limit to prevent memory issues
+
+        $filename = 'immovable_assets_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($immovableAssets) {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for UTF-8 to support Malay characters
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Write CSV headers
+            fputcsv($file, [
+                'No. Siri Pendaftaran',
+                'Nama Aset',
+                'Jenis Aset',
+                'Masjid/Surau',
+                'Alamat',
+                'No. Hakmilik',
+                'No. Lot',
+                'Luas Tanah/Bangunan (m²)',
+                'Tarikh Perolehan',
+                'Sumber Perolehan',
+                'Kos Perolehan (RM)',
+                'Keadaan Semasa',
+                'Catatan',
+                'Dicipta Pada',
+                'Dikemaskini Pada'
+            ]);
+
+            // Write data rows
+            foreach ($immovableAssets as $asset) {
+                fputcsv($file, [
+                    $asset->no_siri_pendaftaran ?? '',
+                    $asset->nama_aset,
+                    $asset->jenis_aset,
+                    $asset->masjidSurau->nama ?? '',
+                    $asset->alamat ?? '',
+                    $asset->no_hakmilik ?? '',
+                    $asset->no_lot ?? '',
+                    number_format($asset->luas_tanah_bangunan ?? 0, 2),
+                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '',
+                    $asset->sumber_perolehan ?? '',
+                    number_format($asset->kos_perolehan ?? 0, 2),
+                    $asset->keadaan_semasa ?? '',
+                    $asset->catatan ?? '',
+                    $asset->created_at->format('Y-m-d H:i:s'),
+                    $asset->updated_at->format('Y-m-d H:i:s')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Download import template
+     */
+    public function downloadTemplate()
+    {
+        $filename = 'immovable_assets_import_template_' . now()->format('Y-m-d') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for UTF-8
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Write CSV headers
+            fputcsv($file, [
+                'Masjid/Surau ID',
+                'Nama Aset',
+                'Jenis Aset (Tanah/Bangunan/Tanah dan Bangunan)',
+                'Alamat',
+                'No. Hakmilik',
+                'No. Lot',
+                'Luas Tanah/Bangunan (m²)',
+                'Tarikh Perolehan (YYYY-MM-DD)',
+                'Sumber Perolehan (Pembelian/Hibah/Wakaf/Derma/Lain-lain)',
+                'Kos Perolehan (RM)',
+                'Keadaan Semasa (Sangat Baik/Baik/Sederhana/Perlu Pembaikan/Rosak)',
+                'Catatan'
+            ]);
+
+            // Add example row
+            $masjidSuraus = MasjidSurau::limit(1)->first();
+            
+            fputcsv($file, [
+                $masjidSuraus->id ?? '1',
+                'Contoh: Tanah Masjid',
+                'Tanah',
+                'Jalan Contoh, Taman Contoh',
+                '12345',
+                'Lot 123',
+                '500.00',
+                date('Y-m-d'),
+                'Pembelian',
+                '100000.00',
+                'Baik',
+                'Contoh catatan'
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Show import form
+     */
+    public function showImport()
+    {
+        $masjidSuraus = MasjidSurau::all();
+        
+        return view('admin.immovable-assets.import', compact('masjidSuraus'));
+    }
+
+    /**
+     * Import immovable assets from CSV
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:51200', // 50MB max
+        ]);
+
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+        
+        // Read file line by line to handle large files efficiently
+        $handle = fopen($path, 'r');
+        if (!$handle) {
+            return redirect()->route('admin.immovable-assets.import')
+                ->with('error', 'Tidak dapat membaca fail CSV.');
+        }
+        
+        // Read and skip header row
+        $header = fgetcsv($handle);
+        if ($header && isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
+            $header[0] = substr($header[0], 3);
+        }
+
+        $errors = [];
+        $successCount = 0;
+        $skipCount = 0;
+        $rowIndex = 0;
+        
+        // Process rows in batches for better performance
+        $batchSize = 100;
+        $batch = [];
+        
+        while (($row = fgetcsv($handle)) !== false) {
+            $rowIndex++;
+            $rowNumber = $rowIndex + 1; // +1 because header is row 1
+            
+            // Skip empty rows
+            if (empty(array_filter($row))) {
+                $skipCount++;
+                continue;
+            }
+
+            try {
+                // Map CSV columns to immovable asset fields
+                $assetData = [
+                    'masjid_surau_id' => $row[0] ?? null,
+                    'nama_aset' => $row[1] ?? null,
+                    'jenis_aset' => $row[2] ?? null,
+                    'alamat' => $row[3] ?? null,
+                    'no_hakmilik' => $row[4] ?? null,
+                    'no_lot' => $row[5] ?? null,
+                    'luas_tanah_bangunan' => $row[6] ?? null,
+                    'tarikh_perolehan' => !empty($row[7]) ? $row[7] : null,
+                    'sumber_perolehan' => $row[8] ?? null,
+                    'kos_perolehan' => $row[9] ?? null,
+                    'keadaan_semasa' => $row[10] ?? 'Baik',
+                    'catatan' => $row[11] ?? null,
+                ];
+
+                // Validate required fields
+                if (empty($assetData['nama_aset'])) {
+                    $errors[] = "Baris {$rowNumber}: Nama Aset diperlukan";
+                    continue;
+                }
+
+                if (empty($assetData['masjid_surau_id']) || !MasjidSurau::find($assetData['masjid_surau_id'])) {
+                    $errors[] = "Baris {$rowNumber}: Masjid/Surau ID tidak sah";
+                    continue;
+                }
+
+                if (empty($assetData['jenis_aset']) || !in_array($assetData['jenis_aset'], ['Tanah', 'Bangunan', 'Tanah dan Bangunan'])) {
+                    $errors[] = "Baris {$rowNumber}: Jenis Aset tidak sah. Sila gunakan: Tanah, Bangunan, atau Tanah dan Bangunan";
+                    continue;
+                }
+
+                if (empty($assetData['tarikh_perolehan'])) {
+                    $errors[] = "Baris {$rowNumber}: Tarikh Perolehan diperlukan";
+                    continue;
+                }
+
+                // Validate date format
+                try {
+                    $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                } catch (\Exception $e) {
+                    $errors[] = "Baris {$rowNumber}: Format tarikh perolehan tidak sah. Gunakan format YYYY-MM-DD";
+                    continue;
+                }
+
+                // Validate source
+                $validSources = ['Pembelian', 'Hibah', 'Wakaf', 'Derma', 'Lain-lain'];
+                if (!empty($assetData['sumber_perolehan']) && !in_array($assetData['sumber_perolehan'], $validSources)) {
+                    $errors[] = "Baris {$rowNumber}: Sumber Perolehan tidak sah";
+                    continue;
+                }
+
+                // Validate condition
+                $validConditions = ['Sangat Baik', 'Baik', 'Sederhana', 'Perlu Pembaikan', 'Rosak'];
+                if (!empty($assetData['keadaan_semasa']) && !in_array($assetData['keadaan_semasa'], $validConditions)) {
+                    $errors[] = "Baris {$rowNumber}: Keadaan Semasa tidak sah";
+                    continue;
+                }
+
+                // Generate registration number
+                $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable(
+                    $assetData['masjid_surau_id'],
+                    $tarikhPerolehan->format('y')
+                );
+
+                // Check if registration number already exists (duplicate check)
+                if (ImmovableAsset::where('no_siri_pendaftaran', $assetData['no_siri_pendaftaran'])->exists()) {
+                    $errors[] = "Baris {$rowNumber}: Nombor siri pendaftaran sudah wujud: {$assetData['no_siri_pendaftaran']}";
+                    continue;
+                }
+
+                // Convert numeric fields
+                $assetData['luas_tanah_bangunan'] = (float) ($assetData['luas_tanah_bangunan'] ?? 0);
+                $assetData['kos_perolehan'] = (float) ($assetData['kos_perolehan'] ?? 0);
+
+                // Create immovable asset
+                ImmovableAsset::create($assetData);
+                $successCount++;
+
+            } catch (\Exception $e) {
+                $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
+            }
+        }
+        
+        // Close file handle
+        fclose($handle);
+
+        $message = "Import selesai. {$successCount} aset tak alih berjaya diimport.";
+        if ($skipCount > 0) {
+            $message .= " {$skipCount} baris kosong dilangkau.";
+        }
+        if (count($errors) > 0) {
+            $message .= " " . count($errors) . " ralat ditemui.";
+        }
+
+        if (count($errors) > 0) {
+            return redirect()->route('admin.immovable-assets.import')
+                            ->with('errors', $errors)
+                            ->with('success', $message)
+                            ->withInput();
+        }
+
+        return redirect()->route('admin.immovable-assets.index')
+                        ->with('success', $message);
+    }
+
+    /**
+     * padamAsetTerpilih(): Delete multiple selected immovable assets from the system
+     */
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'asset_ids' => 'required|array|min:1',
+            'asset_ids.*' => 'exists:immovable_assets,id'
+        ]);
+
+        $deletedCount = ImmovableAsset::whereIn('id', $validated['asset_ids'])->delete();
+
+        return redirect()->route('admin.immovable-assets.index')
+                        ->with('success', "Berjaya memadamkan {$deletedCount} aset tak alih yang dipilih.");
     }
 }

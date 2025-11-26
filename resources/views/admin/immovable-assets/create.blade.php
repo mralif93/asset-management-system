@@ -193,7 +193,7 @@
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Masjid/Surau</option>
                                         @foreach($masjidSuraus as $masjidSurau)
-                                            <option value="{{ $masjidSurau->id }}" {{ old('masjid_surau_id') == $masjidSurau->id ? 'selected' : '' }}>
+                                            <option value="{{ $masjidSurau->id }}" {{ old('masjid_surau_id', $default_masjid_surau_id) == $masjidSurau->id ? 'selected' : '' }}>
                                                 {{ $masjidSurau->nama }}
                                             </option>
                                         @endforeach

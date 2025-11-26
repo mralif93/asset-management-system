@@ -95,6 +95,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('maintenance-records', MaintenanceRecordController::class);
     
     // Immovable Assets
+    Route::get('immovable-assets/export', [ImmovableAssetController::class, 'export'])->name('immovable-assets.export');
+    Route::get('immovable-assets/import', [ImmovableAssetController::class, 'showImport'])->name('immovable-assets.import');
+    Route::post('immovable-assets/import', [ImmovableAssetController::class, 'import'])->name('immovable-assets.import.store');
+    Route::get('immovable-assets/import/template', [ImmovableAssetController::class, 'downloadTemplate'])->name('immovable-assets.import.template');
+    Route::post('immovable-assets/bulk-delete', [ImmovableAssetController::class, 'bulkDelete'])->name('immovable-assets.bulk-delete');
     Route::resource('immovable-assets', ImmovableAssetController::class);
     
     // Disposals

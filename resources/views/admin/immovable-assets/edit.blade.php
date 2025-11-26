@@ -474,14 +474,14 @@
                             @if($immovableAsset->gambar_aset && count($immovableAsset->gambar_aset) > 0)
                             <div class="mb-4">
                                 <p class="text-sm text-gray-600 mb-2">Gambar Sedia Ada:</p>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4" id="existingImages">
                                     @foreach($immovableAsset->gambar_aset as $index => $gambar)
-                                    <div class="relative group">
+                                    <div class="relative group image-container" data-image-path="{{ $gambar }}">
                                         <img src="{{ Storage::url($gambar) }}" 
                                              alt="Gambar Aset" 
                                              class="w-full h-24 object-cover rounded-lg">
                                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity rounded-lg flex items-center justify-center">
-                                            <button type="button" onclick="removeImage({{ $index }})"
+                                            <button type="button" onclick="removeImage('{{ $gambar }}')"
                                                     class="text-white opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 rounded-full p-2">
                                                 <i class='bx bx-trash text-sm'></i>
                                             </button>
@@ -489,6 +489,7 @@
                                     </div>
                                     @endforeach
                                 </div>
+                                <div id="deleteImagesContainer"></div>
                             </div>
                             @endif
                             
@@ -663,10 +664,23 @@
 @push('scripts')
 <script>
     // Image removal function
-    function removeImage(index) {
+    function removeImage(imagePath) {
         if (confirm('Adakah anda pasti mahu membuang gambar ini?')) {
-            // Add logic to remove image
-            console.log('Remove image at index:', index);
+            // Hide the image container
+            const imageContainer = document.querySelector(`[data-image-path="${imagePath}"]`);
+            if (imageContainer) {
+                imageContainer.style.display = 'none';
+            }
+            
+            // Add hidden input to mark image for deletion
+            const deleteContainer = document.getElementById('deleteImagesContainer');
+            if (deleteContainer) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'delete_images[]';
+                hiddenInput.value = imagePath;
+                deleteContainer.appendChild(hiddenInput);
+            }
         }
     }
 
