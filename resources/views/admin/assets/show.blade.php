@@ -336,8 +336,134 @@
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">{{ $asset->masjidSurau->nama ?? '-' }}</dd>
                     </div>
+
+                    <!-- Supplier -->
+                    @if($asset->pembekal)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-store text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Pembekal</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->pembekal }}</dd>
+                    </div>
+                    @endif
+
+                    <!-- Brand -->
+                    @if($asset->jenama)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-purchase-tag-alt text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Jenama</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->jenama }}</dd>
+                    </div>
+                    @endif
+
+                    <!-- Government Order Number -->
+                    @if($asset->no_pesanan_kerajaan)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-file-blank text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">No. Pesanan Kerajaan</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->no_pesanan_kerajaan }}</dd>
+                    </div>
+                    @endif
+
+                    <!-- Contract Reference -->
+                    @if($asset->no_rujukan_kontrak)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-file text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">No. Rujukan Kontrak</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->no_rujukan_kontrak }}</dd>
+                    </div>
+                    @endif
+
+                    <!-- Receipt Document URL -->
+                    @if($asset->dokumen_resit_url)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-link text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Dokumen Resit</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">
+                            <a href="{{ $asset->dokumen_resit_url }}" target="_blank" class="text-emerald-600 hover:text-emerald-700 underline">
+                                Lihat Dokumen
+                            </a>
+                        </dd>
+                    </div>
+                    @endif
                 </div>
             </div>
+
+            <!-- Warranty Information Section -->
+            @if($asset->status_jaminan || $asset->tempoh_jaminan || $asset->tarikh_tamat_jaminan)
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                        <i class='bx bx-shield-check text-white text-xl'></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Maklumat Jaminan</h3>
+                        <p class="text-sm text-emerald-700">Butiran jaminan dan tempoh perlindungan</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Warranty Status -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-shield-check text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Status Jaminan</dt>
+                        </div>
+                        <dd class="flex items-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                @if($asset->status_jaminan === 'Aktif') bg-green-100 text-green-800
+                                @elseif($asset->status_jaminan === 'Tamat') bg-red-100 text-red-800
+                                @else bg-gray-100 text-gray-800 @endif">
+                                {{ $asset->status_jaminan ?? 'Tiada Jaminan' }}
+                            </span>
+                        </dd>
+                    </div>
+
+                    <!-- Warranty Period -->
+                    @if($asset->tempoh_jaminan)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-time-five text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Tempoh Jaminan</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->tempoh_jaminan }}</dd>
+                    </div>
+                    @endif
+
+                    <!-- Warranty Expiry Date -->
+                    @if($asset->tarikh_tamat_jaminan)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-calendar-x text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Tarikh Tamat Jaminan</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-gray-900">{{ $asset->tarikh_tamat_jaminan->format('d/m/Y') }}</dd>
+                        <p class="text-xs text-gray-500 mt-1">{{ $asset->tarikh_tamat_jaminan->diffForHumans() }}</p>
+                    </div>
+                    @endif
+
+                    <!-- Warranty Notes -->
+                    @if($asset->catatan_jaminan)
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 md:col-span-2">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-note text-emerald-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Catatan Jaminan</dt>
+                        </div>
+                        <dd class="text-gray-900 leading-relaxed">{{ $asset->catatan_jaminan }}</dd>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <!-- Location & Management Section -->
             <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
@@ -508,7 +634,7 @@
             @endif
 
             <!-- Notes Section -->
-            @if($asset->catatan || $asset->catatan_jaminan)
+            @if($asset->catatan)
             <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                 <div class="flex items-center mb-6">
                     <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
@@ -520,20 +646,8 @@
                     </div>
                 </div>
                 
-                <div class="space-y-4">
-                    @if($asset->catatan)
-                    <div class="bg-white rounded-lg p-4 border border-gray-200">
-                        <h4 class="font-medium text-gray-900 mb-2">Catatan Umum</h4>
-                        <p class="text-gray-900 leading-relaxed">{{ $asset->catatan }}</p>
-                    </div>
-                    @endif
-
-                    @if($asset->catatan_jaminan)
-                    <div class="bg-white rounded-lg p-4 border border-gray-200">
-                        <h4 class="font-medium text-gray-900 mb-2">Catatan Jaminan</h4>
-                        <p class="text-gray-900 leading-relaxed">{{ $asset->catatan_jaminan }}</p>
-                    </div>
-                    @endif
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <p class="text-gray-900 leading-relaxed">{{ $asset->catatan }}</p>
                 </div>
             </div>
             @endif

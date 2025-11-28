@@ -258,32 +258,28 @@ class ImmovableAssetController extends Controller
             // Add BOM for UTF-8 to support Malay characters
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             
-            // Write CSV headers
+            // Write CSV headers - matching import template order and format
             fputcsv($file, [
-                'No. Siri Pendaftaran',
+                'Masjid/Surau ID',
                 'Nama Aset',
-                'Jenis Aset',
-                'Masjid/Surau',
+                'Jenis Aset (Tanah/Bangunan/Tanah dan Bangunan)',
                 'Alamat',
                 'No. Hakmilik',
                 'No. Lot',
                 'Luas Tanah/Bangunan (m²)',
-                'Tarikh Perolehan',
-                'Sumber Perolehan',
+                'Tarikh Perolehan (YYYY-MM-DD)',
+                'Sumber Perolehan (Pembelian/Hibah/Wakaf/Derma/Lain-lain)',
                 'Kos Perolehan (RM)',
-                'Keadaan Semasa',
-                'Catatan',
-                'Dicipta Pada',
-                'Dikemaskini Pada'
+                'Keadaan Semasa (Sangat Baik/Baik/Sederhana/Perlu Pembaikan/Rosak)',
+                'Catatan'
             ]);
 
-            // Write data rows
+            // Write data rows - matching import template column order
             foreach ($immovableAssets as $asset) {
                 fputcsv($file, [
-                    $asset->no_siri_pendaftaran ?? '',
+                    $asset->masjid_surau_id,
                     $asset->nama_aset,
                     $asset->jenis_aset,
-                    $asset->masjidSurau->nama ?? '',
                     $asset->alamat ?? '',
                     $asset->no_hakmilik ?? '',
                     $asset->no_lot ?? '',
@@ -292,9 +288,7 @@ class ImmovableAssetController extends Controller
                     $asset->sumber_perolehan ?? '',
                     number_format($asset->kos_perolehan ?? 0, 2),
                     $asset->keadaan_semasa ?? '',
-                    $asset->catatan ?? '',
-                    $asset->created_at->format('Y-m-d H:i:s'),
-                    $asset->updated_at->format('Y-m-d H:i:s')
+                    $asset->catatan ?? ''
                 ]);
             }
 
@@ -514,7 +508,7 @@ class ImmovableAssetController extends Controller
 
         if (count($errors) > 0) {
             return redirect()->route('admin.immovable-assets.import')
-                            ->with('errors', $errors)
+                            ->with('import_errors', $errors)
                             ->with('success', $message)
                             ->withInput();
         }

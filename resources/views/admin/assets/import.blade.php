@@ -52,7 +52,7 @@
     </div>
     @endif
 
-    @if(session('errors'))
+    @if(session('import_errors'))
     <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
         <div class="flex items-start mb-4">
             <i class='bx bx-error-circle text-red-600 text-xl mr-3 mt-0.5'></i>
@@ -60,7 +60,7 @@
                 <h3 class="text-red-800 font-semibold mb-2">Ralat Import Ditemui</h3>
                 <p class="text-red-700 text-sm mb-4">Sila semak ralat berikut dan betulkan fail CSV anda:</p>
                 <ul class="space-y-2 max-h-60 overflow-y-auto">
-                    @foreach(session('errors') as $error)
+                    @foreach(session('import_errors') as $error)
                     <li class="text-red-700 text-sm flex items-start">
                         <span class="text-red-500 mr-2">•</span>
                         <span>{{ $error }}</span>

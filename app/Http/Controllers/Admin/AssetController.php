@@ -351,14 +351,13 @@ class AssetController extends Controller
             // Add BOM for UTF-8 to support Malay characters
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             
-            // Write CSV headers
+            // Write CSV headers - matching import template order and format
             fputcsv($file, [
-                'No. Siri Pendaftaran',
+                'Masjid/Surau ID',
                 'Nama Aset',
                 'Jenis Aset',
-                'Kategori Aset',
-                'Masjid/Surau',
-                'Tarikh Perolehan',
+                'Kategori Aset (asset/non-asset)',
+                'Tarikh Perolehan (YYYY-MM-DD)',
                 'Kaedah Perolehan',
                 'Nilai Perolehan (RM)',
                 'Diskaun (RM)',
@@ -370,30 +369,27 @@ class AssetController extends Controller
                 'Status Aset',
                 'Keadaan Fizikal',
                 'Status Jaminan',
-                'Tarikh Pemeriksaan Terakhir',
-                'Tarikh Penyelenggaraan Akan Datang',
+                'Tarikh Pemeriksaan Terakhir (YYYY-MM-DD)',
+                'Tarikh Penyelenggaraan Akan Datang (YYYY-MM-DD)',
                 'No. Resit',
-                'Tarikh Resit',
+                'Tarikh Resit (YYYY-MM-DD)',
                 'Pembekal',
                 'Jenama',
                 'No. Pesanan Kerajaan',
                 'No. Rujukan Kontrak',
                 'Tempoh Jaminan',
-                'Tarikh Tamat Jaminan',
+                'Tarikh Tamat Jaminan (YYYY-MM-DD)',
                 'Catatan',
-                'Catatan Jaminan',
-                'Dicipta Pada',
-                'Dikemaskini Pada'
+                'Catatan Jaminan'
             ]);
 
-            // Write data rows
+            // Write data rows - matching import template column order
             foreach ($assets as $asset) {
                 fputcsv($file, [
-                    $asset->no_siri_pendaftaran,
+                    $asset->masjid_surau_id,
                     $asset->nama_aset,
                     $asset->jenis_aset,
-                    $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset',
-                    $asset->masjidSurau->nama ?? '',
+                    $asset->kategori_aset === 'asset' ? 'asset' : 'non-asset',
                     $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '',
                     $asset->kaedah_perolehan ?? '',
                     number_format($asset->nilai_perolehan ?? 0, 2),
@@ -409,7 +405,7 @@ class AssetController extends Controller
                     $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('Y-m-d') : '',
                     $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('Y-m-d') : '',
                     $asset->no_resit ?? '',
-                    $asset->tarikh_resit ? $asset->tarikh_resit->format('Y-m-d H:i:s') : '',
+                    $asset->tarikh_resit ? $asset->tarikh_resit->format('Y-m-d') : '',
                     $asset->pembekal ?? '',
                     $asset->jenama ?? '',
                     $asset->no_pesanan_kerajaan ?? '',
@@ -417,9 +413,7 @@ class AssetController extends Controller
                     $asset->tempoh_jaminan ?? '',
                     $asset->tarikh_tamat_jaminan ? $asset->tarikh_tamat_jaminan->format('Y-m-d') : '',
                     $asset->catatan ?? '',
-                    $asset->catatan_jaminan ?? '',
-                    $asset->created_at->format('Y-m-d H:i:s'),
-                    $asset->updated_at->format('Y-m-d H:i:s')
+                    $asset->catatan_jaminan ?? ''
                 ]);
             }
 
@@ -744,7 +738,7 @@ class AssetController extends Controller
 
         if (count($errors) > 0) {
             return redirect()->route('admin.assets.import')
-                            ->with('errors', $errors)
+                            ->with('import_errors', $errors)
                             ->with('success', $message)
                             ->withInput();
         }

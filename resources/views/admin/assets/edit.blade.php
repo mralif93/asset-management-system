@@ -657,7 +657,7 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">Maklumat Kewangan</h3>
-                                <p class="text-sm text-amber-700">Susut nilai dan umur faedah aset</p>
+                                <p class="text-sm text-amber-700">Susut nilai dan umur faedah aset(only for assets)</p>
                             </div>
                         </div>
                         
