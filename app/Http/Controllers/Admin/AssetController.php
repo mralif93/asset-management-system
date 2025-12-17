@@ -503,7 +503,91 @@ class AssetController extends Controller
                 ''
             ]);
 
+            // Add blank rows for separation
+            fputcsv($file, []);
+            fputcsv($file, []);
+
+            // Add reference sections
+            fputcsv($file, ['=== RUJUKAN: SENARAI NILAI SAH ===']);
+            fputcsv($file, ['Gunakan nilai-nilai di bawah untuk mengisi template']);
+            fputcsv($file, []);
+
+            // 1. Asset Types Reference
+            fputcsv($file, ['--- JENIS ASET SAH ---']);
+            foreach ($assetTypes as $type) {
+                fputcsv($file, [$type]);
+            }
+            fputcsv($file, []);
+
+            // 2. Asset Category Reference
+            fputcsv($file, ['--- KATEGORI ASET SAH ---']);
+            fputcsv($file, ['asset', '(Aset bernilai)']);
+            fputcsv($file, ['non-asset', '(Bukan aset)']);
+            fputcsv($file, []);
+
+            // 3. Location Reference
+            fputcsv($file, ['--- LOKASI PENEMPATAN SAH ---']);
+            $validLocations = [
+                'Anjung kiri',
+                'Anjung kanan',
+                'Anjung Depan(Ruang Pengantin)',
+                'Ruang Utama (tingkat atas, tingkat bawah)',
+                'Bilik Mesyuarat',
+                'Bilik Kuliah',
+                'Bilik Bendahari',
+                'Bilik Setiausaha',
+                'Bilik Nazir & Imam',
+                'Bangunan Jenazah',
+                'Lain-lain'
+            ];
+            foreach ($validLocations as $location) {
+                fputcsv($file, [$location]);
+            }
+            fputcsv($file, []);
+
+            // 4. Physical Condition Reference
+            fputcsv($file, ['--- KEADAAN FIZIKAL SAH ---']);
+            fputcsv($file, ['Cemerlang']);
+            fputcsv($file, ['Baik']);
+            fputcsv($file, ['Sederhana']);
+            fputcsv($file, ['Rosak']);
+            fputcsv($file, ['Tidak Boleh Digunakan']);
+            fputcsv($file, []);
+
+            // 5. Asset Status Reference
+            fputcsv($file, ['--- STATUS ASET SAH ---']);
+            fputcsv($file, ['Baru']);
+            fputcsv($file, ['Sedang Digunakan']);
+            fputcsv($file, ['Dalam Penyelenggaraan']);
+            fputcsv($file, ['Rosak']);
+            fputcsv($file, []);
+
+            // 6. Acquisition Method Reference
+            fputcsv($file, ['--- KAEDAH PEROLEHAN SAH ---']);
+            fputcsv($file, ['Pembelian']);
+            fputcsv($file, ['Sumbangan']);
+            fputcsv($file, ['Hibah']);
+            fputcsv($file, ['Infaq']);
+            fputcsv($file, ['Lain-lain']);
+            fputcsv($file, []);
+
+            // 7. Warranty Status Reference
+            fputcsv($file, ['--- STATUS JAMINAN SAH ---']);
+            fputcsv($file, ['Aktif']);
+            fputcsv($file, ['Tamat']);
+            fputcsv($file, ['Tiada Jaminan']);
+            fputcsv($file, []);
+
+            // Add important notes
+            fputcsv($file, ['=== NOTA PENTING ===']);
+            fputcsv($file, ['1. Format tarikh: YYYY-MM-DD (contoh: 2024-01-15)']);
+            fputcsv($file, ['2. Pastikan Masjid/Surau ID wujud dalam sistem']);
+            fputcsv($file, ['3. Nombor siri pendaftaran akan dijana automatik']);
+            fputcsv($file, ['4. Gunakan nilai TEPAT seperti dalam senarai rujukan']);
+            fputcsv($file, ['5. Kategori Aset: gunakan huruf kecil (asset atau non-asset)']);
+
             fclose($file);
+
         };
 
         return response()->stream($callback, 200, $headers);

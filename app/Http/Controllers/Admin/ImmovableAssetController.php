@@ -345,7 +345,57 @@ class ImmovableAssetController extends Controller
                 'Contoh catatan'
             ]);
 
+            // Add blank rows for separation
+            fputcsv($file, []);
+            fputcsv($file, []);
+
+            // Add reference sections
+            fputcsv($file, ['=== RUJUKAN: SENARAI NILAI SAH ===']);
+            fputcsv($file, ['Gunakan nilai-nilai di bawah untuk mengisi template']);
+            fputcsv($file, []);
+
+            // 1. Asset Types Reference
+            fputcsv($file, ['--- JENIS ASET SAH ---']);
+            fputcsv($file, ['Tanah']);
+            fputcsv($file, ['Bangunan']);
+            fputcsv($file, ['Tanah dan Bangunan']);
+            fputcsv($file, []);
+
+            // 2. Asset Category Reference  
+            fputcsv($file, ['--- KATEGORI ASET SAH ---']);
+            fputcsv($file, ['asset', '(Aset bernilai)']);
+            fputcsv($file, ['non-asset', '(Bukan aset)']);
+            fputcsv($file, []);
+
+            // 3. Source Reference
+            fputcsv($file, ['--- SUMBER PEROLEHAN SAH ---']);
+            fputcsv($file, ['Pembelian']);
+            fputcsv($file, ['Hibah']);
+            fputcsv($file, ['Wakaf']);
+            fputcsv($file, ['Derma']);
+            fputcsv($file, ['Lain-lain']);
+            fputcsv($file, []);
+
+            // 4. Condition Reference
+            fputcsv($file, ['--- KEADAAN SEMASA SAH ---']);
+            fputcsv($file, ['Sangat Baik']);
+            fputcsv($file, ['Baik']);
+            fputcsv($file, ['Sederhana']);
+            fputcsv($file, ['Perlu Pembaikan']);
+            fputcsv($file, ['Rosak']);
+            fputcsv($file, []);
+
+            // Add important notes
+            fputcsv($file, ['=== NOTA PENTING ===']);
+            fputcsv($file, ['1. Format tarikh: YYYY-MM-DD (contoh: 2024-01-15)']);
+            fputcsv($file, ['2. Pastikan Masjid/Surau ID wujud dalam sistem']);
+            fputcsv($file, ['3. Nombor siri pendaftaran akan dijana automatik']);
+            fputcsv($file, ['4. Gunakan nilai TEPAT seperti dalam senarai rujukan']);
+            fputcsv($file, ['5. Kategori Aset: gunakan huruf kecil (asset atau non-asset)']);
+            fputcsv($file, ['6. Luas dalam meter persegi (m²)']);
+
             fclose($file);
+
         };
 
         return response()->stream($callback, 200, $headers);
