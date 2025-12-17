@@ -14,6 +14,7 @@ use App\Models\MasjidSurau;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -28,22 +29,22 @@ class ReportController extends Controller
         $totalInspections = Inspection::count();
         $totalMaintenance = MaintenanceRecord::count();
         $pendingApprovals = AssetMovement::where('status_pergerakan', 'menunggu_kelulusan')->count() +
-                           Disposal::where('status_kelulusan', 'menunggu')->count() +
-                           LossWriteoff::where('status_kelulusan', 'menunggu')->count();
-        
+            Disposal::where('status_kelulusan', 'menunggu')->count() +
+            LossWriteoff::where('status_kelulusan', 'menunggu')->count();
+
         // Asset status counts
         $statusCounts = [
             'aktif' => Asset::where('status_aset', 'aktif')->count(),
             'maintenance' => Asset::where('status_aset', 'dalam_penyelenggaraan')->count(),
             'rosak' => Asset::where('status_aset', 'rosak')->count(),
         ];
-        
+
         // Asset types
         $assetTypes = Asset::select('jenis_aset', DB::raw('count(*) as count'))
-                          ->groupBy('jenis_aset')
-                          ->pluck('count', 'jenis_aset')
-                          ->toArray();
-        
+            ->groupBy('jenis_aset')
+            ->pluck('count', 'jenis_aset')
+            ->toArray();
+
         // Recent activities (sample data - you can customize this based on your needs)
         $recentActivities = [
             [
@@ -62,12 +63,12 @@ class ReportController extends Controller
                 'time' => '6 jam yang lalu'
             ]
         ];
-        
+
         return view('admin.reports.index', compact(
-            'totalAssets', 
+            'totalAssets',
             'totalValue',
-            'totalInspections', 
-            'totalMaintenance', 
+            'totalInspections',
+            'totalMaintenance',
             'pendingApprovals',
             'statusCounts',
             'assetTypes',
@@ -82,16 +83,16 @@ class ReportController extends Controller
     {
         // Get lokasi from route parameter or request parameter
         $lokasi = $lokasi ?? $request->get('lokasi', '');
-        
+
         $query = Asset::with('masjidSurau');
-        
+
         // Only filter by location if lokasi is provided and not empty
         if (!empty($lokasi)) {
             $query->where('lokasi_penempatan', 'like', '%' . $lokasi . '%');
         }
-        
+
         $assets = $query->get();
-        
+
         return view('admin.reports.assets-by-location', compact('assets', 'lokasi'));
     }
 
@@ -101,7 +102,7 @@ class ReportController extends Controller
     public function disposalReport($id)
     {
         $disposal = Disposal::with(['asset', 'asset.masjidSurau'])->findOrFail($id);
-        
+
         return view('admin.reports.disposal', compact('disposal'));
     }
 
@@ -111,7 +112,7 @@ class ReportController extends Controller
     public function annualSummary($year = null)
     {
         $year = $year ?? now()->year;
-        
+
         $summary = [
             'total_assets' => Asset::whereYear('tarikh_perolehan', $year)->count(),
             'total_acquisitions_value' => Asset::whereYear('tarikh_perolehan', $year)->sum('nilai_perolehan'),
@@ -120,7 +121,7 @@ class ReportController extends Controller
             'total_maintenance_cost' => MaintenanceRecord::whereYear('tarikh_penyelenggaraan', $year)->sum('kos_penyelenggaraan'),
             'inspections_conducted' => Inspection::whereYear('tarikh_pemeriksaan', $year)->count(),
         ];
-        
+
         return view('admin.reports.annual-summary', compact('summary', 'year'));
     }
 
@@ -130,10 +131,10 @@ class ReportController extends Controller
     public function movementsSummary()
     {
         $movements = AssetMovement::with(['asset', 'asset.masjidSurau'])
-                                ->where('status_pergerakan', 'diluluskan')
-                                ->latest()
-                                ->get();
-        
+            ->where('status_pergerakan', 'diluluskan')
+            ->latest()
+            ->get();
+
         return view('admin.reports.movements-summary', compact('movements'));
     }
 
@@ -143,11 +144,11 @@ class ReportController extends Controller
     public function inspectionSchedule()
     {
         $upcomingInspections = Inspection::with(['asset', 'asset.masjidSurau'])
-                                       ->whereNotNull('tarikh_pemeriksaan_akan_datang')
-                                       ->where('tarikh_pemeriksaan_akan_datang', '>=', now())
-                                       ->orderBy('tarikh_pemeriksaan_akan_datang')
-                                       ->get();
-        
+            ->whereNotNull('tarikh_pemeriksaan_akan_datang')
+            ->where('tarikh_pemeriksaan_akan_datang', '>=', now())
+            ->orderBy('tarikh_pemeriksaan_akan_datang')
+            ->get();
+
         return view('admin.reports.inspection-schedule', compact('upcomingInspections'));
     }
 
@@ -157,11 +158,11 @@ class ReportController extends Controller
     public function maintenanceSchedule()
     {
         $upcomingMaintenance = MaintenanceRecord::with(['asset', 'asset.masjidSurau'])
-                                               ->whereNotNull('tarikh_penyelenggaraan_akan_datang')
-                                               ->where('tarikh_penyelenggaraan_akan_datang', '>=', now())
-                                               ->orderBy('tarikh_penyelenggaraan_akan_datang')
-                                               ->get();
-        
+            ->whereNotNull('tarikh_penyelenggaraan_akan_datang')
+            ->where('tarikh_penyelenggaraan_akan_datang', '>=', now())
+            ->orderBy('tarikh_penyelenggaraan_akan_datang')
+            ->get();
+
         return view('admin.reports.maintenance-schedule', compact('upcomingMaintenance'));
     }
 
@@ -171,31 +172,31 @@ class ReportController extends Controller
     public function assetDepreciation()
     {
         $assets = Asset::with('masjidSurau')
-                      ->whereNotNull('tarikh_perolehan')
-                      ->whereNotNull('nilai_perolehan')
-                      ->get()
-                      ->filter(function ($asset) {
-                          // Only include assets that have depreciation info (manual or auto-calculable)
-                          return $asset->getAnnualDepreciation() !== null;
-                      })
-                      ->map(function ($asset) {
-                          $yearsElapsed = (int) $asset->tarikh_perolehan->diffInYears(now());
-                          $usefulLife = $asset->umur_faedah_tahunan;
-                          
-                          // Don't depreciate beyond useful life
-                          if ($usefulLife && $yearsElapsed > $usefulLife) {
-                              $yearsElapsed = $usefulLife;
-                          }
-                          
-                          $asset->years_elapsed = $yearsElapsed;
-                          $asset->total_depreciation = $asset->getTotalDepreciation();
-                          $asset->current_value = $asset->getCurrentValue();
-                          $asset->annual_depreciation = $asset->getAnnualDepreciation();
-                          $asset->depreciable_base = ($asset->nilai_perolehan ?? 0) - ($asset->diskaun ?? 0);
-                          
-                          return $asset;
-                      });
-        
+            ->whereNotNull('tarikh_perolehan')
+            ->whereNotNull('nilai_perolehan')
+            ->get()
+            ->filter(function ($asset) {
+                // Only include assets that have depreciation info (manual or auto-calculable)
+                return $asset->getAnnualDepreciation() !== null;
+            })
+            ->map(function ($asset) {
+                $yearsElapsed = (int) $asset->tarikh_perolehan->diffInYears(now());
+                $usefulLife = $asset->umur_faedah_tahunan;
+
+                // Don't depreciate beyond useful life
+                if ($usefulLife && $yearsElapsed > $usefulLife) {
+                    $yearsElapsed = $usefulLife;
+                }
+
+                $asset->years_elapsed = $yearsElapsed;
+                $asset->total_depreciation = $asset->getTotalDepreciation();
+                $asset->current_value = $asset->getCurrentValue();
+                $asset->annual_depreciation = $asset->getAnnualDepreciation();
+                $asset->depreciable_base = ($asset->nilai_perolehan ?? 0) - ($asset->diskaun ?? 0);
+
+                return $asset;
+            });
+
         return view('admin.reports.asset-depreciation', compact('assets'));
     }
 
@@ -331,35 +332,35 @@ class ReportController extends Controller
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
-        
+
         // Build query
         $query = Asset::with('masjidSurau');
-        
+
         if ($masjidSurauId) {
             $query->where('masjid_surau_id', $masjidSurauId);
         }
-        
+
         if ($daerah) {
-            $query->whereHas('masjidSurau', function($q) use ($daerah) {
+            $query->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
-        
+
         $assets = $query->orderBy('created_at', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Calculate totals
         $totalValue = $assets->sum('nilai_perolehan');
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         return view('admin.reports.br-ams-001', compact(
-            'assets', 
-            'masjidSurauList', 
-            'daerahList', 
+            'assets',
+            'masjidSurauList',
+            'daerahList',
             'totalValue',
             'masjidSurauId',
             'daerah'
@@ -374,35 +375,35 @@ class ReportController extends Controller
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
-        
+
         // Build query - for inventory, we might want to filter by specific asset types
         $query = Asset::with('masjidSurau');
-        
+
         if ($masjidSurauId) {
             $query->where('masjid_surau_id', $masjidSurauId);
         }
-        
+
         if ($daerah) {
-            $query->whereHas('masjidSurau', function($q) use ($daerah) {
+            $query->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
-        
+
         $assets = $query->orderBy('created_at', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Calculate totals
         $totalValue = $assets->sum('nilai_perolehan');
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         return view('admin.reports.br-ams-002', compact(
-            'assets', 
-            'masjidSurauList', 
-            'daerahList', 
+            'assets',
+            'masjidSurauList',
+            'daerahList',
             'totalValue',
             'masjidSurauId',
             'daerah'
@@ -417,40 +418,40 @@ class ReportController extends Controller
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
         $lokasi = $request->get('lokasi');
-        
+
         // Build query
         $query = Asset::with('masjidSurau');
-        
+
         if ($masjidSurauId) {
             $query->where('masjid_surau_id', $masjidSurauId);
         }
-        
+
         if ($lokasi) {
             $query->where('lokasi_penempatan', 'like', '%' . $lokasi . '%');
         }
-        
+
         $assets = $query->orderBy('lokasi_penempatan')->orderBy('nama_aset')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get unique locations for filter
         $lokasiList = Asset::select('lokasi_penempatan')
-                          ->whereNotNull('lokasi_penempatan')
-                          ->distinct()
-                          ->orderBy('lokasi_penempatan')
-                          ->pluck('lokasi_penempatan');
-        
+            ->whereNotNull('lokasi_penempatan')
+            ->distinct()
+            ->orderBy('lokasi_penempatan')
+            ->pluck('lokasi_penempatan');
+
         // Get selected masjid/surau details
         $selectedMasjidSurau = null;
         if ($masjidSurauId) {
             $selectedMasjidSurau = MasjidSurau::find($masjidSurauId);
         }
-        
+
         return view('admin.reports.br-ams-003', compact(
-            'assets', 
-            'masjidSurauList', 
-            'lokasiList', 
+            'assets',
+            'masjidSurauList',
+            'lokasiList',
             'masjidSurauId',
             'lokasi',
             'selectedMasjidSurau'
@@ -465,25 +466,25 @@ class ReportController extends Controller
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
         $status = $request->get('status');
-        
+
         // Build query for asset movements
         $query = AssetMovement::with(['asset', 'asset.masjidSurau', 'user']);
-        
+
         if ($masjidSurauId) {
-            $query->whereHas('asset', function($q) use ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        
+
         if ($status) {
             $query->where('status_pergerakan', $status);
         }
-        
+
         $movements = $query->orderBy('created_at', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get status options
         $statusOptions = [
             'menunggu_kelulusan' => 'Menunggu Kelulusan',
@@ -491,10 +492,10 @@ class ReportController extends Controller
             'ditolak' => 'Ditolak',
             'dipulangkan' => 'Dipulangkan'
         ];
-        
+
         return view('admin.reports.br-ams-004', compact(
-            'movements', 
-            'masjidSurauList', 
+            'movements',
+            'masjidSurauList',
             'statusOptions',
             'masjidSurauId',
             'status'
@@ -511,50 +512,50 @@ class ReportController extends Controller
         $tahun = $request->get('tahun', date('Y')); // Default to current year
         $status = $request->get('status'); // Filter by asset status
         $needsInspection = $request->get('needs_inspection'); // Filter assets that need inspection
-        
+
         // Build query for assets to be inspected with related data
         $query = Asset::with([
             'masjidSurau',
-            'assetMovements' => function($q) {
+            'assetMovements' => function ($q) {
                 $q->latest()->limit(3); // Get last 3 movements
             },
-            'inspections' => function($q) {
+            'inspections' => function ($q) {
                 $q->latest()->limit(1); // Get latest inspection
             },
-            'maintenanceRecords' => function($q) {
+            'maintenanceRecords' => function ($q) {
                 $q->latest()->limit(1); // Get latest maintenance
             }
         ]);
-        
+
         if ($masjidSurauId) {
             $query->where('masjid_surau_id', $masjidSurauId);
         }
-        
+
         if ($status) {
             $query->where('status_aset', $status);
         }
-        
+
         if ($needsInspection) {
-            $query->whereDoesntHave('inspections', function($q) {
+            $query->whereDoesntHave('inspections', function ($q) {
                 $q->where('tarikh_pemeriksaan', '>=', now()->subDays(90));
             });
         }
-        
+
         // Get assets for inspection
         $assets = $query->orderBy('nama_aset')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get immovable assets for context (if needed)
         $immovableAssets = ImmovableAsset::where('masjid_surau_id', $masjidSurauId)->get();
-        
+
         // Get asset status options
         $assetStatuses = Asset::getAvailableStatuses();
-        
+
         return view('admin.reports.br-ams-005', compact(
-            'assets', 
-            'masjidSurauList', 
+            'assets',
+            'masjidSurauList',
             'masjidSurauId',
             'tahun',
             'status',
@@ -572,37 +573,37 @@ class ReportController extends Controller
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
-        
+
         // Build query for maintenance records
         $query = MaintenanceRecord::with(['asset', 'asset.masjidSurau']);
-        
+
         if ($masjidSurauId) {
-            $query->whereHas('asset', function($q) use ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        
+
         if ($daerah) {
-            $query->whereHas('asset.masjidSurau', function($q) use ($daerah) {
+            $query->whereHas('asset.masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
-        
+
         $maintenanceRecords = $query->orderBy('tarikh_penyelenggaraan', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         // Calculate totals
         $totalCost = $maintenanceRecords->sum('kos_penyelenggaraan');
-        
+
         return view('admin.reports.br-ams-006', compact(
-            'maintenanceRecords', 
-            'masjidSurauList', 
-            'daerahList', 
+            'maintenanceRecords',
+            'masjidSurauList',
+            'daerahList',
             'totalCost',
             'masjidSurauId',
             'daerah'
@@ -618,41 +619,41 @@ class ReportController extends Controller
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
         $tahun = $request->get('tahun', date('Y'));
-        
+
         // Build query for disposal records
         $query = Disposal::with(['asset', 'asset.masjidSurau']);
-        
+
         if ($masjidSurauId) {
-            $query->whereHas('asset', function($q) use ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        
+
         if ($daerah) {
-            $query->whereHas('asset.masjidSurau', function($q) use ($daerah) {
+            $query->whereHas('asset.masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
-        
+
         if ($tahun) {
             $query->whereYear('tarikh_pelupusan', $tahun);
         }
-        
+
         $disposals = $query->orderBy('tarikh_pelupusan', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         // Calculate totals
         $totalValue = $disposals->sum('nilai_pelupusan');
-        
+
         return view('admin.reports.br-ams-007', compact(
-            'disposals', 
-            'masjidSurauList', 
-            'daerahList', 
+            'disposals',
+            'masjidSurauList',
+            'daerahList',
             'totalValue',
             'masjidSurauId',
             'daerah',
@@ -669,41 +670,41 @@ class ReportController extends Controller
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
         $tahun = $request->get('tahun', date('Y'));
-        
+
         // Build query for disposal records
         $query = Disposal::with(['asset', 'asset.masjidSurau']);
-        
+
         if ($masjidSurauId) {
-            $query->whereHas('asset', function($q) use ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        
+
         if ($daerah) {
-            $query->whereHas('asset.masjidSurau', function($q) use ($daerah) {
+            $query->whereHas('asset.masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
-        
+
         if ($tahun) {
             $query->whereYear('tarikh_pelupusan', $tahun);
         }
-        
+
         $disposals = $query->orderBy('tarikh_pelupusan', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         // Calculate totals
         $totalProceeds = $disposals->where('kaedah_pelupusan', 'jualan')->sum('hasil_pelupusan');
-        
+
         return view('admin.reports.br-ams-008', compact(
-            'disposals', 
-            'masjidSurauList', 
-            'daerahList', 
+            'disposals',
+            'masjidSurauList',
+            'daerahList',
             'totalProceeds',
             'masjidSurauId',
             'daerah',
@@ -720,41 +721,41 @@ class ReportController extends Controller
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
         $tahun = $request->get('tahun', date('Y'));
-        
+
         // Build query for loss/write-off records
         $query = LossWriteoff::with(['asset', 'asset.masjidSurau']);
-        
+
         if ($masjidSurauId) {
-            $query->whereHas('asset', function($q) use ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        
+
         if ($daerah) {
-            $query->whereHas('asset.masjidSurau', function($q) use ($daerah) {
+            $query->whereHas('asset.masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
-        
+
         if ($tahun) {
             $query->whereYear('tarikh_kehilangan', $tahun);
         }
-        
+
         $lossWriteoffs = $query->orderBy('tarikh_kehilangan', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         // Calculate totals
         $totalValue = $lossWriteoffs->sum('nilai_kehilangan');
-        
+
         return view('admin.reports.br-ams-009', compact(
-            'lossWriteoffs', 
-            'masjidSurauList', 
-            'daerahList', 
+            'lossWriteoffs',
+            'masjidSurauList',
+            'daerahList',
             'totalValue',
             'masjidSurauId',
             'daerah',
@@ -771,39 +772,39 @@ class ReportController extends Controller
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
         $tahun = $request->get('tahun', date('Y'));
-        
+
         // Build query for immovable assets
         $query = ImmovableAsset::with(['masjidSurau']);
-        
+
         if ($masjidSurauId) {
             $query->where('masjid_surau_id', $masjidSurauId);
         }
-        
+
         if ($daerah) {
-            $query->whereHas('masjidSurau', function($q) use ($daerah) {
+            $query->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
-        
+
         if ($tahun) {
             $query->whereYear('tarikh_perolehan', $tahun);
         }
-        
+
         $immovableAssets = $query->orderBy('tarikh_perolehan', 'desc')->get();
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         // Calculate totals
         $totalCost = $immovableAssets->sum('kos_perolehan');
-        
+
         return view('admin.reports.br-ams-011', compact(
-            'immovableAssets', 
-            'masjidSurauList', 
-            'daerahList', 
+            'immovableAssets',
+            'masjidSurauList',
+            'daerahList',
             'totalCost',
             'masjidSurauId',
             'daerah',
@@ -820,14 +821,14 @@ class ReportController extends Controller
         $masjidSurauId = $request->get('masjid_surau_id');
         $daerah = $request->get('daerah');
         $tahun = $request->get('tahun', date('Y'));
-        
+
         // Get capital assets (BR-AMS 001)
         $capitalAssetsQuery = Asset::where('kategori_aset', 'harta_modal');
         if ($masjidSurauId) {
             $capitalAssetsQuery->where('masjid_surau_id', $masjidSurauId);
         }
         if ($daerah) {
-            $capitalAssetsQuery->whereHas('masjidSurau', function($q) use ($daerah) {
+            $capitalAssetsQuery->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
@@ -837,14 +838,14 @@ class ReportController extends Controller
         $capitalAssets = $capitalAssetsQuery->get();
         $capitalAssetsCount = $capitalAssets->count();
         $capitalAssetsValue = $capitalAssets->sum('nilai_perolehan');
-        
+
         // Get inventory assets (BR-AMS 002)
         $inventoryQuery = Asset::where('kategori_aset', 'inventori');
         if ($masjidSurauId) {
             $inventoryQuery->where('masjid_surau_id', $masjidSurauId);
         }
         if ($daerah) {
-            $inventoryQuery->whereHas('masjidSurau', function($q) use ($daerah) {
+            $inventoryQuery->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
@@ -854,16 +855,16 @@ class ReportController extends Controller
         $inventoryAssets = $inventoryQuery->get();
         $inventoryCount = $inventoryAssets->count();
         $inventoryValue = $inventoryAssets->sum('nilai_perolehan');
-        
+
         // Get disposals (BR-AMS 007)
         $disposalsQuery = Disposal::with('asset');
         if ($masjidSurauId) {
-            $disposalsQuery->whereHas('asset', function($q) use ($masjidSurauId) {
+            $disposalsQuery->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
         if ($daerah) {
-            $disposalsQuery->whereHas('asset.masjidSurau', function($q) use ($daerah) {
+            $disposalsQuery->whereHas('asset.masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
@@ -873,16 +874,16 @@ class ReportController extends Controller
         $disposals = $disposalsQuery->get();
         $disposalsCount = $disposals->count();
         $disposalsValue = $disposals->sum('nilai_pelupusan');
-        
+
         // Get write-offs (BR-AMS 008)
         $writeoffsQuery = LossWriteoff::with('asset');
         if ($masjidSurauId) {
-            $writeoffsQuery->whereHas('asset', function($q) use ($masjidSurauId) {
+            $writeoffsQuery->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
         if ($daerah) {
-            $writeoffsQuery->whereHas('asset.masjidSurau', function($q) use ($daerah) {
+            $writeoffsQuery->whereHas('asset.masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
         }
@@ -892,16 +893,16 @@ class ReportController extends Controller
         $writeoffs = $writeoffsQuery->get();
         $writeoffsCount = $writeoffs->count();
         $writeoffsValue = $writeoffs->sum('nilai_kehilangan');
-        
+
         // Calculate grand total: (a) + (b) - (c) - (d)
         $grandTotal = $capitalAssetsValue + $inventoryValue - $disposalsValue - $writeoffsValue;
-        
+
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
-        
+
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
-        
+
         return view('admin.reports.br-ams-010', compact(
             'capitalAssetsCount',
             'capitalAssetsValue',
@@ -918,5 +919,221 @@ class ReportController extends Controller
             'daerah',
             'tahun'
         ));
+    }
+
+    /**
+     * Generate PDF for BR-AMS 001
+     */
+    public function brAms001Pdf(Request $request)
+    {
+        // Get the same data as the regular view
+        $masjidSurauId = $request->get('masjid_surau_id');
+        $daerah = $request->get('daerah');
+
+        $query = Asset::with('masjidSurau');
+
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+
+        if ($daerah) {
+            $query->whereHas('masjidSurau', function ($q) use ($daerah) {
+                $q->where('daerah', 'like', '%' . $daerah . '%');
+            });
+        }
+
+        $assets = $query->orderBy('created_at', 'desc')->get();
+        $totalValue = $assets->sum('nilai_perolehan');
+
+        // Load PDF view
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-001', compact('assets', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->stream('BR-AMS-001-' . date('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Generate PDF for BR-AMS 002
+     */
+    public function brAms002Pdf(Request $request)
+    {
+        $masjidSurauId = $request->get('masjid_surau_id');
+        $daerah = $request->get('daerah');
+
+        $query = Asset::with('masjidSurau');
+
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+
+        if ($daerah) {
+            $query->whereHas('masjidSurau', function ($q) use ($daerah) {
+                $q->where('daerah', 'like', '%' . $daerah . '%');
+            });
+        }
+
+        $assets = $query->orderBy('created_at', 'desc')->get();
+        $totalValue = $assets->sum('nilai_perolehan');
+
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-002', compact('assets', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->stream('BR-AMS-002-' . date('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Generate PDF for BR-AMS 003
+     */
+    public function brAms003Pdf(Request $request)
+    {
+        $masjidSurauId = $request->get('masjid_surau_id');
+        $lokasi = $request->get('lokasi');
+
+        $query = Asset::with('masjidSurau');
+
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+
+        if ($lokasi) {
+            $query->where('lokasi_penempatan', 'like', '%' . $lokasi . '%');
+        }
+
+        $assets = $query->orderBy('lokasi_penempatan')->orderBy('nama_aset')->get();
+
+        $selectedMasjidSurau = null;
+        if ($masjidSurauId) {
+            $selectedMasjidSurau = MasjidSurau::find($masjidSurauId);
+        }
+
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-003', compact('assets', 'lokasi', 'selectedMasjidSurau'));
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->stream('BR-AMS-003-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms004Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $kategori = $request->kategori;
+        $query = Asset::query();
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+        if ($kategori) {
+            $query->where('kategori_aset', $kategori);
+        }
+        $assets = $query->get();
+        $totalValue = $assets->sum('nilai_perolehan');
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-004', compact('assets', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-004-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms005Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $query = Asset::query();
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+        $assets = $query->get();
+        $totalValue = $assets->sum('nilai_perolehan');
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-005', compact('assets', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-005-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms006Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $tahun = $request->tahun;
+        $query = Asset::query();
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+        if ($tahun) {
+            $query->whereYear('tarikh_perolehan', $tahun);
+        }
+        $assets = $query->get();
+        $totalValue = $assets->sum('nilai_perolehan');
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-006', compact('assets', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-006-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms007Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $query = Disposal::query();
+        if ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
+                $q->where('masjid_surau_id', $masjidSurauId);
+            });
+        }
+        $disposals = $query->get();
+        $totalValue = $disposals->sum('nilai_pelupusan');
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-007', compact('disposals', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-007-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms008Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $query = LossWriteoff::query();
+        if ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
+                $q->where('masjid_surau_id', $masjidSurauId);
+            });
+        }
+        $lossWriteoffs = $query->get();
+        $totalValue = $lossWriteoffs->sum('nilai_buku');
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-008', compact('lossWriteoffs', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-008-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms009Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $query = AssetMovement::query();
+        if ($masjidSurauId) {
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
+                $q->where('masjid_surau_id', $masjidSurauId);
+            });
+        }
+        $movements = $query->get();
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-009', compact('movements'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-009-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms010Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $query = Asset::query();
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+        $assets = $query->get();
+        $totalValue = $assets->sum('nilai_perolehan');
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-010', compact('assets', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-010-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function brAms011Pdf(Request $request)
+    {
+        $masjidSurauId = $request->masjid_surau_id;
+        $query = Asset::query();
+        if ($masjidSurauId) {
+            $query->where('masjid_surau_id', $masjidSurauId);
+        }
+        $assets = $query->get();
+        $totalValue = $assets->sum('nilai_perolehan');
+        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-011', compact('assets', 'totalValue'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream('BR-AMS-011-' . date('Y-m-d') . '.pdf');
     }
 }

@@ -378,14 +378,9 @@
             
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-3">
-                <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                    <i class='bx bx-printer mr-2'></i>
-                    Cetak Laporan
-                </button>
-                
                 <button onclick="exportToPDF()" class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
-                    <i class='bx bx-download mr-2'></i>
-                    Muat Turun PDF
+                    <i class='bx bx-file-blank mr-2'></i>
+                    Muat Turun / Cetak Laporan
                 </button>
                 
                 <a href="{{ route('admin.reports.index') }}" class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
@@ -401,22 +396,13 @@
 @push('scripts')
 <script>
 function exportToPDF() {
-    // Show loading state
-    const button = event.target;
-    const originalContent = button.innerHTML;
-    
-    button.innerHTML = `
-        <i class='bx bx-loader-alt animate-spin mr-2'></i>
-        Memproses...
-    `;
-    button.disabled = true;
-    
-    // Simulate PDF generation
-    setTimeout(() => {
-        button.innerHTML = originalContent;
-        button.disabled = false;
-        alert('Fungsi export PDF akan dilaksanakan - fail PDF akan dimuat turun');
-    }, 2000);
+    const urlParams = new URLSearchParams(window.location.search);
+    const pdfUrl = '{{ route("admin.reports.br-ams-005.pdf") }}?' + urlParams.toString();
+    const previewWindow = window.open(pdfUrl, '_blank', 'width=1024,height=768');
+    if (!previewWindow) {
+        alert('Sila benarkan pop-up untuk melihat pratonton PDF');
+    }
+}, 2000);
 }
 
 // Print styles

@@ -297,22 +297,13 @@
 @push('scripts')
 <script>
 function exportToPDF() {
-    // Show loading state
-    const button = event.target;
-    const originalContent = button.innerHTML;
-    
-    button.innerHTML = `
-        <i class='bx bx-loader-alt animate-spin mr-2'></i>
-        Memproses...
-    `;
-    button.disabled = true;
-    
-    // Simulate PDF generation
-    setTimeout(() => {
-        button.innerHTML = originalContent;
-        button.disabled = false;
-        alert('Fungsi export PDF akan dilaksanakan - fail PDF akan dimuat turun');
-    }, 2000);
+    const urlParams = new URLSearchParams(window.location.search);
+    const pdfUrl = '{{ route("admin.reports.br-ams-004.pdf") }}?' + urlParams.toString();
+    const previewWindow = window.open(pdfUrl, '_blank', 'width=1024,height=768');
+    if (!previewWindow) {
+        alert('Sila benarkan pop-up untuk melihat pratonton PDF');
+    }
+}, 2000);
 }
 
 // Print styles
