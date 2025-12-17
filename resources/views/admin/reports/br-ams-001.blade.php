@@ -38,7 +38,7 @@
             </div>
 
             <form method="GET" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             <i class='bx bx-building mr-1'></i>
@@ -71,13 +71,66 @@
                         </select>
                     </div>
 
-                    <div class="flex items-end">
-                        <button type="submit"
-                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
-                            <i class='bx bx-search mr-2'></i>
-                            Terapkan Penapis
-                        </button>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class='bx bx-map-pin mr-1'></i>
+                            Lokasi
+                        </label>
+                        <select name="lokasi"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                            <option value="">Semua Lokasi</option>
+                            @foreach($lokasiList as $lok)
+                                <option value="{{ $lok }}" {{ $lokasi == $lok ? 'selected' : '' }}>
+                                    {{ $lok }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class='bx bx-calendar mr-1'></i>
+                            Bulan
+                        </label>
+                        <select name="bulan"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                            <option value="">Semua Bulan</option>
+                            <option value="1" {{ $bulan == '1' ? 'selected' : '' }}>Januari</option>
+                            <option value="2" {{ $bulan == '2' ? 'selected' : '' }}>Februari</option>
+                            <option value="3" {{ $bulan == '3' ? 'selected' : '' }}>Mac</option>
+                            <option value="4" {{ $bulan == '4' ? 'selected' : '' }}>April</option>
+                            <option value="5" {{ $bulan == '5' ? 'selected' : '' }}>Mei</option>
+                            <option value="6" {{ $bulan == '6' ? 'selected' : '' }}>Jun</option>
+                            <option value="7" {{ $bulan == '7' ? 'selected' : '' }}>Julai</option>
+                            <option value="8" {{ $bulan == '8' ? 'selected' : '' }}>Ogos</option>
+                            <option value="9" {{ $bulan == '9' ? 'selected' : '' }}>September</option>
+                            <option value="10" {{ $bulan == '10' ? 'selected' : '' }}>Oktober</option>
+                            <option value="11" {{ $bulan == '11' ? 'selected' : '' }}>November</option>
+                            <option value="12" {{ $bulan == '12' ? 'selected' : '' }}>Disember</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class='bx bx-calendar-alt mr-1'></i>
+                            Tahun
+                        </label>
+                        <select name="tahun"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                            <option value="">Semua Tahun</option>
+                            @for($y = date('Y'); $y >= 2020; $y--)
+                                <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-8 rounded-lg transition-colors flex items-center justify-center">
+                        <i class='bx bx-search mr-2'></i>
+                        Terapkan Penapis
+                    </button>
                 </div>
             </form>
         </div>

@@ -31,41 +31,77 @@
 
         <!-- Filter Section -->
         <div class="bg-gray-50 rounded-lg p-6 mb-8">
-            <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Masjid / Surau :</label>
-                    <select name="masjid_surau_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Pilih Masjid/Surau</option>
-                        @foreach($masjidSurauList as $ms)
-                            <option value="{{ $ms->id }}" {{ $masjidSurauId == $ms->id ? 'selected' : '' }}>
-                                {{ $ms->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+            <form method="GET" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Masjid / Surau :</label>
+                        <select name="masjid_surau_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Masjid/Surau</option>
+                            @foreach($masjidSurauList as $ms)
+                                <option value="{{ $ms->id }}" {{ $masjidSurauId == $ms->id ? 'selected' : '' }}>
+                                    {{ $ms->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Daerah :</label>
+                        <select name="daerah" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Daerah</option>
+                            @foreach($daerahList as $d)
+                                <option value="{{ $d }}" {{ $daerah == $d ? 'selected' : '' }}>
+                                    {{ $d }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi :</label>
+                        <select name="lokasi" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Lokasi</option>
+                            @foreach($lokasiList as $lok)
+                                <option value="{{ $lok }}" {{ $lokasi == $lok ? 'selected' : '' }}>
+                                    {{ $lok }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bulan :</label>
+                        <select name="bulan" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Bulan</option>
+                            <option value="1" {{ $bulan == '1' ? 'selected' : '' }}>Januari</option>
+                            <option value="2" {{ $bulan == '2' ? 'selected' : '' }}>Februari</option>
+                            <option value="3" {{ $bulan == '3' ? 'selected' : '' }}>Mac</option>
+                            <option value="4" {{ $bulan == '4' ? 'selected' : '' }}>April</option>
+                            <option value="5" {{ $bulan == '5' ? 'selected' : '' }}>Mei</option>
+                            <option value="6" {{ $bulan == '6' ? 'selected' : '' }}>Jun</option>
+                            <option value="7" {{ $bulan == '7' ? 'selected' : '' }}>Julai</option>
+                            <option value="8" {{ $bulan == '8' ? 'selected' : '' }}>Ogos</option>
+                            <option value="9" {{ $bulan == '9' ? 'selected' : '' }}>September</option>
+                            <option value="10" {{ $bulan == '10' ? 'selected' : '' }}>Oktober</option>
+                            <option value="11" {{ $bulan == '11' ? 'selected' : '' }}>November</option>
+                            <option value="12" {{ $bulan == '12' ? 'selected' : '' }}>Disember</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tahun :</label>
+                        <select name="tahun" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Tahun</option>
+                            @for($y = date('Y'); $y >= 2020; $y--)
+                                <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Daerah :</label>
-                    <select name="daerah" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Pilih Daerah</option>
-                        @foreach($daerahList as $d)
-                            <option value="{{ $d }}" {{ $daerah == $d ? 'selected' : '' }}>
-                                {{ $d }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tahun :</label>
-                    <input type="number" name="tahun" value="{{ $tahun }}" 
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Cth: 2024">
-                </div>
-                
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                        <i class='bx bx-search mr-2'></i>Filter
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                        <i class='bx bx-search mr-2'></i>Terapkan Penapis
                     </button>
                 </div>
             </form>

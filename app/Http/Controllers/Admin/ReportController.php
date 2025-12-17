@@ -331,6 +331,9 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
         $daerah = $request->get('daerah');
 
         // Build query
@@ -346,6 +349,18 @@ class ReportController extends Controller
             });
         }
 
+        if ($lokasi) {
+            $query->where('lokasi_penempatan', $lokasi);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_perolehan', $bulan);
+        }
+
+        if ($tahun) {
+            $query->whereYear('tarikh_perolehan', $tahun);
+        }
+
         $assets = $query->orderBy('created_at', 'desc')->get();
 
         // Get all masjid/surau for filter dropdown
@@ -357,13 +372,20 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         return view('admin.reports.br-ams-001', compact(
             'assets',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'totalValue',
             'masjidSurauId',
-            'daerah'
+            'daerah',
+            'lokasi',
+            'bulan',
+            'tahun'
         ));
     }
 
@@ -374,6 +396,9 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
         $daerah = $request->get('daerah');
 
         // Build query - for inventory, we might want to filter by specific asset types
@@ -389,6 +414,18 @@ class ReportController extends Controller
             });
         }
 
+        if ($lokasi) {
+            $query->where('lokasi_penempatan', $lokasi);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_perolehan', $bulan);
+        }
+
+        if ($tahun) {
+            $query->whereYear('tarikh_perolehan', $tahun);
+        }
+
         $assets = $query->orderBy('created_at', 'desc')->get();
 
         // Get all masjid/surau for filter dropdown
@@ -400,13 +437,20 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         return view('admin.reports.br-ams-002', compact(
             'assets',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'totalValue',
             'masjidSurauId',
-            'daerah'
+            'daerah',
+            'lokasi',
+            'bulan',
+            'tahun'
         ));
     }
 
@@ -418,6 +462,8 @@ class ReportController extends Controller
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
         $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
 
         // Build query
         $query = Asset::with('masjidSurau');
@@ -427,7 +473,15 @@ class ReportController extends Controller
         }
 
         if ($lokasi) {
-            $query->where('lokasi_penempatan', 'like', '%' . $lokasi . '%');
+            $query->where('lokasi_penempatan', $lokasi);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_perolehan', $bulan);
+        }
+
+        if ($tahun) {
+            $query->whereYear('tarikh_perolehan', $tahun);
         }
 
         $assets = $query->orderBy('lokasi_penempatan')->orderBy('nama_aset')->get();
@@ -452,9 +506,11 @@ class ReportController extends Controller
             'assets',
             'masjidSurauList',
             'lokasiList',
+            'selectedMasjidSurau',
             'masjidSurauId',
             'lokasi',
-            'selectedMasjidSurau'
+            'bulan',
+            'tahun'
         ));
     }
 
@@ -465,6 +521,9 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
         $status = $request->get('status');
 
         // Build query for asset movements
@@ -480,6 +539,20 @@ class ReportController extends Controller
             $query->where('status_pergerakan', $status);
         }
 
+        if ($lokasi) {
+            $query->whereHas('asset', function ($q) use ($lokasi) {
+                $q->where('lokasi_penempatan', $lokasi);
+            });
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_mula', $bulan);
+        }
+
+        if ($tahun) {
+            $query->whereYear('tarikh_mula', $tahun);
+        }
+
         $movements = $query->orderBy('created_at', 'desc')->get();
 
         // Get all masjid/surau for filter dropdown
@@ -493,12 +566,19 @@ class ReportController extends Controller
             'dipulangkan' => 'Dipulangkan'
         ];
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         return view('admin.reports.br-ams-004', compact(
             'movements',
             'masjidSurauList',
             'statusOptions',
+            'lokasiList',
             'masjidSurauId',
-            'status'
+            'status',
+            'lokasi',
+            'bulan',
+            'tahun'
         ));
     }
 
@@ -509,6 +589,8 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
         $tahun = $request->get('tahun', date('Y')); // Default to current year
         $status = $request->get('status'); // Filter by asset status
         $needsInspection = $request->get('needs_inspection'); // Filter assets that need inspection
@@ -541,27 +623,44 @@ class ReportController extends Controller
             });
         }
 
-        // Get assets for inspection
-        $assets = $query->orderBy('nama_aset')->get();
+        if ($lokasi) {
+            $query->where('lokasi_penempatan', $lokasi);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_perolehan', $bulan);
+        }
+
+        if ($tahun) {
+            $query->whereYear('tarikh_perolehan', $tahun);
+        }
+
+        $assets = $query->orderBy('created_at', 'desc')->get();
 
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
 
-        // Get immovable assets for context (if needed)
-        $immovableAssets = ImmovableAsset::where('masjid_surau_id', $masjidSurauId)->get();
+        // Get status options
+        $statusOptions = [
+            'baik' => 'Baik',
+            'perlu_pembaikan' => 'Perlu Pembaikan',
+            'rosak' => 'Rosak'
+        ];
 
-        // Get asset status options
-        $assetStatuses = Asset::getAvailableStatuses();
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
 
         return view('admin.reports.br-ams-005', compact(
             'assets',
             'masjidSurauList',
+            'statusOptions',
+            'lokasiList',
             'masjidSurauId',
-            'tahun',
             'status',
             'needsInspection',
-            'immovableAssets',
-            'assetStatuses'
+            'lokasi',
+            'bulan',
+            'tahun'
         ));
     }
 
@@ -572,6 +671,9 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
         $daerah = $request->get('daerah');
 
         // Build query for maintenance records
@@ -589,6 +691,20 @@ class ReportController extends Controller
             });
         }
 
+        if ($lokasi) {
+            $query->whereHas('asset', function ($q) use ($lokasi) {
+                $q->where('lokasi_penempatan', $lokasi);
+            });
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_penyelenggaraan', $bulan);
+        }
+
+        if ($tahun) {
+            $query->whereYear('tarikh_penyelenggaraan', $tahun);
+        }
+
         $maintenanceRecords = $query->orderBy('tarikh_penyelenggaraan', 'desc')->get();
 
         // Get all masjid/surau for filter dropdown
@@ -597,6 +713,9 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         // Calculate totals
         $totalCost = $maintenanceRecords->sum('kos_penyelenggaraan');
 
@@ -604,9 +723,13 @@ class ReportController extends Controller
             'maintenanceRecords',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'totalCost',
             'masjidSurauId',
-            'daerah'
+            'daerah',
+            'lokasi',
+            'bulan',
+            'tahun'
         ));
     }
 
@@ -617,8 +740,10 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
-        $daerah = $request->get('daerah');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
         $tahun = $request->get('tahun', date('Y'));
+        $daerah = $request->get('daerah');
 
         // Build query for disposal records
         $query = Disposal::with(['asset', 'asset.masjidSurau']);
@@ -635,6 +760,16 @@ class ReportController extends Controller
             });
         }
 
+        if ($lokasi) {
+            $query->whereHas('asset', function ($q) use ($lokasi) {
+                $q->where('lokasi_penempatan', $lokasi);
+            });
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_pelupusan', $bulan);
+        }
+
         if ($tahun) {
             $query->whereYear('tarikh_pelupusan', $tahun);
         }
@@ -647,6 +782,9 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         // Calculate totals
         $totalValue = $disposals->sum('nilai_pelupusan');
 
@@ -654,9 +792,12 @@ class ReportController extends Controller
             'disposals',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'totalValue',
             'masjidSurauId',
             'daerah',
+            'lokasi',
+            'bulan',
             'tahun'
         ));
     }
@@ -668,8 +809,10 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
-        $daerah = $request->get('daerah');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
         $tahun = $request->get('tahun', date('Y'));
+        $daerah = $request->get('daerah');
 
         // Build query for disposal records
         $query = Disposal::with(['asset', 'asset.masjidSurau']);
@@ -686,6 +829,16 @@ class ReportController extends Controller
             });
         }
 
+        if ($lokasi) {
+            $query->whereHas('asset', function ($q) use ($lokasi) {
+                $q->where('lokasi_penempatan', $lokasi);
+            });
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_pelupusan', $bulan);
+        }
+
         if ($tahun) {
             $query->whereYear('tarikh_pelupusan', $tahun);
         }
@@ -698,6 +851,9 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         // Calculate totals
         $totalProceeds = $disposals->where('kaedah_pelupusan', 'jualan')->sum('hasil_pelupusan');
 
@@ -705,9 +861,12 @@ class ReportController extends Controller
             'disposals',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'totalProceeds',
             'masjidSurauId',
             'daerah',
+            'lokasi',
+            'bulan',
             'tahun'
         ));
     }
@@ -719,8 +878,10 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
-        $daerah = $request->get('daerah');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
         $tahun = $request->get('tahun', date('Y'));
+        $daerah = $request->get('daerah');
 
         // Build query for loss/write-off records
         $query = LossWriteoff::with(['asset', 'asset.masjidSurau']);
@@ -737,6 +898,16 @@ class ReportController extends Controller
             });
         }
 
+        if ($lokasi) {
+            $query->whereHas('asset', function ($q) use ($lokasi) {
+                $q->where('lokasi_penempatan', $lokasi);
+            });
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_kehilangan', $bulan);
+        }
+
         if ($tahun) {
             $query->whereYear('tarikh_kehilangan', $tahun);
         }
@@ -749,6 +920,9 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         // Calculate totals
         $totalValue = $lossWriteoffs->sum('nilai_kehilangan');
 
@@ -756,9 +930,12 @@ class ReportController extends Controller
             'lossWriteoffs',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'totalValue',
             'masjidSurauId',
             'daerah',
+            'lokasi',
+            'bulan',
             'tahun'
         ));
     }
@@ -770,8 +947,10 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
-        $daerah = $request->get('daerah');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
         $tahun = $request->get('tahun', date('Y'));
+        $daerah = $request->get('daerah');
 
         // Build query for immovable assets
         $query = ImmovableAsset::with(['masjidSurau']);
@@ -784,6 +963,10 @@ class ReportController extends Controller
             $query->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_perolehan', $bulan);
         }
 
         if ($tahun) {
@@ -808,6 +991,8 @@ class ReportController extends Controller
             'totalCost',
             'masjidSurauId',
             'daerah',
+            'lokasi',
+            'bulan',
             'tahun'
         ));
     }
@@ -819,8 +1004,10 @@ class ReportController extends Controller
     {
         // Get filter parameters
         $masjidSurauId = $request->get('masjid_surau_id');
-        $daerah = $request->get('daerah');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
         $tahun = $request->get('tahun', date('Y'));
+        $daerah = $request->get('daerah');
 
         // Get capital assets (BR-AMS 001)
         $capitalAssetsQuery = Asset::where('kategori_aset', 'harta_modal');
@@ -831,6 +1018,12 @@ class ReportController extends Controller
             $capitalAssetsQuery->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
+        }
+        if ($lokasi) {
+            $capitalAssetsQuery->where('lokasi_penempatan', $lokasi);
+        }
+        if ($bulan) {
+            $capitalAssetsQuery->whereMonth('tarikh_perolehan', $bulan);
         }
         if ($tahun) {
             $capitalAssetsQuery->whereYear('tarikh_perolehan', $tahun);
@@ -848,6 +1041,12 @@ class ReportController extends Controller
             $inventoryQuery->whereHas('masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
+        }
+        if ($lokasi) {
+            $inventoryQuery->where('lokasi_penempatan', $lokasi);
+        }
+        if ($bulan) {
+            $inventoryQuery->whereMonth('tarikh_perolehan', $bulan);
         }
         if ($tahun) {
             $inventoryQuery->whereYear('tarikh_perolehan', $tahun);
@@ -867,6 +1066,14 @@ class ReportController extends Controller
             $disposalsQuery->whereHas('asset.masjidSurau', function ($q) use ($daerah) {
                 $q->where('daerah', 'like', '%' . $daerah . '%');
             });
+        }
+        if ($lokasi) {
+            $disposalsQuery->whereHas('asset', function ($q) use ($lokasi) {
+                $q->where('lokasi_penempatan', $lokasi);
+            });
+        }
+        if ($bulan) {
+            $disposalsQuery->whereMonth('tarikh_pelupusan', $bulan);
         }
         if ($tahun) {
             $disposalsQuery->whereYear('tarikh_pelupusan', $tahun);

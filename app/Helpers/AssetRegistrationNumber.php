@@ -24,7 +24,7 @@ class AssetRegistrationNumber
         'Pakaian' => 'PK',
         'Harta Tak Alih' => 'HTA',
         // Non-Asset Categories
-        'Barang-barang Dapur' => 'BD',  // Kitchen items
+        'Peralatan Dapur' => 'BD',  // Kitchen equipment (updated from Barang-barang Dapur)
         'Peralatan Pejabat - Alat tulis' => 'AT',  // Office Equipment - Stationery
         'Alat-alat Pertukangan' => 'AP',  // Carpentry tools
         // Common Option
@@ -39,20 +39,20 @@ class AssetRegistrationNumber
     public static function generate($masjidSurauId, $jenisAset, $year = null)
     {
         $year = $year ?: date('y'); // Get last 2 digits of year
-        
+
         // Get mosque/surau abbreviation
         $masjidSurau = MasjidSurau::findOrFail($masjidSurauId);
         $singkatan = $masjidSurau->singkatan_nama;
-        
+
         // Get asset type abbreviation
         $jenisAsetCode = self::$assetTypeAbbreviations[$jenisAset] ?? 'O';
-        
+
         // Get next sequence number
         $sequenceNumber = self::getNextSequenceNumber($jenisAsetCode, $masjidSurauId, $year);
-        
+
         return sprintf('%s/%s/%s/%03d', $singkatan, $jenisAsetCode, $year, $sequenceNumber);
     }
-    
+
     /**
      * Get the next sequence number for the given year and asset type
      */
@@ -60,7 +60,7 @@ class AssetRegistrationNumber
     {
         // Build pattern to search for
         $pattern = "%/{$jenisAsetCode}/{$year}/%";
-        
+
         // Get the latest sequence from both tables
         $latestAsset = Asset::where('masjid_surau_id', $masjidSurauId)
             ->where('no_siri_pendaftaran', 'LIKE', $pattern)
@@ -78,17 +78,17 @@ class AssetRegistrationNumber
 
         if ($latestAsset) {
             $parts = explode('/', $latestAsset->no_siri_pendaftaran);
-            $latestSequence = max($latestSequence, (int)end($parts));
+            $latestSequence = max($latestSequence, (int) end($parts));
         }
 
         if ($latestImmovableAsset) {
             $parts = explode('/', $latestImmovableAsset->no_siri_pendaftaran);
-            $latestSequence = max($latestSequence, (int)end($parts));
+            $latestSequence = max($latestSequence, (int) end($parts));
         }
-        
+
         return $latestSequence + 1;
     }
-    
+
     /**
      * Validate asset registration number format
      */
@@ -98,7 +98,7 @@ class AssetRegistrationNumber
         $pattern = '/^[A-Z]+\/[A-Z]+\/\d{2}\/\d{3}$/';
         return preg_match($pattern, $registrationNumber);
     }
-    
+
     /**
      * Parse asset registration number into components
      */
@@ -109,7 +109,7 @@ class AssetRegistrationNumber
         }
 
         $parts = explode('/', $registrationNumber);
-        
+
         return [
             'singkatan_nama' => $parts[0],
             'jenis_aset_code' => $parts[1],
@@ -130,14 +130,14 @@ class AssetRegistrationNumber
     public static function generateImmovable($masjidSurauId, $year = null)
     {
         $year = $year ?: date('y'); // Get last 2 digits of year
-        
+
         // Get mosque/surau abbreviation
         $masjidSurau = MasjidSurau::findOrFail($masjidSurauId);
         $singkatan = $masjidSurau->singkatan_nama;
-        
+
         // Get next sequence number for immovable assets
         $sequenceNumber = self::getNextSequenceNumber('HTA', $masjidSurauId, $year);
-        
+
         return sprintf('%s/HTA/%s/%03d', $singkatan, $year, $sequenceNumber);
     }
-} 
+}
