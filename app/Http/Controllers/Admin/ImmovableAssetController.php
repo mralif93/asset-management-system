@@ -103,11 +103,6 @@ class ImmovableAssetController extends Controller
         // Remove the separate fields
         unset($validated['keluasan_tanah'], $validated['keluasan_bangunan']);
 
-        // Custom validation: Ensure at least 1 image for new assets
-        if (!$request->hasFile('gambar_aset') || count($request->file('gambar_aset')) < 1) {
-            return back()->withErrors(['gambar_aset' => 'Sekurang-kurangnya 1 gambar diperlukan untuk aset baru.'])->withInput();
-        }
-
         // Generate registration number
         $tarikhPerolehan = new \Carbon\Carbon($validated['tarikh_perolehan']);
         $validated['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable(

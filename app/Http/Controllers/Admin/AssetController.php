@@ -114,11 +114,6 @@ class AssetController extends Controller
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        // Custom validation: Ensure at least 1 image for new assets
-        if (!$request->hasFile('gambar_aset') || count($request->file('gambar_aset')) < 1) {
-            return back()->withErrors(['gambar_aset' => 'Sekurang-kurangnya 1 gambar diperlukan untuk aset baru.'])->withInput();
-        }
-
         // Generate registration number
         $tarikhPerolehan = new \Carbon\Carbon($validated['tarikh_perolehan']);
         $validated['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
