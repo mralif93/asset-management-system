@@ -17,18 +17,18 @@ class ImmovableAssetController extends Controller
     public function index(Request $request)
     {
         $query = ImmovableAsset::with('masjidSurau');
-        
+
         // Admin can see all assets
-        
+
         // Search functionality
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('nama_aset', 'like', "%{$searchTerm}%")
-                  ->orWhere('no_siri_pendaftaran', 'like', "%{$searchTerm}%")
-                  ->orWhere('alamat', 'like', "%{$searchTerm}%")
-                  ->orWhere('no_hakmilik', 'like', "%{$searchTerm}%")
-                  ->orWhere('no_lot', 'like', "%{$searchTerm}%");
+                    ->orWhere('no_siri_pendaftaran', 'like', "%{$searchTerm}%")
+                    ->orWhere('alamat', 'like', "%{$searchTerm}%")
+                    ->orWhere('no_hakmilik', 'like', "%{$searchTerm}%")
+                    ->orWhere('no_lot', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -43,7 +43,7 @@ class ImmovableAssetController extends Controller
         }
 
         $immovableAssets = $query->latest()->paginate(15);
-        
+
         // Preserve query parameters in pagination
         $immovableAssets->appends($request->query());
 
@@ -56,13 +56,13 @@ class ImmovableAssetController extends Controller
     public function create()
     {
         $masjidSuraus = MasjidSurau::all();
-        
+
         // Set default to Masjid Al-Hidayah, Taman Melawati
         $defaultMasjid = MasjidSurau::where('nama', 'like', '%Al-Hidayah%')
-                                   ->where('nama', 'like', '%Taman Melawati%')
-                                   ->first();
+            ->where('nama', 'like', '%Taman Melawati%')
+            ->first();
         $default_masjid_surau_id = $defaultMasjid ? $defaultMasjid->id : (auth()->user()->masjid_surau_id ?? null);
-        
+
         return view('admin.immovable-assets.create', compact('masjidSuraus', 'default_masjid_surau_id'));
     }
 
@@ -128,7 +128,7 @@ class ImmovableAssetController extends Controller
         $immovableAsset = ImmovableAsset::create($validated);
 
         return redirect()->route('admin.immovable-assets.show', $immovableAsset)
-                        ->with('success', 'Aset tak alih berjaya didaftarkan dengan nombor siri: ' . $immovableAsset->no_siri_pendaftaran);
+            ->with('success', 'Aset tak alih berjaya didaftarkan dengan nombor siri: ' . $immovableAsset->no_siri_pendaftaran);
     }
 
     /**
@@ -137,7 +137,7 @@ class ImmovableAssetController extends Controller
     public function show(ImmovableAsset $immovableAsset)
     {
         $immovableAsset->load('masjidSurau');
-        
+
         return view('admin.immovable-assets.show', compact('immovableAsset'));
     }
 
@@ -147,7 +147,7 @@ class ImmovableAssetController extends Controller
     public function edit(ImmovableAsset $immovableAsset)
     {
         $masjidSuraus = MasjidSurau::all();
-        
+
         return view('admin.immovable-assets.edit', compact('immovableAsset', 'masjidSuraus'));
     }
 
@@ -176,11 +176,11 @@ class ImmovableAssetController extends Controller
         if ($request->has('delete_images')) {
             $imagesToDelete = is_array($request->delete_images) ? $request->delete_images : [$request->delete_images];
             $currentImages = $immovableAsset->gambar_aset ?? [];
-            $remainingImages = array_filter($currentImages, function($image) use ($imagesToDelete) {
+            $remainingImages = array_filter($currentImages, function ($image) use ($imagesToDelete) {
                 return !in_array($image, $imagesToDelete);
             });
             $validated['gambar_aset'] = array_values($remainingImages);
-            
+
             // Delete files from storage
             foreach ($imagesToDelete as $imagePath) {
                 if (Storage::disk('public')->exists($imagePath)) {
@@ -202,7 +202,7 @@ class ImmovableAssetController extends Controller
         $immovableAsset->update($validated);
 
         return redirect()->route('admin.immovable-assets.show', $immovableAsset)
-                        ->with('success', 'Butiran aset tak alih berjaya dikemaskini.');
+            ->with('success', 'Butiran aset tak alih berjaya dikemaskini.');
     }
 
     /**
@@ -213,7 +213,7 @@ class ImmovableAssetController extends Controller
         $immovableAsset->delete();
 
         return redirect()->route('admin.immovable-assets.index')
-                        ->with('success', 'Rekod aset tak alih berjaya dipadamkan.');
+            ->with('success', 'Rekod aset tak alih berjaya dipadamkan.');
     }
 
     /**
@@ -222,16 +222,16 @@ class ImmovableAssetController extends Controller
     public function export(Request $request)
     {
         $query = ImmovableAsset::with('masjidSurau');
-        
+
         // Apply same filters as index
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('nama_aset', 'like', "%{$searchTerm}%")
-                  ->orWhere('no_siri_pendaftaran', 'like', "%{$searchTerm}%")
-                  ->orWhere('alamat', 'like', "%{$searchTerm}%")
-                  ->orWhere('no_hakmilik', 'like', "%{$searchTerm}%")
-                  ->orWhere('no_lot', 'like', "%{$searchTerm}%");
+                    ->orWhere('no_siri_pendaftaran', 'like', "%{$searchTerm}%")
+                    ->orWhere('alamat', 'like', "%{$searchTerm}%")
+                    ->orWhere('no_hakmilik', 'like', "%{$searchTerm}%")
+                    ->orWhere('no_lot', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -246,18 +246,18 @@ class ImmovableAssetController extends Controller
         $immovableAssets = $query->latest()->limit(10000)->get(); // Limit to prevent memory issues
 
         $filename = 'immovable_assets_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function() use ($immovableAssets) {
+        $callback = function () use ($immovableAssets) {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for UTF-8 to support Malay characters
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
             // Write CSV headers - matching import template order and format
             fputcsv($file, [
                 'Masjid/Surau ID',
@@ -267,7 +267,7 @@ class ImmovableAssetController extends Controller
                 'No. Hakmilik',
                 'No. Lot',
                 'Luas Tanah/Bangunan (m²)',
-                'Tarikh Perolehan (YYYY-MM-DD)',
+                'Tarikh Perolehan (DD/MM/YYYY)',
                 'Sumber Perolehan (Pembelian/Hibah/Wakaf/Derma/Lain-lain)',
                 'Kos Perolehan (RM)',
                 'Keadaan Semasa (Sangat Baik/Baik/Sederhana/Perlu Pembaikan/Rosak)',
@@ -284,7 +284,7 @@ class ImmovableAssetController extends Controller
                     $asset->no_hakmilik ?? '',
                     $asset->no_lot ?? '',
                     number_format($asset->luas_tanah_bangunan ?? 0, 2),
-                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '',
+                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('d/m/Y') : '',
                     $asset->sumber_perolehan ?? '',
                     number_format($asset->kos_perolehan ?? 0, 2),
                     $asset->keadaan_semasa ?? '',
@@ -304,18 +304,18 @@ class ImmovableAssetController extends Controller
     public function downloadTemplate()
     {
         $filename = 'immovable_assets_import_template_' . now()->format('Y-m-d') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function() {
+        $callback = function () {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for UTF-8
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
             // Write CSV headers
             fputcsv($file, [
                 'Masjid/Surau ID',
@@ -325,7 +325,7 @@ class ImmovableAssetController extends Controller
                 'No. Hakmilik',
                 'No. Lot',
                 'Luas Tanah/Bangunan (m²)',
-                'Tarikh Perolehan (YYYY-MM-DD)',
+                'Tarikh Perolehan (DD/MM/YYYY)',
                 'Sumber Perolehan (Pembelian/Hibah/Wakaf/Derma/Lain-lain)',
                 'Kos Perolehan (RM)',
                 'Keadaan Semasa (Sangat Baik/Baik/Sederhana/Perlu Pembaikan/Rosak)',
@@ -334,7 +334,7 @@ class ImmovableAssetController extends Controller
 
             // Add example row
             $masjidSuraus = MasjidSurau::limit(1)->first();
-            
+
             fputcsv($file, [
                 $masjidSuraus->id ?? '1',
                 'Contoh: Tanah Masjid',
@@ -362,7 +362,7 @@ class ImmovableAssetController extends Controller
     public function showImport()
     {
         $masjidSuraus = MasjidSurau::all();
-        
+
         return view('admin.immovable-assets.import', compact('masjidSuraus'));
     }
 
@@ -377,14 +377,14 @@ class ImmovableAssetController extends Controller
 
         $file = $request->file('csv_file');
         $path = $file->getRealPath();
-        
+
         // Read file line by line to handle large files efficiently
         $handle = fopen($path, 'r');
         if (!$handle) {
             return redirect()->route('admin.immovable-assets.import')
                 ->with('error', 'Tidak dapat membaca fail CSV.');
         }
-        
+
         // Read and skip header row
         $header = fgetcsv($handle);
         if ($header && isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
@@ -395,15 +395,15 @@ class ImmovableAssetController extends Controller
         $successCount = 0;
         $skipCount = 0;
         $rowIndex = 0;
-        
+
         // Process rows in batches for better performance
         $batchSize = 100;
         $batch = [];
-        
+
         while (($row = fgetcsv($handle)) !== false) {
             $rowIndex++;
             $rowNumber = $rowIndex + 1; // +1 because header is row 1
-            
+
             // Skip empty rows
             if (empty(array_filter($row))) {
                 $skipCount++;
@@ -494,7 +494,7 @@ class ImmovableAssetController extends Controller
                 $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
             }
         }
-        
+
         // Close file handle
         fclose($handle);
 
@@ -508,13 +508,13 @@ class ImmovableAssetController extends Controller
 
         if (count($errors) > 0) {
             return redirect()->route('admin.immovable-assets.import')
-                            ->with('import_errors', $errors)
-                            ->with('success', $message)
-                            ->withInput();
+                ->with('import_errors', $errors)
+                ->with('success', $message)
+                ->withInput();
         }
 
         return redirect()->route('admin.immovable-assets.index')
-                        ->with('success', $message);
+            ->with('success', $message);
     }
 
     /**
@@ -530,6 +530,6 @@ class ImmovableAssetController extends Controller
         $deletedCount = ImmovableAsset::whereIn('id', $validated['asset_ids'])->delete();
 
         return redirect()->route('admin.immovable-assets.index')
-                        ->with('success', "Berjaya memadamkan {$deletedCount} aset tak alih yang dipilih.");
+            ->with('success', "Berjaya memadamkan {$deletedCount} aset tak alih yang dipilih.");
     }
 }

@@ -18,19 +18,19 @@ class AssetController extends Controller
     public function index(Request $request)
     {
         $query = Asset::with('masjidSurau');
-        
+
         // Admin can see all assets
-        
+
         // Filter by location if requested
         if ($request->filled('lokasi')) {
             $query->where('lokasi_penempatan', 'like', '%' . $request->lokasi . '%');
         }
-        
+
         // Filter by asset type
         if ($request->filled('jenis_aset')) {
             $query->where('jenis_aset', $request->jenis_aset);
         }
-        
+
         // Filter by type of asset
         if ($request->filled('kategori_aset')) {
             $query->where('kategori_aset', $request->kategori_aset);
@@ -40,20 +40,20 @@ class AssetController extends Controller
         if ($request->filled('lokasi_penempatan')) {
             $query->where('lokasi_penempatan', $request->lokasi_penempatan);
         }
-        
+
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status_aset', $request->status);
         }
-        
+
         // Filter by physical condition
         if ($request->filled('keadaan_fizikal')) {
             $query->where('keadaan_fizikal', $request->keadaan_fizikal);
         }
-        
+
         $assets = $query->latest()->paginate(15);
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        
+
         return view('admin.assets.index', compact('assets', 'assetTypes'));
     }
 
@@ -64,11 +64,11 @@ class AssetController extends Controller
     {
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        
+
         // Set default to Masjid Al-Hidayah, Taman Melawati
         $defaultMasjid = MasjidSurau::where('nama', 'like', '%Al-Hidayah%')
-                                   ->where('nama', 'like', '%Taman Melawati%')
-                                   ->first();
+            ->where('nama', 'like', '%Taman Melawati%')
+            ->first();
         $default_masjid_surau_id = $defaultMasjid ? $defaultMasjid->id : (auth()->user()->masjid_surau_id ?? null);
         return view('admin.assets.create', compact('masjidSuraus', 'assetTypes', 'default_masjid_surau_id'));
     }
@@ -80,7 +80,7 @@ class AssetController extends Controller
     public function store(Request $request)
     {
         $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        
+
         $validated = $request->validate([
             'masjid_surau_id' => 'required|exists:masjid_surau,id',
             'nama_aset' => 'required|string|max:255',
@@ -140,7 +140,7 @@ class AssetController extends Controller
         $asset = Asset::create($validated);
 
         return redirect()->route('admin.assets.show', $asset)
-                        ->with('success', 'Aset baru berjaya didaftarkan dengan nombor siri: ' . $asset->no_siri_pendaftaran);
+            ->with('success', 'Aset baru berjaya didaftarkan dengan nombor siri: ' . $asset->no_siri_pendaftaran);
     }
 
     /**
@@ -149,7 +149,7 @@ class AssetController extends Controller
     public function show(Asset $asset)
     {
         $asset->load(['masjidSurau', 'movements', 'inspections', 'maintenanceRecords']);
-        
+
         return view('admin.assets.show', compact('asset'));
     }
 
@@ -160,7 +160,7 @@ class AssetController extends Controller
     {
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        
+
         return view('admin.assets.edit', compact('asset', 'masjidSuraus', 'assetTypes'));
     }
 
@@ -170,7 +170,7 @@ class AssetController extends Controller
     public function update(Request $request, Asset $asset)
     {
         $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        
+
         $validated = $request->validate([
             'nama_aset' => 'required|string|max:255',
             'jenis_aset' => 'required|string|in:' . implode(',', $availableAssetTypes),
@@ -207,11 +207,11 @@ class AssetController extends Controller
         if ($request->has('delete_images')) {
             $imagesToDelete = is_array($request->delete_images) ? $request->delete_images : [$request->delete_images];
             $currentImages = $asset->gambar_aset ?? [];
-            $remainingImages = array_filter($currentImages, function($image) use ($imagesToDelete) {
+            $remainingImages = array_filter($currentImages, function ($image) use ($imagesToDelete) {
                 return !in_array($image, $imagesToDelete);
             });
             $validated['gambar_aset'] = array_values($remainingImages);
-            
+
             // Delete files from storage
             foreach ($imagesToDelete as $imagePath) {
                 if (Storage::disk('public')->exists($imagePath)) {
@@ -233,7 +233,7 @@ class AssetController extends Controller
         $asset->update($validated);
 
         return redirect()->route('admin.assets.show', $asset)
-                        ->with('success', 'Butiran aset berjaya dikemaskini.');
+            ->with('success', 'Butiran aset berjaya dikemaskini.');
     }
 
     /**
@@ -244,7 +244,7 @@ class AssetController extends Controller
         $asset->delete();
 
         return redirect()->route('admin.assets.index')
-                        ->with('success', 'Rekod aset berjaya dipadamkan.');
+            ->with('success', 'Rekod aset berjaya dipadamkan.');
     }
 
     /**
@@ -253,12 +253,12 @@ class AssetController extends Controller
     public function byLocation(Request $request)
     {
         $lokasi = $request->get('lokasi');
-        
+
         $query = Asset::with('masjidSurau')
-                     ->where('lokasi_penempatan', 'like', '%' . $lokasi . '%');
-        
+            ->where('lokasi_penempatan', 'like', '%' . $lokasi . '%');
+
         $assets = $query->get();
-        
+
         return view('admin.assets.by-location', compact('assets', 'lokasi'));
     }
 
@@ -276,7 +276,7 @@ class AssetController extends Controller
         $asset->update($validated);
 
         return redirect()->route('admin.assets.show', $asset)
-                        ->with('success', 'Lokasi aset berjaya dikemaskini.');
+            ->with('success', 'Lokasi aset berjaya dikemaskini.');
     }
 
     /**
@@ -292,7 +292,7 @@ class AssetController extends Controller
         $deletedCount = Asset::whereIn('id', $validated['asset_ids'])->delete();
 
         return redirect()->route('admin.assets.index')
-                        ->with('success', "Berjaya memadamkan {$deletedCount} aset yang dipilih.");
+            ->with('success', "Berjaya memadamkan {$deletedCount} aset yang dipilih.");
     }
 
     /**
@@ -301,16 +301,16 @@ class AssetController extends Controller
     public function export(Request $request)
     {
         $query = Asset::with('masjidSurau');
-        
+
         // Apply same filters as index
         if ($request->filled('lokasi')) {
             $query->where('lokasi_penempatan', 'like', '%' . $request->lokasi . '%');
         }
-        
+
         if ($request->filled('jenis_aset')) {
             $query->where('jenis_aset', $request->jenis_aset);
         }
-        
+
         if ($request->filled('kategori_aset')) {
             $query->where('kategori_aset', $request->kategori_aset);
         }
@@ -318,46 +318,46 @@ class AssetController extends Controller
         if ($request->filled('lokasi_penempatan')) {
             $query->where('lokasi_penempatan', $request->lokasi_penempatan);
         }
-        
+
         if ($request->filled('status')) {
             $query->where('status_aset', $request->status);
         }
-        
+
         if ($request->filled('keadaan_fizikal')) {
             $query->where('keadaan_fizikal', $request->keadaan_fizikal);
         }
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama_aset', 'like', '%' . $search . '%')
-                  ->orWhere('no_siri_pendaftaran', 'like', '%' . $search . '%')
-                  ->orWhere('jenis_aset', 'like', '%' . $search . '%');
+                    ->orWhere('no_siri_pendaftaran', 'like', '%' . $search . '%')
+                    ->orWhere('jenis_aset', 'like', '%' . $search . '%');
             });
         }
 
         $assets = $query->latest()->limit(10000)->get(); // Limit to prevent memory issues
 
         $filename = 'assets_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function() use ($assets) {
+        $callback = function () use ($assets) {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for UTF-8 to support Malay characters
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
             // Write CSV headers - matching import template order and format
             fputcsv($file, [
                 'Masjid/Surau ID',
                 'Nama Aset',
                 'Jenis Aset',
                 'Kategori Aset (asset/non-asset)',
-                'Tarikh Perolehan (YYYY-MM-DD)',
+                'Tarikh Perolehan (DD/MM/YYYY)',
                 'Kaedah Perolehan',
                 'Nilai Perolehan (RM)',
                 'Diskaun (RM)',
@@ -369,16 +369,16 @@ class AssetController extends Controller
                 'Status Aset',
                 'Keadaan Fizikal',
                 'Status Jaminan',
-                'Tarikh Pemeriksaan Terakhir (YYYY-MM-DD)',
-                'Tarikh Penyelenggaraan Akan Datang (YYYY-MM-DD)',
+                'Tarikh Pemeriksaan Terakhir (DD/MM/YYYY)',
+                'Tarikh Penyelenggaraan Akan Datang (DD/MM/YYYY)',
                 'No. Resit',
-                'Tarikh Resit (YYYY-MM-DD)',
+                'Tarikh Resit (DD/MM/YYYY)',
                 'Pembekal',
                 'Jenama',
                 'No. Pesanan Kerajaan',
                 'No. Rujukan Kontrak',
                 'Tempoh Jaminan',
-                'Tarikh Tamat Jaminan (YYYY-MM-DD)',
+                'Tarikh Tamat Jaminan (DD/MM/YYYY)',
                 'Catatan',
                 'Catatan Jaminan'
             ]);
@@ -390,7 +390,7 @@ class AssetController extends Controller
                     $asset->nama_aset,
                     $asset->jenis_aset,
                     $asset->kategori_aset === 'asset' ? 'asset' : 'non-asset',
-                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '',
+                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('d/m/Y') : '',
                     $asset->kaedah_perolehan ?? '',
                     number_format($asset->nilai_perolehan ?? 0, 2),
                     number_format($asset->diskaun ?? 0, 2),
@@ -402,16 +402,16 @@ class AssetController extends Controller
                     $asset->status_aset,
                     $asset->keadaan_fizikal ?? '',
                     $asset->status_jaminan ?? '',
-                    $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('Y-m-d') : '',
-                    $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('Y-m-d') : '',
+                    $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('d/m/Y') : '',
+                    $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('d/m/Y') : '',
                     $asset->no_resit ?? '',
-                    $asset->tarikh_resit ? $asset->tarikh_resit->format('Y-m-d') : '',
+                    $asset->tarikh_resit ? $asset->tarikh_resit->format('d/m/Y') : '',
                     $asset->pembekal ?? '',
                     $asset->jenama ?? '',
                     $asset->no_pesanan_kerajaan ?? '',
                     $asset->no_rujukan_kontrak ?? '',
                     $asset->tempoh_jaminan ?? '',
-                    $asset->tarikh_tamat_jaminan ? $asset->tarikh_tamat_jaminan->format('Y-m-d') : '',
+                    $asset->tarikh_tamat_jaminan ? $asset->tarikh_tamat_jaminan->format('d/m/Y') : '',
                     $asset->catatan ?? '',
                     $asset->catatan_jaminan ?? ''
                 ]);
@@ -429,25 +429,25 @@ class AssetController extends Controller
     public function downloadTemplate()
     {
         $filename = 'assets_import_template_' . now()->format('Y-m-d') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function() {
+        $callback = function () {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for UTF-8
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
             // Write CSV headers
             fputcsv($file, [
                 'Masjid/Surau ID',
                 'Nama Aset',
                 'Jenis Aset',
                 'Kategori Aset (asset/non-asset)',
-                'Tarikh Perolehan (YYYY-MM-DD)',
+                'Tarikh Perolehan (DD/MM/YYYY)',
                 'Kaedah Perolehan',
                 'Nilai Perolehan (RM)',
                 'Diskaun (RM)',
@@ -459,16 +459,16 @@ class AssetController extends Controller
                 'Status Aset',
                 'Keadaan Fizikal',
                 'Status Jaminan',
-                'Tarikh Pemeriksaan Terakhir (YYYY-MM-DD)',
-                'Tarikh Penyelenggaraan Akan Datang (YYYY-MM-DD)',
+                'Tarikh Pemeriksaan Terakhir (DD/MM/YYYY)',
+                'Tarikh Penyelenggaraan Akan Datang (DD/MM/YYYY)',
                 'No. Resit',
-                'Tarikh Resit (YYYY-MM-DD)',
+                'Tarikh Resit (DD/MM/YYYY)',
                 'Pembekal',
                 'Jenama',
                 'No. Pesanan Kerajaan',
                 'No. Rujukan Kontrak',
                 'Tempoh Jaminan',
-                'Tarikh Tamat Jaminan (YYYY-MM-DD)',
+                'Tarikh Tamat Jaminan (DD/MM/YYYY)',
                 'Catatan',
                 'Catatan Jaminan'
             ]);
@@ -476,7 +476,7 @@ class AssetController extends Controller
             // Add example row
             $masjidSuraus = MasjidSurau::limit(1)->first();
             $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-            
+
             fputcsv($file, [
                 $masjidSuraus->id ?? '1',
                 'Contoh: Komputer Desktop',
@@ -521,7 +521,7 @@ class AssetController extends Controller
     {
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        
+
         return view('admin.assets.import', compact('masjidSuraus', 'assetTypes'));
     }
 
@@ -536,14 +536,14 @@ class AssetController extends Controller
 
         $file = $request->file('csv_file');
         $path = $file->getRealPath();
-        
+
         // Read file line by line to handle large files efficiently
         $handle = fopen($path, 'r');
         if (!$handle) {
             return redirect()->route('admin.assets.import')
                 ->with('error', 'Tidak dapat membaca fail CSV.');
         }
-        
+
         // Read and skip header row
         $header = fgetcsv($handle);
         if ($header && isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
@@ -555,15 +555,15 @@ class AssetController extends Controller
         $skipCount = 0;
         $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
         $rowIndex = 0;
-        
+
         // Process rows in batches for better performance
         $batchSize = 100;
         $batch = [];
-        
+
         while (($row = fgetcsv($handle)) !== false) {
             $rowIndex++;
             $rowNumber = $rowIndex + 1; // +1 because header is row 1
-            
+
             // Skip empty rows
             if (empty(array_filter($row))) {
                 $skipCount++;
@@ -724,7 +724,7 @@ class AssetController extends Controller
                 $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
             }
         }
-        
+
         // Close file handle
         fclose($handle);
 
@@ -738,12 +738,12 @@ class AssetController extends Controller
 
         if (count($errors) > 0) {
             return redirect()->route('admin.assets.import')
-                            ->with('import_errors', $errors)
-                            ->with('success', $message)
-                            ->withInput();
+                ->with('import_errors', $errors)
+                ->with('success', $message)
+                ->withInput();
         }
 
         return redirect()->route('admin.assets.index')
-                        ->with('success', $message);
+            ->with('success', $message);
     }
 }

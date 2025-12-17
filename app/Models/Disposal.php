@@ -14,6 +14,7 @@ class Disposal extends Model
 
     protected $fillable = [
         'asset_id',
+        'kuantiti',
         'tarikh_permohonan',
         'justifikasi_pelupusan',
         'kaedah_pelupusan_dicadang',
@@ -27,6 +28,7 @@ class Disposal extends Model
     protected $casts = [
         'tarikh_permohonan' => 'datetime',
         'tarikh_kelulusan_pelupusan' => 'datetime',
+        'kuantiti' => 'integer',
         'deleted_at' => 'datetime',
     ];
 

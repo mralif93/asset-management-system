@@ -14,6 +14,7 @@ class AssetMovement extends Model
 
     protected $fillable = [
         'asset_id',
+        'kuantiti',
         'user_id',
         'origin_masjid_surau_id',
         'destination_masjid_surau_id',
@@ -36,6 +37,7 @@ class AssetMovement extends Model
         'tarikh_pergerakan' => 'datetime',
         'tarikh_jangka_pulang' => 'datetime',
         'tarikh_pulang_sebenar' => 'datetime',
+        'kuantiti' => 'integer',
         'deleted_at' => 'datetime',
     ];
 

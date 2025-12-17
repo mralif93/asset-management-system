@@ -646,8 +646,8 @@
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <p class="text-gray-900 leading-relaxed">{{ $asset->catatan }}</p>
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <p class="text-gray-900 leading-relaxed">{{ $asset->catatan }}</p>
                 </div>
             </div>
             @endif

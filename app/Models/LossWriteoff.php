@@ -16,6 +16,7 @@ class LossWriteoff extends Model
 
     protected $fillable = [
         'asset_id',
+        'kuantiti_kehilangan',
         'tarikh_laporan',
         'jenis_kejadian',
         'sebab_kejadian',
@@ -29,6 +30,7 @@ class LossWriteoff extends Model
     protected $casts = [
         'tarikh_laporan' => 'datetime',
         'tarikh_kelulusan_hapus_kira' => 'datetime',
+        'kuantiti_kehilangan' => 'integer',
         'deleted_at' => 'datetime',
     ];
 

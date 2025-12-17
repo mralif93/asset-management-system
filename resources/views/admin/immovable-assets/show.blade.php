@@ -68,7 +68,7 @@
                         class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
                     <i class='bx bx-trash mr-2'></i>
                     Padamkan Aset
-                </button>
+            </button>
             </form>
         </div>
     </div>
@@ -496,7 +496,7 @@
 </div>
 
 <script>
-function openImageModal(imageSrc) {
+    function openImageModal(imageSrc) {
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
     const modalImageName = document.getElementById('modalImageName');
@@ -505,13 +505,13 @@ function openImageModal(imageSrc) {
     modalImageName.textContent = 'Gambar Aset';
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden'; // Prevent background scrolling
-}
+    }
 
-function closeImageModal() {
+    function closeImageModal() {
     const modal = document.getElementById('imageModal');
     modal.classList.add('hidden');
     document.body.style.overflow = 'auto'; // Restore scrolling
-}
+    }
 
 // Close modal functionality
 document.getElementById('closeModal').addEventListener('click', function() {
@@ -519,20 +519,20 @@ document.getElementById('closeModal').addEventListener('click', function() {
 });
 
 // Close modal when clicking outside
-document.getElementById('imageModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeImageModal();
-    }
-});
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeImageModal();
+        }
+    });
 
-// Close modal with Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
         const modal = document.getElementById('imageModal');
         if (!modal.classList.contains('hidden')) {
             closeImageModal();
         }
-    }
-});
+        }
+    });
 </script>
-@endsection
+@endsection 
