@@ -187,7 +187,8 @@
                                             <option value="">-- Pilih --</option>
                                             @foreach($assetTypes as $type)
                                                 <option value="{{ $type }}" {{ old('jenis_aset') === $type ? 'selected' : '' }}>
-                                                    {{ $type }}</option>
+                                                    {{ $type }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -563,11 +564,14 @@
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <i class='bx bx-dollar text-gray-400'></i>
                                         </div>
-                                        <input type="number" id="nilai_perolehan" name="nilai_perolehan"
-                                            value="{{ old('nilai_perolehan') }}" required step="0.01" min="0"
-                                            x-model="form.nilai_perolehan" @input="calculateAnnualDepreciation()"
+                                        <input type="text" id="nilai_perolehan_display"
+                                            value="{{ old('nilai_perolehan') ? number_format(old('nilai_perolehan'), 2) : '' }}"
+                                            required @input="formatPriceInput($event, 'nilai_perolehan')"
+                                            @blur="formatPriceBlur($event, 'nilai_perolehan')"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_perolehan') border-red-500 @enderror bg-white"
                                             placeholder="0.00">
+                                        <input type="hidden" id="nilai_perolehan" name="nilai_perolehan"
+                                            x-model="form.nilai_perolehan">
                                     </div>
                                     @error('nilai_perolehan')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -587,11 +591,13 @@
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <i class='bx bx-purchase-tag text-gray-400'></i>
                                         </div>
-                                        <input type="number" id="diskaun" name="diskaun"
-                                            value="{{ old('diskaun', '0.00') }}" step="0.01" min="0" x-model="form.diskaun"
-                                            @input="calculateAnnualDepreciation()"
+                                        <input type="text" id="diskaun_display"
+                                            value="{{ old('diskaun') ? number_format(old('diskaun'), 2) : '0.00' }}"
+                                            @input="formatPriceInput($event, 'diskaun')"
+                                            @blur="formatPriceBlur($event, 'diskaun')"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('diskaun') border-red-500 @enderror bg-white"
                                             placeholder="0.00">
+                                        <input type="hidden" id="diskaun" name="diskaun" x-model="form.diskaun">
                                     </div>
                                     @error('diskaun')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -747,11 +753,14 @@
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <i class='bx bx-trending-down text-gray-400'></i>
                                         </div>
-                                        <input type="number" id="susut_nilai_tahunan" name="susut_nilai_tahunan"
-                                            value="{{ old('susut_nilai_tahunan') }}" step="0.01" min="0"
-                                            x-model="form.susut_nilai_tahunan" @input="calculateAnnualDepreciation()"
+                                        <input type="text" id="susut_nilai_tahunan_display"
+                                            value="{{ old('susut_nilai_tahunan') ? number_format(old('susut_nilai_tahunan'), 2) : '' }}"
+                                            @input="formatPriceInput($event, 'susut_nilai_tahunan')"
+                                            @blur="formatPriceBlur($event, 'susut_nilai_tahunan')"
                                             class="w-full pl-10 pr-20 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('susut_nilai_tahunan') border-red-500 @enderror bg-white"
                                             placeholder="Auto-calculate">
+                                        <input type="hidden" id="susut_nilai_tahunan" name="susut_nilai_tahunan"
+                                            x-model="form.susut_nilai_tahunan">
                                         <button type="button" @click="calculateAnnualDepreciation()"
                                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-emerald-600 hover:text-emerald-700"
                                             title="Kira semula">
@@ -1219,9 +1228,75 @@
                             // Auto-fill if field is empty
                             if (!this.form.susut_nilai_tahunan || this.form.susut_nilai_tahunan === '') {
                                 this.form.susut_nilai_tahunan = annualDepreciation.toFixed(2);
+                                // Update display field
+                                const displayField = document.getElementById('susut_nilai_tahunan_display');
+                                if (displayField) {
+                                    displayField.value = this.formatCurrency(annualDepreciation);
+                                }
                             }
                         } else {
                             this.calculatedDepreciation = null;
+                        }
+                    },
+
+                    // Format number with thousand separators and 2 decimals
+                    formatCurrency(value) {
+                        if (!value && value !== 0) return '';
+                        const num = parseFloat(value.toString().replace(/,/g, ''));
+                        if (isNaN(num)) return '';
+                        return num.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    },
+
+                    // Remove commas and return numeric value
+                    parseCurrency(value) {
+                        if (!value) return 0;
+                        return parseFloat(value.toString().replace(/,/g, '')) || 0;
+                    },
+
+                    // Format on input (allows partial entry)
+                    formatPriceInput(event, fieldName) {
+                        const input = event.target;
+                        let value = input.value.replace(/,/g, '');
+
+                        // Allow only numbers and decimal point
+                        value = value.replace(/[^\d.]/g, '');
+
+                        // Ensure only one decimal point
+                        const parts = value.split('.');
+                        if (parts.length > 2) {
+                            value = parts[0] + '.' + parts.slice(1).join('');
+                        }
+
+                        // Limit to 2 decimal places
+                        if (parts.length === 2 && parts[1].length > 2) {
+                            value = parts[0] + '.' + parts[1].substring(0, 2);
+                        }
+
+                        // Update the display
+                        input.value = value;
+
+                        // Update hidden field with raw value
+                        this.form[fieldName] = value;
+                    },
+
+                    // Format on blur (final formatting with commas and 2 decimals)
+                    formatPriceBlur(event, fieldName) {
+                        const input = event.target;
+                        const rawValue = input.value.replace(/,/g, '');
+                        const numValue = parseFloat(rawValue) || 0;
+
+                        // Update visible input with formatted value
+                        input.value = this.formatCurrency(numValue);
+
+                        // Update hidden field with raw value (2 decimal places)
+                        this.form[fieldName] = numValue.toFixed(2);
+
+                        // Recalculate depreciation if needed
+                        if (fieldName === 'nilai_perolehan' || fieldName === 'diskaun') {
+                            this.calculateAnnualDepreciation();
                         }
                     },
 
@@ -1356,24 +1431,24 @@
                                 const previewDiv = document.createElement('div');
                                 previewDiv.className = 'relative group animate-fadeIn';
                                 previewDiv.innerHTML = `
-                                <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
-                                    <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                                        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                                                <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                        <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
+                                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                                        <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
-                                    <i class='bx bx-x text-lg'></i>
-                                </button>
-                                <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                                    <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
-                                    <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                </div>
-                            `;
+                                        <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
+                                            <i class='bx bx-x text-lg'></i>
+                                        </button>
+                                        <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                                            <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
+                                            <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                        </div>
+                                    `;
                                 imagePreview.appendChild(previewDiv);
 
                                 // Update progress

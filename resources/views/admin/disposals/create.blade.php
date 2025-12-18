@@ -258,15 +258,17 @@
                                     Nilai Pelupusan (RM)
                                 </label>
                                 <div class="relative">
-                                    <input type="number" 
-                                           name="nilai_pelupusan" 
-                                           id="nilai_pelupusan" 
-                                           value="{{ old('nilai_pelupusan') }}" 
-                                           step="0.01" 
-                                           min="0"
-                                           x-model="form.nilai_pelupusan"
+                                    <input type="text" 
+                                           id="nilai_pelupusan_display"
+                                           value="{{ old('nilai_pelupusan') ? number_format(old('nilai_pelupusan'), 2) : '' }}" 
+                                           oninput="formatDisposalPrice(event, 'nilai_pelupusan')"
+                                           onblur="formatDisposalPriceBlur(event, 'nilai_pelupusan')"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_pelupusan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
+                                    <input type="hidden"
+                                           name="nilai_pelupusan" 
+                                           id="nilai_pelupusan" 
+                                           x-model="form.nilai_pelupusan">
                                     <i class='bx bx-dollar absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nilai_pelupusan')
@@ -284,15 +286,17 @@
                                     Nilai Baki (RM)
                                 </label>
                                 <div class="relative">
-                                    <input type="number" 
-                                           name="nilai_baki" 
-                                           id="nilai_baki" 
-                                           value="{{ old('nilai_baki') }}" 
-                                           step="0.01" 
-                                           min="0"
-                                           x-model="form.nilai_baki"
+                                    <input type="text" 
+                                           id="nilai_baki_display"
+                                           value="{{ old('nilai_baki') ? number_format(old('nilai_baki'), 2) : '' }}" 
+                                           oninput="formatDisposalPrice(event, 'nilai_baki')"
+                                           onblur="formatDisposalPriceBlur(event, 'nilai_baki')"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_baki') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
+                                    <input type="hidden"
+                                           name="nilai_baki" 
+                                           id="nilai_baki" 
+                                           x-model="form.nilai_baki">
                                     <i class='bx bx-calculator absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nilai_baki')
@@ -622,18 +626,89 @@
         }
     });
 
+    // Format number with thousand separators and 2 decimals
+    function formatCurrency(value) {
+        if (!value && value !== 0) return '';
+        const num = parseFloat(value.toString().replace(/,/g, ''));
+        if (isNaN(num)) return '';
+        return num.toLocaleString('en-US', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
+    }
+
+    // Price formatting - during input
+    function formatDisposalPrice(event, fieldName) {
+        const input = event.target;
+        let value = input.value.replace(/,/g, '');
+        
+        // Allow only numbers and decimal point
+        value = value.replace(/[^\d.]/g, '');
+        
+        // Ensure only one decimal point
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        // Limit to 2 decimal places
+        if (parts.length === 2 && parts[1].length > 2) {
+            value = parts[0] + '.' + parts[1].substring(0, 2);
+        }
+        
+        // Validate min value
+        const numValue = parseFloat(value);
+        if (numValue < 0) {
+            value = '0';
+        }
+        
+        // Update the display
+        input.value = value;
+        
+        // Update hidden field
+        const hiddenField = document.getElementById(fieldName);
+        if (hiddenField) {
+            hiddenField.value = value;
+            // Trigger Alpine.js model update
+            hiddenField.dispatchEvent(new Event('input'));
+        }
+    }
+
+    // Price formatting - on blur (final formatting)
+    function formatDisposalPriceBlur(event, fieldName) {
+        const input = event.target;
+        const rawValue = input.value.replace(/,/g, '');
+        const numValue = parseFloat(rawValue) || 0;
+        
+        // Update visible input with formatted value
+        input.value = formatCurrency(numValue);
+        
+        // Update hidden field with raw value
+        const hiddenField = document.getElementById(fieldName);
+        if (hiddenField) {
+            hiddenField.value = numValue.toFixed(2);
+            // Trigger Alpine.js model update
+            hiddenField.dispatchEvent(new Event('input'));
+        }
+    }
+
     // Auto-calculate remaining value suggestion
-    document.getElementById('nilai_pelupusan').addEventListener('input', function() {
+    document.getElementById('nilai_pelupusan_display').addEventListener('input', function() {
         const assetSelect = document.getElementById('asset_id');
         const selectedOption = assetSelect.options[assetSelect.selectedIndex];
         const nilaiBalakInput = document.getElementById('nilai_baki');
+        const nilaiBalakDisplay = document.getElementById('nilai_baki_display');
         
-        if (selectedOption && selectedOption.dataset.value && this.value) {
+        // Get raw value from hidden field
+        const disposalValue = parseFloat(nilaiBalakInput.value || this.value.replace(/,/g, '')) || 0;
+        
+        if (selectedOption && selectedOption.dataset.value) {
             const originalValue = parseFloat(selectedOption.dataset.value);
-            const disposalValue = parseFloat(this.value);
             const remainingValue = Math.max(0, originalValue - disposalValue);
             
             if (!nilaiBalakInput.value) {
+                // Update both display and hidden fields
+                nilaiBalakDisplay.value = formatCurrency(remainingValue);
                 nilaiBalakInput.value = remainingValue.toFixed(2);
                 // Update Alpine.js model
                 nilaiBalakInput.dispatchEvent(new Event('input'));

@@ -5,520 +5,579 @@
 @section('page-description', 'Cipta rekod penyelenggaraan baru untuk aset')
 
 @section('content')
-<div class="p-6">
-    <!-- Welcome Header -->
-    <div class="bg-emerald-600 rounded-2xl p-8 text-white mb-8">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold mb-2">Tambah Rekod Penyelenggaraan</h1>
-                <p class="text-emerald-100 text-lg">Cipta rekod penyelenggaraan baharu untuk aset</p>
-                <div class="flex items-center space-x-4 mt-4">
-                    <div class="flex items-center space-x-2">
-                        <i class='bx bx-wrench text-emerald-200'></i>
-                        <span class="text-emerald-100">Penyelenggaraan Aset</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <i class='bx bx-calendar-check text-emerald-200'></i>
-                        <span class="text-emerald-100">Jadual Teratur</span>
-                    </div>
-                </div>
-            </div>
-            <div class="hidden md:block">
-                <i class='bx bx-wrench text-6xl text-emerald-200'></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- Navigation Breadcrumb -->
-    <div class="flex items-center space-x-2 mb-6">
-        <a href="{{ route('admin.dashboard') }}" class="text-gray-500 hover:text-emerald-600">
-            <i class='bx bx-home'></i>
-        </a>
-        <i class='bx bx-chevron-right text-gray-400'></i>
-        <a href="{{ route('admin.maintenance-records.index') }}" class="text-gray-500 hover:text-emerald-600">
-            Pengurusan Penyelenggaraan
-        </a>
-        <i class='bx bx-chevron-right text-gray-400'></i>
-        <span class="text-emerald-600 font-medium">Tambah Rekod</span>
-    </div>
-
-
-
-    <!-- Progress Steps -->
-    <div class="mb-8">
-        <div class="flex items-center justify-center">
-            <div class="flex items-center space-x-4">
-                <!-- Step 1 -->
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-semibold">
-                        1
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-emerald-600">Maklumat Aset</span>
-                </div>
-                <div class="w-16 h-1 bg-gray-200 rounded"></div>
-                
-                <!-- Step 2 -->
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-semibold">
-                        2
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-gray-500">Butiran Penyelenggaraan</span>
-                </div>
-                <div class="w-16 h-1 bg-gray-200 rounded"></div>
-                
-                <!-- Step 3 -->
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-semibold">
-                        3
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-gray-500">Semak & Simpan</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Form Card - Full Width -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <form action="{{ route('admin.maintenance-records.store') }}" method="POST" enctype="multipart/form-data" x-data="maintenanceForm()" class="space-y-0">
-            @csrf
-
-            <!-- Form Header -->
-            <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-blue-50">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-xl font-semibold text-gray-900">Cipta Rekod Penyelenggaraan Baru</h2>
-                        <p class="text-sm text-gray-600">Isikan semua maklumat yang diperlukan untuk mencipta rekod penyelenggaraan</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span class="text-sm text-gray-600">Sistem Online</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form Content - Two Column Layout -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6">
-                
-                <!-- Left Column - Main Form -->
-                <div class="lg:col-span-2 space-y-8">
-                    
-                    <!-- Asset Selection Section -->
-                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-package text-white text-xl'></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Pemilihan Aset</h3>
-                                <p class="text-sm text-emerald-700">Pilih aset yang akan diselenggara</p>
-                            </div>
+    <div class="p-6">
+        <!-- Welcome Header -->
+        <div class="bg-emerald-600 rounded-2xl p-8 text-white mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Tambah Rekod Penyelenggaraan</h1>
+                    <p class="text-emerald-100 text-lg">Cipta rekod penyelenggaraan baharu untuk aset</p>
+                    <div class="flex items-center space-x-4 mt-4">
+                        <div class="flex items-center space-x-2">
+                            <i class='bx bx-wrench text-emerald-200'></i>
+                            <span class="text-emerald-100">Penyelenggaraan Aset</span>
                         </div>
-                        
+                        <div class="flex items-center space-x-2">
+                            <i class='bx bx-calendar-check text-emerald-200'></i>
+                            <span class="text-emerald-100">Jadual Teratur</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <i class='bx bx-wrench text-6xl text-emerald-200'></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Breadcrumb -->
+        <div class="flex items-center space-x-2 mb-6">
+            <a href="{{ route('admin.dashboard') }}" class="text-gray-500 hover:text-emerald-600">
+                <i class='bx bx-home'></i>
+            </a>
+            <i class='bx bx-chevron-right text-gray-400'></i>
+            <a href="{{ route('admin.maintenance-records.index') }}" class="text-gray-500 hover:text-emerald-600">
+                Pengurusan Penyelenggaraan
+            </a>
+            <i class='bx bx-chevron-right text-gray-400'></i>
+            <span class="text-emerald-600 font-medium">Tambah Rekod</span>
+        </div>
+
+
+
+        <!-- Progress Steps -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center">
+                <div class="flex items-center space-x-4">
+                    <!-- Step 1 -->
+                    <div class="flex items-center">
+                        <div
+                            class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-semibold">
+                            1
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-emerald-600">Maklumat Aset</span>
+                    </div>
+                    <div class="w-16 h-1 bg-gray-200 rounded"></div>
+
+                    <!-- Step 2 -->
+                    <div class="flex items-center">
+                        <div
+                            class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-semibold">
+                            2
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">Butiran Penyelenggaraan</span>
+                    </div>
+                    <div class="w-16 h-1 bg-gray-200 rounded"></div>
+
+                    <!-- Step 3 -->
+                    <div class="flex items-center">
+                        <div
+                            class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-semibold">
+                            3
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">Semak & Simpan</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Card - Full Width -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <form action="{{ route('admin.maintenance-records.store') }}" method="POST" enctype="multipart/form-data"
+                x-data="maintenanceForm()" class="space-y-0">
+                @csrf
+
+                <!-- Form Header -->
+                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-blue-50">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <!-- Asset Selection -->
-                            <div>
-                                <label for="asset_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-package mr-1'></i>
-                                    Aset <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <select id="asset_id" 
-                                            name="asset_id" 
-                                            required
-                                            x-model="form.asset_id"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('asset_id') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Aset</option>
-                                        @foreach($assets as $asset)
-                                            <option value="{{ $asset->id }}" {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
-                                                {{ $asset->nama_aset }} - {{ $asset->no_siri_pendaftaran }} ({{ $asset->masjidSurau->nama ?? '' }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <i class='bx bx-package absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
-                                </div>
-                                @error('asset_id')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
+                            <h2 class="text-xl font-semibold text-gray-900">Cipta Rekod Penyelenggaraan Baru</h2>
+                            <p class="text-sm text-gray-600">Isikan semua maklumat yang diperlukan untuk mencipta rekod
+                                penyelenggaraan</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <span class="text-sm text-gray-600">Sistem Online</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Maintenance Details Section -->
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-wrench text-white text-xl'></i>
+                <!-- Form Content - Two Column Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6">
+
+                    <!-- Left Column - Main Form -->
+                    <div class="lg:col-span-2 space-y-8">
+
+                        <!-- Asset Selection Section -->
+                        <div
+                            class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
+                            <div class="flex items-center mb-6">
+                                <div
+                                    class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                    <i class='bx bx-package text-white text-xl'></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Pemilihan Aset</h3>
+                                    <p class="text-sm text-emerald-700">Pilih aset yang akan diselenggara</p>
+                                </div>
                             </div>
+
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Butiran Penyelenggaraan</h3>
-                                <p class="text-sm text-purple-700">Maklumat kerja penyelenggaraan</p>
+                                <!-- Asset Selection -->
+                                <div>
+                                    <label for="asset_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-package mr-1'></i>
+                                        Aset <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <select id="asset_id" name="asset_id" required x-model="form.asset_id"
+                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('asset_id') border-red-500 @enderror appearance-none bg-white">
+                                            <option value="">Pilih Aset</option>
+                                            @foreach($assets as $asset)
+                                                <option value="{{ $asset->id }}" {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
+                                                    {{ $asset->nama_aset }} - {{ $asset->no_siri_pendaftaran }}
+                                                    ({{ $asset->masjidSurau->nama ?? '' }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <i class='bx bx-package absolute left-3 top-3.5 text-gray-400'></i>
+                                        <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                    </div>
+                                    @error('asset_id')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Jenis Penyelenggaraan -->
-                            <div>
-                                <label for="jenis_penyelenggaraan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-cog mr-1'></i>
-                                    Jenis Penyelenggaraan <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <select id="jenis_penyelenggaraan" 
-                                            name="jenis_penyelenggaraan" 
-                                            required
+
+                        <!-- Maintenance Details Section -->
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+                            <div class="flex items-center mb-6">
+                                <div
+                                    class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                    <i class='bx bx-wrench text-white text-xl'></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Butiran Penyelenggaraan</h3>
+                                    <p class="text-sm text-purple-700">Maklumat kerja penyelenggaraan</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Jenis Penyelenggaraan -->
+                                <div>
+                                    <label for="jenis_penyelenggaraan" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-cog mr-1'></i>
+                                        Jenis Penyelenggaraan <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <select id="jenis_penyelenggaraan" name="jenis_penyelenggaraan" required
                                             x-model="form.jenis_penyelenggaraan"
                                             class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('jenis_penyelenggaraan') border-red-500 @enderror appearance-none bg-white">
-                                        <option value="">Pilih Jenis</option>
-                                        <option value="Pencegahan" {{ old('jenis_penyelenggaraan') == 'Pencegahan' ? 'selected' : '' }}>Pencegahan</option>
-                                        <option value="Pembaikan" {{ old('jenis_penyelenggaraan') == 'Pembaikan' ? 'selected' : '' }}>Pembaikan</option>
-                                        <option value="Kalibrasi" {{ old('jenis_penyelenggaraan') == 'Kalibrasi' ? 'selected' : '' }}>Kalibrasi</option>
-                                        <option value="Pembersihan" {{ old('jenis_penyelenggaraan') == 'Pembersihan' ? 'selected' : '' }}>Pembersihan</option>
-                                        <option value="Upgrade" {{ old('jenis_penyelenggaraan') == 'Upgrade' ? 'selected' : '' }}>Upgrade</option>
-                                    </select>
-                                    <i class='bx bx-cog absolute left-3 top-3.5 text-gray-400'></i>
-                                    <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                            <option value="">Pilih Jenis</option>
+                                            <option value="Pencegahan" {{ old('jenis_penyelenggaraan') == 'Pencegahan' ? 'selected' : '' }}>Pencegahan</option>
+                                            <option value="Pembaikan" {{ old('jenis_penyelenggaraan') == 'Pembaikan' ? 'selected' : '' }}>Pembaikan</option>
+                                            <option value="Kalibrasi" {{ old('jenis_penyelenggaraan') == 'Kalibrasi' ? 'selected' : '' }}>Kalibrasi</option>
+                                            <option value="Pembersihan" {{ old('jenis_penyelenggaraan') == 'Pembersihan' ? 'selected' : '' }}>Pembersihan</option>
+                                            <option value="Upgrade" {{ old('jenis_penyelenggaraan') == 'Upgrade' ? 'selected' : '' }}>Upgrade</option>
+                                        </select>
+                                        <i class='bx bx-cog absolute left-3 top-3.5 text-gray-400'></i>
+                                        <i class='bx bx-chevron-down absolute right-3 top-3.5 text-gray-400'></i>
+                                    </div>
+                                    @error('jenis_penyelenggaraan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                @error('jenis_penyelenggaraan')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
 
-                            <!-- Tarikh Penyelenggaraan -->
-                            <div>
-                                <label for="tarikh_penyelenggaraan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-calendar mr-1'></i>
-                                    Tarikh Penyelenggaraan <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <input type="date" 
-                                           id="tarikh_penyelenggaraan" 
-                                           name="tarikh_penyelenggaraan" 
-                                           value="{{ old('tarikh_penyelenggaraan', date('Y-m-d')) }}" 
-                                           required
-                                           x-model="form.tarikh_penyelenggaraan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_penyelenggaraan') border-red-500 @enderror bg-white">
-                                    <i class='bx bx-calendar absolute left-3 top-3.5 text-gray-400'></i>
+                                <!-- Tarikh Penyelenggaraan -->
+                                <div>
+                                    <label for="tarikh_penyelenggaraan"
+                                        class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-calendar mr-1'></i>
+                                        Tarikh Penyelenggaraan <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="date" id="tarikh_penyelenggaraan" name="tarikh_penyelenggaraan"
+                                            value="{{ old('tarikh_penyelenggaraan', date('Y-m-d')) }}" required
+                                            x-model="form.tarikh_penyelenggaraan"
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_penyelenggaraan') border-red-500 @enderror bg-white">
+                                        <i class='bx bx-calendar absolute left-3 top-3.5 text-gray-400'></i>
+                                    </div>
+                                    @error('tarikh_penyelenggaraan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                @error('tarikh_penyelenggaraan')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
 
-                            <!-- Kos Penyelenggaraan -->
-                            <div>
-                                <label for="kos_penyelenggaraan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-money mr-1'></i>
-                                    Kos Penyelenggaraan (RM) <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <input type="number" 
-                                           id="kos_penyelenggaraan" 
-                                           name="kos_penyelenggaraan" 
-                                           value="{{ old('kos_penyelenggaraan') }}" 
-                                           step="0.01" 
-                                           min="0" 
-                                           required
-                                           x-model="form.kos_penyelenggaraan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_penyelenggaraan') border-red-500 @enderror bg-white"
-                                           placeholder="0.00">
-                                    <i class='bx bx-money absolute left-3 top-3.5 text-gray-400'></i>
+                                <!-- Kos Penyelenggaraan -->
+                                <div>
+                                    <label for="kos_penyelenggaraan" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-money mr-1'></i>
+                                        Kos Penyelenggaraan (RM) <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" id="kos_penyelenggaraan_display"
+                                            value="{{ old('kos_penyelenggaraan') ? number_format(old('kos_penyelenggaraan'), 2) : '' }}"
+                                            oninput="formatMaintenanceCost(event)" onblur="formatMaintenanceCostBlur(event)"
+                                            required
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_penyelenggaraan') border-red-500 @enderror bg-white"
+                                            placeholder="0.00">
+                                        <input type="hidden" id="kos_penyelenggaraan" name="kos_penyelenggaraan"
+                                            x-model="form.kos_penyelenggaraan">
+                                        <i class='bx bx-money absolute left-3 top-3.5 text-gray-400'></i>
+                                    </div>
+                                    @error('kos_penyelenggaraan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                @error('kos_penyelenggaraan')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
 
-                            <!-- Penyedia Perkhidmatan -->
-                            <div>
-                                <label for="penyedia_perkhidmatan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-user-check mr-1'></i>
-                                    Penyedia Perkhidmatan <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <input type="text" 
-                                           id="penyedia_perkhidmatan" 
-                                           name="penyedia_perkhidmatan" 
-                                           value="{{ old('penyedia_perkhidmatan') }}" 
-                                           required
-                                           x-model="form.penyedia_perkhidmatan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('penyedia_perkhidmatan') border-red-500 @enderror bg-white"
-                                           placeholder="Nama syarikat atau individu">
-                                    <i class='bx bx-user-check absolute left-3 top-3.5 text-gray-400'></i>
+                                <!-- Penyedia Perkhidmatan -->
+                                <div>
+                                    <label for="penyedia_perkhidmatan" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-user-check mr-1'></i>
+                                        Penyedia Perkhidmatan <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" id="penyedia_perkhidmatan" name="penyedia_perkhidmatan"
+                                            value="{{ old('penyedia_perkhidmatan') }}" required
+                                            x-model="form.penyedia_perkhidmatan"
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('penyedia_perkhidmatan') border-red-500 @enderror bg-white"
+                                            placeholder="Nama syarikat atau individu">
+                                        <i class='bx bx-user-check absolute left-3 top-3.5 text-gray-400'></i>
+                                    </div>
+                                    @error('penyedia_perkhidmatan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                @error('penyedia_perkhidmatan')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
 
-                            <!-- Tarikh Penyelenggaraan Akan Datang -->
-                            <div class="md:col-span-2">
-                                <label for="tarikh_penyelenggaraan_akan_datang" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-calendar-plus mr-1'></i>
-                                    Tarikh Penyelenggaraan Akan Datang
-                                </label>
-                                <div class="relative">
-                                    <input type="date" 
-                                           id="tarikh_penyelenggaraan_akan_datang" 
-                                           name="tarikh_penyelenggaraan_akan_datang" 
-                                           value="{{ old('tarikh_penyelenggaraan_akan_datang') }}"
-                                           x-model="form.tarikh_penyelenggaraan_akan_datang"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_penyelenggaraan_akan_datang') border-red-500 @enderror bg-white">
-                                    <i class='bx bx-calendar-plus absolute left-3 top-3.5 text-gray-400'></i>
-                                </div>
-                                @error('tarikh_penyelenggaraan_akan_datang')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
+                                <!-- Tarikh Penyelenggaraan Akan Datang -->
+                                <div class="md:col-span-2">
+                                    <label for="tarikh_penyelenggaraan_akan_datang"
+                                        class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-calendar-plus mr-1'></i>
+                                        Tarikh Penyelenggaraan Akan Datang
+                                    </label>
+                                    <div class="relative">
+                                        <input type="date" id="tarikh_penyelenggaraan_akan_datang"
+                                            name="tarikh_penyelenggaraan_akan_datang"
+                                            value="{{ old('tarikh_penyelenggaraan_akan_datang') }}"
+                                            x-model="form.tarikh_penyelenggaraan_akan_datang"
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_penyelenggaraan_akan_datang') border-red-500 @enderror bg-white">
+                                        <i class='bx bx-calendar-plus absolute left-3 top-3.5 text-gray-400'></i>
+                                    </div>
+                                    @error('tarikh_penyelenggaraan_akan_datang')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                    <p class="mt-1 text-xs text-purple-600 flex items-center">
+                                        <i class='bx bx-info-circle mr-1'></i>
+                                        Opsional: Tetapkan jadual penyelenggaraan seterusnya
                                     </p>
-                                @enderror
-                                <p class="mt-1 text-xs text-purple-600 flex items-center">
-                                    <i class='bx bx-info-circle mr-1'></i>
-                                    Opsional: Tetapkan jadual penyelenggaraan seterusnya
-                                </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Additional Information Section -->
-                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border border-amber-200">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                <i class='bx bx-note text-white text-xl'></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Maklumat Tambahan</h3>
-                                <p class="text-sm text-amber-700">Catatan dan gambar penyelenggaraan</p>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-6">
-                            <!-- Catatan Penyelenggaraan -->
-                            <div>
-                                <label for="catatan_penyelenggaraan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-note mr-1'></i>
-                                    Catatan Penyelenggaraan
-                                </label>
-                                <textarea id="catatan_penyelenggaraan" 
-                                          name="catatan_penyelenggaraan" 
-                                          rows="4"
-                                          x-model="form.catatan_penyelenggaraan"
-                                          class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan_penyelenggaraan') border-red-500 @enderror bg-white"
-                                          placeholder="Butiran kerja yang dilakukan, masalah yang ditemui, dll...">{{ old('catatan_penyelenggaraan') }}</textarea>
-                                @error('catatan_penyelenggaraan')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
+                        <!-- Additional Information Section -->
+                        <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border border-amber-200">
+                            <div class="flex items-center mb-6">
+                                <div
+                                    class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                    <i class='bx bx-note text-white text-xl'></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Maklumat Tambahan</h3>
+                                    <p class="text-sm text-amber-700">Catatan dan gambar penyelenggaraan</p>
+                                </div>
                             </div>
 
-                            <!-- Gambar Penyelenggaraan -->
-                            <div>
-                                <label for="gambar_penyelenggaraan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class='bx bx-image mr-1'></i>
-                                    Gambar Penyelenggaraan
-                                </label>
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-emerald-400 transition-colors">
-                                    <input type="file" 
-                                           id="gambar_penyelenggaraan" 
-                                           name="gambar_penyelenggaraan[]" 
-                                           multiple 
-                                           accept="image/*"
-                                           class="hidden"
-                                           x-model="form.gambar_penyelenggaraan">
-                                    <div class="space-y-2">
-                                        <i class='bx bx-cloud-upload text-4xl text-gray-400'></i>
-                                        <div>
-                                            <label for="gambar_penyelenggaraan" class="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium">
-                                                Klik untuk pilih gambar
-                                            </label>
-                                            <p class="text-gray-500"> atau seret dan lepas di sini</p>
+                            <div class="space-y-6">
+                                <!-- Catatan Penyelenggaraan -->
+                                <div>
+                                    <label for="catatan_penyelenggaraan"
+                                        class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-note mr-1'></i>
+                                        Catatan Penyelenggaraan
+                                    </label>
+                                    <textarea id="catatan_penyelenggaraan" name="catatan_penyelenggaraan" rows="4"
+                                        x-model="form.catatan_penyelenggaraan"
+                                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan_penyelenggaraan') border-red-500 @enderror bg-white"
+                                        placeholder="Butiran kerja yang dilakukan, masalah yang ditemui, dll...">{{ old('catatan_penyelenggaraan') }}</textarea>
+                                    @error('catatan_penyelenggaraan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <!-- Gambar Penyelenggaraan -->
+                                <div>
+                                    <label for="gambar_penyelenggaraan"
+                                        class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-image mr-1'></i>
+                                        Gambar Penyelenggaraan
+                                    </label>
+                                    <div
+                                        class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-emerald-400 transition-colors">
+                                        <input type="file" id="gambar_penyelenggaraan" name="gambar_penyelenggaraan[]"
+                                            multiple accept="image/*" class="hidden" x-model="form.gambar_penyelenggaraan">
+                                        <div class="space-y-2">
+                                            <i class='bx bx-cloud-upload text-4xl text-gray-400'></i>
+                                            <div>
+                                                <label for="gambar_penyelenggaraan"
+                                                    class="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium">
+                                                    Klik untuk pilih gambar
+                                                </label>
+                                                <p class="text-gray-500"> atau seret dan lepas di sini</p>
+                                            </div>
+                                            <p class="text-xs text-gray-400">JPG, PNG hingga 2MB setiap gambar</p>
                                         </div>
-                                        <p class="text-xs text-gray-400">JPG, PNG hingga 2MB setiap gambar</p>
+                                    </div>
+                                    @error('gambar_penyelenggaraan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Preview & Summary -->
+                    <div class="lg:col-span-1">
+                        <div class="sticky top-6 space-y-6">
+
+                            <!-- Preview Card -->
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 border border-blue-200">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                                        <i class='bx bx-show text-white'></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Pratonton Penyelenggaraan</h3>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                                            <i class='bx bx-wrench text-emerald-700'></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900"
+                                                x-text="form.jenis_penyelenggaraan || 'Jenis Penyelenggaraan'">Jenis
+                                                Penyelenggaraan</p>
+                                            <p class="text-sm text-gray-500"
+                                                x-text="form.tarikh_penyelenggaraan || 'Tarikh penyelenggaraan'">Tarikh
+                                                penyelenggaraan</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-sm text-gray-600">Kos:</span>
+                                            <span class="text-sm font-medium"
+                                                x-text="form.kos_penyelenggaraan ? 'RM ' + parseFloat(form.kos_penyelenggaraan).toFixed(2) : 'RM 0.00'">RM
+                                                0.00</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-sm text-gray-600">Penyedia:</span>
+                                            <span class="text-sm font-medium"
+                                                x-text="form.penyedia_perkhidmatan || '-'">-</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-sm text-gray-600">Seterusnya:</span>
+                                            <span class="text-sm font-medium"
+                                                x-text="form.tarikh_penyelenggaraan_akan_datang || '-'">-</span>
+                                        </div>
                                     </div>
                                 </div>
-                                @error('gambar_penyelenggaraan')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
+                            </div>
+
+                            <!-- Progress Card -->
+                            <div class="bg-white rounded-xl p-6 border border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Kemajuan Borang</h3>
+
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Pemilihan Aset</span>
+                                        <div class="flex items-center" x-show="form.asset_id">
+                                            <i class='bx bx-check text-green-500'></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Butiran Penyelenggaraan</span>
+                                        <div class="flex items-center"
+                                            x-show="form.jenis_penyelenggaraan && form.tarikh_penyelenggaraan && form.kos_penyelenggaraan">
+                                            <i class='bx bx-check text-green-500'></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Penyedia Perkhidmatan</span>
+                                        <div class="flex items-center" x-show="form.penyedia_perkhidmatan">
+                                            <i class='bx bx-check text-green-500'></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Tips -->
+                            <div
+                                class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 border border-green-200">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                                        <i class='bx bx-bulb text-white'></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Tips Berguna</h3>
+                                </div>
+
+                                <ul class="space-y-2 text-sm text-green-800">
+                                    <li class="flex items-start">
+                                        <i class='bx bx-check mr-2 text-green-600 mt-0.5'></i>
+                                        Sertakan gambar sebelum dan selepas kerja
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class='bx bx-check mr-2 text-green-600 mt-0.5'></i>
+                                        Catat butiran kerja yang dilakukan
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class='bx bx-check mr-2 text-green-600 mt-0.5'></i>
+                                        Tetapkan jadual penyelenggaraan seterusnya
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column - Preview & Summary -->
-                <div class="lg:col-span-1">
-                    <div class="sticky top-6 space-y-6">
-                        
-                        <!-- Preview Card -->
-                        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 border border-blue-200">
-                            <div class="flex items-center mb-4">
-                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                                    <i class='bx bx-show text-white'></i>
-                                </div>
-                                <h3 class="text-lg font-semibold text-gray-900">Pratonton Penyelenggaraan</h3>
-                            </div>
-                            
-                            <div class="space-y-4">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                                        <i class='bx bx-wrench text-emerald-700'></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-gray-900" x-text="form.jenis_penyelenggaraan || 'Jenis Penyelenggaraan'">Jenis Penyelenggaraan</p>
-                                        <p class="text-sm text-gray-500" x-text="form.tarikh_penyelenggaraan || 'Tarikh penyelenggaraan'">Tarikh penyelenggaraan</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="space-y-2">
-                                    <div class="flex justify-between">
-                                        <span class="text-sm text-gray-600">Kos:</span>
-                                        <span class="text-sm font-medium" x-text="form.kos_penyelenggaraan ? 'RM ' + parseFloat(form.kos_penyelenggaraan).toFixed(2) : 'RM 0.00'">RM 0.00</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-sm text-gray-600">Penyedia:</span>
-                                        <span class="text-sm font-medium" x-text="form.penyedia_perkhidmatan || '-'">-</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-sm text-gray-600">Seterusnya:</span>
-                                        <span class="text-sm font-medium" x-text="form.tarikh_penyelenggaraan_akan_datang || '-'">-</span>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Form Footer -->
+                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                    <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class='bx bx-info-circle mr-1'></i>
+                            Semua medan bertanda (*) adalah wajib diisi
                         </div>
 
-                        <!-- Progress Card -->
-                        <div class="bg-white rounded-xl p-6 border border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Kemajuan Borang</h3>
-                            
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">Pemilihan Aset</span>
-                                    <div class="flex items-center" x-show="form.asset_id">
-                                        <i class='bx bx-check text-green-500'></i>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">Butiran Penyelenggaraan</span>
-                                    <div class="flex items-center" x-show="form.jenis_penyelenggaraan && form.tarikh_penyelenggaraan && form.kos_penyelenggaraan">
-                                        <i class='bx bx-check text-green-500'></i>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">Penyedia Perkhidmatan</span>
-                                    <div class="flex items-center" x-show="form.penyedia_perkhidmatan">
-                                        <i class='bx bx-check text-green-500'></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quick Tips -->
-                        <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 border border-green-200">
-                            <div class="flex items-center mb-4">
-                                <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
-                                    <i class='bx bx-bulb text-white'></i>
-                                </div>
-                                <h3 class="text-lg font-semibold text-gray-900">Tips Berguna</h3>
-                            </div>
-                            
-                            <ul class="space-y-2 text-sm text-green-800">
-                                <li class="flex items-start">
-                                    <i class='bx bx-check mr-2 text-green-600 mt-0.5'></i>
-                                    Sertakan gambar sebelum dan selepas kerja
-                                </li>
-                                <li class="flex items-start">
-                                    <i class='bx bx-check mr-2 text-green-600 mt-0.5'></i>
-                                    Catat butiran kerja yang dilakukan
-                                </li>
-                                <li class="flex items-start">
-                                    <i class='bx bx-check mr-2 text-green-600 mt-0.5'></i>
-                                    Tetapkan jadual penyelenggaraan seterusnya
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form Footer -->
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-                <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
-                    <div class="flex items-center text-sm text-gray-500">
-                        <i class='bx bx-info-circle mr-1'></i>
-                        Semua medan bertanda (*) adalah wajib diisi
-                    </div>
-                    
-                    <div class="flex space-x-3">
-                        <a href="{{ route('admin.maintenance-records.index') }}" 
-                           class="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors">
-                            <i class='bx bx-x mr-2'></i>
-                            Batal
-                        </a>
-                        <button type="submit" 
+                        <div class="flex space-x-3">
+                            <a href="{{ route('admin.maintenance-records.index') }}"
+                                class="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors">
+                                <i class='bx bx-x mr-2'></i>
+                                Batal
+                            </a>
+                            <button type="submit"
                                 class="px-8 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
-                            <i class='bx bx-plus mr-2'></i>
-                            Simpan Penyelenggaraan
-                        </button>
+                                <i class='bx bx-plus mr-2'></i>
+                                Simpan Penyelenggaraan
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-    function maintenanceForm() {
-        return {
-            form: {
-                asset_id: '{{ old('asset_id') }}',
-                jenis_penyelenggaraan: '{{ old('jenis_penyelenggaraan') }}',
-                tarikh_penyelenggaraan: '{{ old('tarikh_penyelenggaraan', date('Y-m-d')) }}',
-                kos_penyelenggaraan: '{{ old('kos_penyelenggaraan') }}',
-                penyedia_perkhidmatan: '{{ old('penyedia_perkhidmatan') }}',
-                tarikh_penyelenggaraan_akan_datang: '{{ old('tarikh_penyelenggaraan_akan_datang') }}',
-                catatan_penyelenggaraan: '{{ old('catatan_penyelenggaraan') }}',
-                gambar_penyelenggaraan: null
+    @push('scripts')
+        <script>
+            function maintenanceForm() {
+                return {
+                    form: {
+                        asset_id: '{{ old('asset_id') }}',
+                        jenis_penyelenggaraan: '{{ old('jenis_penyelenggaraan') }}',
+                        tarikh_penyelenggaraan: '{{ old('tarikh_penyelenggaraan', date('Y-m-d')) }}',
+                        kos_penyelenggaraan: '{{ old('kos_penyelenggaraan') }}',
+                        penyedia_perkhidmatan: '{{ old('penyedia_perkhidmatan') }}',
+                        tarikh_penyelenggaraan_akan_datang: '{{ old('tarikh_penyelenggaraan_akan_datang') }}',
+                        catatan_penyelenggaraan: '{{ old('catatan_penyelenggaraan') }}',
+                        gambar_penyelenggaraan: null
+                    }
+                }
             }
-        }
-    }
 
-    // File upload preview
-    document.getElementById('gambar_penyelenggaraan').addEventListener('change', function(e) {
-        const fileList = this.files;
-        const fileNames = Array.from(fileList).map(file => file.name);
-        
-        if (fileNames.length > 0) {
-            console.log('Files selected:', fileNames);
-        }
-    });
+            // File upload preview
+            document.getElementById('gambar_penyelenggaraan').addEventListener('change', function (e) {
+                const fileList = this.files;
+                const fileNames = Array.from(fileList).map(file => file.name);
 
-    // Cost formatting
-    document.getElementById('kos_penyelenggaraan').addEventListener('input', function() {
-        const value = this.value;
-        if (value < 0) {
-            this.value = 0;
-        }
-    });
-</script>
-@endpush
-@endsection 
+                if (fileNames.length > 0) {
+                    console.log('Files selected:', fileNames);
+                }
+            });
+
+            // Format number with thousand separators and 2 decimals
+            function formatCurrency(value) {
+                if (!value && value !== 0) return '';
+                const num = parseFloat(value.toString().replace(/,/g, ''));
+                if (isNaN(num)) return '';
+                return num.toLocaleString('en-US', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                });
+            }
+
+            // Cost formatting - during input
+            function formatMaintenanceCost(event) {
+                const input = event.target;
+                let value = input.value.replace(/,/g, '');
+                
+                // Allow only numbers and decimal point
+                value = value.replace(/[^\d.]/g, '');
+                
+                // Ensure only one decimal point
+                const parts = value.split('.');
+                if (parts.length > 2) {
+                    value = parts[0] + '.' + parts.slice(1).join('');
+                }
+                
+                // Limit to 2 decimal places
+                if (parts.length === 2 && parts[1].length > 2) {
+                    value = parts[0] + '.' + parts[1].substring(0, 2);
+                }
+                
+                // Validate min value
+                const numValue = parseFloat(value);
+                if (numValue < 0) {
+                    value = '0';
+                }
+                
+                // Update the display
+                input.value = value;
+                
+                // Update hidden field
+                const hiddenField = document.getElementById('kos_penyelenggaraan');
+                if (hiddenField) {
+                    hiddenField.value = value;
+                }
+            }
+
+            // Cost formatting - on blur (final formatting)
+            function formatMaintenanceCostBlur(event) {
+                const input = event.target;
+                const rawValue = input.value.replace(/,/g, '');
+                const numValue = parseFloat(rawValue) || 0;
+                
+                // Update visible input with formatted value
+                input.value = formatCurrency(numValue);
+                
+                // Update hidden field with raw value
+                const hiddenField = document.getElementById('kos_penyelenggaraan');
+                if (hiddenField) {
+                    hiddenField.value = numValue.toFixed(2);
+                }
+            }
+        </script>
+    @endpush
+@endsection

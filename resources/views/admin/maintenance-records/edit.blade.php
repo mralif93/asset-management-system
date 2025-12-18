@@ -202,16 +202,18 @@
                                     Kos Penyelenggaraan (RM) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
-                                    <input type="number" 
-                                           id="kos_penyelenggaraan" 
-                                           name="kos_penyelenggaraan" 
-                                           value="{{ old('kos_penyelenggaraan', $maintenanceRecord->kos_penyelenggaraan) }}" 
-                                           step="0.01" 
-                                           min="0" 
+                                    <input type="text" 
+                                           id="kos_penyelenggaraan_display"
+                                           value="{{ old('kos_penyelenggaraan', $maintenanceRecord->kos_penyelenggaraan) ? number_format(old('kos_penyelenggaraan', $maintenanceRecord->kos_penyelenggaraan), 2) : '' }}" 
+                                           oninput="formatMaintenanceCostEdit(event)"
+                                           onblur="formatMaintenanceCostBlurEdit(event)"
                                            required
-                                           x-model="form.kos_penyelenggaraan"
                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_penyelenggaraan') border-red-500 @enderror bg-white"
                                            placeholder="0.00">
+                                    <input type="hidden"
+                                           id="kos_penyelenggaraan" 
+                                           name="kos_penyelenggaraan" 
+                                           x-model="form.kos_penyelenggaraan">
                                     <i class='bx bx-money absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('kos_penyelenggaraan')
@@ -547,13 +549,67 @@
         }
     });
 
-    // Cost formatting
-    document.getElementById('kos_penyelenggaraan').addEventListener('input', function() {
-        const value = this.value;
-        if (value < 0) {
-            this.value = 0;
+    // Format number with thousand separators and 2 decimals
+    function formatCurrency(value) {
+        if (!value && value !== 0) return '';
+        const num = parseFloat(value.toString().replace(/,/g, ''));
+        if (isNaN(num)) return '';
+        return num.toLocaleString('en-US', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
+    }
+
+    // Cost formatting - during input
+    function formatMaintenanceCostEdit(event) {
+        const input = event.target;
+        let value = input.value.replace(/,/g, '');
+        
+        // Allow only numbers and decimal point
+        value = value.replace(/[^\d.]/g, '');
+        
+        // Ensure only one decimal point
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
         }
-    });
+        
+        // Limit to 2 decimal places
+        if (parts.length === 2 && parts[1].length > 2) {
+            value = parts[0] + '.' + parts[1].substring(0, 2);
+        }
+        
+        // Validate min value
+        const numValue = parseFloat(value);
+        if (numValue < 0) {
+            value = '0';
+        }
+        
+        // Update the display
+        input.value = value;
+        
+        // Update hidden field
+        const hiddenField = document.getElementById('kos_penyelenggaraan');
+        if (hiddenField) {
+            hiddenField.value = value;
+        }
+    }
+
+    // Cost formatting - on blur (final formatting)
+    function formatMaintenanceCostBlurEdit(event) {
+        const input = event.target;
+        const rawValue = input.value.replace(/,/g, '');
+        const numValue = parseFloat(rawValue) || 0;
+        
+        // Update visible input with formatted value
+        input.value = formatCurrency(numValue);
+        
+        // Update hidden field with raw value
+        const hiddenField = document.getElementById('kos_penyelenggaraan');
+        if (hiddenField) {
+            hiddenField.value = numValue.toFixed(2);
+        }
+    }
 </script>
 @endpush
 @endsection 

@@ -233,15 +233,17 @@
                                     Nilai Kerugian (RM) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
-                                    <input type="number" 
+                                    <input type="text" 
+                                           id="nilai_kehilangan_display"
+                                           value="{{ old('nilai_kehilangan', $lossWriteoff->nilai_kehilangan) ? number_format(old('nilai_kehilangan', $lossWriteoff->nilai_kehilangan), 2) : '' }}" 
+                                           oninput="formatLossPriceEdit(event)"
+                                           onblur="formatLossPriceBlurEdit(event)"
+                                           required
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_kehilangan') border-red-500 @enderror bg-white">
+                                    <input type="hidden"
                                            name="nilai_kehilangan" 
                                            id="nilai_kehilangan" 
-                                           value="{{ old('nilai_kehilangan', $lossWriteoff->nilai_kehilangan) }}" 
-                                           step="0.01" 
-                                           min="0" 
-                                           required
-                                           x-model="form.nilai_kehilangan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_kehilangan') border-red-500 @enderror bg-white">
+                                           x-model="form.nilai_kehilangan">
                                     <i class='bx bx-money absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nilai_kehilangan')

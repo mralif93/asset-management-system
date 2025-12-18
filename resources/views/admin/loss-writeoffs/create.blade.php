@@ -247,15 +247,17 @@
                                     Nilai Kerugian (RM) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
-                                    <input type="number" 
+                                    <input type="text" 
+                                           id="nilai_kehilangan_display"
+                                           value="{{ old('nilai_kehilangan') ? number_format(old('nilai_kehilangan'), 2) : '' }}" 
+                                           oninput="formatLossPrice(event)"
+                                           onblur="formatLossPriceBlur(event)"
+                                           required
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_kehilangan') border-red-500 @enderror bg-white">
+                                    <input type="hidden"
                                            name="nilai_kehilangan" 
                                            id="nilai_kehilangan" 
-                                           value="{{ old('nilai_kehilangan') }}" 
-                                           step="0.01" 
-                                           min="0" 
-                                           required
-                                           x-model="form.nilai_kehilangan"
-                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nilai_kehilangan') border-red-500 @enderror bg-white">
+                                           x-model="form.nilai_kehilangan">
                                     <i class='bx bx-money absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('nilai_kehilangan')
@@ -577,6 +579,69 @@
                 console.log('Files selected:', files.length);
                 // You can add file validation here if needed
             }
+        }
+        }
+    }
+
+    // Format number with thousand separators and 2 decimals
+    function formatCurrency(value) {
+        if (!value && value !== 0) return '';
+        const num = parseFloat(value.toString().replace(/,/g, ''));
+        if (isNaN(num)) return '';
+        return num.toLocaleString('en-US', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
+    }
+
+    // Price formatting - during input
+    function formatLossPrice(event) {
+        const input = event.target;
+        let value = input.value.replace(/,/g, '');
+        
+        // Allow only numbers and decimal point
+        value = value.replace(/[^\d.]/g, '');
+        
+        // Ensure only one decimal point
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        // Limit to 2 decimal places
+        if (parts.length === 2 && parts[1].length > 2) {
+            value = parts[0] + '.' + parts[1].substring(0, 2);
+        }
+        
+        // Validate min value
+        const numValue = parseFloat(value);
+        if (numValue < 0) {
+            value = '0';
+        }
+        
+        // Update the display
+        input.value = value;
+        
+        // Update hidden field
+        const hiddenField = document.getElementById('nilai_kehilangan');
+        if (hiddenField) {
+            hiddenField.value = value;
+        }
+    }
+
+    // Price formatting - on blur (final formatting)
+    function formatLossPriceBlur(event) {
+        const input = event.target;
+        const rawValue = input.value.replace(/,/g, '');
+        const numValue = parseFloat(rawValue) || 0;
+        
+        // Update visible input with formatted value
+        input.value = formatCurrency(numValue);
+        
+        // Update hidden field with raw value
+        const hiddenField = document.getElementById('nilai_kehilangan');
+        if (hiddenField) {
+            hiddenField.value = numValue.toFixed(2);
         }
     }
 
