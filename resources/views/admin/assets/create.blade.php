@@ -856,7 +856,7 @@
                                                             Upload gambar
                                                         </span>
                                                         <input id="gambar_aset" name="gambar_aset[]" type="file"
-                                                            class="sr-only" multiple accept="image/*" required>
+                                                            class="sr-only" multiple accept="image/*">
                                                     </label>
                                                     <p class="pl-3 text-gray-500 group-hover:text-emerald-600">atau drag and
                                                         drop di sini</p>
@@ -1431,24 +1431,24 @@
                                 const previewDiv = document.createElement('div');
                                 previewDiv.className = 'relative group animate-fadeIn';
                                 previewDiv.innerHTML = `
-                                        <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
-                                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                                                        <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
+                                                    <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                                        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                            <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                                                <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
-                                            <i class='bx bx-x text-lg'></i>
-                                        </button>
-                                        <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                                            <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
-                                            <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                        </div>
-                                    `;
+                                                <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
+                                                    <i class='bx bx-x text-lg'></i>
+                                                </button>
+                                                <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                                                    <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
+                                                    <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                </div>
+                                            `;
                                 imagePreview.appendChild(previewDiv);
 
                                 // Update progress
