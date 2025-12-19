@@ -16,6 +16,7 @@ class ImmovableAsset extends Model
         'masjid_surau_id',
         'no_siri_pendaftaran',
         'nama_aset',
+        'batch_id',
         'jenis_aset',
         'alamat',
         'no_hakmilik',

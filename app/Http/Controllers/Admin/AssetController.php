@@ -84,6 +84,7 @@ class AssetController extends Controller
         $validated = $request->validate([
             'masjid_surau_id' => 'required|exists:masjid_surau,id',
             'nama_aset' => 'required|string|max:255',
+            'kuantiti' => 'required|integer|min:1',
             'jenis_aset' => 'required|string|in:' . implode(',', $availableAssetTypes),
             'kategori_aset' => 'required|in:asset,non-asset',
             'tarikh_perolehan' => 'required|date',
@@ -114,28 +115,93 @@ class AssetController extends Controller
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        // Generate registration number
+        $quantity = (int) $validated['kuantiti'];
         $tarikhPerolehan = new \Carbon\Carbon($validated['tarikh_perolehan']);
-        $validated['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
-            $validated['masjid_surau_id'],
-            $validated['jenis_aset'],
-            $tarikhPerolehan->format('y')
-        );
 
-        // Handle image uploads
+        // Handle image uploads once
+        $uploadedImages = [];
         if ($request->hasFile('gambar_aset')) {
-            $images = [];
             foreach ($request->file('gambar_aset') as $image) {
                 $path = $image->store('assets', 'public');
-                $images[] = $path;
+                $uploadedImages[] = $path;
             }
-            $validated['gambar_aset'] = $images;
         }
 
-        $asset = Asset::create($validated);
+        // Use database transaction for atomicity
+        \DB::beginTransaction();
+        try {
+            $createdAssets = [];
 
-        return redirect()->route('admin.assets.show', $asset)
-            ->with('success', 'Aset baru berjaya didaftarkan dengan nombor siri: ' . $asset->no_siri_pendaftaran);
+            if ($quantity === 1) {
+                // Single asset - standard behavior
+                $validated['kuantiti'] = 1;
+                $validated['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
+                    $validated['masjid_surau_id'],
+                    $validated['jenis_aset'],
+                    $tarikhPerolehan->format('y')
+                );
+
+                if (!empty($uploadedImages)) {
+                    $validated['gambar_aset'] = $uploadedImages;
+                }
+
+                $asset = Asset::create($validated);
+                $createdAssets[] = $asset;
+
+            } else {
+                // Bulk creation - create individual records
+                $batchId = \App\Helpers\BatchIdGenerator::generate();
+                $baseAssetName = $validated['nama_aset'];
+
+                // Pre-generate all serial numbers to ensure they're sequential
+                $serialNumbers = [];
+                for ($i = 1; $i <= $quantity; $i++) {
+                    $serialNumbers[] = AssetRegistrationNumber::generate(
+                        $validated['masjid_surau_id'],
+                        $validated['jenis_aset'],
+                        $tarikhPerolehan->format('y')
+                    );
+                }
+
+                // Create individual asset records
+                for ($i = 1; $i <= $quantity; $i++) {
+                    $assetData = $validated;
+                    $assetData['kuantiti'] = 1;
+                    $assetData['batch_id'] = $batchId;
+                    $assetData['nama_aset'] = "{$baseAssetName} ({$i} of {$quantity})";
+                    $assetData['no_siri_pendaftaran'] = $serialNumbers[$i - 1];
+
+                    // Copy images to all items
+                    if (!empty($uploadedImages)) {
+                        $assetData['gambar_aset'] = $uploadedImages;
+                    }
+
+                    $asset = Asset::create($assetData);
+                    $createdAssets[] = $asset;
+                }
+            }
+
+            \DB::commit();
+
+            // Prepare success message
+            if ($quantity === 1) {
+                $message = "Aset baru berjaya didaftarkan dengan nombor siri: {$createdAssets[0]->no_siri_pendaftaran}";
+                return redirect()->route('admin.assets.show', $createdAssets[0])
+                    ->with('success', $message);
+            } else {
+                $firstSerial = $createdAssets[0]->no_siri_pendaftaran;
+                $lastSerial = end($createdAssets)->no_siri_pendaftaran;
+                $message = "{$quantity} aset berjaya didaftarkan ({$firstSerial} hingga {$lastSerial})";
+                return redirect()->route('admin.assets.index')
+                    ->with('success', $message);
+            }
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ralat mewujudkan aset: ' . $e->getMessage());
+        }
     }
 
     /**

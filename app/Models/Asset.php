@@ -19,6 +19,7 @@ class Asset extends Model
         'no_siri_pendaftaran',
         'nama_aset',
         'kuantiti',
+        'batch_id',
         'jenis_aset',
         'kategori_aset',
         'tarikh_perolehan',
