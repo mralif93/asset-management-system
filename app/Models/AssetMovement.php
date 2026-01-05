@@ -29,7 +29,8 @@ class AssetMovement extends Model
         'tarikh_pulang_sebenar',
         'status_pergerakan',
         'pegawai_meluluskan',
-        'catatan'
+        'catatan',
+        'pembekal'
     ];
 
     protected $casts = [
