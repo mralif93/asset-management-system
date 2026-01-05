@@ -555,7 +555,7 @@
                                 </div>
 
                                 <!-- Pembekal / Vendor -->
-                                <div>
+                                <div class="md:col-span-2">
                                     <label for="pembekal" class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class='bx bx-store mr-1'></i>
                                         Pembekal / Vendor <span class="text-gray-500 text-xs">(Jika ada)</span>
@@ -794,762 +794,763 @@
                                         x-text="'Dikira: RM ' + parseFloat(calculatedDepreciation || 0).toFixed(2) + ' (Straight-Line Method)'">
                                     </p>
                                     <p class="mt-1 text-xs text-gray-500">
-                                            <i class='bx bx-info-circle mr-1 align-middle'></i>
-                                            Klik ikon kalkulator untuk memaksa pengiraan semula (override manual input).
+                                        <i class='bx bx-info-circle mr-1 align-middle'></i>
+                                        Klik ikon kalkulator untuk memaksa pengiraan semula (override manual input).
+                                    </p>
+                                    @error('susut_nilai_tahunan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
                                         </p>
-                                        @error('susut_nilai_tahunan')
-                                            <p class="mt-1 text-sm text-red-600 flex items-center">
-                                                <i class='bx bx-error-circle mr-1'></i>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Additional Information Section -->
-                            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-                                <div class="flex items-center mb-6">
-                                    <div
-                                        class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                        <i class='bx bx-note text-white text-xl'></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900">Maklumat Tambahan</h3>
-                                        <p class="text-sm text-green-700">Catatan dan gambar aset</p>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-6">
-                                    <!-- Notes -->
-                                    <div>
-                                        <label for="catatan" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class='bx bx-note mr-1'></i>
-                                            Catatan
-                                        </label>
-                                        <textarea id="catatan" name="catatan" rows="4" x-model="form.catatan"
-                                            class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
-                                            placeholder="Catatan tambahan tentang aset ini...">{{ old('catatan') }}</textarea>
-                                        @error('catatan')
-                                            <p class="mt-1 text-sm text-red-600 flex items-center">
-                                                <i class='bx bx-error-circle mr-1'></i>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Warranty Notes -->
-                                    <div>
-                                        <label for="catatan_jaminan" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class='bx bx-shield mr-1'></i>
-                                            Catatan Jaminan
-                                        </label>
-                                        <textarea id="catatan_jaminan" name="catatan_jaminan" rows="3"
-                                            x-model="form.catatan_jaminan"
-                                            class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan_jaminan') border-red-500 @enderror bg-white"
-                                            placeholder="Catatan tentang jaminan aset...">{{ old('catatan_jaminan') }}</textarea>
-                                        @error('catatan_jaminan')
-                                            <p class="mt-1 text-sm text-red-600 flex items-center">
-                                                <i class='bx bx-error-circle mr-1'></i>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Asset Images -->
-                                    <div>
-                                        <label for="gambar_aset" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class='bx bx-image mr-1'></i>
-                                            Gambar Aset (Opsional)
-                                        </label>
-                                        <div class="mt-1 flex justify-center px-8 pt-8 pb-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-emerald-400 transition-all duration-300 bg-gradient-to-br from-gray-50 to-emerald-50 hover:from-emerald-50 hover:to-emerald-100 group cursor-pointer"
-                                            id="dropZone">
-                                            <div class="space-y-4 text-center">
-                                                <div class="relative">
-                                                    <i
-                                                        class='bx bx-cloud-upload text-5xl text-gray-400 mb-4 group-hover:text-emerald-500 transition-all duration-300 transform group-hover:scale-110'></i>
-                                                    <div
-                                                        class="absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
-                                                        <i class='bx bx-plus text-white text-lg'></i>
-                                                    </div>
-                                                </div>
-                                                <div class="space-y-2">
-                                                    <div
-                                                        class="flex text-sm text-gray-600 group-hover:text-emerald-700 transition-colors duration-300 justify-center items-center">
-                                                        <label for="gambar_aset"
-                                                            class="relative cursor-pointer bg-white rounded-lg px-4 py-2 font-medium text-emerald-600 hover:text-emerald-500 hover:bg-emerald-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500 transition-all duration-200 shadow-sm hover:shadow-md">
-                                                            <span class="flex items-center">
-                                                                <i class='bx bx-upload mr-2'></i>
-                                                                Upload gambar
-                                                            </span>
-                                                            <input id="gambar_aset" name="gambar_aset[]" type="file"
-                                                                class="sr-only" multiple accept="image/*">
-                                                        </label>
-                                                        <p class="pl-3 text-gray-500 group-hover:text-emerald-600">atau drag and
-                                                            drop di sini</p>
-                                                    </div>
-                                                </div>
-                                                <div class="space-y-2">
-                                                    <p class="text-xs text-gray-500 flex items-center justify-center">
-                                                        <i class='bx bx-file-blank mr-1'></i>
-                                                        PNG, JPG, GIF hingga 2MB setiap gambar
-                                                    </p>
-                                                    <p
-                                                        class="text-xs text-emerald-600 font-medium flex items-center justify-center">
-                                                        <i class='bx bx-check-circle mr-1'></i>
-                                                        Maksimum 5 gambar
-                                                    </p>
-                                                    <p class="text-xs text-blue-600 flex items-center justify-center">
-                                                        <i class='bx bx-info-circle mr-1'></i>
-                                                        Anda boleh menambah gambar lagi kemudian
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Image Preview Area -->
-                                        <div id="imagePreview"
-                                            class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-                                            <!-- Preview images will be inserted here -->
-                                        </div>
-
-                                        <!-- Image Modal -->
-                                        <div id="imageModal"
-                                            class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
-                                            <div
-                                                class="relative max-w-6xl max-h-full bg-white rounded-xl shadow-2xl overflow-hidden">
-                                                <button id="closeModal"
-                                                    class="absolute top-4 right-4 z-10 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all duration-200">
-                                                    <i class='bx bx-x text-2xl'></i>
-                                                </button>
-                                                <div class="p-4">
-                                                    <img id="modalImage" src="" alt="Full size image"
-                                                        class="max-w-full max-h-[80vh] object-contain mx-auto">
-                                                </div>
-                                                <div
-                                                    class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg">
-                                                    <p id="modalImageName" class="text-sm font-medium"></p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Upload Progress -->
-                                        <div id="uploadProgress" class="mt-4 hidden">
-                                            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                                                <div class="flex items-center">
-                                                    <div
-                                                        class="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-600 mr-3">
-                                                    </div>
-                                                    <span class="text-sm text-emerald-700 font-medium">Memproses
-                                                        gambar...</span>
-                                                </div>
-                                                <div class="mt-2 bg-emerald-200 rounded-full h-2">
-                                                    <div id="progressBar"
-                                                        class="bg-emerald-600 h-2 rounded-full transition-all duration-300"
-                                                        style="width: 0%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        @error('gambar_aset')
-                                            <p class="mt-1 text-sm text-red-600 flex items-center">
-                                                <i class='bx bx-error-circle mr-1'></i>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                        @error('gambar_aset.*')
-                                            <p class="mt-1 text-sm text-red-600 flex items-center">
-                                                <i class='bx bx-error-circle mr-1'></i>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-
-                                        <!-- Helpful Info -->
-                                        <div
-                                            class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
-                                            <div class="flex items-start">
-                                                <div class="flex-shrink-0">
-                                                    <div
-                                                        class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                                        <i class='bx bx-bulb text-blue-600 text-lg'></i>
-                                                    </div>
-                                                </div>
-                                                <div class="ml-3 text-sm">
-                                                    <p class="font-semibold text-blue-800 mb-1">💡 Tip Berguna:</p>
-                                                    <p class="text-blue-700 leading-relaxed">Anda boleh upload 1 gambar sekarang
-                                                        dan menambah gambar lagi kemudian melalui halaman edit aset. Ini
-                                                        memberikan fleksibiliti untuk melengkapkan maklumat aset secara
-                                                        berperingkat.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Right Column - Summary & Actions -->
-                        <div class="lg:col-span-1 space-y-6">
-                            <!-- Form Summary -->
-                            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                                <div class="flex items-center mb-4">
-                                    <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
-                                        <i class='bx bx-check-circle text-white text-sm'></i>
-                                    </div>
-                                    <h3 class="font-semibold text-gray-900">Ringkasan Aset</h3>
+                        <!-- Additional Information Section -->
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+                            <div class="flex items-center mb-6">
+                                <div
+                                    class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                    <i class='bx bx-note text-white text-xl'></i>
                                 </div>
-
-                                <div class="space-y-3 text-sm">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Nama Aset:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.nama_aset || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Jenis:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.jenis_aset || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Kategori:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="form.kategori_aset === 'asset' ? 'Asset' : (form.kategori_aset === 'non-asset' ? 'Non-Asset' : '-')"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Status:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.status_aset || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Lokasi:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.lokasi_penempatan || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Nilai:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="form.nilai_perolehan ? 'RM ' + parseFloat(form.nilai_perolehan).toFixed(2) : '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Diskaun:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="form.diskaun ? 'RM ' + parseFloat(form.diskaun).toFixed(2) : 'RM 0.00'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Pegawai:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="form.pegawai_bertanggungjawab_lokasi || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Jawatan:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.jawatan_pegawai || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Keadaan:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.keadaan_fizikal || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Jaminan:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.status_jaminan || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Tarikh Perolehan:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="formatDate(form.tarikh_perolehan)"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Kaedah Perolehan:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.kaedah_perolehan || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">No. Resit:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.no_resit || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Tarikh Resit:</span>
-                                        <span class="font-medium text-gray-900" x-text="formatDate(form.tarikh_resit)"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Umur Faedah:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="form.umur_faedah_tahunan ? form.umur_faedah_tahunan + ' tahun' : '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Susut Nilai:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="form.susut_nilai_tahunan ? 'RM ' + parseFloat(form.susut_nilai_tahunan).toFixed(2) + '/tahun' : '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Masjid/Surau:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="getMasjidName(form.masjid_surau_id)"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Pemeriksaan Terakhir:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="formatDate(form.tarikh_pemeriksaan_terakhir)"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Penyelenggaraan Akan Datang:</span>
-                                        <span class="font-medium text-gray-900"
-                                            x-text="formatDate(form.tarikh_penyelenggaraan_akan_datang)"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Catatan:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.catatan || '-'"></span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Catatan Jaminan:</span>
-                                        <span class="font-medium text-gray-900" x-text="form.catatan_jaminan || '-'"></span>
-                                    </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Maklumat Tambahan</h3>
+                                    <p class="text-sm text-green-700">Catatan dan gambar aset</p>
                                 </div>
                             </div>
 
-                            <!-- Actions -->
-                            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                                <h3 class="font-semibold text-gray-900 mb-4">Tindakan</h3>
-                                <div class="space-y-3">
-                                    <button type="submit"
-                                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                        <i class='bx bx-save mr-2'></i>
-                                        Simpan Aset
-                                    </button>
-                                    <a href="{{ route('admin.assets.index') }}"
-                                        class="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                        <i class='bx bx-x mr-2'></i>
-                                        Batal
-                                    </a>
+                            <div class="space-y-6">
+                                <!-- Notes -->
+                                <div>
+                                    <label for="catatan" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-note mr-1'></i>
+                                        Catatan
+                                    </label>
+                                    <textarea id="catatan" name="catatan" rows="4" x-model="form.catatan"
+                                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
+                                        placeholder="Catatan tambahan tentang aset ini...">{{ old('catatan') }}</textarea>
+                                    @error('catatan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                            </div>
 
-                            <!-- Help & Tips -->
-                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                                <div class="flex items-start">
-                                    <i class='bx bx-info-circle text-blue-600 text-lg mr-3 mt-0.5'></i>
-                                    <div>
-                                        <h4 class="font-medium text-blue-900 mb-2">Tips Pengisian</h4>
-                                        <ul class="text-sm text-blue-800 space-y-1">
-                                            <li>• Pastikan nama aset jelas dan spesifik</li>
-                                            <li>• Nilai perolehan dalam Ringgit Malaysia</li>
-                                            <li>• Upload gambar untuk dokumentasi</li>
-                                            <li>• Susut nilai dikira automatik</li>
-                                        </ul>
+                                <!-- Warranty Notes -->
+                                <div>
+                                    <label for="catatan_jaminan" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-shield mr-1'></i>
+                                        Catatan Jaminan
+                                    </label>
+                                    <textarea id="catatan_jaminan" name="catatan_jaminan" rows="3"
+                                        x-model="form.catatan_jaminan"
+                                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan_jaminan') border-red-500 @enderror bg-white"
+                                        placeholder="Catatan tentang jaminan aset...">{{ old('catatan_jaminan') }}</textarea>
+                                    @error('catatan_jaminan')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <!-- Asset Images -->
+                                <div>
+                                    <label for="gambar_aset" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-image mr-1'></i>
+                                        Gambar Aset (Opsional)
+                                    </label>
+                                    <div class="mt-1 flex justify-center px-8 pt-8 pb-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-emerald-400 transition-all duration-300 bg-gradient-to-br from-gray-50 to-emerald-50 hover:from-emerald-50 hover:to-emerald-100 group cursor-pointer"
+                                        id="dropZone">
+                                        <div class="space-y-4 text-center">
+                                            <div class="relative">
+                                                <i
+                                                    class='bx bx-cloud-upload text-5xl text-gray-400 mb-4 group-hover:text-emerald-500 transition-all duration-300 transform group-hover:scale-110'></i>
+                                                <div
+                                                    class="absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
+                                                    <i class='bx bx-plus text-white text-lg'></i>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <div
+                                                    class="flex text-sm text-gray-600 group-hover:text-emerald-700 transition-colors duration-300 justify-center items-center">
+                                                    <label for="gambar_aset"
+                                                        class="relative cursor-pointer bg-white rounded-lg px-4 py-2 font-medium text-emerald-600 hover:text-emerald-500 hover:bg-emerald-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                                                        <span class="flex items-center">
+                                                            <i class='bx bx-upload mr-2'></i>
+                                                            Upload gambar
+                                                        </span>
+                                                        <input id="gambar_aset" name="gambar_aset[]" type="file"
+                                                            class="sr-only" multiple accept="image/*">
+                                                    </label>
+                                                    <p class="pl-3 text-gray-500 group-hover:text-emerald-600">atau drag and
+                                                        drop di sini</p>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <p class="text-xs text-gray-500 flex items-center justify-center">
+                                                    <i class='bx bx-file-blank mr-1'></i>
+                                                    PNG, JPG, GIF hingga 2MB setiap gambar
+                                                </p>
+                                                <p
+                                                    class="text-xs text-emerald-600 font-medium flex items-center justify-center">
+                                                    <i class='bx bx-check-circle mr-1'></i>
+                                                    Maksimum 5 gambar
+                                                </p>
+                                                <p class="text-xs text-blue-600 flex items-center justify-center">
+                                                    <i class='bx bx-info-circle mr-1'></i>
+                                                    Anda boleh menambah gambar lagi kemudian
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Image Preview Area -->
+                                    <div id="imagePreview"
+                                        class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                                        <!-- Preview images will be inserted here -->
+                                    </div>
+
+                                    <!-- Image Modal -->
+                                    <div id="imageModal"
+                                        class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+                                        <div
+                                            class="relative max-w-6xl max-h-full bg-white rounded-xl shadow-2xl overflow-hidden">
+                                            <button id="closeModal"
+                                                class="absolute top-4 right-4 z-10 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all duration-200">
+                                                <i class='bx bx-x text-2xl'></i>
+                                            </button>
+                                            <div class="p-4">
+                                                <img id="modalImage" src="" alt="Full size image"
+                                                    class="max-w-full max-h-[80vh] object-contain mx-auto">
+                                            </div>
+                                            <div
+                                                class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg">
+                                                <p id="modalImageName" class="text-sm font-medium"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Upload Progress -->
+                                    <div id="uploadProgress" class="mt-4 hidden">
+                                        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-600 mr-3">
+                                                </div>
+                                                <span class="text-sm text-emerald-700 font-medium">Memproses
+                                                    gambar...</span>
+                                            </div>
+                                            <div class="mt-2 bg-emerald-200 rounded-full h-2">
+                                                <div id="progressBar"
+                                                    class="bg-emerald-600 h-2 rounded-full transition-all duration-300"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @error('gambar_aset')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                    @error('gambar_aset.*')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                    <!-- Helpful Info -->
+                                    <div
+                                        class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0">
+                                                <div
+                                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <i class='bx bx-bulb text-blue-600 text-lg'></i>
+                                                </div>
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <p class="font-semibold text-blue-800 mb-1">💡 Tip Berguna:</p>
+                                                <p class="text-blue-700 leading-relaxed">Anda boleh upload 1 gambar sekarang
+                                                    dan menambah gambar lagi kemudian melalui halaman edit aset. Ini
+                                                    memberikan fleksibiliti untuk melengkapkan maklumat aset secara
+                                                    berperingkat.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
+
+                    <!-- Right Column - Summary & Actions -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <!-- Form Summary -->
+                        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                                    <i class='bx bx-check-circle text-white text-sm'></i>
+                                </div>
+                                <h3 class="font-semibold text-gray-900">Ringkasan Aset</h3>
+                            </div>
+
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama Aset:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.nama_aset || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Jenis:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.jenis_aset || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Kategori:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="form.kategori_aset === 'asset' ? 'Asset' : (form.kategori_aset === 'non-asset' ? 'Non-Asset' : '-')"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Status:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.status_aset || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Lokasi:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.lokasi_penempatan || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nilai:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="form.nilai_perolehan ? 'RM ' + parseFloat(form.nilai_perolehan).toFixed(2) : '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Diskaun:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="form.diskaun ? 'RM ' + parseFloat(form.diskaun).toFixed(2) : 'RM 0.00'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pegawai:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="form.pegawai_bertanggungjawab_lokasi || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Jawatan:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.jawatan_pegawai || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Keadaan:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.keadaan_fizikal || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Jaminan:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.status_jaminan || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Tarikh Perolehan:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="formatDate(form.tarikh_perolehan)"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Kaedah Perolehan:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.kaedah_perolehan || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. Resit:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.no_resit || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Tarikh Resit:</span>
+                                    <span class="font-medium text-gray-900" x-text="formatDate(form.tarikh_resit)"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Umur Faedah:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="form.umur_faedah_tahunan ? form.umur_faedah_tahunan + ' tahun' : '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Susut Nilai:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="form.susut_nilai_tahunan ? 'RM ' + parseFloat(form.susut_nilai_tahunan).toFixed(2) + '/tahun' : '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Masjid/Surau:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="getMasjidName(form.masjid_surau_id)"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pemeriksaan Terakhir:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="formatDate(form.tarikh_pemeriksaan_terakhir)"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Penyelenggaraan Akan Datang:</span>
+                                    <span class="font-medium text-gray-900"
+                                        x-text="formatDate(form.tarikh_penyelenggaraan_akan_datang)"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Catatan:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.catatan || '-'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Catatan Jaminan:</span>
+                                    <span class="font-medium text-gray-900" x-text="form.catatan_jaminan || '-'"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                            <h3 class="font-semibold text-gray-900 mb-4">Tindakan</h3>
+                            <div class="space-y-3">
+                                <button type="submit"
+                                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                                    <i class='bx bx-save mr-2'></i>
+                                    Simpan Aset
+                                </button>
+                                <a href="{{ route('admin.assets.index') }}"
+                                    class="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                                    <i class='bx bx-x mr-2'></i>
+                                    Batal
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Help & Tips -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                            <div class="flex items-start">
+                                <i class='bx bx-info-circle text-blue-600 text-lg mr-3 mt-0.5'></i>
+                                <div>
+                                    <h4 class="font-medium text-blue-900 mb-2">Tips Pengisian</h4>
+                                    <ul class="text-sm text-blue-800 space-y-1">
+                                        <li>• Pastikan nama aset jelas dan spesifik</li>
+                                        <li>• Nilai perolehan dalam Ringgit Malaysia</li>
+                                        <li>• Upload gambar untuk dokumentasi</li>
+                                        <li>• Susut nilai dikira automatik</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
+    </div>
 
-        @push('scripts')
-            <style>
-                @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
+    @push('scripts')
+        <style>
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
                 }
 
-                @keyframes slideIn {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-20px);
-                    }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
 
-                    to {
-                        opacity: 1;
-                        transform: translateX(0);
-                    }
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-20px);
                 }
 
-                @keyframes pulse {
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
 
-                    0%,
-                    100% {
-                        transform: scale(1);
-                    }
+            @keyframes pulse {
 
-                    50% {
-                        transform: scale(1.05);
-                    }
+                0%,
+                100% {
+                    transform: scale(1);
                 }
 
-                .animate-fadeIn {
-                    animation: fadeIn 0.5s ease-out;
+                50% {
+                    transform: scale(1.05);
                 }
+            }
 
-                .animate-slideIn {
-                    animation: slideIn 0.3s ease-out;
-                }
+            .animate-fadeIn {
+                animation: fadeIn 0.5s ease-out;
+            }
 
-                .animate-pulse-slow {
-                    animation: pulse 2s infinite;
-                }
+            .animate-slideIn {
+                animation: slideIn 0.3s ease-out;
+            }
 
-                /* Enhanced hover effects */
-                .group:hover .group-hover\:animate-pulse {
-                    animation: pulse 1s infinite;
-                }
+            .animate-pulse-slow {
+                animation: pulse 2s infinite;
+            }
 
-                /* Custom scrollbar for image preview */
-                #imagePreview::-webkit-scrollbar {
-                    width: 6px;
-                }
+            /* Enhanced hover effects */
+            .group:hover .group-hover\:animate-pulse {
+                animation: pulse 1s infinite;
+            }
 
-                #imagePreview::-webkit-scrollbar-track {
-                    background: #f1f5f9;
-                    border-radius: 3px;
-                }
+            /* Custom scrollbar for image preview */
+            #imagePreview::-webkit-scrollbar {
+                width: 6px;
+            }
 
-                #imagePreview::-webkit-scrollbar-thumb {
-                    background: #cbd5e1;
-                    border-radius: 3px;
-                }
+            #imagePreview::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 3px;
+            }
 
-                #imagePreview::-webkit-scrollbar-thumb:hover {
-                    background: #94a3b8;
-                }
-            </style>
-            <script>
-                function assetForm() {
-                    return {
-                        form: {
-                            nama_aset: '{{ old("nama_aset") }}',
-                            jenis_aset: '{{ old("jenis_aset") }}',
-                            kategori_aset: '{{ old("kategori_aset") }}',
-                            status_aset: '{{ old("status_aset") }}',
-                            keadaan_fizikal: '{{ old("keadaan_fizikal") }}',
-                            status_jaminan: '{{ old("status_jaminan") }}',
-                            lokasi_penempatan: '{{ old("lokasi_penempatan") }}',
-                            tarikh_pemeriksaan_terakhir: '{{ old("tarikh_pemeriksaan_terakhir") }}',
-                            tarikh_penyelenggaraan_akan_datang: '{{ old("tarikh_penyelenggaraan_akan_datang") }}',
-                            masjid_surau_id: '{{ old("masjid_surau_id", $default_masjid_surau_id) }}',
-                            tarikh_perolehan: '{{ old("tarikh_perolehan") }}',
-                            kaedah_perolehan: '{{ old("kaedah_perolehan") }}',
-                            nilai_perolehan: '{{ old("nilai_perolehan") }}',
-                            diskaun: '{{ old("diskaun", "0.00") }}',
-                            no_resit: '{{ old("no_resit") }}',
-                            tarikh_resit: '{{ old("tarikh_resit") }}',
-                            pegawai_bertanggungjawab_lokasi: '{{ old("pegawai_bertanggungjawab_lokasi") }}',
-                            jawatan_pegawai: '{{ old("jawatan_pegawai") }}',
-                            umur_faedah_tahunan: '{{ old("umur_faedah_tahunan") }}',
-                            susut_nilai_tahunan: '{{ old("susut_nilai_tahunan") }}',
-                            catatan: '{{ old("catatan") }}',
-                            catatan_jaminan: '{{ old("catatan_jaminan") }}'
-                        },
-                        calculatedDepreciation: null,
-                        calculateAnnualDepreciation(force = false) {
-                            // Straight-line method: (Cost - Discount) / Useful Life
-                            const cost = parseFloat(this.form.nilai_perolehan) || 0;
-                            const discount = parseFloat(this.form.diskaun) || 0;
-                            const usefulLife = parseFloat(this.form.umur_faedah_tahunan) || 0;
+            #imagePreview::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
 
-                            if (cost > 0 && usefulLife > 0) {
-                                const depreciableBase = cost - discount;
-                                const annualDepreciation = depreciableBase / usefulLife;
-                                this.calculatedDepreciation = annualDepreciation.toFixed(2);
+            #imagePreview::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+        </style>
+        <script>
+            function assetForm() {
+                return {
+                    form: {
+                        nama_aset: '{{ old("nama_aset") }}',
+                        jenis_aset: '{{ old("jenis_aset") }}',
+                        kategori_aset: '{{ old("kategori_aset") }}',
+                        status_aset: '{{ old("status_aset") }}',
+                        keadaan_fizikal: '{{ old("keadaan_fizikal") }}',
+                        status_jaminan: '{{ old("status_jaminan") }}',
+                        lokasi_penempatan: '{{ old("lokasi_penempatan") }}',
+                        tarikh_pemeriksaan_terakhir: '{{ old("tarikh_pemeriksaan_terakhir") }}',
+                        tarikh_penyelenggaraan_akan_datang: '{{ old("tarikh_penyelenggaraan_akan_datang") }}',
+                        masjid_surau_id: '{{ old("masjid_surau_id", $default_masjid_surau_id) }}',
+                        tarikh_perolehan: '{{ old("tarikh_perolehan") }}',
+                        kaedah_perolehan: '{{ old("kaedah_perolehan") }}',
+                        pembekal: '{{ old("pembekal") }}',
+                        nilai_perolehan: '{{ old("nilai_perolehan") }}',
+                        diskaun: '{{ old("diskaun", "0.00") }}',
+                        no_resit: '{{ old("no_resit") }}',
+                        tarikh_resit: '{{ old("tarikh_resit") }}',
+                        pegawai_bertanggungjawab_lokasi: '{{ old("pegawai_bertanggungjawab_lokasi") }}',
+                        jawatan_pegawai: '{{ old("jawatan_pegawai") }}',
+                        umur_faedah_tahunan: '{{ old("umur_faedah_tahunan") }}',
+                        susut_nilai_tahunan: '{{ old("susut_nilai_tahunan") }}',
+                        catatan: '{{ old("catatan") }}',
+                        catatan_jaminan: '{{ old("catatan_jaminan") }}'
+                    },
+                    calculatedDepreciation: null,
+                    calculateAnnualDepreciation(force = false) {
+                        // Straight-line method: (Cost - Discount) / Useful Life
+                        const cost = parseFloat(this.form.nilai_perolehan) || 0;
+                        const discount = parseFloat(this.form.diskaun) || 0;
+                        const usefulLife = parseFloat(this.form.umur_faedah_tahunan) || 0;
 
-                                // Auto-fill if field is empty OR force is true
-                                if (force || !this.form.susut_nilai_tahunan || this.form.susut_nilai_tahunan === '') {
-                                    this.form.susut_nilai_tahunan = annualDepreciation.toFixed(2);
-                                    // Update display field
-                                    const displayField = document.getElementById('susut_nilai_tahunan_display');
-                                    if (displayField) {
-                                        displayField.value = this.formatCurrency(annualDepreciation);
-                                    }
+                        if (cost > 0 && usefulLife > 0) {
+                            const depreciableBase = cost - discount;
+                            const annualDepreciation = depreciableBase / usefulLife;
+                            this.calculatedDepreciation = annualDepreciation.toFixed(2);
+
+                            // Auto-fill if field is empty OR force is true
+                            if (force || !this.form.susut_nilai_tahunan || this.form.susut_nilai_tahunan === '') {
+                                this.form.susut_nilai_tahunan = annualDepreciation.toFixed(2);
+                                // Update display field
+                                const displayField = document.getElementById('susut_nilai_tahunan_display');
+                                if (displayField) {
+                                    displayField.value = this.formatCurrency(annualDepreciation);
                                 }
-                            } else {
-                                this.calculatedDepreciation = null;
                             }
-                        },
-
-                        // Format number with thousand separators and 2 decimals
-                        formatCurrency(value) {
-                            if (!value && value !== 0) return '';
-                            const num = parseFloat(value.toString().replace(/,/g, ''));
-                            if (isNaN(num)) return '';
-                            return num.toLocaleString('en-US', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            });
-                        },
-
-                        // Remove commas and return numeric value
-                        parseCurrency(value) {
-                            if (!value) return 0;
-                            return parseFloat(value.toString().replace(/,/g, '')) || 0;
-                        },
-
-                        // Format on input (allows partial entry)
-                        formatPriceInput(event, fieldName) {
-                            const input = event.target;
-                            let value = input.value.replace(/,/g, '');
-
-                            // Allow only numbers and decimal point
-                            value = value.replace(/[^\d.]/g, '');
-
-                            // Ensure only one decimal point
-                            const parts = value.split('.');
-                            if (parts.length > 2) {
-                                value = parts[0] + '.' + parts.slice(1).join('');
-                            }
-
-                            // Limit to 2 decimal places
-                            if (parts.length === 2 && parts[1].length > 2) {
-                                value = parts[0] + '.' + parts[1].substring(0, 2);
-                            }
-
-                            // Update the display
-                            input.value = value;
-
-                            // Update hidden field with raw value
-                            this.form[fieldName] = value;
-                        },
-
-                        // Format on blur (final formatting with commas and 2 decimals)
-                        formatPriceBlur(event, fieldName) {
-                            const input = event.target;
-                            const rawValue = input.value.replace(/,/g, '');
-                            const numValue = parseFloat(rawValue) || 0;
-
-                            // Update visible input with formatted value
-                            input.value = this.formatCurrency(numValue);
-
-                            // Update hidden field with raw value (2 decimal places)
-                            this.form[fieldName] = numValue.toFixed(2);
-
-                            // Recalculate depreciation if needed
-                            if (fieldName === 'nilai_perolehan' || fieldName === 'diskaun') {
-                                this.calculateAnnualDepreciation();
-                            }
-                        },
-
-                        updateWarrantyStatus(status) {
-                            if (status === 'Baru') {
-                                this.form.keadaan_fizikal = 'Cemerlang';
-                                this.form.status_jaminan = 'Aktif';
-                            }
-                        },
-                        setInspectionDate(receiptDate) {
-                            if (receiptDate) {
-                                // Create a new date from the receipt date
-                                const date = new Date(receiptDate);
-                                // Add 1 year
-                                date.setFullYear(date.getFullYear() + 1);
-                                // Format as YYYY-MM-DD for the date input
-                                const inspectionDate = date.toISOString().split('T')[0];
-                                // Set the inspection date
-                                this.form.tarikh_pemeriksaan_terakhir = inspectionDate;
-                            }
-                        },
-                        getMasjidName(masjidId) {
-                            if (!masjidId) return '-';
-
-                            // Get the masjid data from the select options
-                            const selectElement = document.getElementById('masjid_surau_id');
-                            const selectedOption = selectElement.querySelector(`option[value="${masjidId}"]`);
-
-                            return selectedOption ? selectedOption.textContent : masjidId;
-                        },
-                        formatDate(dateString) {
-                            if (!dateString) return '-';
-
-                            // Convert yyyy-mm-dd to dd/mm/yyyy
-                            const date = new Date(dateString);
-                            if (isNaN(date.getTime())) return dateString; // Return original if invalid
-
-                            const day = String(date.getDate()).padStart(2, '0');
-                            const month = String(date.getMonth() + 1).padStart(2, '0');
-                            const year = date.getFullYear();
-
-                            return `${day}/${month}/${year}`;
+                        } else {
+                            this.calculatedDepreciation = null;
                         }
+                    },
+
+                    // Format number with thousand separators and 2 decimals
+                    formatCurrency(value) {
+                        if (!value && value !== 0) return '';
+                        const num = parseFloat(value.toString().replace(/,/g, ''));
+                        if (isNaN(num)) return '';
+                        return num.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    },
+
+                    // Remove commas and return numeric value
+                    parseCurrency(value) {
+                        if (!value) return 0;
+                        return parseFloat(value.toString().replace(/,/g, '')) || 0;
+                    },
+
+                    // Format on input (allows partial entry)
+                    formatPriceInput(event, fieldName) {
+                        const input = event.target;
+                        let value = input.value.replace(/,/g, '');
+
+                        // Allow only numbers and decimal point
+                        value = value.replace(/[^\d.]/g, '');
+
+                        // Ensure only one decimal point
+                        const parts = value.split('.');
+                        if (parts.length > 2) {
+                            value = parts[0] + '.' + parts.slice(1).join('');
+                        }
+
+                        // Limit to 2 decimal places
+                        if (parts.length === 2 && parts[1].length > 2) {
+                            value = parts[0] + '.' + parts[1].substring(0, 2);
+                        }
+
+                        // Update the display
+                        input.value = value;
+
+                        // Update hidden field with raw value
+                        this.form[fieldName] = value;
+                    },
+
+                    // Format on blur (final formatting with commas and 2 decimals)
+                    formatPriceBlur(event, fieldName) {
+                        const input = event.target;
+                        const rawValue = input.value.replace(/,/g, '');
+                        const numValue = parseFloat(rawValue) || 0;
+
+                        // Update visible input with formatted value
+                        input.value = this.formatCurrency(numValue);
+
+                        // Update hidden field with raw value (2 decimal places)
+                        this.form[fieldName] = numValue.toFixed(2);
+
+                        // Recalculate depreciation if needed
+                        if (fieldName === 'nilai_perolehan' || fieldName === 'diskaun') {
+                            this.calculateAnnualDepreciation();
+                        }
+                    },
+
+                    updateWarrantyStatus(status) {
+                        if (status === 'Baru') {
+                            this.form.keadaan_fizikal = 'Cemerlang';
+                            this.form.status_jaminan = 'Aktif';
+                        }
+                    },
+                    setInspectionDate(receiptDate) {
+                        if (receiptDate) {
+                            // Create a new date from the receipt date
+                            const date = new Date(receiptDate);
+                            // Add 1 year
+                            date.setFullYear(date.getFullYear() + 1);
+                            // Format as YYYY-MM-DD for the date input
+                            const inspectionDate = date.toISOString().split('T')[0];
+                            // Set the inspection date
+                            this.form.tarikh_pemeriksaan_terakhir = inspectionDate;
+                        }
+                    },
+                    getMasjidName(masjidId) {
+                        if (!masjidId) return '-';
+
+                        // Get the masjid data from the select options
+                        const selectElement = document.getElementById('masjid_surau_id');
+                        const selectedOption = selectElement.querySelector(`option[value="${masjidId}"]`);
+
+                        return selectedOption ? selectedOption.textContent : masjidId;
+                    },
+                    formatDate(dateString) {
+                        if (!dateString) return '-';
+
+                        // Convert yyyy-mm-dd to dd/mm/yyyy
+                        const date = new Date(dateString);
+                        if (isNaN(date.getTime())) return dateString; // Return original if invalid
+
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+
+                        return `${day}/${month}/${year}`;
                     }
                 }
+            }
 
-                // Image upload handling
-                document.addEventListener('DOMContentLoaded', function () {
-                    const fileInput = document.getElementById('gambar_aset');
-                    const dropZone = document.getElementById('dropZone');
-                    const imagePreview = document.getElementById('imagePreview');
-                    const maxFiles = 5;
-                    const minFiles = 1;
+            // Image upload handling
+            document.addEventListener('DOMContentLoaded', function () {
+                const fileInput = document.getElementById('gambar_aset');
+                const dropZone = document.getElementById('dropZone');
+                const imagePreview = document.getElementById('imagePreview');
+                const maxFiles = 5;
+                const minFiles = 1;
 
-                    // Handle file selection
-                    fileInput.addEventListener('change', function (e) {
-                        handleFiles(e.target.files);
-                    });
+                // Handle file selection
+                fileInput.addEventListener('change', function (e) {
+                    handleFiles(e.target.files);
+                });
 
-                    // Handle drag and drop
-                    dropZone.addEventListener('dragover', function (e) {
-                        e.preventDefault();
-                        dropZone.classList.add('border-emerald-400', 'bg-emerald-50');
-                    });
+                // Handle drag and drop
+                dropZone.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    dropZone.classList.add('border-emerald-400', 'bg-emerald-50');
+                });
 
-                    dropZone.addEventListener('dragleave', function (e) {
-                        e.preventDefault();
-                        dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
-                    });
+                dropZone.addEventListener('dragleave', function (e) {
+                    e.preventDefault();
+                    dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
+                });
 
-                    dropZone.addEventListener('drop', function (e) {
-                        e.preventDefault();
-                        dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
-                        handleFiles(e.dataTransfer.files);
-                    });
+                dropZone.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
+                    handleFiles(e.dataTransfer.files);
+                });
 
-                    function handleFiles(files) {
-                        // Clear previous previews
-                        imagePreview.innerHTML = '';
-                        imagePreview.classList.add('hidden');
+                function handleFiles(files) {
+                    // Clear previous previews
+                    imagePreview.innerHTML = '';
+                    imagePreview.classList.add('hidden');
 
-                        if (files.length === 0) return;
+                    if (files.length === 0) return;
 
-                        // Validate file count
-                        if (files.length > maxFiles) {
-                            alert(`Maksimum ${maxFiles} gambar sahaja dibenarkan.`);
-                            return;
+                    // Validate file count
+                    if (files.length > maxFiles) {
+                        alert(`Maksimum ${maxFiles} gambar sahaja dibenarkan.`);
+                        return;
+                    }
+
+                    // Note: We don't enforce minimum here as user can add more later
+
+                    // Validate file types and sizes
+                    const validFiles = [];
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+
+                        // Check file type
+                        if (!file.type.startsWith('image/')) {
+                            alert(`${file.name} bukan fail gambar yang sah.`);
+                            continue;
                         }
 
-                        // Note: We don't enforce minimum here as user can add more later
-
-                        // Validate file types and sizes
-                        const validFiles = [];
-                        for (let i = 0; i < files.length; i++) {
-                            const file = files[i];
-
-                            // Check file type
-                            if (!file.type.startsWith('image/')) {
-                                alert(`${file.name} bukan fail gambar yang sah.`);
-                                continue;
-                            }
-
-                            // Check file size (2MB = 2 * 1024 * 1024 bytes)
-                            if (file.size > 2 * 1024 * 1024) {
-                                alert(`${file.name} terlalu besar. Maksimum 2MB setiap gambar.`);
-                                continue;
-                            }
-
-                            validFiles.push(file);
+                        // Check file size (2MB = 2 * 1024 * 1024 bytes)
+                        if (file.size > 2 * 1024 * 1024) {
+                            alert(`${file.name} terlalu besar. Maksimum 2MB setiap gambar.`);
+                            continue;
                         }
 
-                        if (validFiles.length === 0) return;
+                        validFiles.push(file);
+                    }
 
-                        // Update file input
-                        const dataTransfer = new DataTransfer();
-                        validFiles.forEach(file => dataTransfer.items.add(file));
-                        fileInput.files = dataTransfer.files;
+                    if (validFiles.length === 0) return;
 
-                        // Show upload progress
-                        const uploadProgress = document.getElementById('uploadProgress');
-                        const progressBar = document.getElementById('progressBar');
-                        if (uploadProgress && progressBar) {
-                            uploadProgress.classList.remove('hidden');
-                        }
+                    // Update file input
+                    const dataTransfer = new DataTransfer();
+                    validFiles.forEach(file => dataTransfer.items.add(file));
+                    fileInput.files = dataTransfer.files;
 
-                        // Show previews with enhanced animations
-                        if (validFiles.length > 0) {
-                            imagePreview.classList.remove('hidden');
-                            validFiles.forEach((file, index) => {
-                                const reader = new FileReader();
-                                reader.onload = function (e) {
-                                    const previewDiv = document.createElement('div');
-                                    previewDiv.className = 'relative group animate-fadeIn';
-                                    previewDiv.innerHTML = `
-                                                                            <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
-                                                                                <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                                                                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                                                                                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                                                        <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                                                                                            <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                    // Show upload progress
+                    const uploadProgress = document.getElementById('uploadProgress');
+                    const progressBar = document.getElementById('progressBar');
+                    if (uploadProgress && progressBar) {
+                        uploadProgress.classList.remove('hidden');
+                    }
+
+                    // Show previews with enhanced animations
+                    if (validFiles.length > 0) {
+                        imagePreview.classList.remove('hidden');
+                        validFiles.forEach((file, index) => {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                const previewDiv = document.createElement('div');
+                                previewDiv.className = 'relative group animate-fadeIn';
+                                previewDiv.innerHTML = `
+                                                                                        <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
+                                                                                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                                                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                                                                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                                                                    <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                                                                                        <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
-                                                                                <i class='bx bx-x text-lg'></i>
-                                                                            </button>
-                                                                            <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                                                                                <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
-                                                                                <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                                                            </div>
-                                                                        `;
-                                    imagePreview.appendChild(previewDiv);
+                                                                                        <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
+                                                                                            <i class='bx bx-x text-lg'></i>
+                                                                                        </button>
+                                                                                        <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                                                                                            <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
+                                                                                            <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                                                        </div>
+                                                                                    `;
+                                imagePreview.appendChild(previewDiv);
 
-                                    // Update progress
-                                    if (progressBar) {
-                                        const progress = ((index + 1) / validFiles.length) * 100;
-                                        progressBar.style.width = progress + '%';
-                                    }
-                                };
-                                reader.readAsDataURL(file);
-                            });
-
-                            // Hide progress after all images are loaded
-                            setTimeout(() => {
-                                if (uploadProgress) {
-                                    uploadProgress.classList.add('hidden');
-                                }
+                                // Update progress
                                 if (progressBar) {
-                                    progressBar.style.width = '0%';
+                                    const progress = ((index + 1) / validFiles.length) * 100;
+                                    progressBar.style.width = progress + '%';
                                 }
-                            }, 1000);
-                        }
+                            };
+                            reader.readAsDataURL(file);
+                        });
+
+                        // Hide progress after all images are loaded
+                        setTimeout(() => {
+                            if (uploadProgress) {
+                                uploadProgress.classList.add('hidden');
+                            }
+                            if (progressBar) {
+                                progressBar.style.width = '0%';
+                            }
+                        }, 1000);
                     }
+                }
 
-                    // Global function to remove image
-                    window.removeImage = function (index) {
-                        const fileInput = document.getElementById('gambar_aset');
-                        const files = Array.from(fileInput.files);
-                        files.splice(index, 1);
+                // Global function to remove image
+                window.removeImage = function (index) {
+                    const fileInput = document.getElementById('gambar_aset');
+                    const files = Array.from(fileInput.files);
+                    files.splice(index, 1);
 
-                        const dataTransfer = new DataTransfer();
-                        files.forEach(file => dataTransfer.items.add(file));
-                        fileInput.files = dataTransfer.files;
+                    const dataTransfer = new DataTransfer();
+                    files.forEach(file => dataTransfer.items.add(file));
+                    fileInput.files = dataTransfer.files;
 
-                        handleFiles(fileInput.files);
-                    };
+                    handleFiles(fileInput.files);
+                };
 
-                    // Global function to open image modal
-                    window.openImageModal = function (imageSrc, imageName) {
+                // Global function to open image modal
+                window.openImageModal = function (imageSrc, imageName) {
+                    const modal = document.getElementById('imageModal');
+                    const modalImage = document.getElementById('modalImage');
+                    const modalImageName = document.getElementById('modalImageName');
+
+                    modalImage.src = imageSrc;
+                    modalImageName.textContent = imageName;
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                };
+
+                // Close modal functionality
+                document.getElementById('closeModal').addEventListener('click', function () {
+                    const modal = document.getElementById('imageModal');
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto'; // Restore scrolling
+                });
+
+                // Close modal when clicking outside
+                document.getElementById('imageModal').addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        this.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+
+                // Close modal with Escape key
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
                         const modal = document.getElementById('imageModal');
-                        const modalImage = document.getElementById('modalImage');
-                        const modalImageName = document.getElementById('modalImageName');
-
-                        modalImage.src = imageSrc;
-                        modalImageName.textContent = imageName;
-                        modal.classList.remove('hidden');
-                        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-                    };
-
-                    // Close modal functionality
-                    document.getElementById('closeModal').addEventListener('click', function () {
-                        const modal = document.getElementById('imageModal');
-                        modal.classList.add('hidden');
-                        document.body.style.overflow = 'auto'; // Restore scrolling
-                    });
-
-                    // Close modal when clicking outside
-                    document.getElementById('imageModal').addEventListener('click', function (e) {
-                        if (e.target === this) {
-                            this.classList.add('hidden');
+                        if (!modal.classList.contains('hidden')) {
+                            modal.classList.add('hidden');
                             document.body.style.overflow = 'auto';
                         }
-                    });
-
-                    // Close modal with Escape key
-                    document.addEventListener('keydown', function (e) {
-                        if (e.key === 'Escape') {
-                            const modal = document.getElementById('imageModal');
-                            if (!modal.classList.contains('hidden')) {
-                                modal.classList.add('hidden');
-                                document.body.style.overflow = 'auto';
-                            }
-                        }
-                    });
+                    }
                 });
-            </script>
-        @endpush
+            });
+        </script>
+    @endpush
 @endsection
