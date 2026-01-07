@@ -42,6 +42,8 @@ class Asset extends Model
         'tarikh_resit',
         'dokumen_resit_url',
         'pembekal',
+        'pembekal_alamat',
+        'pembekal_no_telefon',
         'jenama',
         'no_pesanan_kerajaan',
         'no_rujukan_kontrak',

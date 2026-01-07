@@ -355,6 +355,26 @@
                                     <dt class="text-sm font-medium text-gray-600">Pembekal / Vendor</dt>
                                 </div>
                                 <dd class="text-lg font-semibold text-gray-900">{{ $asset->pembekal }}</dd>
+
+                                @if($asset->pembekal_alamat)
+                                    <div class="mt-2 pt-2 border-t border-gray-100">
+                                        <div class="flex items-center mb-1">
+                                            <i class='bx bx-map-pin text-emerald-600 mr-1 text-xs'></i>
+                                            <dt class="text-xs font-medium text-gray-500">Alamat</dt>
+                                        </div>
+                                        <dd class="text-sm text-gray-700 whitespace-pre-line">{{ $asset->pembekal_alamat }}</dd>
+                                    </div>
+                                @endif
+
+                                @if($asset->pembekal_no_telefon)
+                                    <div class="mt-2 pt-2 border-t border-gray-100">
+                                        <div class="flex items-center mb-1">
+                                            <i class='bx bx-phone text-emerald-600 mr-1 text-xs'></i>
+                                            <dt class="text-xs font-medium text-gray-500">No. Telefon</dt>
+                                        </div>
+                                        <dd class="text-sm text-gray-700">{{ $asset->pembekal_no_telefon }}</dd>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 

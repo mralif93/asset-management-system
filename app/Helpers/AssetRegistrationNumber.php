@@ -22,6 +22,7 @@ class AssetRegistrationNumber
         'Peralatan Pejabat' => 'PP',  // Office Equipment
         'Buku' => 'B',
         'Pakaian' => 'PK',
+        'Lekapan' => 'L',
         'Harta Tak Alih' => 'HTA',
         // Non-Asset Categories
         'Peralatan Dapur' => 'BD',  // Kitchen equipment (updated from Barang-barang Dapur)

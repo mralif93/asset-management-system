@@ -95,7 +95,7 @@ class AssetController extends Controller
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Lain-lain',
+            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Tempat Letak Kenderaan,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
@@ -106,6 +106,8 @@ class AssetController extends Controller
             'catatan_jaminan' => 'nullable|string',
             'catatan' => 'nullable|string',
             'pembekal' => 'nullable|string|max:255',
+            'pembekal_alamat' => 'nullable|string',
+            'pembekal_no_telefon' => 'nullable|string|max:50',
             'jenama' => 'nullable|string|max:255',
             'no_pesanan_kerajaan' => 'nullable|string|max:255',
             'no_rujukan_kontrak' => 'nullable|string|max:255',
@@ -245,7 +247,7 @@ class AssetController extends Controller
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Lain-lain',
+            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Tempat Letak Kenderaan,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
@@ -256,6 +258,8 @@ class AssetController extends Controller
             'catatan_jaminan' => 'nullable|string',
             'catatan' => 'nullable|string',
             'pembekal' => 'nullable|string|max:255',
+            'pembekal_alamat' => 'nullable|string',
+            'pembekal_no_telefon' => 'nullable|string|max:50',
             'jenama' => 'nullable|string|max:255',
             'no_pesanan_kerajaan' => 'nullable|string|max:255',
             'no_rujukan_kontrak' => 'nullable|string|max:255',
@@ -330,7 +334,7 @@ class AssetController extends Controller
     public function updateLocation(Request $request, Asset $asset)
     {
         $validated = $request->validate([
-            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Lain-lain',
+            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Tempat Letak Kenderaan,Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
         ]);
@@ -605,6 +609,7 @@ class AssetController extends Controller
                 'Bilik Setiausaha',
                 'Bilik Nazir & Imam',
                 'Bangunan Jenazah',
+                'Tempat Letak Kenderaan',
                 'Lain-lain'
             ];
             foreach ($validLocations as $location) {
