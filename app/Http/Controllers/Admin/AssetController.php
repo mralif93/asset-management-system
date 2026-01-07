@@ -9,9 +9,32 @@ use App\Helpers\AssetRegistrationNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Carbon\Carbon; // Added Carbon import
 
 class AssetController extends Controller
 {
+    private const VALID_LOCATIONS = [
+        'Anjung kiri',
+        'Anjung kanan',
+        'Anjung Depan(Ruang Pengantin)',
+        'Ruang Utama (tingkat atas, tingkat bawah)',
+        'Bilik Mesyuarat',
+        'Bilik Kuliah',
+        'Bilik Bendahari',
+        'Bilik Setiausaha',
+        'Bilik Nazir & Imam',
+        'Bangunan Jenazah',
+        'Tempat letak kereta',
+        'Bilik pengurusan',
+        'Bilik pejabat',
+        'Bilik store',
+        'Kawasan Letak Kereta & Motor',
+        'Dapur',
+        'Tempat Letak Kenderaan',
+        'Lain-lain'
+    ];
+
     /**
      * lihatSenaraiAset(): Display complete list of all registered movable assets
      */
@@ -95,7 +118,7 @@ class AssetController extends Controller
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Tempat Letak Kenderaan,Lain-lain',
+            'lokasi_penempatan' => ['required', 'string', Rule::in(self::VALID_LOCATIONS)],
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
@@ -114,90 +137,76 @@ class AssetController extends Controller
             'tempoh_jaminan' => 'nullable|string|max:255',
             'tarikh_tamat_jaminan' => 'nullable|date',
             'gambar_aset' => 'nullable|array|max:5',
-            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'dokumen_resit_url' => 'nullable|url',
         ]);
 
-        $quantity = (int) $validated['kuantiti'];
-        $tarikhPerolehan = new \Carbon\Carbon($validated['tarikh_perolehan']);
-
-        // Handle image uploads once
-        $uploadedImages = [];
-        if ($request->hasFile('gambar_aset')) {
-            foreach ($request->file('gambar_aset') as $image) {
-                $path = $image->store('assets', 'public');
-                $uploadedImages[] = $path;
-            }
-        }
-
-        // Use database transaction for atomicity
         \DB::beginTransaction();
         try {
-            $createdAssets = [];
+            // Generate Registration Number
+            // Use current year or year from date of acquisition
+            $year = Carbon::parse($validated['tarikh_perolehan'])->format('y');
 
-            if ($quantity === 1) {
-                // Single asset - standard behavior
-                $validated['kuantiti'] = 1;
-                $validated['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
+            // Handle multiple quantity
+            $quantity = (int) $validated['kuantiti'];
+            $firstAssetId = null;
+
+            for ($i = 0; $i < $quantity; $i++) {
+                // Generate unique registration number for each asset
+                // Pass offset to handle concurrent creations in loop
+                $registrationNumber = AssetRegistrationNumber::generate(
                     $validated['masjid_surau_id'],
                     $validated['jenis_aset'],
-                    $tarikhPerolehan->format('y')
+                    $year,
+                    $i // Offset
                 );
 
-                if (!empty($uploadedImages)) {
-                    $validated['gambar_aset'] = $uploadedImages;
-                }
+                $assetData = $validated;
+                $assetData['no_siri_pendaftaran'] = $registrationNumber;
+                unset($assetData['kuantiti']); // Remove quantity from individual asset data
 
-                $asset = Asset::create($validated);
-                $createdAssets[] = $asset;
+                $asset = Asset::create($assetData);
 
-            } else {
-                // Bulk creation - create individual records
-                $batchId = \App\Helpers\BatchIdGenerator::generate();
-                $baseAssetName = $validated['nama_aset'];
-
-                // Pre-generate all serial numbers to ensure they're sequential
-                $serialNumbers = [];
-                for ($i = 1; $i <= $quantity; $i++) {
-                    $serialNumbers[] = AssetRegistrationNumber::generate(
-                        $validated['masjid_surau_id'],
-                        $validated['jenis_aset'],
-                        $tarikhPerolehan->format('y'),
-                        $i - 1
-                    );
-                }
-
-                // Create individual asset records
-                for ($i = 1; $i <= $quantity; $i++) {
-                    $assetData = $validated;
-                    $assetData['kuantiti'] = 1;
-                    $assetData['batch_id'] = $batchId;
-                    $assetData['nama_aset'] = "{$baseAssetName} ({$i} of {$quantity})";
-                    $assetData['no_siri_pendaftaran'] = $serialNumbers[$i - 1];
-
-                    // Copy images to all items
-                    if (!empty($uploadedImages)) {
-                        $assetData['gambar_aset'] = $uploadedImages;
+                // Handle image uploads if any
+                if ($request->hasFile('gambar_aset')) {
+                    $imagePaths = [];
+                    foreach ($request->file('gambar_aset') as $image) {
+                        $path = $image->store('assets', 'public');
+                        $imagePaths[] = $path;
                     }
+                    $asset->gambar_aset = $imagePaths;
+                    $asset->save();
+                }
 
-                    $asset = Asset::create($assetData);
-                    $createdAssets[] = $asset;
+                if ($i === 0) {
+                    $firstAssetId = $asset->id;
                 }
             }
 
             \DB::commit();
 
-            // Prepare success message
-            if ($quantity === 1) {
-                $message = "Aset baru berjaya didaftarkan dengan nombor siri: {$createdAssets[0]->no_siri_pendaftaran}";
-                return redirect()->route('admin.assets.show', $createdAssets[0])
-                    ->with('success', $message);
-            } else {
-                $firstSerial = $createdAssets[0]->no_siri_pendaftaran;
-                $lastSerial = end($createdAssets)->no_siri_pendaftaran;
-                $message = "{$quantity} aset berjaya didaftarkan ({$firstSerial} hingga {$lastSerial})";
+            if ($quantity > 1) {
                 return redirect()->route('admin.assets.index')
-                    ->with('success', $message);
+                    ->with('success', "$quantity aset telah berjaya didaftarkan.");
             }
+
+            return redirect()->route('admin.assets.show', $firstAssetId)
+                ->with('success', 'Aset berjaya didaftarkan.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \DB::rollBack();
+            throw $e;
+        } catch (\Illuminate\Database\QueryException $e) {
+            \DB::rollBack();
+            // Check for duplicate entry error
+            if ($e->errorInfo[1] == 1062) { // MySQL duplicate entry error code
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Ralat: Nombor siri pendaftaran aset ini telah wujud. Sila cuba lagi.');
+            }
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ralat pangkalan data: ' . $e->getMessage());
 
         } catch (\Exception $e) {
             \DB::rollBack();
@@ -247,7 +256,7 @@ class AssetController extends Controller
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Tempat Letak Kenderaan,Lain-lain',
+            'lokasi_penempatan' => ['required', 'string', Rule::in(self::VALID_LOCATIONS)],
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
@@ -266,40 +275,36 @@ class AssetController extends Controller
             'tempoh_jaminan' => 'nullable|string|max:255',
             'tarikh_tamat_jaminan' => 'nullable|date',
             'gambar_aset' => 'nullable|array|max:5',
-            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'dokumen_resit_url' => 'nullable|url',
         ]);
-
-        // Handle image deletions
-        if ($request->has('delete_images')) {
-            $imagesToDelete = is_array($request->delete_images) ? $request->delete_images : [$request->delete_images];
-            $currentImages = $asset->gambar_aset ?? [];
-            $remainingImages = array_filter($currentImages, function ($image) use ($imagesToDelete) {
-                return !in_array($image, $imagesToDelete);
-            });
-            $validated['gambar_aset'] = array_values($remainingImages);
-
-            // Delete files from storage
-            foreach ($imagesToDelete as $imagePath) {
-                if (Storage::disk('public')->exists($imagePath)) {
-                    Storage::disk('public')->delete($imagePath);
-                }
-            }
-        }
-
-        // Handle image uploads
-        if ($request->hasFile('gambar_aset')) {
-            $images = $validated['gambar_aset'] ?? ($asset->gambar_aset ?? []);
-            foreach ($request->file('gambar_aset') as $image) {
-                $path = $image->store('assets', 'public');
-                $images[] = $path;
-            }
-            $validated['gambar_aset'] = $images;
-        }
 
         $asset->update($validated);
 
+        if ($request->hasFile('gambar_aset')) {
+            $imagePaths = $asset->gambar_aset ?? [];
+            foreach ($request->file('gambar_aset') as $image) {
+                $path = $image->store('assets', 'public');
+                $imagePaths[] = $path;
+            }
+            $asset->gambar_aset = $imagePaths;
+            $asset->save();
+        }
+
+        if ($request->has('remove_images')) {
+            $currentImages = $asset->gambar_aset ?? [];
+            foreach ($request->remove_images as $imageToRemove) {
+                if (($key = array_search($imageToRemove, $currentImages)) !== false) {
+                    Storage::disk('public')->delete($imageToRemove);
+                    unset($currentImages[$key]);
+                }
+            }
+            $asset->gambar_aset = array_values($currentImages);
+            $asset->save();
+        }
+
         return redirect()->route('admin.assets.show', $asset)
-            ->with('success', 'Butiran aset berjaya dikemaskini.');
+            ->with('success', 'Aset berjaya dikemaskini.');
     }
 
     /**
@@ -307,10 +312,16 @@ class AssetController extends Controller
      */
     public function destroy(Asset $asset)
     {
+        if ($asset->gambar_aset) {
+            foreach ($asset->gambar_aset as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
+
         $asset->delete();
 
         return redirect()->route('admin.assets.index')
-            ->with('success', 'Rekod aset berjaya dipadamkan.');
+            ->with('success', 'Aset berjaya dipadamkan.');
     }
 
     /**
@@ -334,15 +345,14 @@ class AssetController extends Controller
     public function updateLocation(Request $request, Asset $asset)
     {
         $validated = $request->validate([
-            'lokasi_penempatan' => 'required|string|in:Anjung kiri,Anjung kanan,Anjung Depan(Ruang Pengantin),Ruang Utama (tingkat atas, tingkat bawah),Bilik Mesyuarat,Bilik Kuliah,Bilik Bendahari,Bilik Setiausaha,Bilik Nazir & Imam,Bangunan Jenazah,Tempat letak kereta,Bilik pengurusan,Bilik pejabat,Bilik store,Kawasan Letak Kereta & Motor,Dapur,Tempat Letak Kenderaan,Lain-lain',
+            'lokasi_penempatan' => ['required', 'string', Rule::in(self::VALID_LOCATIONS)],
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
         ]);
 
         $asset->update($validated);
 
-        return redirect()->route('admin.assets.show', $asset)
-            ->with('success', 'Lokasi aset berjaya dikemaskini.');
+        return back()->with('success', 'Lokasi aset berjaya dikemaskini.');
     }
 
     /**
@@ -598,20 +608,7 @@ class AssetController extends Controller
 
             // 3. Location Reference
             fputcsv($file, ['--- LOKASI PENEMPATAN SAH ---']);
-            $validLocations = [
-                'Anjung kiri',
-                'Anjung kanan',
-                'Anjung Depan(Ruang Pengantin)',
-                'Ruang Utama (tingkat atas, tingkat bawah)',
-                'Bilik Mesyuarat',
-                'Bilik Kuliah',
-                'Bilik Bendahari',
-                'Bilik Setiausaha',
-                'Bilik Nazir & Imam',
-                'Bangunan Jenazah',
-                'Tempat Letak Kenderaan',
-                'Lain-lain'
-            ];
+            $validLocations = self::VALID_LOCATIONS;
             foreach ($validLocations as $location) {
                 fputcsv($file, [$location]);
             }

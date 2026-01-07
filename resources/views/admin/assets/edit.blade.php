@@ -145,6 +145,34 @@
 
                             <!-- Asset Type and Category Row -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Type of Asset -->
+                                <div>
+                                    <label for="kategori_aset" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-cube mr-1'></i>
+                                        Kategori Aset <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class='bx bx-cube text-gray-400'></i>
+                                        </div>
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <i class='bx bx-chevron-down text-gray-400'></i>
+                                        </div>
+                                        <select id="kategori_aset" name="kategori_aset" required
+                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kategori_aset') border-red-500 @enderror appearance-none bg-white">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="asset" {{ old('kategori_aset', $asset->kategori_aset) == 'asset' ? 'selected' : '' }}>Asset</option>
+                                            <option value="non-asset" {{ old('kategori_aset', $asset->kategori_aset) == 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
+                                        </select>
+                                    </div>
+                                    @error('kategori_aset')
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class='bx bx-error-circle mr-1'></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
                                 <!-- Asset Type -->
                                 <div>
                                     <label for="jenis_aset" class="block text-sm font-medium text-gray-700 mb-2">
@@ -167,34 +195,6 @@
                                         </select>
                                     </div>
                                     @error('jenis_aset')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
-
-                                <!-- Type of Asset -->
-                                <div>
-                                    <label for="kategori_aset" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-cube mr-1'></i>
-                                        Kategori Aset <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-cube text-gray-400'></i>
-                                        </div>
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-chevron-down text-gray-400'></i>
-                                        </div>
-                                        <select id="kategori_aset" name="kategori_aset" required
-                                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kategori_aset') border-red-500 @enderror appearance-none bg-white">
-                                            <option value="">-- Pilih --</option>
-                                            <option value="asset" {{ old('kategori_aset', $asset->kategori_aset) == 'asset' ? 'selected' : '' }}>Asset</option>
-                                            <option value="non-asset" {{ old('kategori_aset', $asset->kategori_aset) == 'non-asset' ? 'selected' : '' }}>Non-Asset</option>
-                                        </select>
-                                    </div>
-                                    @error('kategori_aset')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
                                             <i class='bx bx-error-circle mr-1'></i>
                                             {{ $message }}
@@ -1488,24 +1488,24 @@
                                 const previewDiv = document.createElement('div');
                                 previewDiv.className = 'relative group animate-fadeIn';
                                 previewDiv.innerHTML = `
-                                                                                        <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
-                                                                                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                                                                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                                                                                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                                                                    <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                                                                                                        <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                                                                <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
+                                                                                                    <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                                                                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                                                                                        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                                                                            <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                                                                                                <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                                                                            </div>
+                                                                                                        </div>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <button type="button" onclick="removeNewImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
-                                                                                            <i class='bx bx-x text-lg'></i>
-                                                                                        </button>
-                                                                                        <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                                                                                            <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
-                                                                                            <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                                                                        </div>
-                                                                                    `;
+                                                                                                <button type="button" onclick="removeNewImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
+                                                                                                    <i class='bx bx-x text-lg'></i>
+                                                                                                </button>
+                                                                                                <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                                                                                                    <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
+                                                                                                    <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                                                                </div>
+                                                                                            `;
                                 imagePreview.appendChild(previewDiv);
 
                                 // Update progress
