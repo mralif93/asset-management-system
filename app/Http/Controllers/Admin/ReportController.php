@@ -981,6 +981,10 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        // Note: Immovable assets don't have existing location filter, passing empty until needed
+        $lokasiList = collect([]);
+
         // Calculate totals
         $totalCost = $immovableAssets->sum('kos_perolehan');
 
@@ -988,6 +992,7 @@ class ReportController extends Controller
             'immovableAssets',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'totalCost',
             'masjidSurauId',
             'daerah',
@@ -1110,6 +1115,9 @@ class ReportController extends Controller
         // Get unique daerah for filter
         $daerahList = MasjidSurau::select('daerah')->distinct()->orderBy('daerah')->pluck('daerah');
 
+        // Get unique locations for filter
+        $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
+
         return view('admin.reports.br-ams-010', compact(
             'capitalAssetsCount',
             'capitalAssetsValue',
@@ -1122,8 +1130,11 @@ class ReportController extends Controller
             'grandTotal',
             'masjidSurauList',
             'daerahList',
+            'lokasiList',
             'masjidSurauId',
             'daerah',
+            'lokasi',
+            'bulan', // Added missing month variable
             'tahun'
         ));
     }
