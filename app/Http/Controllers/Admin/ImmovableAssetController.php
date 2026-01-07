@@ -82,21 +82,25 @@ class ImmovableAssetController extends Controller
             'keluasan_tanah' => 'nullable|numeric|min:0',
             'keluasan_bangunan' => 'nullable|numeric|min:0',
             'tarikh_perolehan' => 'required|date',
-            'sumber_perolehan' => 'required|string',
+            'sumber_perolehan' => 'required|string|in:' . implode(',', \App\Helpers\SystemData::getAcquisitionSources()),
             'kos_perolehan' => 'required|numeric|min:0',
-            'keadaan_semasa' => 'required|string',
+            'keadaan_semasa' => 'required|string|in:' . implode(',', \App\Helpers\SystemData::getPhysicalConditions()),
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array|max:5',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         // Combine keluasan_tanah and keluasan_bangunan if provided separately
-        if (!$validated['luas_tanah_bangunan'] && ($validated['keluasan_tanah'] || $validated['keluasan_bangunan'])) {
-            $validated['luas_tanah_bangunan'] = ($validated['keluasan_tanah'] ?? 0) + ($validated['keluasan_bangunan'] ?? 0);
+        $luas = $validated['luas_tanah_bangunan'] ?? 0;
+        $tanah = $validated['keluasan_tanah'] ?? 0;
+        $bangunan = $validated['keluasan_bangunan'] ?? 0;
+
+        if ($luas == 0 && ($tanah > 0 || $bangunan > 0)) {
+            $validated['luas_tanah_bangunan'] = $tanah + $bangunan;
         }
 
         // Ensure luas_tanah_bangunan is set
-        if (!$validated['luas_tanah_bangunan']) {
+        if (!isset($validated['luas_tanah_bangunan'])) {
             $validated['luas_tanah_bangunan'] = 0;
         }
 
@@ -159,9 +163,9 @@ class ImmovableAssetController extends Controller
             'no_lot' => 'nullable|string|max:255',
             'luas_tanah_bangunan' => 'required|numeric|min:0',
             'tarikh_perolehan' => 'required|date',
-            'sumber_perolehan' => 'required|string',
+            'sumber_perolehan' => 'required|string|in:' . implode(',', \App\Helpers\SystemData::getAcquisitionSources()),
             'kos_perolehan' => 'required|numeric|min:0',
-            'keadaan_semasa' => 'required|string',
+            'keadaan_semasa' => 'required|string|in:' . implode(',', \App\Helpers\SystemData::getPhysicalConditions()),
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array|max:5',
             'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
@@ -369,20 +373,16 @@ class ImmovableAssetController extends Controller
 
             // 3. Source Reference
             fputcsv($file, ['--- SUMBER PEROLEHAN SAH ---']);
-            fputcsv($file, ['Pembelian']);
-            fputcsv($file, ['Hibah']);
-            fputcsv($file, ['Wakaf']);
-            fputcsv($file, ['Derma']);
-            fputcsv($file, ['Lain-lain']);
+            foreach (\App\Helpers\SystemData::getAcquisitionSources() as $source) {
+                fputcsv($file, [$source]);
+            }
             fputcsv($file, []);
 
             // 4. Condition Reference
-            fputcsv($file, ['--- KEADAAN SEMASA SAH ---']);
-            fputcsv($file, ['Sangat Baik']);
-            fputcsv($file, ['Baik']);
-            fputcsv($file, ['Sederhana']);
-            fputcsv($file, ['Perlu Pembaikan']);
-            fputcsv($file, ['Rosak']);
+            fputcsv($file, ['--- KEADAAN SEMASA SAH (Sama seperti Keadaan Fizikal) ---']);
+            foreach (\App\Helpers\SystemData::getPhysicalConditions() as $condition) {
+                fputcsv($file, [$condition]);
+            }
             fputcsv($file, []);
 
             // Add important notes
@@ -502,16 +502,16 @@ class ImmovableAssetController extends Controller
                 }
 
                 // Validate source
-                $validSources = ['Pembelian', 'Hibah', 'Wakaf', 'Derma', 'Lain-lain'];
+                $validSources = \App\Helpers\SystemData::getAcquisitionSources();
                 if (!empty($assetData['sumber_perolehan']) && !in_array($assetData['sumber_perolehan'], $validSources)) {
-                    $errors[] = "Baris {$rowNumber}: Sumber Perolehan tidak sah";
+                    $errors[] = "Baris {$rowNumber}: Sumber Perolehan tidak sah. Sila gunakan: " . implode(', ', $validSources);
                     continue;
                 }
 
                 // Validate condition
-                $validConditions = ['Sangat Baik', 'Baik', 'Sederhana', 'Perlu Pembaikan', 'Rosak'];
+                $validConditions = \App\Helpers\SystemData::getPhysicalConditions();
                 if (!empty($assetData['keadaan_semasa']) && !in_array($assetData['keadaan_semasa'], $validConditions)) {
-                    $errors[] = "Baris {$rowNumber}: Keadaan Semasa tidak sah";
+                    $errors[] = "Baris {$rowNumber}: Keadaan Semasa tidak sah. Sila gunakan: " . implode(', ', $validConditions);
                     continue;
                 }
 

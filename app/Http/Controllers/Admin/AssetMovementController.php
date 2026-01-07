@@ -63,8 +63,9 @@ class AssetMovementController extends Controller
     {
         $assets = Asset::with('masjidSurau')->get();
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        $validLocations = \App\Helpers\SystemData::getValidLocations();
 
-        return view('admin.asset-movements.create', compact('assets', 'masjidSuraus'));
+        return view('admin.asset-movements.create', compact('assets', 'masjidSuraus', 'validLocations'));
     }
 
     /**
@@ -72,6 +73,8 @@ class AssetMovementController extends Controller
      */
     public function store(Request $request)
     {
+        $request->merge(['tarikh_permohonan' => now()->toDateString()]);
+
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'jenis_pergerakan' => 'required|in:Pemindahan,Peminjaman,Pulangan',
@@ -91,22 +94,6 @@ class AssetMovementController extends Controller
 
         $validated['user_id'] = auth()->id();
         $validated['status_pergerakan'] = 'menunggu_kelulusan';
-        // Note: status_kelulusan_asal/destinasi are NOT in the migration provided (0004_create_asset_movements_table.php), 
-        // but appeared in the original controller code. 
-        // Based on the migration file viewed earlier, THESE COLUMNS DO NOT EXIST in the schema shown in Step 24.
-        // However, the Model uses 'status_pergerakan'.
-        // If 'status_kelulusan_asal' and 'status_kelulusan_destinasi' are needed, they presumably exist 
-        // (maybe I missed a migration or they are virtual attributes/mutators, or the controller was writing to non-existent columns).
-        // Let's re-read the migration file carefully.
-        // Migration 0004 (Step 24) has: status_pergerakan, pegawai_meluluskan, catatan.
-        // It DOES NOT HAVE status_kelulusan_asal, diluluskan_oleh_asal, etc.
-        // This confirms the previous controller code was writing to columns that DO NOT EXIST in that migration.
-        // IF there are other migrations I missed, I should check. But based on `find_by_name *asset_movements*` I only saw two.
-        // Let's assume for now we only stick to what is in the schema we saw.
-        // But wait, the original controller used them. 
-        // Let's check if the user wants this functionality. 
-        // The Prompt was "verify CRUD". The current code is definitely broken if those columns don't exist.
-        // I will stick to the schema I saw.
 
         $assetMovement = AssetMovement::create($validated);
 
@@ -143,8 +130,9 @@ class AssetMovementController extends Controller
 
         $assets = Asset::with('masjidSurau')->get();
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        $validLocations = \App\Helpers\SystemData::getValidLocations();
 
-        return view('admin.asset-movements.edit', compact('assetMovement', 'assets', 'masjidSuraus'));
+        return view('admin.asset-movements.edit', compact('assetMovement', 'assets', 'masjidSuraus', 'validLocations'));
     }
 
     /**
@@ -154,6 +142,10 @@ class AssetMovementController extends Controller
     {
         if ($assetMovement->status_pergerakan !== 'menunggu_kelulusan') {
             abort(403, 'Pergerakan yang telah diluluskan tidak boleh diedit.');
+        }
+
+        if (!$request->has('tarikh_permohonan')) {
+            $request->merge(['tarikh_permohonan' => $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('Y-m-d') : now()->toDateString()]);
         }
 
         $validated = $request->validate([

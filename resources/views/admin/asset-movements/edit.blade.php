@@ -304,6 +304,13 @@
                                     @enderror
                                 </div>
 
+                                <!-- Valid Locations Datalist -->
+                                <datalist id="locations">
+                                    @foreach($validLocations ?? [] as $location)
+                                        <option value="{{ $location }}">
+                                    @endforeach
+                                </datalist>
+
                                 <!-- Detailed Source Location -->
                                 <div>
                                     <label for="lokasi_asal_spesifik" class="block text-sm font-medium text-gray-700 mb-2">
@@ -318,6 +325,7 @@
                                             value="{{ old('lokasi_asal_spesifik', $assetMovement->lokasi_asal_spesifik) }}"
                                             required x-model="form.lokasi_asal_spesifik"
                                             placeholder="Contoh: Bilik Stor Tingkat 1"
+                                            list="locations"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror bg-white">
                                     </div>
                                     @error('lokasi_asal_spesifik')
@@ -343,6 +351,7 @@
                                             value="{{ old('lokasi_destinasi_spesifik', $assetMovement->lokasi_destinasi_spesifik) }}"
                                             required x-model="form.lokasi_destinasi_spesifik"
                                             placeholder="Contoh: Ruang Solat Utama"
+                                            list="locations"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror bg-white">
                                     </div>
                                     @error('lokasi_destinasi_spesifik')

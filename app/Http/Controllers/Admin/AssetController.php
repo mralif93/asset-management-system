@@ -14,26 +14,7 @@ use Carbon\Carbon; // Added Carbon import
 
 class AssetController extends Controller
 {
-    private const VALID_LOCATIONS = [
-        'Anjung kiri',
-        'Anjung kanan',
-        'Anjung Depan(Ruang Pengantin)',
-        'Ruang Utama (tingkat atas, tingkat bawah)',
-        'Bilik Mesyuarat',
-        'Bilik Kuliah',
-        'Bilik Bendahari',
-        'Bilik Setiausaha',
-        'Bilik Nazir & Imam',
-        'Bangunan Jenazah',
-        'Tempat letak kereta',
-        'Bilik pengurusan',
-        'Bilik pejabat',
-        'Bilik store',
-        'Kawasan Letak Kereta & Motor',
-        'Dapur',
-        'Tempat Letak Kenderaan',
-        'Lain-lain'
-    ];
+    // Valid locations moved to App\Helpers\SystemData
 
     /**
      * lihatSenaraiAset(): Display complete list of all registered movable assets
@@ -118,7 +99,7 @@ class AssetController extends Controller
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => ['required', 'string', Rule::in(self::VALID_LOCATIONS)],
+            'lokasi_penempatan' => ['required', 'string', Rule::in(\App\Helpers\SystemData::getValidLocations())],
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
@@ -256,7 +237,7 @@ class AssetController extends Controller
             'diskaun' => 'nullable|numeric|min:0',
             'umur_faedah_tahunan' => 'nullable|integer|min:1',
             'susut_nilai_tahunan' => 'nullable|numeric|min:0',
-            'lokasi_penempatan' => ['required', 'string', Rule::in(self::VALID_LOCATIONS)],
+            'lokasi_penempatan' => ['required', 'string', Rule::in(\App\Helpers\SystemData::getValidLocations())],
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
             'status_aset' => 'required|string',
@@ -345,7 +326,7 @@ class AssetController extends Controller
     public function updateLocation(Request $request, Asset $asset)
     {
         $validated = $request->validate([
-            'lokasi_penempatan' => ['required', 'string', Rule::in(self::VALID_LOCATIONS)],
+            'lokasi_penempatan' => ['required', 'string', Rule::in(\App\Helpers\SystemData::getValidLocations())],
             'pegawai_bertanggungjawab_lokasi' => 'required|string|max:255',
             'jawatan_pegawai' => 'nullable|string|max:255',
         ]);
@@ -608,19 +589,16 @@ class AssetController extends Controller
 
             // 3. Location Reference
             fputcsv($file, ['--- LOKASI PENEMPATAN SAH ---']);
-            $validLocations = self::VALID_LOCATIONS;
-            foreach ($validLocations as $location) {
+            foreach (\App\Helpers\SystemData::getValidLocations() as $location) {
                 fputcsv($file, [$location]);
             }
             fputcsv($file, []);
 
             // 4. Physical Condition Reference
             fputcsv($file, ['--- KEADAAN FIZIKAL SAH ---']);
-            fputcsv($file, ['Cemerlang']);
-            fputcsv($file, ['Baik']);
-            fputcsv($file, ['Sederhana']);
-            fputcsv($file, ['Rosak']);
-            fputcsv($file, ['Tidak Boleh Digunakan']);
+            foreach (\App\Helpers\SystemData::getPhysicalConditions() as $condition) {
+                fputcsv($file, [$condition]);
+            }
             fputcsv($file, []);
 
             // 5. Asset Status Reference
@@ -633,11 +611,9 @@ class AssetController extends Controller
 
             // 6. Acquisition Method Reference
             fputcsv($file, ['--- KAEDAH PEROLEHAN SAH ---']);
-            fputcsv($file, ['Pembelian']);
-            fputcsv($file, ['Sumbangan']);
-            fputcsv($file, ['Hibah']);
-            fputcsv($file, ['Infaq']);
-            fputcsv($file, ['Lain-lain']);
+            foreach (\App\Helpers\SystemData::getAcquisitionSources() as $source) {
+                fputcsv($file, [$source]);
+            }
             fputcsv($file, []);
 
             // 7. Warranty Status Reference
