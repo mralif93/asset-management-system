@@ -363,18 +363,11 @@
                                             x-model="form.lokasi_penempatan"
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_penempatan') border-red-500 @enderror appearance-none bg-white">
                                             <option value="">-- Pilih --</option>
-                                            <option value="Anjung kiri" {{ old('lokasi_penempatan') === 'Anjung kiri' ? 'selected' : '' }}>Anjung kiri</option>
-                                            <option value="Anjung kanan" {{ old('lokasi_penempatan') === 'Anjung kanan' ? 'selected' : '' }}>Anjung kanan</option>
-                                            <option value="Anjung Depan(Ruang Pengantin)" {{ old('lokasi_penempatan') === 'Anjung Depan(Ruang Pengantin)' ? 'selected' : '' }}>Anjung Depan(Ruang Pengantin)</option>
-                                            <option value="Ruang Utama (tingkat atas, tingkat bawah)" {{ old('lokasi_penempatan') === 'Ruang Utama (tingkat atas, tingkat bawah)' ? 'selected' : '' }}>Ruang Utama (tingkat atas, tingkat bawah)</option>
-                                            <option value="Bilik Mesyuarat" {{ old('lokasi_penempatan') === 'Bilik Mesyuarat' ? 'selected' : '' }}>Bilik Mesyuarat</option>
-                                            <option value="Bilik Kuliah" {{ old('lokasi_penempatan') === 'Bilik Kuliah' ? 'selected' : '' }}>Bilik Kuliah</option>
-                                            <option value="Bilik Bendahari" {{ old('lokasi_penempatan') === 'Bilik Bendahari' ? 'selected' : '' }}>Bilik Bendahari</option>
-                                            <option value="Bilik Setiausaha" {{ old('lokasi_penempatan') === 'Bilik Setiausaha' ? 'selected' : '' }}>Bilik Setiausaha</option>
-                                            <option value="Bilik Nazir & Imam" {{ old('lokasi_penempatan') === 'Bilik Nazir & Imam' ? 'selected' : '' }}>Bilik Nazir & Imam</option>
-                                            <option value="Bangunan Jenazah" {{ old('lokasi_penempatan') === 'Bangunan Jenazah' ? 'selected' : '' }}>Bangunan Jenazah</option>
-                                            <option value="Tempat Letak Kenderaan" {{ old('lokasi_penempatan') === 'Tempat Letak Kenderaan' ? 'selected' : '' }}>Tempat Letak Kenderaan</option>
-                                            <option value="Lain-lain" {{ old('lokasi_penempatan') === 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                            @foreach(\App\Helpers\SystemData::getValidLocations() as $location)
+                                                <option value="{{ $location }}" {{ old('lokasi_penempatan') === $location ? 'selected' : '' }}>
+                                                    {{ $location }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     @error('lokasi_penempatan')
@@ -1555,24 +1548,24 @@
                                 const previewDiv = document.createElement('div');
                                 previewDiv.className = 'relative group animate-fadeIn';
                                 previewDiv.innerHTML = `
-                                                                                                                                <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
-                                                                                                                                    <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                                                                                                                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                                                                                                                                        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                                                                                                            <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                                                                                                                                                <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                                                                                                        <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-emerald-300 transition-all duration-300 shadow-sm group-hover:shadow-lg transform group-hover:scale-105 cursor-pointer" onclick="openImageModal('${e.target.result}', '${file.name}')">
+                                                                                                                                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                                                                                                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                                                                                                                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                                                                                                                    <div class="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                                                                                                                                        <i class='bx bx-zoom-in text-gray-700 text-2xl'></i>
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
                                                                                                                                             </div>
                                                                                                                                         </div>
-                                                                                                                                    </div>
-                                                                                                                                </div>
-                                                                                                                                <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
-                                                                                                                                    <i class='bx bx-x text-lg'></i>
-                                                                                                                                </button>
-                                                                                                                                <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                                                                                                                                    <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
-                                                                                                                                    <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                                                                                                                </div>
-                                                                                                                            `;
+                                                                                                                                        <button type="button" onclick="removeImage(${index})" class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl transform hover:scale-110">
+                                                                                                                                            <i class='bx bx-x text-lg'></i>
+                                                                                                                                        </button>
+                                                                                                                                        <div class="mt-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                                                                                                                                            <p class="text-sm text-gray-700 truncate font-medium">${file.name}</p>
+                                                                                                                                            <p class="text-sm text-emerald-600 mt-1 font-medium">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                                                                                                        </div>
+                                                                                                                                    `;
                                 imagePreview.appendChild(previewDiv);
 
                                 // Update progress

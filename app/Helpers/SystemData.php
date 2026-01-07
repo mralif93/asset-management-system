@@ -22,6 +22,7 @@ class SystemData
         'Bilik store',
         'Kawasan Letak Kereta & Motor',
         'Dapur',
+        'Barangan Stor Dapur', // New location
         'Lain-lain'
     ];
 
