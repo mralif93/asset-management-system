@@ -36,7 +36,7 @@ class AssetRegistrationNumber
      * Format: [Singkatan Nama]/[Jenis Aset]/[Tahun]/[Nombor Urutan]
      * Example: MTAJ/HM/23/001
      */
-    public static function generate($masjidSurauId, $jenisAset, $year = null)
+    public static function generate($masjidSurauId, $jenisAset, $year = null, $sequenceOffset = 0)
     {
         $year = $year ?: date('y'); // Get last 2 digits of year
 
@@ -48,7 +48,7 @@ class AssetRegistrationNumber
         $jenisAsetCode = self::$assetTypeAbbreviations[$jenisAset] ?? 'O';
 
         // Get next sequence number
-        $sequenceNumber = self::getNextSequenceNumber($jenisAsetCode, $masjidSurauId, $year);
+        $sequenceNumber = self::getNextSequenceNumber($jenisAsetCode, $masjidSurauId, $year, $sequenceOffset);
 
         return sprintf('%s/%s/%s/%03d', $singkatan, $jenisAsetCode, $year, $sequenceNumber);
     }
@@ -56,7 +56,7 @@ class AssetRegistrationNumber
     /**
      * Get the next sequence number for the given year and asset type
      */
-    private static function getNextSequenceNumber($jenisAsetCode, $masjidSurauId, $year)
+    private static function getNextSequenceNumber($jenisAsetCode, $masjidSurauId, $year, $offset = 0)
     {
         // Build pattern to search for
         $pattern = "%/{$jenisAsetCode}/{$year}/%";
@@ -86,7 +86,7 @@ class AssetRegistrationNumber
             $latestSequence = max($latestSequence, (int) end($parts));
         }
 
-        return $latestSequence + 1;
+        return $latestSequence + 1 + $offset;
     }
 
     /**

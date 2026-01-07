@@ -159,7 +159,8 @@ class AssetController extends Controller
                     $serialNumbers[] = AssetRegistrationNumber::generate(
                         $validated['masjid_surau_id'],
                         $validated['jenis_aset'],
-                        $tarikhPerolehan->format('y')
+                        $tarikhPerolehan->format('y'),
+                        $i - 1
                     );
                 }
 
