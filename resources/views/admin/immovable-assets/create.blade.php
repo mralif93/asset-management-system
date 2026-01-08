@@ -214,7 +214,7 @@
                                         Alamat
                                     </label>
                                     <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <div class="absolute top-0 left-0 pl-3 pt-4 flex pointer-events-none">
                                             <i class='bx bx-map text-gray-400'></i>
                                         </div>
                                         <textarea id="alamat" name="alamat" rows="3"
@@ -303,7 +303,7 @@
                                         <input type="text" id="keluasan_tanah" name="keluasan_tanah"
                                             value="{{ old('keluasan_tanah') }}"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_tanah') border-red-500 @enderror bg-white"
-                                            placeholder="Masukkan keluasan tanah">
+                                            placeholder="0.00">
                                     </div>
                                     @error('keluasan_tanah')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -415,7 +415,7 @@
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <i class='bx bx-dollar text-gray-400'></i>
                                         </div>
-                                        <input type="number" step="0.01" id="kos_perolehan" name="kos_perolehan"
+                                        <input type="text" id="kos_perolehan" name="kos_perolehan"
                                             value="{{ old('kos_perolehan') }}" required
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_perolehan') border-red-500 @enderror bg-white"
                                             placeholder="0.00">
@@ -494,7 +494,7 @@
                                     Catatan
                                 </label>
                                 <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <div class="absolute top-0 left-0 pl-3 pt-4 flex pointer-events-none">
                                         <i class='bx bx-note text-gray-400'></i>
                                     </div>
                                     <textarea id="catatan" name="catatan" rows="4"
@@ -644,23 +644,70 @@
 
     @push('scripts')
         <script>
-            // Form validation
-            document.getElementById('keluasan_tanah').addEventListener('input', function () {
-                const value = parseFloat(this.value);
-                if (value < 0) {
-                    this.setCustomValidity('Luas tidak boleh negatif');
-                } else {
-                    this.setCustomValidity('');
+            // Currency formatting functions
+            function formatCurrency(value) {
+                if (!value) return '';
+                // Remove non-numeric characters except dot
+                let number = value.replace(/[^\d.]/g, '');
+                // Ensure only one dot
+                const parts = number.split('.');
+                number = parts[0] + (parts.length > 1 ? '.' + parts[1] : '');
+                
+                // Parse float and format
+                const floatVal = parseFloat(number);
+                if (isNaN(floatVal)) return '';
+                
+                return floatVal.toLocaleString('en-MY', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            function stripCurrency(value) {
+                if (!value) return '';
+                return value.replace(/,/g, '');
+            }
+
+            function setupCurrencyInput(elementId) {
+                const element = document.getElementById(elementId);
+                if (!element) return;
+
+                // Format on blur
+                element.addEventListener('blur', function() {
+                    this.value = formatCurrency(this.value);
+                });
+
+                // Strip formatting on focus
+                element.addEventListener('focus', function() {
+                    this.value = stripCurrency(this.value);
+                });
+
+                // Allow only numbers and dot on input
+                element.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+
+                // Format initial value if exists
+                if (element.value) {
+                    element.value = formatCurrency(element.value);
                 }
+            }
+
+            // Clean values before submit
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const fields = ['keluasan_tanah', 'kos_perolehan'];
+                fields.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = stripCurrency(element.value);
+                    }
+                });
             });
 
-            document.getElementById('kos_perolehan').addEventListener('input', function () {
-                const value = parseFloat(this.value);
-                if (value < 0) {
-                    this.setCustomValidity('Kos tidak boleh negatif');
-                } else {
-                    this.setCustomValidity('');
-                }
+            // Initialize inputs
+            document.addEventListener('DOMContentLoaded', function() {
+                setupCurrencyInput('keluasan_tanah');
+                setupCurrencyInput('kos_perolehan');
             });
         </script>
     @endpush

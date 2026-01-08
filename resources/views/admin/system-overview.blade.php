@@ -299,7 +299,7 @@
                                     </div>
                                     <div class="flex items-center space-x-2">
                                         <div class="text-right">
-                                            <div class="text-lg font-bold text-gray-900">RM {{ number_format(($masjid instanceof \App\Models\MasjidSurau ? ($masjid->assets->sum('nilai_perolehan') ?? 0) : 0), 0) }}</div>
+                                            <div class="text-lg font-bold text-gray-900">RM {{ number_format(($masjid instanceof \App\Models\MasjidSurau ? ($masjid->assets->sum('nilai_perolehan') ?? 0) : 0), 2) }}</div>
                                             <div class="text-xs text-gray-500">Nilai Aset</div>
                                         </div>
                                         <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-emerald-100 transition-colors">

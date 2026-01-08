@@ -427,13 +427,18 @@
                                 <!-- Purpose -->
                                 <div>
                                     <label for="tujuan_pergerakan" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-target mr-1'></i>
+                                        <i class='bx bx-comment-detail mr-1'></i>
                                         Sebab Pergerakan <span class="text-red-500">*</span>
                                     </label>
-                                    <textarea id="tujuan_pergerakan" name="tujuan_pergerakan" rows="3" required
-                                        x-model="form.tujuan_pergerakan"
-                                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tujuan_pergerakan') border-red-500 @enderror bg-white"
-                                        placeholder="Sebab dan tujuan pergerakan aset ini...">{{ old('tujuan_pergerakan') }}</textarea>
+                                    <div class="relative">
+                                        <div class="absolute top-0 left-0 pl-3 pt-4 flex pointer-events-none z-10">
+                                            <i class='bx bx-comment-detail text-gray-400'></i>
+                                        </div>
+                                        <textarea id="tujuan_pergerakan" name="tujuan_pergerakan" rows="3" required
+                                            x-model="form.tujuan_pergerakan"
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tujuan_pergerakan') border-red-500 @enderror bg-white"
+                                            placeholder="Sebab dan tujuan pergerakan aset ini...">{{ old('tujuan_pergerakan') }}</textarea>
+                                    </div>
                                     @error('tujuan_pergerakan')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
                                             <i class='bx bx-error-circle mr-1'></i>
@@ -448,10 +453,15 @@
                                         <i class='bx bx-building mr-1'></i>
                                         Pembekal / Vendor (Jika ada)
                                     </label>
-                                    <input type="text" id="pembekal" name="pembekal" x-model="form.pembekal"
-                                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('pembekal') border-red-500 @enderror bg-white"
-                                        placeholder="Nama Syarikat Pembekal atau Vendor (Pilihan)"
-                                        value="{{ old('pembekal') }}">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                            <i class='bx bx-store-alt text-gray-400'></i>
+                                        </div>
+                                        <input type="text" id="pembekal" name="pembekal" x-model="form.pembekal"
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('pembekal') border-red-500 @enderror bg-white"
+                                            placeholder="Nama Syarikat Pembekal atau Vendor (Pilihan)"
+                                            value="{{ old('pembekal') }}">
+                                    </div>
                                     @error('pembekal')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
                                             <i class='bx bx-error-circle mr-1'></i>
@@ -466,9 +476,14 @@
                                         <i class='bx bx-note mr-1'></i>
                                         Catatan Pergerakan
                                     </label>
-                                    <textarea id="catatan" name="catatan" rows="3" x-model="form.catatan"
-                                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
-                                        placeholder="Catatan tambahan (pilihan)">{{ old('catatan') }}</textarea>
+                                    <div class="relative">
+                                        <div class="absolute top-0 left-0 pl-3 pt-4 flex pointer-events-none z-10">
+                                            <i class='bx bx-notepad text-gray-400'></i>
+                                        </div>
+                                        <textarea id="catatan" name="catatan" rows="3" x-model="form.catatan"
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
+                                            placeholder="Catatan tambahan (pilihan)">{{ old('catatan') }}</textarea>
+                                    </div>
                                     @error('catatan')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
                                             <i class='bx bx-error-circle mr-1'></i>

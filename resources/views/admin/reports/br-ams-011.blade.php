@@ -221,7 +221,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-300">
-                                <div class="font-medium">{{ $asset->keluasan_tanah ?? 'N/A' }}</div>
+                                <div class="font-medium">{{ number_format($asset->keluasan_tanah ?? 0, 2) }}</div>
                             </td>
 
                             <!-- Building Asset Information -->
@@ -419,7 +419,7 @@
                     alert('Sila benarkan pop-up untuk melihat pratonton PDF');
                 }
             }, 2000);
-        }
+                }
 
             // Print styles
             window.addEventListener('beforeprint', function () {

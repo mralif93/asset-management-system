@@ -19,9 +19,9 @@
                         </div>
                         <div class="flex items-center space-x-2">
                             <div class="w-3 h-3 
-                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-400
-                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-400
-                                @else bg-red-400 @endif rounded-full"></div>
+                                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-400
+                                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-400
+                                                @else bg-red-400 @endif rounded-full"></div>
                             <span class="text-emerald-100">{{ $immovableAsset->keadaan_semasa }}</span>
                         </div>
                     </div>
@@ -63,13 +63,13 @@
                         </div>
                         <div class="flex items-center space-x-3">
                             <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
-                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
-                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
-                                @else bg-red-100 text-red-800 @endif">
+                                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
+                                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
+                                                @else bg-red-100 text-red-800 @endif">
                                 <div class="w-2 h-2 
-                                    @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
-                                    @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
-                                    @else bg-red-500 @endif rounded-full mr-2"></div>
+                                                    @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
+                                                    @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
+                                                    @else bg-red-500 @endif rounded-full mr-2"></div>
                                 {{ $immovableAsset->keadaan_semasa }}
                             </span>
                             <span
@@ -193,7 +193,7 @@
                                         Alamat
                                     </label>
                                     <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <div class="absolute top-0 left-0 pl-3 pt-4 flex pointer-events-none">
                                             <i class='bx bx-map text-gray-400'></i>
                                         </div>
                                         <textarea id="alamat" name="alamat" rows="3"
@@ -283,7 +283,7 @@
                                         <input type="text" id="keluasan_tanah" name="keluasan_tanah"
                                             value="{{ old('keluasan_tanah', $immovableAsset->keluasan_tanah) }}"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('keluasan_tanah') border-red-500 @enderror bg-white"
-                                            placeholder="Masukkan keluasan tanah">
+                                            placeholder="0.00">
                                     </div>
                                     @error('keluasan_tanah')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -387,7 +387,7 @@
                                         Kos Perolehan (RM) <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="number" step="0.01" id="kos_perolehan" name="kos_perolehan"
+                                        <input type="text" id="kos_perolehan" name="kos_perolehan"
                                             value="{{ old('kos_perolehan', $immovableAsset->kos_perolehan) }}" required
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kos_perolehan') border-red-500 @enderror bg-white"
                                             placeholder="0.00">
@@ -484,10 +484,12 @@
                                     Catatan
                                 </label>
                                 <div class="relative">
+                                    <div class="absolute top-0 left-0 pl-3 pt-4 flex pointer-events-none">
+                                        <i class='bx bx-note text-gray-400'></i>
+                                    </div>
                                     <textarea id="catatan" name="catatan" rows="4"
                                         class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('catatan') border-red-500 @enderror bg-white"
                                         placeholder="Masukkan catatan tambahan jika ada">{{ old('catatan', $immovableAsset->catatan) }}</textarea>
-                                    <i class='bx bx-note absolute left-3 top-3.5 text-gray-400'></i>
                                 </div>
                                 @error('catatan')
                                     <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -551,13 +553,13 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm text-gray-600">Status Keadaan:</span>
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-                                            @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
-                                            @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
-                                            @else bg-red-100 text-red-800 @endif">
+                                                            @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
+                                                            @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
+                                                            @else bg-red-100 text-red-800 @endif">
                                             <div class="w-2 h-2 
-                                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
-                                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
-                                                @else bg-red-500 @endif rounded-full mr-1"></div>
+                                                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
+                                                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
+                                                                @else bg-red-500 @endif rounded-full mr-1"></div>
                                             {{ $immovableAsset->keadaan_semasa }}
                                         </span>
                                     </div>
@@ -632,6 +634,73 @@
 
     @push('scripts')
         <script>
+
+            // Currency formatting functions
+            function formatCurrency(value) {
+                if (!value) return '';
+                // Remove non-numeric characters except dot
+                let number = value.replace(/[^\d.]/g, '');
+                // Ensure only one dot
+                const parts = number.split('.');
+                number = parts[0] + (parts.length > 1 ? '.' + parts[1] : '');
+
+                // Parse float and format
+                const floatVal = parseFloat(number);
+                if (isNaN(floatVal)) return '';
+
+                return floatVal.toLocaleString('en-MY', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            function stripCurrency(value) {
+                if (!value) return '';
+                return value.replace(/,/g, '');
+            }
+
+            function setupCurrencyInput(elementId) {
+                const element = document.getElementById(elementId);
+                if (!element) return;
+
+                // Format on blur
+                element.addEventListener('blur', function () {
+                    this.value = formatCurrency(this.value);
+                });
+
+                // Strip formatting on focus
+                element.addEventListener('focus', function () {
+                    this.value = stripCurrency(this.value);
+                });
+
+                // Allow only numbers and dot on input
+                element.addEventListener('input', function (e) {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+
+                // Format initial value if exists
+                if (element.value) {
+                    element.value = formatCurrency(element.value);
+                }
+            }
+
+            // Clean values before submit
+            document.querySelector('form').addEventListener('submit', function (e) {
+                const fields = ['keluasan_tanah', 'kos_perolehan'];
+                fields.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = stripCurrency(element.value);
+                    }
+                });
+            });
+
+            // Initialize inputs
+            document.addEventListener('DOMContentLoaded', function () {
+                setupCurrencyInput('keluasan_tanah');
+                setupCurrencyInput('kos_perolehan');
+            });
+
             // Image removal function
             function removeImage(imagePath) {
                 if (confirm('Adakah anda pasti mahu membuang gambar ini?')) {
