@@ -94,7 +94,8 @@
                     <div>
                         <p class="text-sm font-medium text-amber-700">Status Kelulusan</p>
                         <p class="text-2xl font-bold text-amber-900">
-                            {{ ucfirst(str_replace('_', ' ', $assetMovement->status_pergerakan)) }}</p>
+                            {{ ucfirst(str_replace('_', ' ', $assetMovement->status_pergerakan)) }}
+                        </p>
                         <p class="text-xs text-amber-600 mt-1">Semasa</p>
                     </div>
                     <div
@@ -129,7 +130,8 @@
                     <div>
                         <p class="text-sm font-medium text-purple-700">Nilai Aset</p>
                         <p class="text-2xl font-bold text-purple-900">RM
-                            {{ number_format($assetMovement->asset->nilai_perolehan ?? 0, 0) }}</p>
+                            {{ number_format($assetMovement->asset->nilai_perolehan ?? 0, 0) }}
+                        </p>
                         <p class="text-xs text-purple-600 mt-1">{{ $assetMovement->asset->jenis_aset }}</p>
                     </div>
                     <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
@@ -200,7 +202,8 @@
                                 <dt class="text-sm font-medium text-gray-600">Masjid/Surau Asal</dt>
                             </div>
                             <dd class="text-lg font-semibold text-gray-900">
-                                {{ $assetMovement->masjidSurauAsal->nama ?? 'Tidak Ditetapkan' }}</dd>
+                                {{ $assetMovement->masjidSurauAsal->nama ?? 'Tidak Ditetapkan' }}
+                            </dd>
                             <p class="text-sm text-gray-600">{{ $assetMovement->lokasi_asal_spesifik }}</p>
 
                         </div>
@@ -212,7 +215,8 @@
                                 <dt class="text-sm font-medium text-gray-600">Masjid/Surau Destinasi</dt>
                             </div>
                             <dd class="text-lg font-semibold text-gray-900">
-                                {{ $assetMovement->masjidSurauDestinasi->nama ?? 'Tidak Ditetapkan' }}</dd>
+                                {{ $assetMovement->masjidSurauDestinasi->nama ?? 'Tidak Ditetapkan' }}
+                            </dd>
                             <p class="text-sm text-gray-600">{{ $assetMovement->lokasi_destinasi_spesifik }}</p>
 
                         </div>
@@ -247,7 +251,8 @@
                                     <dt class="text-sm font-medium text-gray-600">Tarikh Jangka Pulangan</dt>
                                 </div>
                                 <dd class="text-lg font-semibold text-gray-900">
-                                    {{ $assetMovement->tarikh_jangka_pulang->format('d/m/Y') }}</dd>
+                                    {{ $assetMovement->tarikh_jangka_pulang->format('d/m/Y') }}
+                                </dd>
                             </div>
                         @endif
 
@@ -258,7 +263,15 @@
                                 <dt class="text-sm font-medium text-gray-600">Pegawai Bertanggungjawab</dt>
                             </div>
                             <dd class="text-lg font-semibold text-gray-900">
-                                {{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab }}</dd>
+                                {{ $assetMovement->nama_peminjam_pegawai_bertanggungjawab }}
+                            </dd>
+                            @if($assetMovement->pegawai_bertanggungjawab_signature)
+                                <div class="mt-3 pt-3 border-t border-gray-100">
+                                    <p class="text-xs text-gray-500 mb-2">Tandatangan:</p>
+                                    <img src="{{ $assetMovement->pegawai_bertanggungjawab_signature }}"
+                                        alt="Tandatangan Pegawai" class="h-20 border border-gray-200 rounded p-1 bg-white">
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

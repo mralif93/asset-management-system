@@ -263,24 +263,29 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                    <div
-                                        class="h-8 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
-                                        <span class="text-gray-400 text-xs">Tandatangan</span>
+                                    <div class="text-xs text-gray-500">
+                                        {{ $movement->approver->name ?? 'System' }} <!-- Assuming relation exists or just display text -->
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                    <div
-                                        class="h-8 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
-                                        <span class="text-gray-400 text-xs">Tandatangan</span>
-                                    </div>
+                                    @if($movement->pegawai_bertanggungjawab_signature)
+                                        <div class="flex justify-center">
+                                            <img src="{{ $movement->pegawai_bertanggungjawab_signature }}" alt="Signature" class="h-8 object-contain">
+                                        </div>
+                                    @else
+                                        <div
+                                            class="h-8 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
+                                            <span class="text-gray-400 text-xs">Tiada</span>
+                                        </div>
+                                    @endif
                                 </td>
 
                                 <!-- Dipulangkan Section -->
                                 <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                    {{ $movement->tarikh_pulang ? \Carbon\Carbon::parse($movement->tarikh_pulang)->format('d/m/Y') : 'Belum Dipulangkan' }}
+                                    {{ $movement->tarikh_pulang_sebenar ? \Carbon\Carbon::parse($movement->tarikh_pulang_sebenar)->format('d/m/Y') : 'Belum Dipulangkan' }}
                                 </td>
                                 <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                    @if($movement->tarikh_pulang)
+                                    @if($movement->tarikh_pulang_sebenar)
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             {{ $movement->kuantiti ?? 1 }}
@@ -290,20 +295,18 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                    @if($movement->tarikh_pulang)
-                                        <div
-                                            class="h-8 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
-                                            <span class="text-gray-400 text-xs">Tandatangan</span>
+                                    @if($movement->tandatangan_penerima)
+                                        <div class="flex justify-center">
+                                            <img src="{{ $movement->tandatangan_penerima }}" alt="Receiver Sign" class="h-8 object-contain">
                                         </div>
                                     @else
                                         <span class="text-gray-400 text-xs">-</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-4 text-center text-sm text-gray-900">
-                                    @if($movement->tarikh_pulang)
-                                        <div
-                                            class="h-8 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
-                                            <span class="text-gray-400 text-xs">Tandatangan</span>
+                                <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
+                                     @if($movement->tandatangan_pemulangan)
+                                        <div class="flex justify-center">
+                                            <img src="{{ $movement->tandatangan_pemulangan }}" alt="Returner Sign" class="h-8 object-contain">
                                         </div>
                                     @else
                                         <span class="text-gray-400 text-xs">-</span>

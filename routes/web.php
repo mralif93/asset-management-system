@@ -83,10 +83,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('assets/{asset}/location', [AssetController::class, 'updateLocation'])->name('assets.update-location');
 
     // Asset Movements
+    Route::get('/asset-movements/{assetMovement}/return', [AssetMovementController::class, 'showReturnForm'])->name('asset-movements.return-form');
     Route::resource('asset-movements', AssetMovementController::class);
     Route::patch('asset-movements/{assetMovement}/approve', [AssetMovementController::class, 'approve'])->name('asset-movements.approve');
     Route::patch('asset-movements/{assetMovement}/reject', [AssetMovementController::class, 'reject'])->name('asset-movements.reject');
-    Route::patch('asset-movements/{assetMovement}/return', [AssetMovementController::class, 'recordReturn'])->name('asset-movements.return');
+    Route::patch('asset-movements/{assetMovement}/process-return', [AssetMovementController::class, 'recordReturn'])->name('asset-movements.process-return');
 
     // Inspections
     Route::resource('inspections', InspectionController::class);

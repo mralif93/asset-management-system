@@ -30,7 +30,10 @@ class AssetMovement extends Model
         'status_pergerakan',
         'pegawai_meluluskan',
         'catatan',
-        'pembekal'
+        'pembekal',
+        'pegawai_bertanggungjawab_signature',
+        'tandatangan_penerima',
+        'tandatangan_pemulangan'
     ];
 
     protected $casts = [

@@ -90,6 +90,7 @@ class AssetMovementController extends Controller
             'kuantiti' => 'required|integer|min:1',
             'catatan' => 'nullable|string',
             'pembekal' => 'nullable|string|max:255',
+            'pegawai_bertanggungjawab_signature' => 'required|string',
         ]);
 
         $validated['user_id'] = auth()->id();
@@ -163,6 +164,7 @@ class AssetMovementController extends Controller
             'kuantiti' => 'required|integer|min:1',
             'catatan' => 'nullable|string',
             'pembekal' => 'nullable|string|max:255',
+            'pegawai_bertanggungjawab_signature' => 'nullable|string',
         ]);
 
         $assetMovement->update($validated);
@@ -227,6 +229,20 @@ class AssetMovementController extends Controller
     }
 
     /**
+     * showReturnForm(id): Display form for returning a borrowed asset
+     */
+    public function showReturnForm(AssetMovement $assetMovement)
+    {
+        if ($assetMovement->status_pergerakan !== 'diluluskan') {
+            abort(403, 'Hanya pergerakan yang diluluskan boleh dikembalikan.');
+        }
+
+        $assetMovement->load(['asset', 'masjidSurauAsal', 'masjidSurauDestinasi']);
+
+        return view('admin.asset-movements.return', compact('assetMovement'));
+    }
+
+    /**
      * rekodPulanganAset(id): Record return of borrowed or transferred assets
      */
     public function recordReturn(Request $request, AssetMovement $assetMovement)
@@ -237,27 +253,21 @@ class AssetMovementController extends Controller
 
         $validated = $request->validate([
             'tarikh_pulang_sebenar' => 'required|date',
-            'catatan' => 'nullable|string'
+            'catatan' => 'nullable|string',
+            'tandatangan_penerima' => 'required|string',
+            'tandatangan_pemulangan' => 'required|string',
         ]);
 
         $assetMovement->update([
-            'status_pergerakan' => 'Pulangan', // Or 'selesai' if that's preferred, but 'Pulangan' is a type. Let's use 'selesai' to indicate completed return if that's the status flow.
-            // Wait, migration schema allows string status. Previous code used 'selesai'. Let's stick to 'selesai' (completed).
-            // Actually, in `index.blade.php`, we only filtered for 'menunggu_kelulusan', 'diluluskan', 'ditolak'.
-            // If I set it to 'selesai', it might disappear from some filters if not accounted for.
-            // But 'selesai' is logical for returned items.
-            // Let's use 'selesai' as status.
-        ]);
-
-        $assetMovement->update([
-            'status_pergerakan' => 'selesai',
+            'status_pergerakan' => 'dipulangkan',
             'tarikh_pulang_sebenar' => $validated['tarikh_pulang_sebenar'],
-            'catatan' => $validated['catatan'] ? $assetMovement->catatan . "\n[Pulang]: " . $validated['catatan'] : $assetMovement->catatan,
+            'catatan' => $validated['catatan'] ? $assetMovement->catatan . "\n\n[Pulangan]: " . $validated['catatan'] : $assetMovement->catatan,
+            'tandatangan_penerima' => $validated['tandatangan_penerima'],
+            'tandatangan_pemulangan' => $validated['tandatangan_pemulangan'],
         ]);
 
         // Update asset location back to original
         $assetMovement->asset->update([
-            // Assuming we want to return it to the origin
             'lokasi_penempatan' => $assetMovement->lokasi_asal_spesifik,
             'masjid_surau_id' => $assetMovement->origin_masjid_surau_id
         ]);

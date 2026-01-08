@@ -160,6 +160,7 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- ROW 1: Type & Quantity -->
                                 <!-- Movement Type -->
                                 <div>
                                     <label for="jenis_pergerakan" class="block text-sm font-medium text-gray-700 mb-2">
@@ -213,8 +214,9 @@
                                     @enderror
                                 </div>
 
+                                <!-- ROW 2: Dates -->
                                 <!-- Movement Date -->
-                                <div>
+                                <div class="col-span-1 md:col-span-2">
                                     <label for="tarikh_pergerakan" class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class='bx bx-calendar mr-1'></i>
                                         Tarikh Pergerakan <span class="text-red-500">*</span>
@@ -236,32 +238,21 @@
                                     @enderror
                                 </div>
 
-                                <!-- Source Masjid/Surau -->
-                                <div>
-                                    <label for="origin_masjid_surau_id"
-                                        class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-building-house mr-1'></i>
-                                        Masjid/Surau Asal <span class="text-red-500">*</span>
+                                <!-- Expected Return Date (for borrowing) - Moved here -->
+                                <div x-show="form.jenis_pergerakan === 'Peminjaman'">
+                                    <label for="tarikh_jangka_pulang" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-time mr-1'></i>
+                                        Tarikh Jangka Pulangan
                                     </label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-building-house text-gray-400'></i>
+                                            <i class='bx bx-time text-gray-400'></i>
                                         </div>
-                                        <select id="origin_masjid_surau_id" name="origin_masjid_surau_id" required
-                                            x-model="form.origin_masjid_surau_id"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('origin_masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
-                                            <option value="">Pilih Masjid/Surau Asal</option>
-                                            @foreach($masjidSuraus as $masjid)
-                                                <option value="{{ $masjid->id }}" {{ old('origin_masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
-                                                    {{ $masjid->nama }} ({{ $masjid->jenis }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-chevron-down text-gray-400'></i>
-                                        </div>
+                                        <input type="date" id="tarikh_jangka_pulang" name="tarikh_jangka_pulang"
+                                            value="{{ old('tarikh_jangka_pulang') }}" x-model="form.tarikh_jangka_pulang"
+                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_jangka_pulang') border-red-500 @enderror bg-white">
                                     </div>
-                                    @error('origin_masjid_surau_id')
+                                    @error('tarikh_jangka_pulang')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
                                             <i class='bx bx-error-circle mr-1'></i>
                                             {{ $message }}
@@ -269,37 +260,73 @@
                                     @enderror
                                 </div>
 
-                                <!-- Destination Masjid/Surau -->
-                                <div>
-                                    <label for="destination_masjid_surau_id"
-                                        class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-building-house mr-1'></i>
-                                        Masjid/Surau Destinasi <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-building-house text-gray-400'></i>
+                                <!-- ROW 3: Masjids (Aligned) -->
+                                <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Source Masjid/Surau -->
+                                    <div>
+                                        <label for="origin_masjid_surau_id"
+                                            class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class='bx bx-building-house mr-1'></i>
+                                            Masjid/Surau Asal <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-building-house text-gray-400'></i>
+                                            </div>
+                                            <select id="origin_masjid_surau_id" name="origin_masjid_surau_id" required
+                                                x-model="form.origin_masjid_surau_id"
+                                                class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('origin_masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
+                                                <option value="">Pilih Masjid/Surau Asal</option>
+                                                @foreach($masjidSuraus as $masjid)
+                                                    <option value="{{ $masjid->id }}" {{ old('origin_masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
+                                                        {{ $masjid->nama }} ({{ $masjid->jenis }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-chevron-down text-gray-400'></i>
+                                            </div>
                                         </div>
-                                        <select id="destination_masjid_surau_id" name="destination_masjid_surau_id" required
-                                            x-model="form.destination_masjid_surau_id"
-                                            class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('destination_masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
-                                            <option value="">Pilih Masjid/Surau Destinasi</option>
-                                            @foreach($masjidSuraus as $masjid)
-                                                <option value="{{ $masjid->id }}" {{ old('destination_masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
-                                                    {{ $masjid->nama }} ({{ $masjid->jenis }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-chevron-down text-gray-400'></i>
-                                        </div>
+                                        @error('origin_masjid_surau_id')
+                                            <p class="mt-1 text-sm text-red-600 flex items-center">
+                                                <i class='bx bx-error-circle mr-1'></i>
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
                                     </div>
-                                    @error('destination_masjid_surau_id')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
+    
+                                    <!-- Destination Masjid/Surau -->
+                                    <div>
+                                        <label for="destination_masjid_surau_id"
+                                            class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class='bx bx-building-house mr-1'></i>
+                                            Masjid/Surau Destinasi <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-building-house text-gray-400'></i>
+                                            </div>
+                                            <select id="destination_masjid_surau_id" name="destination_masjid_surau_id" required
+                                                x-model="form.destination_masjid_surau_id"
+                                                class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('destination_masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
+                                                <option value="">Pilih Masjid/Surau Destinasi</option>
+                                                @foreach($masjidSuraus as $masjid)
+                                                    <option value="{{ $masjid->id }}" {{ old('destination_masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
+                                                        {{ $masjid->nama }} ({{ $masjid->jenis }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-chevron-down text-gray-400'></i>
+                                            </div>
+                                        </div>
+                                        @error('destination_masjid_surau_id')
+                                            <p class="mt-1 text-sm text-red-600 flex items-center">
+                                                <i class='bx bx-error-circle mr-1'></i>
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
+                                    </div>
                                 </div>
 
                                 <!-- Valid Locations Datalist -->
@@ -309,23 +336,78 @@
                                     @endforeach
                                 </datalist>
 
-                                <!-- Detailed Source Location -->
-                                <div>
-                                    <label for="lokasi_asal_spesifik" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-map-pin mr-1'></i>
-                                        Lokasi Terperinci Asal <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-map-pin text-gray-400'></i>
+                                <!-- ROW 4: Locations (Aligned) -->
+                                <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Detailed Source Location -->
+                                    <div>
+                                        <label for="lokasi_asal_spesifik" class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class='bx bx-map-pin mr-1'></i>
+                                            Lokasi Terperinci Asal <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-map-pin text-gray-400'></i>
+                                            </div>
+                                            <input type="text" id="lokasi_asal_spesifik" name="lokasi_asal_spesifik"
+                                                value="{{ old('lokasi_asal_spesifik') }}" required
+                                                x-model="form.lokasi_asal_spesifik" placeholder="Contoh: Bilik Stor Tingkat 1"
+                                                list="locations"
+                                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror bg-white">
                                         </div>
-                                        <input type="text" id="lokasi_asal_spesifik" name="lokasi_asal_spesifik"
-                                            value="{{ old('lokasi_asal_spesifik') }}" required
-                                            x-model="form.lokasi_asal_spesifik" placeholder="Contoh: Bilik Stor Tingkat 1"
-                                            list="locations"
-                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror bg-white">
+                                        @error('lokasi_asal_spesifik')
+                                            <p class="mt-1 text-sm text-red-600 flex items-center">
+                                                <i class='bx bx-error-circle mr-1'></i>
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
                                     </div>
-                                    @error('lokasi_asal_spesifik')
+    
+                                    <!-- Detailed Destination Location -->
+                                    <div>
+                                        <label for="lokasi_destinasi_spesifik"
+                                            class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class='bx bx-map-pin mr-1'></i>
+                                            Lokasi Terperinci Destinasi <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-map-pin text-gray-400'></i>
+                                            </div>
+                                            <input type="text" id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
+                                                value="{{ old('lokasi_destinasi_spesifik') }}" required
+                                                x-model="form.lokasi_destinasi_spesifik" placeholder="Contoh: Ruang Solat Utama"
+                                                list="locations"
+                                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror bg-white">
+                                        </div>
+                                        @error('lokasi_destinasi_spesifik')
+                                            <p class="mt-1 text-sm text-red-600 flex items-center">
+                                                <i class='bx bx-error-circle mr-1'></i>
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- ROW 5: Signature (Full Width) -->
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class='bx bx-pen mr-1'></i>
+                                        Tandatangan Pegawai Bertanggungjawab <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
+                                        <canvas id="signature-pad" class="w-full h-40 touch-none" width="800" height="200"></canvas>
+                                        <div class="absolute top-2 right-2">
+                                            <button type="button" @click="clearSignature()"
+                                                class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded transition-colors">
+                                                Padam
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Sila tandatangan dalam kotak di atas.</p>
+                                    <input type="hidden" id="pegawai_bertanggungjawab_signature"
+                                        name="pegawai_bertanggungjawab_signature"
+                                        x-model="form.pegawai_bertanggungjawab_signature" required>
+                                    @error('pegawai_bertanggungjawab_signature')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
                                             <i class='bx bx-error-circle mr-1'></i>
                                             {{ $message }}
@@ -333,33 +415,8 @@
                                     @enderror
                                 </div>
 
-                                <!-- Detailed Destination Location -->
-                                <div>
-                                    <label for="lokasi_destinasi_spesifik"
-                                        class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-map-pin mr-1'></i>
-                                        Lokasi Terperinci Destinasi <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-map-pin text-gray-400'></i>
-                                        </div>
-                                        <input type="text" id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
-                                            value="{{ old('lokasi_destinasi_spesifik') }}" required
-                                            x-model="form.lokasi_destinasi_spesifik" placeholder="Contoh: Ruang Solat Utama"
-                                            list="locations"
-                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror bg-white">
-                                    </div>
-                                    @error('lokasi_destinasi_spesifik')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
-
-                                <!-- Responsible Person -->
-                                <div>
+                                <!-- ROW 6: Responsible Person (Full Width, Below Signature) -->
+                                <div class="col-span-1 md:col-span-2">
                                     <label for="nama_peminjam_pegawai_bertanggungjawab"
                                         class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class='bx bx-user mr-1'></i>
@@ -377,28 +434,6 @@
                                             placeholder="Nama pegawai yang bertanggungjawab">
                                     </div>
                                     @error('nama_peminjam_pegawai_bertanggungjawab')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
-
-                                <!-- Expected Return Date (for borrowing) -->
-                                <div x-show="form.jenis_pergerakan === 'Peminjaman'">
-                                    <label for="tarikh_jangka_pulang" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-time mr-1'></i>
-                                        Tarikh Jangka Pulangan
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-time text-gray-400'></i>
-                                        </div>
-                                        <input type="date" id="tarikh_jangka_pulang" name="tarikh_jangka_pulang"
-                                            value="{{ old('tarikh_jangka_pulang') }}" x-model="form.tarikh_jangka_pulang"
-                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('tarikh_jangka_pulang') border-red-500 @enderror bg-white">
-                                    </div>
-                                    @error('tarikh_jangka_pulang')
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
                                             <i class='bx bx-error-circle mr-1'></i>
                                             {{ $message }}
@@ -625,6 +660,101 @@
         <script>
             function createMovementForm() {
                 return {
+                    signaturePad: null,
+                    init() {
+                        const canvas = document.getElementById('signature-pad');
+                        
+                        // Resize canvas to fit container
+                        const resizeCanvas = () => {
+                            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                            canvas.width = canvas.offsetWidth * ratio;
+                            canvas.height = canvas.offsetHeight * ratio;
+                            canvas.getContext("2d").scale(ratio, ratio);
+                        };
+                        
+                        window.addEventListener("resize", resizeCanvas);
+                        resizeCanvas();
+                        
+                        // Simple drawing logic without external library to keep it lightweight
+                        const ctx = canvas.getContext('2d');
+                        let isDrawing = false;
+                        let lastX = 0;
+                        let lastY = 0;
+
+                        function getPos(e) {
+                            const rect = canvas.getBoundingClientRect();
+                            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                            return {
+                                x: clientX - rect.left,
+                                y: clientY - rect.top
+                            };
+                        }
+
+                        function startDrawing(e) {
+                            isDrawing = true;
+                            const pos = getPos(e);
+                            lastX = pos.x;
+                            lastY = pos.y;
+                            e.preventDefault();
+                        }
+
+                        function stopDrawing() {
+                            if (isDrawing) {
+                                isDrawing = false;
+                                this.updateSignatureField();
+                            }
+                        }
+
+                        function draw(e) {
+                            if (!isDrawing) return;
+                            
+                            const pos = getPos(e);
+                            ctx.beginPath();
+                            ctx.moveTo(lastX, lastY);
+                            ctx.lineTo(pos.x, pos.y);
+                            ctx.strokeStyle = '#000';
+                            ctx.lineWidth = 2;
+                            ctx.lineCap = 'round';
+                            ctx.stroke();
+                            
+                            lastX = pos.x;
+                            lastY = pos.y;
+                            e.preventDefault();
+                        }
+
+                        // Mouse events
+                        canvas.addEventListener('mousedown', startDrawing.bind(this));
+                        canvas.addEventListener('mousemove', draw.bind(this));
+                        canvas.addEventListener('mouseup', stopDrawing.bind(this));
+                        canvas.addEventListener('mouseout', stopDrawing.bind(this));
+
+                        // Touch events
+                        canvas.addEventListener('touchstart', startDrawing.bind(this));
+                        canvas.addEventListener('touchmove', draw.bind(this));
+                        canvas.addEventListener('touchend', stopDrawing.bind(this));
+                    },
+                    clearSignature() {
+                        const canvas = document.getElementById('signature-pad');
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        this.form.pegawai_bertanggungjawab_signature = '';
+                    },
+                    updateSignatureField() {
+                         const canvas = document.getElementById('signature-pad');
+                         // Only save if canvas is not empty
+                         if (this.isCanvasEmpty(canvas)) {
+                             this.form.pegawai_bertanggungjawab_signature = '';
+                         } else {
+                             this.form.pegawai_bertanggungjawab_signature = canvas.toDataURL();
+                         }
+                    },
+                    isCanvasEmpty(canvas) {
+                        const blank = document.createElement('canvas');
+                        blank.width = canvas.width;
+                        blank.height = canvas.height;
+                        return canvas.toDataURL() === blank.toDataURL();
+                    },
                     form: {
                         asset_id: '{{ old('asset_id') }}',
                         jenis_pergerakan: '{{ old('jenis_pergerakan') }}',
@@ -638,7 +768,8 @@
                         tarikh_jangka_pulang: '{{ old('tarikh_jangka_pulang') }}',
                         tujuan_pergerakan: '{{ old('tujuan_pergerakan') }}',
                         catatan: '{{ old('catatan') }}',
-                        pembekal: '{{ old('pembekal') }}'
+                        pembekal: '{{ old('pembekal') }}',
+                        pegawai_bertanggungjawab_signature: ''
                     },
                     assetInfo: {
                         current_location: '',

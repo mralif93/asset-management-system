@@ -172,6 +172,8 @@
                             <option value="menunggu_kelulusan" {{ request('status') === 'menunggu_kelulusan' ? 'selected' : '' }}>Menunggu Kelulusan</option>
                             <option value="diluluskan" {{ request('status') === 'diluluskan' ? 'selected' : '' }}>Diluluskan
                             </option>
+                            <option value="dipulangkan" {{ request('status') === 'dipulangkan' ? 'selected' : '' }}>Dipulangkan
+                            </option>
                             <option value="ditolak" {{ request('status') === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                         </select>
                     </div>
@@ -317,8 +319,17 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
+                                    @php
+                                        $statusColors = [
+                                            'menunggu_kelulusan' => 'bg-yellow-100 text-yellow-800',
+                                            'diluluskan' => 'bg-green-100 text-green-800',
+                                            'ditolak' => 'bg-red-100 text-red-800',
+                                            'dipulangkan' => 'bg-indigo-100 text-indigo-800',
+                                        ];
+                                        $colorClass = $statusColors[$movement->status_pergerakan] ?? 'bg-gray-100 text-gray-800';
+                                    @endphp
                                     <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $movement->status_pergerakan === 'diluluskan' ? 'bg-green-100 text-green-800' : ($movement->status_pergerakan === 'menunggu_kelulusan' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $colorClass }}">
                                         {{ ucfirst(str_replace('_', ' ', $movement->status_pergerakan)) }}
                                     </span>
                                 </td>
@@ -332,33 +343,35 @@
                                         </a>
 
                                         <!-- Edit Button -->
-                                        @if($movement->status_pergerakan === 'menunggu_kelulusan')
-                                            <a href="{{ route('admin.asset-movements.edit', $movement) }}"
-                                                class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
-                                                title="Edit">
-                                                <i class='bx bx-edit text-sm'></i>
-                                            </a>
-                                        @endif
+                                        <a href="{{ route('admin.asset-movements.edit', $movement) }}"
+                                            class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
+                                            title="Edit">
+                                            <i class='bx bx-edit text-sm'></i>
+                                        </a>
 
                                         <!-- Approve Button -->
                                         @if($movement->status_pergerakan === 'menunggu_kelulusan')
-                                            <form action="{{ route('admin.asset-movements.approve', $movement) }}" method="POST"
-                                                class="inline">
+                                            <button type="button" onclick="confirmApprove('{{ $movement->id }}')"
+                                                class="w-8 h-8 bg-green-100 hover:bg-green-200 text-green-600 rounded-lg flex items-center justify-center transition-colors"
+                                                title="Luluskan">
+                                                <i class='bx bx-check text-sm'></i>
+                                            </button>
+                                            <form id="approve-form-{{ $movement->id }}" action="{{ route('admin.asset-movements.approve', $movement) }}" method="POST" class="hidden">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit"
-                                                    class="w-8 h-8 bg-green-100 hover:bg-green-200 text-green-600 rounded-lg flex items-center justify-center transition-colors"
-                                                    title="Luluskan" onclick="return confirm('Luluskan pergerakan ini?')">
-                                                    <i class='bx bx-check text-sm'></i>
-                                                </button>
                                             </form>
 
                                             <!-- Reject Button -->
-                                            <button onclick="showRejectModal({{ $movement->id }})"
+                                            <button type="button" onclick="confirmReject('{{ $movement->id }}')"
                                                 class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
                                                 title="Tolak">
                                                 <i class='bx bx-x text-sm'></i>
                                             </button>
+                                            <form id="reject-form-{{ $movement->id }}" action="{{ route('admin.asset-movements.reject', $movement->id) }}" method="POST" class="hidden">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="catatan" id="reject-catatan-{{ $movement->id }}">
+                                            </form>
                                         @endif
 
                                         <!-- Delete Button -->
@@ -374,6 +387,15 @@
                                                     <i class='bx bx-trash text-sm'></i>
                                                 </button>
                                             </form>
+                                        @endif
+
+                                        <!-- Return Link -->
+                                        @if($movement->status_pergerakan === 'diluluskan' && $movement->jenis_pergerakan === 'Peminjaman')
+                                            <a href="{{ route('admin.asset-movements.return-form', $movement) }}"
+                                                class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors"
+                                                title="Pulangkan">
+                                                <i class='bx bx-reply text-sm'></i>
+                                            </a>
                                         @endif
                                     </div>
                                 </td>
@@ -396,66 +418,71 @@
         </div>
     </div>
 
-    <!-- Reject Modal -->
-    <div id="rejectModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-xl bg-white">
-            <div class="mt-3">
-                <div class="flex items-center mb-4">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                        <i class='bx bx-x text-red-600 text-xl'></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Tolak Pergerakan</h3>
-                </div>
-
-                <form id="rejectForm" method="POST">
-                    @csrf
-                    @method('PATCH')
-
-                    <div class="mb-4">
-                        <label for="catatan" class="block text-sm font-medium text-gray-700 mb-2">
-                            Sebab Penolakan <span class="text-red-500">*</span>
-                        </label>
-                        <textarea id="catatan" name="catatan" rows="3" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                            placeholder="Masukkan sebab penolakan..."></textarea>
-                    </div>
-
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeRejectModal()"
-                            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors">
-                            Batal
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
-                            <i class='bx bx-x mr-2'></i>
-                            Tolak Pergerakan
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Global Return Form (Hidden) - REMOVED -->
 
     @push('scripts')
         <script>
-            function showRejectModal(movementId) {
-                document.getElementById('rejectForm').action = `/admin/asset-movements/${movementId}/reject`;
-                document.getElementById('rejectModal').classList.remove('hidden');
-            }
-
-            function closeRejectModal() {
-                document.getElementById('rejectModal').classList.add('hidden');
-                document.getElementById('catatan').value = '';
-            }
-
-            // Close modal when clicking outside
-            document.addEventListener('DOMContentLoaded', function () {
-                document.getElementById('rejectModal').addEventListener('click', function (e) {
-                    if (e.target === this) {
-                        closeRejectModal();
+            function confirmApprove(id) {
+                Swal.fire({
+                    title: 'Luluskan Pergerakan?',
+                    text: "Adakah anda pasti mahu meluluskan pergerakan aset ini?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10b981', // emerald-500
+                    cancelButtonColor: '#d1d5db', // gray-300
+                    confirmButtonText: 'Ya, Luluskan',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        cancelButton: 'text-gray-700'
                     }
-                });
-            });
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('approve-form-' + id).submit();
+                    }
+                })
+            }
+
+            function confirmReject(id) {
+                Swal.fire({
+                    title: 'Tolak Pergerakan',
+                    input: 'textarea',
+                    inputLabel: 'Sebab Penolakan',
+                    inputPlaceholder: 'Sila nyatakan sebab penolakan...',
+                    inputAttributes: {
+                        required: 'required',
+                        'aria-label': 'Sebab penolakan'
+                    },
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444', // red-500
+                    cancelButtonColor: '#d1d5db', // gray-300
+                    confirmButtonText: 'Tolak Permohonan',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        cancelButton: 'text-gray-700'
+                    },
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'Sila nyatakan sebab penolakan!'
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('reject-catatan-' + id).value = result.value;
+                        document.getElementById('reject-form-' + id).submit();
+                    }
+                })
+            }
+
+            // Close modal when clicking outside - REMOVED
+
+            // Initialize signature pad script if not already present
+
+            if (typeof SignaturePad === 'undefined') {
+                const script = document.createElement('script');
+                script.src = "https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js";
+                document.head.appendChild(script);
+            }
         </script>
     @endpush
 
