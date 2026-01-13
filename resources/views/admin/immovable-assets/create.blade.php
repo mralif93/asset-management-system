@@ -317,7 +317,7 @@
                                 <div>
                                     <label for="keluasan_bangunan" class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class='bx bx-building-house mr-1'></i>
-                                        Keluasan Bangunan
+                                        Keluasan Bangunan (m²)
                                     </label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -695,7 +695,7 @@
 
             // Clean values before submit
             document.querySelector('form').addEventListener('submit', function(e) {
-                const fields = ['keluasan_tanah', 'kos_perolehan'];
+                const fields = ['keluasan_tanah', 'keluasan_bangunan', 'kos_perolehan'];
                 fields.forEach(id => {
                     const element = document.getElementById(id);
                     if (element) {
@@ -707,6 +707,7 @@
             // Initialize inputs
             document.addEventListener('DOMContentLoaded', function() {
                 setupCurrencyInput('keluasan_tanah');
+                setupCurrencyInput('keluasan_bangunan');
                 setupCurrencyInput('kos_perolehan');
             });
         </script>

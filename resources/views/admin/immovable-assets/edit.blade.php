@@ -19,9 +19,9 @@
                         </div>
                         <div class="flex items-center space-x-2">
                             <div class="w-3 h-3 
-                                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-400
-                                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-400
-                                                @else bg-red-400 @endif rounded-full"></div>
+                                                        @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-400
+                                                        @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-400
+                                                        @else bg-red-400 @endif rounded-full"></div>
                             <span class="text-emerald-100">{{ $immovableAsset->keadaan_semasa }}</span>
                         </div>
                     </div>
@@ -63,13 +63,13 @@
                         </div>
                         <div class="flex items-center space-x-3">
                             <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
-                                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
-                                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
-                                                @else bg-red-100 text-red-800 @endif">
+                                                        @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
+                                                        @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
+                                                        @else bg-red-100 text-red-800 @endif">
                                 <div class="w-2 h-2 
-                                                    @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
-                                                    @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
-                                                    @else bg-red-500 @endif rounded-full mr-2"></div>
+                                                            @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
+                                                            @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
+                                                            @else bg-red-500 @endif rounded-full mr-2"></div>
                                 {{ $immovableAsset->keadaan_semasa }}
                             </span>
                             <span
@@ -274,7 +274,7 @@
                                 <div>
                                     <label for="keluasan_tanah" class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class='bx bx-area mr-1'></i>
-                                        Keluasan Tanah
+                                        Keluasan Tanah (m²)
                                     </label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -297,7 +297,7 @@
                                 <div>
                                     <label for="keluasan_bangunan" class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class='bx bx-building-house mr-1'></i>
-                                        Keluasan Bangunan
+                                        Keluasan Bangunan (m²)
                                     </label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -553,13 +553,13 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm text-gray-600">Status Keadaan:</span>
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-                                                            @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
-                                                            @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
-                                                            @else bg-red-100 text-red-800 @endif">
+                                                                    @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-100 text-green-800
+                                                                    @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-100 text-yellow-800
+                                                                    @else bg-red-100 text-red-800 @endif">
                                             <div class="w-2 h-2 
-                                                                @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
-                                                                @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
-                                                                @else bg-red-500 @endif rounded-full mr-1"></div>
+                                                                        @if($immovableAsset->keadaan_semasa === 'Sangat Baik' || $immovableAsset->keadaan_semasa === 'Baik') bg-green-500
+                                                                        @elseif($immovableAsset->keadaan_semasa === 'Sederhana') bg-yellow-500
+                                                                        @else bg-red-500 @endif rounded-full mr-1"></div>
                                             {{ $immovableAsset->keadaan_semasa }}
                                         </span>
                                     </div>
@@ -686,7 +686,7 @@
 
             // Clean values before submit
             document.querySelector('form').addEventListener('submit', function (e) {
-                const fields = ['keluasan_tanah', 'kos_perolehan'];
+                const fields = ['keluasan_tanah', 'keluasan_bangunan', 'kos_perolehan'];
                 fields.forEach(id => {
                     const element = document.getElementById(id);
                     if (element) {
@@ -698,6 +698,7 @@
             // Initialize inputs
             document.addEventListener('DOMContentLoaded', function () {
                 setupCurrencyInput('keluasan_tanah');
+                setupCurrencyInput('keluasan_bangunan');
                 setupCurrencyInput('kos_perolehan');
             });
 

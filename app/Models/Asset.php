@@ -96,6 +96,14 @@ class Asset extends Model
     }
 
     /**
+     * Get other assets in the same batch.
+     */
+    public function batchSiblings(): HasMany
+    {
+        return $this->hasMany(Asset::class, 'batch_id', 'batch_id');
+    }
+
+    /**
      * Get the asset movements for the asset.
      */
     public function assetMovements(): HasMany

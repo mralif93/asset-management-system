@@ -311,7 +311,7 @@
                 </div>
 
                 <!-- Purpose and Notes Section -->
-                @if($assetMovement->sebab_pergerakan || $assetMovement->catatan_pergerakan || $assetMovement->sebab_penolakan)
+                @if($assetMovement->tujuan_pergerakan || $assetMovement->catatan || $assetMovement->pembekal)
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
                         <div class="flex items-center mb-6">
                             <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">

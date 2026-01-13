@@ -198,6 +198,20 @@
                             </dd>
                         </div>
 
+                        <!-- Quantity -->
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <div class="flex items-center mb-2">
+                                <i class='bx bx-layer text-emerald-600 mr-2'></i>
+                                <dt class="text-sm font-medium text-gray-600">Kuantiti</dt>
+                            </div>
+                            <dd class="text-lg font-semibold text-gray-900">
+                                {{ $asset->batch_siblings_count ?? 1 }} Unit
+                                @if(($asset->batch_siblings_count ?? 1) > 1)
+                                    <span class="text-sm font-normal text-gray-500 ml-2">(Batch)</span>
+                                @endif
+                            </dd>
+                        </div>
+
                         <!-- Serial Number -->
                         <div class="bg-white rounded-lg p-4 border border-gray-200">
                             <div class="flex items-center mb-2">

@@ -21,7 +21,10 @@ class Inspection extends Model
         'lokasi_semasa_pemeriksaan',
         'cadangan_tindakan',
         'pegawai_pemeriksa',
-        'catatan_pemeriksa'
+        'catatan_pemeriksa',
+        'signature',
+        'jawatan_pemeriksa',
+        'tarikh_pemeriksaan_akan_datang'
     ];
 
     protected $casts = [

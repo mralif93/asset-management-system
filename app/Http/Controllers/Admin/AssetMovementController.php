@@ -61,11 +61,66 @@ class AssetMovementController extends Controller
      */
     public function create()
     {
-        $assets = Asset::with('masjidSurau')->get();
+        $assets = Asset::with('masjidSurau')
+            ->withCount('batchSiblings')
+            ->where(function ($q) {
+                $q->whereNull('batch_id')
+                    ->orWhereIn('id', function ($sub) {
+                        $sub->selectRaw('MIN(id)')
+                            ->from('assets')
+                            ->whereNotNull('batch_id')
+                            ->groupBy('batch_id');
+                    });
+            })
+            ->get();
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
         $validLocations = \App\Helpers\SystemData::getValidLocations();
 
-        return view('admin.asset-movements.create', compact('assets', 'masjidSuraus', 'validLocations'));
+
+        $defaultMasjid = MasjidSurau::where('nama', 'like', '%Al-Hidayah%')
+            ->where('nama', 'like', '%Taman Melawati%')
+            ->first();
+        $default_masjid_surau_id = $defaultMasjid ? $defaultMasjid->id : null;
+
+        // Ensure "Lain-lain" exists for destination default
+        $lainLain = MasjidSurau::firstOrCreate(
+            ['nama' => 'Lain-lain'],
+            [
+                'jenis' => 'Surau', // Valid enum value required
+                'alamat_baris_1' => '-',
+                'daerah' => 'Lain-lain',
+                'status' => 'Aktif'
+            ]
+        );
+        $default_destination_masjid_id = $lainLain->id;
+
+        // Refresh list to include new item if it was just created
+        if ($masjidSuraus->where('id', $lainLain->id)->isEmpty()) {
+            $masjidSuraus->push($lainLain);
+            $masjidSuraus = $masjidSuraus->sortBy('nama');
+        }
+
+        // Calculate available quantity for each asset considering pending movements
+        foreach ($assets as $asset) {
+            if ($asset->batch_id) {
+                // Use the helper to get accurate count subtracting pending moves
+                $asset->available_quantity = \App\Helpers\BatchHelper::getAvailableQuantity(
+                    $asset->batch_id,
+                    $asset->masjid_surau_id
+                );
+            } else {
+                // For single assets, check if it has pending movement
+                $hasPending = $asset->assetMovements()
+                    ->where('status_pergerakan', 'menunggu_kelulusan')
+                    ->exists();
+                $asset->available_quantity = $hasPending ? 0 : 1;
+            }
+        }
+
+        // Filter out assets with 0 quantity if desired, or keep them disabled in view
+        // For now, we keep them but the view should handle 0.
+
+        return view('admin.asset-movements.create', compact('assets', 'masjidSuraus', 'validLocations', 'default_masjid_surau_id', 'default_destination_masjid_id'));
     }
 
     /**
@@ -96,10 +151,47 @@ class AssetMovementController extends Controller
         $validated['user_id'] = auth()->id();
         $validated['status_pergerakan'] = 'menunggu_kelulusan';
 
-        $assetMovement = AssetMovement::create($validated);
+        $quantity = (int) $validated['kuantiti'];
+        $selectedAsset = Asset::find($validated['asset_id']);
+        $movementIds = [];
+
+        if ($quantity > 1 && $selectedAsset) {
+            // Bulk Logic
+            $assetsToMove = collect([$selectedAsset]);
+
+            if ($selectedAsset->batch_id) {
+                // Find Available Siblings in same original location
+                $siblings = Asset::where('batch_id', $selectedAsset->batch_id)
+                    ->where('id', '!=', $selectedAsset->id)
+                    ->where('masjid_surau_id', $validated['origin_masjid_surau_id'])
+                    ->limit($quantity - 1)
+                    ->get();
+
+                $assetsToMove = $assetsToMove->merge($siblings);
+            }
+
+            foreach ($assetsToMove as $asset) {
+                $data = $validated;
+                $data['asset_id'] = $asset->id;
+                $data['kuantiti'] = 1; // Force 1 per record for strict serial tracking
+                $movement = AssetMovement::create($data);
+                $movementIds[] = $movement->id;
+            }
+        } else {
+            // Single Logic
+            // Force kuantiti = 1 to ensure data integrity
+            $validated['kuantiti'] = 1;
+            $movement = AssetMovement::create($validated);
+            $movementIds[] = $movement->id;
+        }
+
+        if (count($movementIds) > 1) {
+            return redirect()->route('admin.asset-movements.index')
+                ->with('success', count($movementIds) . ' pergerakan aset berjaya didaftarkan secara berkelompok.');
+        }
 
         return redirect()
-            ->route('admin.asset-movements.show', $assetMovement)
+            ->route('admin.asset-movements.show', $movementIds[0])
             ->with('success', 'Pergerakan aset berjaya didaftarkan dan sedang menunggu kelulusan.');
     }
 
@@ -128,6 +220,9 @@ class AssetMovementController extends Controller
         if ($assetMovement->status_pergerakan !== 'menunggu_kelulusan') {
             abort(403, 'Pergerakan yang telah diluluskan tidak boleh diedit.');
         }
+
+        // Load the count for the specific asset attached to the movement
+        $assetMovement->asset->loadCount('batchSiblings');
 
         $assets = Asset::with('masjidSurau')->get();
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
@@ -166,6 +261,10 @@ class AssetMovementController extends Controller
             'pembekal' => 'nullable|string|max:255',
             'pegawai_bertanggungjawab_signature' => 'nullable|string',
         ]);
+
+        if (empty($validated['pegawai_bertanggungjawab_signature'])) {
+            unset($validated['pegawai_bertanggungjawab_signature']);
+        }
 
         $assetMovement->update($validated);
 

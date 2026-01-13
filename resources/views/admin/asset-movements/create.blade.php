@@ -99,12 +99,17 @@
                                             <i class='bx bx-package text-gray-400'></i>
                                         </div>
                                         <select id="asset_id" name="asset_id" required x-model="form.asset_id"
-                                            @change="updateAssetInfo()"
+                                            @change="updateAssetInfo($event)"
                                             class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('asset_id') border-red-500 @enderror appearance-none bg-white">
                                             <option value="">Pilih Aset</option>
                                             @foreach($assets as $asset)
-                                                <option value="{{ $asset->id }}" {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
+                                                <option value="{{ $asset->id }}"
+                                                    data-quantity="{{ $asset->available_quantity ?? ($asset->batch_siblings_count ?? 1) }}"
+                                                    data-original-quantity="{{ $asset->batch_siblings_count ?? 1 }}"
+                                                    {{ (isset($asset->available_quantity) && $asset->available_quantity <= 0) ? 'disabled' : '' }}
+                                                    {{ old('asset_id', request('asset_id')) == $asset->id ? 'selected' : '' }}>
                                                     {{ $asset->nama_aset }} - {{ $asset->no_siri_pendaftaran }}
+                                                    ({{ $asset->available_quantity ?? ($asset->batch_siblings_count ?? 1) }} Unit Available)
                                                 </option>
                                             @endforeach
                                         </select>
@@ -140,6 +145,10 @@
                                         <div>
                                             <span class="text-gray-600">Nilai:</span>
                                             <span class="font-medium text-gray-900" x-text="assetInfo.value || '-'"></span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Kuantiti Semasa:</span>
+                                            <span class="font-medium text-emerald-600" x-text="assetInfo.quantity || '-'"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -270,7 +279,8 @@
                                             Masjid/Surau Asal <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-building-house text-gray-400'></i>
                                             </div>
                                             <select id="origin_masjid_surau_id" name="origin_masjid_surau_id" required
@@ -278,12 +288,13 @@
                                                 class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('origin_masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                                 <option value="">Pilih Masjid/Surau Asal</option>
                                                 @foreach($masjidSuraus as $masjid)
-                                                    <option value="{{ $masjid->id }}" {{ old('origin_masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
-                                                        {{ $masjid->nama }} ({{ $masjid->jenis }})
+                                                    <option value="{{ $masjid->id }}" {{ old('origin_masjid_surau_id', $default_masjid_surau_id) == $masjid->id ? 'selected' : '' }}>
+                                                        {{ $masjid->nama }} {{ $masjid->nama !== 'Lain-lain' ? '('.$masjid->jenis.')' : '' }}
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-chevron-down text-gray-400'></i>
                                             </div>
                                         </div>
@@ -294,7 +305,7 @@
                                             </p>
                                         @enderror
                                     </div>
-    
+
                                     <!-- Destination Masjid/Surau -->
                                     <div>
                                         <label for="destination_masjid_surau_id"
@@ -303,20 +314,22 @@
                                             Masjid/Surau Destinasi <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-building-house text-gray-400'></i>
                                             </div>
-                                            <select id="destination_masjid_surau_id" name="destination_masjid_surau_id" required
-                                                x-model="form.destination_masjid_surau_id"
+                                            <select id="destination_masjid_surau_id" name="destination_masjid_surau_id"
+                                                required x-model="form.destination_masjid_surau_id"
                                                 class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('destination_masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                                 <option value="">Pilih Masjid/Surau Destinasi</option>
                                                 @foreach($masjidSuraus as $masjid)
-                                                    <option value="{{ $masjid->id }}" {{ old('destination_masjid_surau_id') == $masjid->id ? 'selected' : '' }}>
-                                                        {{ $masjid->nama }} ({{ $masjid->jenis }})
+                                                    <option value="{{ $masjid->id }}" {{ old('destination_masjid_surau_id', $default_destination_masjid_id ?? '') == $masjid->id ? 'selected' : '' }}>
+                                                        {{ $masjid->nama }} {{ $masjid->nama !== 'Lain-lain' ? '('.$masjid->jenis.')' : '' }}
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-chevron-down text-gray-400'></i>
                                             </div>
                                         </div>
@@ -340,19 +353,30 @@
                                 <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <!-- Detailed Source Location -->
                                     <div>
-                                        <label for="lokasi_asal_spesifik" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <label for="lokasi_asal_spesifik"
+                                            class="block text-sm font-medium text-gray-700 mb-2">
                                             <i class='bx bx-map-pin mr-1'></i>
                                             Lokasi Terperinci Asal <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-map-pin text-gray-400'></i>
                                             </div>
-                                            <input type="text" id="lokasi_asal_spesifik" name="lokasi_asal_spesifik"
-                                                value="{{ old('lokasi_asal_spesifik') }}" required
-                                                x-model="form.lokasi_asal_spesifik" placeholder="Contoh: Bilik Stor Tingkat 1"
-                                                list="locations"
-                                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror bg-white">
+                                            <select id="lokasi_asal_spesifik" name="lokasi_asal_spesifik" required
+                                                x-model="form.lokasi_asal_spesifik"
+                                                class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror appearance-none bg-white">
+                                                <option value="">Pilih Lokasi Asal</option>
+                                                @foreach($validLocations ?? [] as $location)
+                                                    <option value="{{ $location }}" {{ old('lokasi_asal_spesifik') == $location ? 'selected' : '' }}>
+                                                        {{ $location }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-chevron-down text-gray-400'></i>
+                                            </div>
                                         </div>
                                         @error('lokasi_asal_spesifik')
                                             <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -361,7 +385,7 @@
                                             </p>
                                         @enderror
                                     </div>
-    
+
                                     <!-- Detailed Destination Location -->
                                     <div>
                                         <label for="lokasi_destinasi_spesifik"
@@ -370,14 +394,24 @@
                                             Lokasi Terperinci Destinasi <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-map-pin text-gray-400'></i>
                                             </div>
-                                            <input type="text" id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
-                                                value="{{ old('lokasi_destinasi_spesifik') }}" required
-                                                x-model="form.lokasi_destinasi_spesifik" placeholder="Contoh: Ruang Solat Utama"
-                                                list="locations"
-                                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror bg-white">
+                                            <select id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
+                                                required x-model="form.lokasi_destinasi_spesifik"
+                                                class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror appearance-none bg-white">
+                                                <option value="">Pilih Lokasi Destinasi</option>
+                                                @foreach($validLocations ?? [] as $location)
+                                                    <option value="{{ $location }}" {{ old('lokasi_destinasi_spesifik') == $location ? 'selected' : '' }}>
+                                                        {{ $location }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-chevron-down text-gray-400'></i>
+                                            </div>
                                         </div>
                                         @error('lokasi_destinasi_spesifik')
                                             <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -395,7 +429,8 @@
                                         Tandatangan Pegawai Bertanggungjawab <span class="text-red-500">*</span>
                                     </label>
                                     <div class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
-                                        <canvas id="signature-pad" class="w-full h-40 touch-none" width="800" height="200"></canvas>
+                                        <canvas id="signature-pad" class="w-full h-40 touch-none" width="800"
+                                            height="200"></canvas>
                                         <div class="absolute top-2 right-2">
                                             <button type="button" @click="clearSignature()"
                                                 class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded transition-colors">
@@ -489,7 +524,8 @@
                                         Pembekal / Vendor (Jika ada)
                                     </label>
                                     <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                                             <i class='bx bx-store-alt text-gray-400'></i>
                                         </div>
                                         <input type="text" id="pembekal" name="pembekal" x-model="form.pembekal"
@@ -663,7 +699,7 @@
                     signaturePad: null,
                     init() {
                         const canvas = document.getElementById('signature-pad');
-                        
+
                         // Resize canvas to fit container
                         const resizeCanvas = () => {
                             const ratio = Math.max(window.devicePixelRatio || 1, 1);
@@ -671,10 +707,10 @@
                             canvas.height = canvas.offsetHeight * ratio;
                             canvas.getContext("2d").scale(ratio, ratio);
                         };
-                        
+
                         window.addEventListener("resize", resizeCanvas);
                         resizeCanvas();
-                        
+
                         // Simple drawing logic without external library to keep it lightweight
                         const ctx = canvas.getContext('2d');
                         let isDrawing = false;
@@ -708,7 +744,7 @@
 
                         function draw(e) {
                             if (!isDrawing) return;
-                            
+
                             const pos = getPos(e);
                             ctx.beginPath();
                             ctx.moveTo(lastX, lastY);
@@ -717,7 +753,7 @@
                             ctx.lineWidth = 2;
                             ctx.lineCap = 'round';
                             ctx.stroke();
-                            
+
                             lastX = pos.x;
                             lastY = pos.y;
                             e.preventDefault();
@@ -741,13 +777,13 @@
                         this.form.pegawai_bertanggungjawab_signature = '';
                     },
                     updateSignatureField() {
-                         const canvas = document.getElementById('signature-pad');
-                         // Only save if canvas is not empty
-                         if (this.isCanvasEmpty(canvas)) {
-                             this.form.pegawai_bertanggungjawab_signature = '';
-                         } else {
-                             this.form.pegawai_bertanggungjawab_signature = canvas.toDataURL();
-                         }
+                        const canvas = document.getElementById('signature-pad');
+                        // Only save if canvas is not empty
+                        if (this.isCanvasEmpty(canvas)) {
+                            this.form.pegawai_bertanggungjawab_signature = '';
+                        } else {
+                            this.form.pegawai_bertanggungjawab_signature = canvas.toDataURL();
+                        }
                     },
                     isCanvasEmpty(canvas) {
                         const blank = document.createElement('canvas');
@@ -760,82 +796,94 @@
                         jenis_pergerakan: '{{ old('jenis_pergerakan') }}',
                         kuantiti: '{{ old('kuantiti', 1) }}',
                         tarikh_pergerakan: '{{ old('tarikh_pergerakan', date('Y-m-d')) }}',
-                        origin_masjid_surau_id: '{{ old('origin_masjid_surau_id') }}',
-                        destination_masjid_surau_id: '{{ old('destination_masjid_surau_id') }}',
-                        lokasi_asal_spesifik: '{{ old('lokasi_asal_spesifik') }}',
-                        lokasi_destinasi_spesifik: '{{ old('lokasi_destinasi_spesifik') }}',
-                        nama_peminjam_pegawai_bertanggungjawab: '{{ old('nama_peminjam_pegawai_bertanggungjawab') }}',
-                        tarikh_jangka_pulang: '{{ old('tarikh_jangka_pulang') }}',
-                        tujuan_pergerakan: '{{ old('tujuan_pergerakan') }}',
-                        catatan: '{{ old('catatan') }}',
-                        pembekal: '{{ old('pembekal') }}',
-                        pegawai_bertanggungjawab_signature: ''
-                    },
-                    assetInfo: {
-                        current_location: '',
-                        status: '',
-                        type: '',
-                        value: ''
-                    },
-
-                    updateAssetInfo() {
-                        if (this.form.asset_id) {
-                            // Simulate fetching asset info (in real app, this would be an AJAX call)
-                            const assets = @json($assets->keyBy('id'));
-                            const selectedAsset = assets[this.form.asset_id];
-
-                            if (selectedAsset) {
-                                this.assetInfo = {
-                                    current_location: selectedAsset.lokasi_penempatan || '-',
-                                    status: selectedAsset.status_aset || '-',
-                                    type: selectedAsset.jenis_aset || '-',
-                                    value: 'RM ' + (selectedAsset.nilai_perolehan ? parseFloat(selectedAsset.nilai_perolehan).toLocaleString() : '0')
-                                };
-
-                                // Auto-fill source location
-                                this.form.lokasi_asal_spesifik = selectedAsset.lokasi_penempatan || '';
-                            }
-                        } else {
-                            this.assetInfo = {
+                        origin_masjid_surau_id: '{{ old('origin_masjid_surau_id', $default_masjid_surau_id ?? '') }}',
+                                destination_masjid_surau_id: '{{ old('destination_masjid_surau_id', $default_destination_masjid_id ?? '') }}',
+                                lokasi_asal_spesifik: '{{ old('lokasi_asal_spesifik') }}',
+                                lokasi_destinasi_spesifik: '{{ old('lokasi_destinasi_spesifik') }}',
+                                nama_peminjam_pegawai_bertanggungjawab: '{{ old('nama_peminjam_pegawai_bertanggungjawab') }}',
+                                tarikh_jangka_pulang: '{{ old('tarikh_jangka_pulang') }}',
+                                tujuan_pergerakan: '{{ old('tujuan_pergerakan') }}',
+                                catatan: '{{ old('catatan') }}',
+                                pembekal: '{{ old('pembekal') }}',
+                                pegawai_bertanggungjawab_signature: ''
+                            },
+                            assetInfo: {
                                 current_location: '',
                                 status: '',
                                 type: '',
-                                value: ''
-                            };
-                        }
-                    },
+                                value: '',
+                                quantity: ''
+                            },
 
-                    toggleReturnDate() {
-                        if (this.form.jenis_pergerakan !== 'Peminjaman') {
-                            this.form.tarikh_jangka_pulang = '';
+                            updateAssetInfo(e) {
+                                const selectedOption = e.target.options[e.target.selectedIndex];
+                                if (selectedOption.value) {
+                                    // Parse the quantity from the data attribute we will add
+                                    const availableQty = parseInt(selectedOption.dataset.quantity) || 1;
+                                    
+                                    const assets = @json($assets->keyBy('id'));
+                                    const selectedAsset = assets[selectedOption.value];
+                                    
+                                    if (selectedAsset) {
+                                        this.assetInfo = {
+                                            name: selectedOption.text.split(' - ')[0],
+                                            regNo: selectedOption.text.split(' - ')[1],
+                                            quantity: availableQty, // Use the real available quantity
+                                            originalQty: parseInt(selectedOption.dataset.originalQuantity) || 1, // Keep original for reference
+                                            
+                                            // Restored fields
+                                            current_location: selectedAsset.lokasi_penempatan || '-',
+                                            status: selectedAsset.status_aset || '-',
+                                            type: selectedAsset.jenis_aset || '-',
+                                            value: 'RM ' + (selectedAsset.nilai_perolehan ? parseFloat(selectedAsset.nilai_perolehan).toLocaleString() : '0')
+                                        };
+
+                                        this.form.lokasi_asal_spesifik = selectedAsset.lokasi_penempatan || '';
+                                        // Auto-fill origin masjid
+                                        this.form.origin_masjid_surau_id = selectedAsset.masjid_surau_id || '';
+                                    }
+                                } else {
+                                    this.assetInfo = {
+                                        current_location: '',
+                                        status: '',
+                                        type: '',
+                                        value: '',
+                                        quantity: ''
+                                    };
+                                }
+                            },
+
+                            toggleReturnDate() {
+                                if (this.form.jenis_pergerakan !== 'Peminjaman') {
+                                    this.form.tarikh_jangka_pulang = '';
+                                }
+                            }
                         }
                     }
-                }
-            }
 
-            // Form validation
-            document.addEventListener('DOMContentLoaded', function () {
-                const form = document.querySelector('form');
-                const requiredFields = form.querySelectorAll('[required]');
+                    // Form validation
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.querySelector('form');
+                        const requiredFields = form.querySelectorAll('[required]');
 
-                form.addEventListener('submit', function (e) {
-                    let hasErrors = false;
+                        form.addEventListener('submit', function (e) {
+                            let hasErrors = false;
 
-                    requiredFields.forEach(field => {
-                        if (!field.value.trim()) {
-                            hasErrors = true;
-                            field.classList.add('border-red-500');
-                        } else {
-                            field.classList.remove('border-red-500');
-                        }
+                            requiredFields.forEach(field => {
+                                if (!field.value.trim()) {
+                                    hasErrors = true;
+                                    field.classList.add('border-red-500');
+                                } else {
+                                    field.classList.remove('border-red-500');
+                                }
+                            });
+
+                            if (hasErrors) {
+                                e.preventDefault();
+                                alert('Sila lengkapkan semua medan yang diperlukan.');
+                            }
+                        });
                     });
-
-                    if (hasErrors) {
-                        e.preventDefault();
-                        alert('Sila lengkapkan semua medan yang diperlukan.');
-                    }
-                });
-            });
-        </script>
+                </script>
     @endpush
 @endsection

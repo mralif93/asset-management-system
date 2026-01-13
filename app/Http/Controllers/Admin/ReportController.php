@@ -591,7 +591,7 @@ class ReportController extends Controller
         $masjidSurauId = $request->get('masjid_surau_id');
         $lokasi = $request->get('lokasi');
         $bulan = $request->get('bulan');
-        $tahun = $request->get('tahun', date('Y')); // Default to current year
+        $tahun = $request->get('tahun'); // Default to all years
         $status = $request->get('status'); // Filter by asset status
         $needsInspection = $request->get('needs_inspection'); // Filter assets that need inspection
 

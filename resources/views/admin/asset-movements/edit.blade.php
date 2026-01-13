@@ -140,6 +140,10 @@
                                             <span class="font-medium text-gray-900">RM
                                                 {{ number_format($assetMovement->asset->nilai_perolehan, 2) }}</span>
                                         </div>
+                                        <div>
+                                            <span class="text-gray-600">Kuantiti Semasa:</span>
+                                            <span class="font-medium text-emerald-600">{{ $assetMovement->asset->batch_siblings_count ?? 1 }} unit</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -351,12 +355,19 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-map-pin text-gray-400'></i>
                                             </div>
-                                            <input type="text" id="lokasi_asal_spesifik" name="lokasi_asal_spesifik"
-                                                value="{{ old('lokasi_asal_spesifik', $assetMovement->lokasi_asal_spesifik) }}"
+                                            <select id="lokasi_asal_spesifik" name="lokasi_asal_spesifik"
                                                 required x-model="form.lokasi_asal_spesifik"
-                                                placeholder="Contoh: Bilik Stor Tingkat 1"
-                                                list="locations"
-                                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror bg-white">
+                                                class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror appearance-none bg-white">
+                                                <option value="">Pilih Lokasi Asal</option>
+                                                @foreach($validLocations ?? [] as $location)
+                                                    <option value="{{ $location }}" {{ old('lokasi_asal_spesifik', $assetMovement->lokasi_asal_spesifik) == $location ? 'selected' : '' }}>
+                                                        {{ $location }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-chevron-down text-gray-400'></i>
+                                            </div>
                                         </div>
                                         @error('lokasi_asal_spesifik')
                                             <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -377,12 +388,19 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-map-pin text-gray-400'></i>
                                             </div>
-                                            <input type="text" id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
-                                                value="{{ old('lokasi_destinasi_spesifik', $assetMovement->lokasi_destinasi_spesifik) }}"
+                                            <select id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
                                                 required x-model="form.lokasi_destinasi_spesifik"
-                                                placeholder="Contoh: Ruang Solat Utama"
-                                                list="locations"
-                                                class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror bg-white">
+                                                class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror appearance-none bg-white">
+                                                <option value="">Pilih Lokasi Destinasi</option>
+                                                @foreach($validLocations ?? [] as $location)
+                                                    <option value="{{ $location }}" {{ old('lokasi_destinasi_spesifik', $assetMovement->lokasi_destinasi_spesifik) == $location ? 'selected' : '' }}>
+                                                        {{ $location }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i class='bx bx-chevron-down text-gray-400'></i>
+                                            </div>
                                         </div>
                                         @error('lokasi_destinasi_spesifik')
                                             <p class="mt-1 text-sm text-red-600 flex items-center">

@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon; // Added Carbon import
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class AssetController extends Controller
 {
@@ -21,7 +22,7 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Asset::with('masjidSurau');
+        $query = Asset::with('masjidSurau')->withCount('batchSiblings');
 
         // Admin can see all assets
 
@@ -55,7 +56,15 @@ class AssetController extends Controller
             $query->where('keadaan_fizikal', $request->keadaan_fizikal);
         }
 
-        $assets = $query->latest()->paginate(15);
+        $assets = $query->where(function ($q) {
+            $q->whereNull('batch_id')
+                ->orWhereIn('id', function ($sub) {
+                    $sub->selectRaw('MIN(id)')
+                        ->from('assets')
+                        ->whereNotNull('batch_id')
+                        ->groupBy('batch_id');
+                });
+        })->latest()->paginate(15);
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
 
         return view('admin.assets.index', compact('assets', 'assetTypes'));
@@ -131,6 +140,7 @@ class AssetController extends Controller
             // Handle multiple quantity
             $quantity = (int) $validated['kuantiti'];
             $firstAssetId = null;
+            $batchId = Str::uuid();
 
             for ($i = 0; $i < $quantity; $i++) {
                 // Generate unique registration number for each asset
@@ -144,6 +154,7 @@ class AssetController extends Controller
 
                 $assetData = $validated;
                 $assetData['no_siri_pendaftaran'] = $registrationNumber;
+                $assetData['batch_id'] = $batchId;
                 unset($assetData['kuantiti']); // Remove quantity from individual asset data
 
                 $asset = Asset::create($assetData);
@@ -202,7 +213,8 @@ class AssetController extends Controller
      */
     public function show(Asset $asset)
     {
-        $asset->load(['masjidSurau', 'movements', 'inspections', 'maintenanceRecords']);
+        $asset->load(['masjidSurau', 'movements', 'inspections', 'maintenanceRecords'])
+            ->loadCount('batchSiblings');
 
         return view('admin.assets.show', compact('asset'));
     }
@@ -212,6 +224,7 @@ class AssetController extends Controller
      */
     public function edit(Asset $asset)
     {
+        $asset->loadCount('batchSiblings');
         $masjidSuraus = MasjidSurau::all();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
 

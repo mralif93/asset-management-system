@@ -18,7 +18,7 @@ class AssetSeeder extends Seeder
     public function run(): void
     {
         $masjidSuraus = MasjidSurau::all();
-        
+
         $sampleAssets = [
             // MTAJ - Masjid Tengku Ampuan Jemaah
             [
@@ -54,7 +54,8 @@ class AssetSeeder extends Seeder
                 'status_aset' => 'Sedang Digunakan',
                 'keadaan_fizikal' => 'Baik',
                 'status_jaminan' => 'Tiada Jaminan',
-                'catatan' => 'Set 10 kerusi untuk majlis',
+                'catatan' => 'Set 50 kerusi untuk majlis',
+                'quantity_to_generate' => 50,
                 'lokasi_penempatan' => 'Ruang Utama (tingkat atas, tingkat bawah)',
                 'pegawai_bertanggungjawab_lokasi' => 'Siti Aminah binti Ahmad',
                 'jawatan_pegawai' => 'Pegawai Aset',
@@ -116,7 +117,7 @@ class AssetSeeder extends Seeder
                 'pegawai_bertanggungjawab_lokasi' => 'Ahmad Fauzi bin Mohd',
                 'jawatan_pegawai' => 'Pemandu',
             ],
-            
+
             // SAT - Surau At Taqwa
             [
                 'nama_aset' => 'Meja Kayu Jati',
@@ -131,6 +132,7 @@ class AssetSeeder extends Seeder
                 'keadaan_fizikal' => 'Baik',
                 'status_jaminan' => 'Tiada Jaminan',
                 'catatan' => 'Meja untuk mesyuarat jawatankuasa',
+                'quantity_to_generate' => 12,
                 'lokasi_penempatan' => 'Bilik Mesyuarat',
                 'pegawai_bertanggungjawab_lokasi' => 'Abdul Rahman bin Omar',
                 'jawatan_pegawai' => 'Bendahari',
@@ -150,6 +152,7 @@ class AssetSeeder extends Seeder
                 'keadaan_fizikal' => 'Baik',
                 'status_jaminan' => 'Aktif',
                 'catatan' => 'Set 3 unit kipas siling',
+                'quantity_to_generate' => 3,
                 'lokasi_penempatan' => 'Ruang Utama (tingkat atas, tingkat bawah)',
                 'pegawai_bertanggungjawab_lokasi' => 'Khadijah binti Ali',
                 'jawatan_pegawai' => 'Pegawai Aset',
@@ -184,6 +187,7 @@ class AssetSeeder extends Seeder
                 'keadaan_fizikal' => 'Baik',
                 'status_jaminan' => 'Tiada Jaminan',
                 'catatan' => 'Set peralatan dapur untuk majlis',
+                'quantity_to_generate' => 15,
                 'lokasi_penempatan' => 'Lain-lain',
                 'pegawai_bertanggungjawab_lokasi' => 'Noriza binti Ahmad',
                 'jawatan_pegawai' => 'Pegawai Dapur',
@@ -199,6 +203,7 @@ class AssetSeeder extends Seeder
                 'keadaan_fizikal' => 'Baik',
                 'status_jaminan' => 'Tiada Jaminan',
                 'catatan' => 'Alat tulis untuk kegunaan pejabat',
+                'quantity_to_generate' => 25,
                 'lokasi_penempatan' => 'Bilik Setiausaha',
                 'pegawai_bertanggungjawab_lokasi' => 'Zainab binti Mohd',
                 'jawatan_pegawai' => 'Setiausaha',
@@ -226,22 +231,33 @@ class AssetSeeder extends Seeder
         foreach ($sampleAssets as $assetData) {
             $useFirstMasjid = $assetData['use_first_masjid'] ?? true;
             $masjid = $useFirstMasjid ? $firstMasjid : $firstSurau;
-            
-            if ($masjid) {
-                $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
-                
-                unset($assetData['use_first_masjid']); // Remove the helper key
-                
-                $noSiriPendaftaran = AssetRegistrationNumber::generate(
-                    $masjid->id, 
-                    $assetData['jenis_aset'], 
-                    $tarikhPerolehan->format('y')
-                );
 
-                Asset::create(array_merge($assetData, [
-                    'masjid_surau_id' => $masjid->id,
-                    'no_siri_pendaftaran' => $noSiriPendaftaran,
-                ]));
+            if ($masjid) {
+                // Determine quantity (default to 1 if not specified)
+                // Using a 'quantity_to_generate' key if we want to simulate a batch, otherwise 1
+                $quantity = $assetData['quantity_to_generate'] ?? 1;
+                unset($assetData['quantity_to_generate']); // Remove from data array
+
+                $tarikhPerolehan = Carbon::parse($assetData['tarikh_perolehan']);
+                unset($assetData['use_first_masjid']); // Remove the helper key
+
+                // Generate a unique batch_id for this set of assets
+                $batchId = (string) Str::uuid();
+
+                for ($i = 0; $i < $quantity; $i++) {
+                    $noSiriPendaftaran = AssetRegistrationNumber::generate(
+                        $masjid->id,
+                        $assetData['jenis_aset'],
+                        $tarikhPerolehan->format('y'),
+                        $i // Offset for batch sequence
+                    );
+
+                    Asset::create(array_merge($assetData, [
+                        'masjid_surau_id' => $masjid->id,
+                        'no_siri_pendaftaran' => $noSiriPendaftaran,
+                        'batch_id' => $batchId, // Assign same batch_id to all siblings
+                    ]));
+                }
             }
         }
     }

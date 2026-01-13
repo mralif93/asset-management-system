@@ -16,7 +16,6 @@ class SystemData
         'Bilik Nazir & Imam',
         'Bangunan Jenazah',
         'Tempat Letak Kenderaan',
-        'Tempat letak kereta', // Keeping for backward compatibility if needed, though 'Tempat Letak Kenderaan' is preferred
         'Bilik pengurusan',
         'Bilik pejabat',
         'Bilik store',
