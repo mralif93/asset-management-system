@@ -11,7 +11,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold mb-2">Import Aset Tak Alih</h1>
-                    <p class="text-emerald-100 text-lg">Muat naik senarai aset tak alih dari fail CSV</p>
+                    <p class="text-emerald-100 text-lg">Muat naik senarai aset tak alih (Excel/CSV)</p>
                     <div class="flex items-center space-x-4 mt-4">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-cloud-upload text-emerald-200'></i>
@@ -96,7 +96,8 @@
                             </div>
                             <div>
                                 <p class="font-medium text-gray-900 mb-1">Muat turun Template</p>
-                                <p class="text-sm text-gray-600">Muat turun template CSV untuk melihat format yang betul</p>
+                                <p class="text-sm text-gray-600">Muat turun template Excel untuk melihat format yang betul
+                                </p>
                             </div>
                         </div>
 
@@ -107,7 +108,7 @@
                             </div>
                             <div>
                                 <p class="font-medium text-gray-900 mb-1">Isi Data Aset</p>
-                                <p class="text-sm text-gray-600">Isi maklumat aset tak alih dalam template CSV. Pastikan
+                                <p class="text-sm text-gray-600">Isi maklumat aset tak alih dalam template Excel. Pastikan
                                     format tarikh adalah YYYY-MM-DD</p>
                             </div>
                         </div>
@@ -119,7 +120,8 @@
                             </div>
                             <div>
                                 <p class="font-medium text-gray-900 mb-1">Muat Naik Fail</p>
-                                <p class="text-sm text-gray-600">Pilih fail CSV yang telah diisi dan muat naik ke sistem</p>
+                                <p class="text-sm text-gray-600">Pilih fail Excel/CSV yang telah diisi dan muat naik ke
+                                    sistem</p>
                             </div>
                         </div>
 
@@ -146,8 +148,9 @@
                         <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-blue-50">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-gray-900">Muat Naik Fail CSV</h2>
-                                    <p class="text-sm text-gray-600">Pilih fail CSV yang mengandungi data aset tak alih</p>
+                                    <h2 class="text-xl font-semibold text-gray-900">Muat Naik Fail</h2>
+                                    <p class="text-sm text-gray-600">Pilih fail Excel/CSV yang mengandungi data aset tak
+                                        alih</p>
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <div class="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -162,7 +165,7 @@
                             <div>
                                 <label for="csv_file" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-file mr-1'></i>
-                                    Fail CSV <span class="text-red-500">*</span>
+                                    Fail Excel/CSV <span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 flex justify-center px-8 pt-8 pb-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-emerald-400 transition-all duration-300 bg-gradient-to-br from-gray-50 to-emerald-50 hover:from-emerald-50 hover:to-emerald-100 group cursor-pointer"
                                     id="dropZone">
@@ -178,10 +181,10 @@
                                                     class="relative cursor-pointer bg-white rounded-lg px-4 py-2 font-medium text-emerald-600 hover:text-emerald-500 hover:bg-emerald-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500 transition-all duration-200 shadow-sm hover:shadow-md">
                                                     <span class="flex items-center">
                                                         <i class='bx bx-upload mr-2'></i>
-                                                        Pilih fail CSV
+                                                        Pilih fail Excel/CSV
                                                     </span>
                                                     <input id="csv_file" name="csv_file" type="file" class="sr-only"
-                                                        accept=".csv,.txt" required>
+                                                        accept=".csv,.xlsx,.xls" required>
                                                 </label>
                                                 <p class="pl-3 text-gray-500 group-hover:text-emerald-600">atau drag and
                                                     drop di sini</p>
@@ -190,12 +193,12 @@
                                         <div class="space-y-2">
                                             <p class="text-xs text-gray-500 flex items-center justify-center">
                                                 <i class='bx bx-file-blank mr-1'></i>
-                                                CSV, TXT hingga 10MB
+                                                Excel, CSV hingga 50MB
                                             </p>
                                             <p
                                                 class="text-xs text-emerald-600 font-medium flex items-center justify-center">
                                                 <i class='bx bx-check-circle mr-1'></i>
-                                                Format CSV dengan header diperlukan
+                                                Format Excel (.xlsx) disyorkan
                                             </p>
                                         </div>
                                     </div>
@@ -239,8 +242,8 @@
                                     <div class="ml-3 text-sm">
                                         <p class="font-semibold text-blue-800 mb-1">💡 Tip Berguna:</p>
                                         <ul class="text-blue-700 leading-relaxed space-y-1">
-                                            <li>• Pastikan fail CSV menggunakan format UTF-8 untuk sokongan aksara Melayu
-                                            </li>
+                                            <li>• Gunakan Template Excel yang disediakan (Sheet "Template" untuk data)</li>
+                                            <li>• Rujuk Sheet "Rujukan" untuk senarai kod yang sah</li>
                                             <li>• Format tarikh mesti YYYY-MM-DD (contoh: 2024-01-15)</li>
                                             <li>• Masjid/Surau ID mesti wujud dalam sistem</li>
                                             <li>• Jenis Aset mesti: Tanah, Bangunan, atau Tanah dan Bangunan</li>
@@ -279,7 +282,10 @@
                         <h3 class="font-semibold text-gray-900">Template Import</h3>
                     </div>
 
-                    <p class="text-sm text-gray-600 mb-4">Muat turun template CSV dengan format yang betul dan contoh data.
+                    <p class="text-sm text-gray-600 mb-4">Muat turun template Excel dengan format yang betul dan contoh
+                        data.
+                        <br><span class="text-xs text-amber-600">Info: Template kini mempunyai 2 sheet (Template &
+                            Rujukan)</span>
                     </p>
 
                     <a href="{{ route('admin.immovable-assets.import.template') }}"
@@ -416,8 +422,8 @@
                         <div>
                             <h4 class="font-medium text-blue-900 mb-2">Bantuan Import</h4>
                             <ul class="text-sm text-blue-800 space-y-1">
-                                <li>• Format CSV dengan header</li>
-                                <li>• Maksimum 10MB fail</li>
+                                <li>• Format Excel/CSV</li>
+                                <li>• Maksimum 50MB fail</li>
                                 <li>• Semak ralat selepas import</li>
                                 <li>• Nombor siri auto-generate</li>
                             </ul>
@@ -553,9 +559,9 @@
                     notification.className = `notification-toast fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                         }`;
                     notification.innerHTML = `
-                    <i class='bx bx-${type === 'success' ? 'check-circle' : 'error-circle'} text-xl'></i>
-                    <span class="font-medium">${message}</span>
-                `;
+                            <i class='bx bx-${type === 'success' ? 'check-circle' : 'error-circle'} text-xl'></i>
+                            <span class="font-medium">${message}</span>
+                        `;
 
                     document.body.appendChild(notification);
 

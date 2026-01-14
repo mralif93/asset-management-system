@@ -76,6 +76,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('assets/export', [AssetController::class, 'export'])->name('assets.export');
     Route::get('assets/import', [AssetController::class, 'showImport'])->name('assets.import');
     Route::post('assets/import', [AssetController::class, 'import'])->name('assets.import.store');
+    Route::post('assets/import/preview', [AssetController::class, 'previewImport'])->name('assets.import.preview');
     Route::get('assets/import/template', [AssetController::class, 'downloadTemplate'])->name('assets.import.template');
     Route::get('assets/location/{lokasi}', [AssetController::class, 'byLocation'])->name('assets.by-location');
     Route::post('assets/bulk-delete', [AssetController::class, 'bulkDelete'])->name('assets.bulk-delete');
@@ -84,15 +85,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Asset Movements
     Route::get('/asset-movements/{assetMovement}/return', [AssetMovementController::class, 'showReturnForm'])->name('asset-movements.return-form');
+    Route::get('asset-movements/export', [AssetMovementController::class, 'export'])->name('asset-movements.export');
     Route::resource('asset-movements', AssetMovementController::class);
     Route::patch('asset-movements/{assetMovement}/approve', [AssetMovementController::class, 'approve'])->name('asset-movements.approve');
     Route::patch('asset-movements/{assetMovement}/reject', [AssetMovementController::class, 'reject'])->name('asset-movements.reject');
     Route::patch('asset-movements/{assetMovement}/process-return', [AssetMovementController::class, 'recordReturn'])->name('asset-movements.process-return');
 
     // Inspections
+    Route::get('inspections/export', [InspectionController::class, 'export'])->name('inspections.export');
     Route::resource('inspections', InspectionController::class);
 
     // Maintenance Records
+    Route::get('maintenance-records/export', [MaintenanceRecordController::class, 'export'])->name('maintenance-records.export');
     Route::resource('maintenance-records', MaintenanceRecordController::class);
 
     // Immovable Assets
@@ -104,11 +108,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('immovable-assets', ImmovableAssetController::class);
 
     // Disposals
+    Route::get('disposals/export', [DisposalController::class, 'export'])->name('disposals.export');
     Route::resource('disposals', DisposalController::class);
     Route::patch('disposals/{disposal}/approve', [DisposalController::class, 'approve'])->name('disposals.approve');
     Route::patch('disposals/{disposal}/reject', [DisposalController::class, 'reject'])->name('disposals.reject');
 
     // Loss Write-offs
+    Route::get('loss-writeoffs/export', [LossWriteoffController::class, 'export'])->name('loss-writeoffs.export');
     Route::resource('loss-writeoffs', LossWriteoffController::class);
     Route::patch('loss-writeoffs/{lossWriteoff}/approve', [LossWriteoffController::class, 'approve'])->name('loss-writeoffs.approve');
     Route::patch('loss-writeoffs/{lossWriteoff}/reject', [LossWriteoffController::class, 'reject'])->name('loss-writeoffs.reject');

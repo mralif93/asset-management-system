@@ -117,7 +117,7 @@
             </a>
 
             <!-- Export Data -->
-            <div
+            <a href="{{ route('admin.loss-writeoffs.export', request()->query()) }}"
                 class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-200 cursor-pointer">
                 <div class="flex items-center justify-between mb-4">
                     <div
@@ -127,8 +127,8 @@
                     <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-blue-600 transition-colors'></i>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-2">Eksport Data</h3>
-                <p class="text-sm text-gray-600">Muat turun laporan kehilangan</p>
-            </div>
+                <p class="text-sm text-gray-600">Muat turun laporan kehilangan (.xlsx)</p>
+            </a>
 
             <!-- Loss Reports -->
             <div
@@ -278,11 +278,11 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
-                                        @if($loss->jenis_kehilangan === 'Kehilangan') bg-yellow-100 text-yellow-800
-                                        @elseif($loss->jenis_kehilangan === 'Kecurian') bg-red-100 text-red-800
-                                        @elseif($loss->jenis_kehilangan === 'Kerosakan') bg-orange-100 text-orange-800
-                                        @elseif($loss->jenis_kehilangan === 'Kemalangan') bg-purple-100 text-purple-800
-                                        @else bg-gray-100 text-gray-800 @endif">
+                                                @if($loss->jenis_kehilangan === 'Kehilangan') bg-yellow-100 text-yellow-800
+                                                @elseif($loss->jenis_kehilangan === 'Kecurian') bg-red-100 text-red-800
+                                                @elseif($loss->jenis_kehilangan === 'Kerosakan') bg-orange-100 text-orange-800
+                                                @elseif($loss->jenis_kehilangan === 'Kemalangan') bg-purple-100 text-purple-800
+                                                @else bg-gray-100 text-gray-800 @endif">
                                         {{ $loss->jenis_kehilangan }}
                                     </span>
                                 </td>
@@ -299,13 +299,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                        @if($loss->status_kejadian === 'Dilaporkan') bg-amber-100 text-amber-800
-                                        @elseif($loss->status_kejadian === 'Diluluskan') bg-green-100 text-green-800
-                                        @else bg-red-100 text-red-800 @endif">
+                                                @if($loss->status_kejadian === 'Dilaporkan') bg-amber-100 text-amber-800
+                                                @elseif($loss->status_kejadian === 'Diluluskan') bg-green-100 text-green-800
+                                                @else bg-red-100 text-red-800 @endif">
                                         <div class="w-2 h-2 
-                                            @if($loss->status_kejadian === 'Dilaporkan') bg-amber-500
-                                            @elseif($loss->status_kejadian === 'Diluluskan') bg-green-500
-                                            @else bg-red-500 @endif rounded-full mr-2"></div>
+                                                    @if($loss->status_kejadian === 'Dilaporkan') bg-amber-500
+                                                    @elseif($loss->status_kejadian === 'Diluluskan') bg-green-500
+                                                    @else bg-red-500 @endif rounded-full mr-2"></div>
                                         {{ $loss->status_kejadian }}
                                     </span>
                                 </td>

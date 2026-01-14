@@ -406,91 +406,8 @@ class AssetController extends Controller
             });
         }
 
-        $assets = $query->latest()->limit(10000)->get(); // Limit to prevent memory issues
-
-        $filename = 'assets_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function () use ($assets) {
-            $file = fopen('php://output', 'w');
-
-            // Add BOM for UTF-8 to support Malay characters
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            // Write CSV headers - matching import template order and format
-            fputcsv($file, [
-                'Masjid/Surau ID',
-                'Nama Aset',
-                'Jenis Aset',
-                'Kategori Aset (asset/non-asset)',
-                'Tarikh Perolehan (DD/MM/YYYY)',
-                'Kaedah Perolehan',
-                'Nilai Perolehan (RM)',
-                'Diskaun (RM)',
-                'Umur Faedah (Tahun)',
-                'Susut Nilai Tahunan (RM)',
-                'Lokasi Penempatan',
-                'Pegawai Bertanggungjawab',
-                'Jawatan Pegawai',
-                'Status Aset',
-                'Keadaan Fizikal',
-                'Status Jaminan',
-                'Tarikh Pemeriksaan Terakhir (DD/MM/YYYY)',
-                'Tarikh Penyelenggaraan Akan Datang (DD/MM/YYYY)',
-                'No. Resit',
-                'Tarikh Resit (DD/MM/YYYY)',
-                'Pembekal',
-                'Jenama',
-                'No. Pesanan Kerajaan',
-                'No. Rujukan Kontrak',
-                'Tempoh Jaminan',
-                'Tarikh Tamat Jaminan (DD/MM/YYYY)',
-                'Catatan',
-                'Catatan Jaminan'
-            ]);
-
-            // Write data rows - matching import template column order
-            foreach ($assets as $asset) {
-                fputcsv($file, [
-                    $asset->masjid_surau_id,
-                    $asset->nama_aset,
-                    $asset->jenis_aset,
-                    $asset->kategori_aset === 'asset' ? 'asset' : 'non-asset',
-                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('d/m/Y') : '',
-                    $asset->kaedah_perolehan ?? '',
-                    number_format($asset->nilai_perolehan ?? 0, 2),
-                    number_format($asset->diskaun ?? 0, 2),
-                    $asset->umur_faedah_tahunan ?? '',
-                    number_format($asset->susut_nilai_tahunan ?? 0, 2),
-                    $asset->lokasi_penempatan,
-                    $asset->pegawai_bertanggungjawab_lokasi,
-                    $asset->jawatan_pegawai ?? '',
-                    $asset->status_aset,
-                    $asset->keadaan_fizikal ?? '',
-                    $asset->status_jaminan ?? '',
-                    $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('d/m/Y') : '',
-                    $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('d/m/Y') : '',
-                    $asset->no_resit ?? '',
-                    $asset->tarikh_resit ? $asset->tarikh_resit->format('d/m/Y') : '',
-                    $asset->pembekal ?? '',
-                    $asset->jenama ?? '',
-                    $asset->no_pesanan_kerajaan ?? '',
-                    $asset->no_rujukan_kontrak ?? '',
-                    $asset->tempoh_jaminan ?? '',
-                    $asset->tarikh_tamat_jaminan ? $asset->tarikh_tamat_jaminan->format('d/m/Y') : '',
-                    $asset->catatan ?? '',
-                    $asset->catatan_jaminan ?? ''
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        $filename = 'assets_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssetExport($request), $filename);
     }
 
     /**
@@ -498,157 +415,7 @@ class AssetController extends Controller
      */
     public function downloadTemplate()
     {
-        $filename = 'assets_import_template_' . now()->format('Y-m-d') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function () {
-            $file = fopen('php://output', 'w');
-
-            // Add BOM for UTF-8
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            // Write CSV headers
-            fputcsv($file, [
-                'Masjid/Surau ID',
-                'Nama Aset',
-                'Jenis Aset',
-                'Kategori Aset (asset/non-asset)',
-                'Tarikh Perolehan (DD/MM/YYYY)',
-                'Kaedah Perolehan',
-                'Nilai Perolehan (RM)',
-                'Diskaun (RM)',
-                'Umur Faedah (Tahun)',
-                'Susut Nilai Tahunan (RM)',
-                'Lokasi Penempatan',
-                'Pegawai Bertanggungjawab',
-                'Jawatan Pegawai',
-                'Status Aset',
-                'Keadaan Fizikal',
-                'Status Jaminan',
-                'Tarikh Pemeriksaan Terakhir (DD/MM/YYYY)',
-                'Tarikh Penyelenggaraan Akan Datang (DD/MM/YYYY)',
-                'No. Resit',
-                'Tarikh Resit (DD/MM/YYYY)',
-                'Pembekal',
-                'Jenama',
-                'No. Pesanan Kerajaan',
-                'No. Rujukan Kontrak',
-                'Tempoh Jaminan',
-                'Tarikh Tamat Jaminan (DD/MM/YYYY)',
-                'Catatan',
-                'Catatan Jaminan'
-            ]);
-
-            // Add example row
-            $masjidSuraus = MasjidSurau::limit(1)->first();
-            $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-
-            fputcsv($file, [
-                $masjidSuraus->id ?? '1',
-                'Contoh: Komputer Desktop',
-                $assetTypes[0] ?? 'Perabot',
-                'asset',
-                date('Y-m-d'),
-                'Pembelian',
-                '2500.00',
-                '0.00',
-                '5',
-                '500.00',
-                'Bilik Setiausaha',
-                'Ahmad bin Abdullah',
-                'Setiausaha',
-                'Sedang Digunakan',
-                'Baik',
-                'Aktif',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                'Contoh catatan',
-                ''
-            ]);
-
-            // Add blank rows for separation
-            fputcsv($file, []);
-            fputcsv($file, []);
-
-            // Add reference sections
-            fputcsv($file, ['=== RUJUKAN: SENARAI NILAI SAH ===']);
-            fputcsv($file, ['Gunakan nilai-nilai di bawah untuk mengisi template']);
-            fputcsv($file, []);
-
-            // 1. Asset Types Reference
-            fputcsv($file, ['--- JENIS ASET SAH ---']);
-            foreach ($assetTypes as $type) {
-                fputcsv($file, [$type]);
-            }
-            fputcsv($file, []);
-
-            // 2. Asset Category Reference
-            fputcsv($file, ['--- KATEGORI ASET SAH ---']);
-            fputcsv($file, ['asset', '(Aset bernilai)']);
-            fputcsv($file, ['non-asset', '(Bukan aset)']);
-            fputcsv($file, []);
-
-            // 3. Location Reference
-            fputcsv($file, ['--- LOKASI PENEMPATAN SAH ---']);
-            foreach (\App\Helpers\SystemData::getValidLocations() as $location) {
-                fputcsv($file, [$location]);
-            }
-            fputcsv($file, []);
-
-            // 4. Physical Condition Reference
-            fputcsv($file, ['--- KEADAAN FIZIKAL SAH ---']);
-            foreach (\App\Helpers\SystemData::getPhysicalConditions() as $condition) {
-                fputcsv($file, [$condition]);
-            }
-            fputcsv($file, []);
-
-            // 5. Asset Status Reference
-            fputcsv($file, ['--- STATUS ASET SAH ---']);
-            fputcsv($file, ['Baru']);
-            fputcsv($file, ['Sedang Digunakan']);
-            fputcsv($file, ['Dalam Penyelenggaraan']);
-            fputcsv($file, ['Rosak']);
-            fputcsv($file, []);
-
-            // 6. Acquisition Method Reference
-            fputcsv($file, ['--- KAEDAH PEROLEHAN SAH ---']);
-            foreach (\App\Helpers\SystemData::getAcquisitionSources() as $source) {
-                fputcsv($file, [$source]);
-            }
-            fputcsv($file, []);
-
-            // 7. Warranty Status Reference
-            fputcsv($file, ['--- STATUS JAMINAN SAH ---']);
-            fputcsv($file, ['Aktif']);
-            fputcsv($file, ['Tamat']);
-            fputcsv($file, ['Tiada Jaminan']);
-            fputcsv($file, []);
-
-            // Add important notes
-            fputcsv($file, ['=== NOTA PENTING ===']);
-            fputcsv($file, ['1. Format tarikh: YYYY-MM-DD (contoh: 2024-01-15)']);
-            fputcsv($file, ['2. Pastikan Masjid/Surau ID wujud dalam sistem']);
-            fputcsv($file, ['3. Nombor siri pendaftaran akan dijana automatik']);
-            fputcsv($file, ['4. Gunakan nilai TEPAT seperti dalam senarai rujukan']);
-            fputcsv($file, ['5. Kategori Aset: gunakan huruf kecil (asset atau non-asset)']);
-
-            fclose($file);
-
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssetImportTemplateExport, 'template_import_aset.xlsx');
     }
 
     /**
@@ -665,50 +432,129 @@ class AssetController extends Controller
     /**
      * Import assets from CSV
      */
+    /**
+     * Import assets from CSV
+     */
     public function import(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:51200', // 50MB max (increased for large imports)
+            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200',
         ]);
 
         $file = $request->file('csv_file');
-        $path = $file->getRealPath();
 
-        // Read file line by line to handle large files efficiently
-        $handle = fopen($path, 'r');
-        if (!$handle) {
+        try {
+            $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\AssetImport, $file);
+            $rows = $sheets[0] ?? [];
+        } catch (\Exception $e) {
             return redirect()->route('admin.assets.import')
-                ->with('error', 'Tidak dapat membaca fail CSV.');
+                ->with('error', 'Gagal membaca fail: ' . $e->getMessage());
         }
 
-        // Read and skip header row
-        $header = fgetcsv($handle);
-        if ($header && isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
-            $header[0] = substr($header[0], 3);
+        $result = $this->processImportRows($rows);
+
+        if (count($result['errors']) > 0) {
+            // Flatten errors for display
+            $displayErrors = [];
+            foreach ($result['errors'] as $rowErrors) {
+                foreach ($rowErrors['errors'] as $error) {
+                    $displayErrors[] = $error;
+                }
+            }
+
+            return redirect()->route('admin.assets.import')
+                ->with('import_errors', $displayErrors)
+                ->with('error', 'Terdapat ralat dalam fail import. Sila semak dan cuba lagi.')
+                ->withInput();
         }
 
-        $errors = [];
+        // Process valid rows
         $successCount = 0;
-        $skipCount = 0;
+        foreach ($result['valid_rows'] as $row) {
+            try {
+                Asset::create($row['data']);
+                $successCount++;
+            } catch (\Exception $e) {
+                // Log critical error if creation fails despite validation
+                \Illuminate\Support\Facades\Log::error('Asset Creation Failed in Import: ' . $e->getMessage());
+            }
+        }
+
+        $message = "Import selesai. {$successCount} aset berjaya diimport.";
+        if ($result['skipped_count'] > 0) {
+            $message .= " {$result['skipped_count']} baris kosong dilangkau.";
+        }
+
+        return redirect()->route('admin.assets.index')->with('success', $message);
+    }
+
+    /**
+     * Preview import data
+     */
+    public function previewImport(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200',
+        ]);
+
+        try {
+            $file = $request->file('csv_file');
+            $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\AssetImport, $file);
+            $rows = $sheets[0] ?? [];
+
+            $result = $this->processImportRows($rows);
+
+            return response()->json([
+                'success' => true,
+                'data' => $result['rows'],
+                'summary' => [
+                    'total' => count($rows) - 1, // Exclude header
+                    'valid' => count($result['valid_rows']),
+                    'invalid' => count($result['errors']),
+                    'skipped' => $result['skipped_count']
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Process import rows for validation and preview
+     */
+    private function processImportRows($rows)
+    {
         $availableAssetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
-        $rowIndex = 0;
+        $processedRows = [];
+        $validRows = [];
+        $errorRows = [];
+        $skippedCount = 0;
+        $sequenceOffsets = []; // Track ID generation offsets
 
-        // Process rows in batches for better performance
-        $batchSize = 100;
-        $batch = [];
+        // Skip header row
+        array_shift($rows);
 
-        while (($row = fgetcsv($handle)) !== false) {
-            $rowIndex++;
-            $rowNumber = $rowIndex + 1; // +1 because header is row 1
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2; // +1 for 0-index, +1 for header
+            $rowErrors = [];
+            $assetData = [];
 
             // Skip empty rows
-            if (empty(array_filter($row))) {
-                $skipCount++;
+            if (
+                empty(array_filter($row, function ($value) {
+                    return !is_null($value) && $value !== '';
+                }))
+            ) {
+                $skippedCount++;
                 continue;
             }
 
             try {
-                // Map CSV columns to asset fields
+                // Map columns
                 $assetData = [
                     'masjid_surau_id' => $row[0] ?? null,
                     'nama_aset' => $row[1] ?? null,
@@ -741,146 +587,121 @@ class AssetController extends Controller
                 ];
 
                 // Validate required fields
-                if (empty($assetData['nama_aset'])) {
-                    $errors[] = "Baris {$rowNumber}: Nama Aset diperlukan";
-                    continue;
-                }
+                if (empty($assetData['nama_aset']))
+                    $rowErrors[] = "Nama Aset diperlukan";
 
                 if (empty($assetData['masjid_surau_id']) || !MasjidSurau::find($assetData['masjid_surau_id'])) {
-                    $errors[] = "Baris {$rowNumber}: Masjid/Surau ID tidak sah";
-                    continue;
+                    $rowErrors[] = "Masjid/Surau ID tidak sah";
                 }
 
                 if (empty($assetData['jenis_aset']) || !in_array($assetData['jenis_aset'], $availableAssetTypes)) {
-                    $errors[] = "Baris {$rowNumber}: Jenis Aset tidak sah. Sila gunakan salah satu: " . implode(', ', $availableAssetTypes);
-                    continue;
+                    $rowErrors[] = "Jenis Aset tidak sah. Gunakan: " . implode(', ', $availableAssetTypes);
                 }
 
                 if (empty($assetData['kategori_aset']) || !in_array($assetData['kategori_aset'], ['asset', 'non-asset'])) {
-                    $errors[] = "Baris {$rowNumber}: Kategori Aset mesti 'asset' atau 'non-asset'";
-                    continue;
+                    $rowErrors[] = "Kategori Aset mesti 'asset' atau 'non-asset'";
                 }
 
                 if (empty($assetData['tarikh_perolehan'])) {
-                    $errors[] = "Baris {$rowNumber}: Tarikh Perolehan diperlukan";
-                    continue;
-                }
-
-                // Validate date format
-                try {
-                    $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
-                } catch (\Exception $e) {
-                    $errors[] = "Baris {$rowNumber}: Format tarikh perolehan tidak sah. Gunakan format YYYY-MM-DD";
-                    continue;
-                }
-
-                // Validate and parse other date fields if provided
-                if (!empty($assetData['tarikh_pemeriksaan_terakhir'])) {
+                    $rowErrors[] = "Tarikh Perolehan diperlukan";
+                } else {
                     try {
-                        \Carbon\Carbon::parse($assetData['tarikh_pemeriksaan_terakhir']);
+                        $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
                     } catch (\Exception $e) {
-                        $errors[] = "Baris {$rowNumber}: Format tarikh pemeriksaan terakhir tidak sah. Gunakan format YYYY-MM-DD";
-                        continue;
+                        $rowErrors[] = "Format tarikh perolehan tidak sah (YYYY-MM-DD)";
                     }
                 }
 
-                if (!empty($assetData['tarikh_penyelenggaraan_akan_datang'])) {
-                    try {
-                        \Carbon\Carbon::parse($assetData['tarikh_penyelenggaraan_akan_datang']);
-                    } catch (\Exception $e) {
-                        $errors[] = "Baris {$rowNumber}: Format tarikh penyelenggaraan akan datang tidak sah. Gunakan format YYYY-MM-DD";
-                        continue;
+                // Field validation helper
+                $validateDate = function ($date, $field) use (&$rowErrors) {
+                    if (!empty($date)) {
+                        try {
+                            \Carbon\Carbon::parse($date);
+                        } catch (\Exception $e) {
+                            $rowErrors[] = "Format $field tidak sah (YYYY-MM-DD)";
+                        }
                     }
-                }
+                };
 
-                if (!empty($assetData['tarikh_resit'])) {
-                    try {
-                        \Carbon\Carbon::parse($assetData['tarikh_resit']);
-                    } catch (\Exception $e) {
-                        $errors[] = "Baris {$rowNumber}: Format tarikh resit tidak sah. Gunakan format YYYY-MM-DD";
-                        continue;
-                    }
-                }
+                $validateDate($assetData['tarikh_pemeriksaan_terakhir'], 'tarikh pemeriksaan terakhir');
+                $validateDate($assetData['tarikh_penyelenggaraan_akan_datang'], 'tarikh penyelenggaraan');
+                $validateDate($assetData['tarikh_resit'], 'tarikh resit');
+                $validateDate($assetData['tarikh_tamat_jaminan'], 'tarikh tamat jaminan');
 
-                if (!empty($assetData['tarikh_tamat_jaminan'])) {
-                    try {
-                        \Carbon\Carbon::parse($assetData['tarikh_tamat_jaminan']);
-                    } catch (\Exception $e) {
-                        $errors[] = "Baris {$rowNumber}: Format tarikh tamat jaminan tidak sah. Gunakan format YYYY-MM-DD";
-                        continue;
-                    }
-                }
-
-                // Validate location
                 $validLocations = ['Anjung kiri', 'Anjung kanan', 'Anjung Depan(Ruang Pengantin)', 'Ruang Utama (tingkat atas, tingkat bawah)', 'Bilik Mesyuarat', 'Bilik Kuliah', 'Bilik Bendahari', 'Bilik Setiausaha', 'Bilik Nazir & Imam', 'Bangunan Jenazah', 'Lain-lain'];
                 if (empty($assetData['lokasi_penempatan']) || !in_array($assetData['lokasi_penempatan'], $validLocations)) {
-                    $errors[] = "Baris {$rowNumber}: Lokasi Penempatan tidak sah";
-                    continue;
+                    $rowErrors[] = "Lokasi Penempatan tidak sah";
                 }
 
-                if (empty($assetData['pegawai_bertanggungjawab_lokasi'])) {
-                    $errors[] = "Baris {$rowNumber}: Pegawai Bertanggungjawab diperlukan";
-                    continue;
+                if (empty($assetData['pegawai_bertanggungjawab_lokasi']))
+                    $rowErrors[] = "Pegawai Bertanggungjawab diperlukan";
+                if (empty($assetData['kaedah_perolehan']))
+                    $rowErrors[] = "Kaedah Perolehan diperlukan";
+
+                // Generate ID if valid basic info
+                if (empty($rowErrors)) {
+                    $year = $tarikhPerolehan->format('y');
+                    $offsetKey = "{$assetData['masjid_surau_id']}_{$assetData['jenis_aset']}_{$year}";
+                    $currentOffset = $sequenceOffsets[$offsetKey] ?? 0;
+
+                    $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
+                        $assetData['masjid_surau_id'],
+                        $assetData['jenis_aset'],
+                        $year,
+                        $currentOffset
+                    );
+
+                    // Increment offset for this key
+                    $sequenceOffsets[$offsetKey] = $currentOffset + 1;
+
+                    // Check duplicate
+                    if (Asset::where('no_siri_pendaftaran', $assetData['no_siri_pendaftaran'])->exists()) {
+                        // Note: If we are just previewing, this check is against DB. 
+                        // Since we assume generating NEW IDs, existence means meaningful collision or logic error.
+                        // But for preview of NEXT item, it shouldn't exist unless race condition.
+                        // However, if the generated ID exists, we report it.
+                        $rowErrors[] = "Nombor siri pendaftaran dijana sudah wujud: {$assetData['no_siri_pendaftaran']}";
+                    }
                 }
 
-                if (empty($assetData['kaedah_perolehan'])) {
-                    $errors[] = "Baris {$rowNumber}: Kaedah Perolehan diperlukan";
-                    continue;
-                }
-
-                // Generate registration number (tarikh already validated above)
-                $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
-                    $assetData['masjid_surau_id'],
-                    $assetData['jenis_aset'],
-                    $tarikhPerolehan->format('y')
-                );
-
-                // Check if registration number already exists (duplicate check)
-                if (Asset::where('no_siri_pendaftaran', $assetData['no_siri_pendaftaran'])->exists()) {
-                    $errors[] = "Baris {$rowNumber}: Nombor siri pendaftaran sudah wujud: {$assetData['no_siri_pendaftaran']}";
-                    continue;
-                }
-
-                // Convert numeric fields
+                // Conversions
                 $assetData['nilai_perolehan'] = (float) ($assetData['nilai_perolehan'] ?? 0);
                 $assetData['diskaun'] = (float) ($assetData['diskaun'] ?? 0);
                 $assetData['umur_faedah_tahunan'] = !empty($assetData['umur_faedah_tahunan']) ? (int) $assetData['umur_faedah_tahunan'] : null;
                 $assetData['susut_nilai_tahunan'] = !empty($assetData['susut_nilai_tahunan']) ? (float) $assetData['susut_nilai_tahunan'] : null;
 
-                // Ensure date fields are properly formatted (set to null if empty)
-                $assetData['tarikh_pemeriksaan_terakhir'] = !empty($assetData['tarikh_pemeriksaan_terakhir']) ? $assetData['tarikh_pemeriksaan_terakhir'] : null;
-                $assetData['tarikh_penyelenggaraan_akan_datang'] = !empty($assetData['tarikh_penyelenggaraan_akan_datang']) ? $assetData['tarikh_penyelenggaraan_akan_datang'] : null;
-                $assetData['tarikh_resit'] = !empty($assetData['tarikh_resit']) ? $assetData['tarikh_resit'] : null;
-                $assetData['tarikh_tamat_jaminan'] = !empty($assetData['tarikh_tamat_jaminan']) ? $assetData['tarikh_tamat_jaminan'] : null;
+                $processedRow = [
+                    'row' => $rowNumber,
+                    'data' => $assetData,
+                    'valid' => empty($rowErrors),
+                    'errors' => array_map(function ($e) use ($rowNumber) {
+                        return "Baris $rowNumber: $e"; }, $rowErrors)
+                ];
 
-                // Create asset
-                Asset::create($assetData);
-                $successCount++;
+                $processedRows[] = $processedRow;
+
+                if (empty($rowErrors)) {
+                    $validRows[] = $processedRow;
+                } else {
+                    $errorRows[] = $processedRow;
+                }
 
             } catch (\Exception $e) {
-                $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
+                $processedRows[] = [
+                    'row' => $rowNumber,
+                    'data' => $row, // Raw data on crash
+                    'valid' => false,
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                ];
+                $errorRows[] = end($processedRows);
             }
         }
 
-        // Close file handle
-        fclose($handle);
-
-        $message = "Import selesai. {$successCount} aset berjaya diimport.";
-        if ($skipCount > 0) {
-            $message .= " {$skipCount} baris kosong dilangkau.";
-        }
-        if (count($errors) > 0) {
-            $message .= " " . count($errors) . " ralat ditemui.";
-        }
-
-        if (count($errors) > 0) {
-            return redirect()->route('admin.assets.import')
-                ->with('import_errors', $errors)
-                ->with('success', $message)
-                ->withInput();
-        }
-
-        return redirect()->route('admin.assets.index')
-            ->with('success', $message);
+        return [
+            'rows' => $processedRows,
+            'valid_rows' => $validRows,
+            'errors' => $errorRows,
+            'skipped_count' => $skippedCount
+        ];
     }
 }

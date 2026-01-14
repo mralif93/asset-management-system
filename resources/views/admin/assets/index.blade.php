@@ -139,7 +139,7 @@
                     <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-amber-600 transition-colors'></i>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-2">Import Data</h3>
-                <p class="text-sm text-gray-600">Muat naik senarai aset</p>
+                <p class="text-sm text-gray-600">Muat naik senarai aset (Excel/CSV)</p>
             </a>
         </div>
 
@@ -341,8 +341,8 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
-                                                @if($asset->kategori_aset === 'asset') bg-emerald-100 text-emerald-800
-                                                @else bg-orange-100 text-orange-800 @endif">
+                                                        @if($asset->kategori_aset === 'asset') bg-emerald-100 text-emerald-800
+                                                        @else bg-orange-100 text-orange-800 @endif">
                                             {{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}
                                         </span>
                                     </td>
@@ -351,28 +351,28 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                                @if($asset->status_aset === 'Sedang Digunakan') bg-green-100 text-green-800
-                                                @elseif($asset->status_aset === 'Aktif') bg-green-100 text-green-800
-                                                @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-100 text-yellow-800
-                                                @elseif($asset->status_aset === 'Baru') bg-blue-100 text-blue-800
-                                                @else bg-red-100 text-red-800 @endif">
+                                                        @if($asset->status_aset === 'Sedang Digunakan') bg-green-100 text-green-800
+                                                        @elseif($asset->status_aset === 'Aktif') bg-green-100 text-green-800
+                                                        @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-100 text-yellow-800
+                                                        @elseif($asset->status_aset === 'Baru') bg-blue-100 text-blue-800
+                                                        @else bg-red-100 text-red-800 @endif">
                                             <div class="w-2 h-2 
-                                                    @if($asset->status_aset === 'Sedang Digunakan') bg-green-500
-                                                    @elseif($asset->status_aset === 'Aktif') bg-green-500
-                                                    @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-500
-                                                    @elseif($asset->status_aset === 'Baru') bg-blue-500
-                                                    @else bg-red-500 @endif 
-                                                    rounded-full mr-2"></div>
+                                                            @if($asset->status_aset === 'Sedang Digunakan') bg-green-500
+                                                            @elseif($asset->status_aset === 'Aktif') bg-green-500
+                                                            @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-500
+                                                            @elseif($asset->status_aset === 'Baru') bg-blue-500
+                                                            @else bg-red-500 @endif 
+                                                            rounded-full mr-2"></div>
                                             {{ $asset->status_aset }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                                @if($asset->keadaan_fizikal === 'Cemerlang') bg-green-100 text-green-800
-                                                @elseif($asset->keadaan_fizikal === 'Baik') bg-blue-100 text-blue-800
-                                                @elseif($asset->keadaan_fizikal === 'Sederhana') bg-yellow-100 text-yellow-800
-                                                @elseif($asset->keadaan_fizikal === 'Rosak') bg-orange-100 text-orange-800
-                                                @else bg-red-100 text-red-800 @endif">
+                                                        @if($asset->keadaan_fizikal === 'Cemerlang') bg-green-100 text-green-800
+                                                        @elseif($asset->keadaan_fizikal === 'Baik') bg-blue-100 text-blue-800
+                                                        @elseif($asset->keadaan_fizikal === 'Sederhana') bg-yellow-100 text-yellow-800
+                                                        @elseif($asset->keadaan_fizikal === 'Rosak') bg-orange-100 text-orange-800
+                                                        @else bg-red-100 text-red-800 @endif">
                                             {{ $asset->keadaan_fizikal ?? 'Baik' }}
                                         </span>
                                     </td>

@@ -16,12 +16,21 @@ class MaintenanceRecordController extends Controller
     public function index()
     {
         $query = MaintenanceRecord::with(['asset', 'asset.masjidSurau']);
-        
+
         // Admin can see all maintenance records
-        
+
         $maintenanceRecords = $query->latest()->paginate(15);
-        
+
         return view('admin.maintenance-records.index', compact('maintenanceRecords'));
+    }
+
+    /**
+     * Export maintenance records to Excel
+     */
+    public function export(Request $request)
+    {
+        $filename = 'maintenance_records_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MaintenanceRecordExport($request), $filename);
     }
 
     /**
@@ -30,7 +39,7 @@ class MaintenanceRecordController extends Controller
     public function create()
     {
         $assets = Asset::with('masjidSurau')->get();
-        
+
         return view('admin.maintenance-records.create', compact('assets'));
     }
 
@@ -69,7 +78,7 @@ class MaintenanceRecordController extends Controller
         $maintenanceRecord = MaintenanceRecord::create($validated);
 
         return redirect()->route('admin.maintenance-records.show', $maintenanceRecord)
-                        ->with('success', 'Rekod penyelenggaraan berjaya disimpan.');
+            ->with('success', 'Rekod penyelenggaraan berjaya disimpan.');
     }
 
     /**
@@ -78,7 +87,7 @@ class MaintenanceRecordController extends Controller
     public function show(MaintenanceRecord $maintenanceRecord)
     {
         $maintenanceRecord->load(['asset', 'asset.masjidSurau', 'user']);
-        
+
         return view('admin.maintenance-records.show', compact('maintenanceRecord'));
     }
 
@@ -88,7 +97,7 @@ class MaintenanceRecordController extends Controller
     public function edit(MaintenanceRecord $maintenanceRecord)
     {
         $assets = Asset::with('masjidSurau')->get();
-        
+
         return view('admin.maintenance-records.edit', compact('maintenanceRecord', 'assets'));
     }
 
@@ -123,7 +132,7 @@ class MaintenanceRecordController extends Controller
         $maintenanceRecord->update($validated);
 
         return redirect()->route('admin.maintenance-records.show', $maintenanceRecord)
-                        ->with('success', 'Rekod penyelenggaraan berjaya dikemaskini.');
+            ->with('success', 'Rekod penyelenggaraan berjaya dikemaskini.');
     }
 
     /**
@@ -134,6 +143,6 @@ class MaintenanceRecordController extends Controller
         $maintenanceRecord->delete();
 
         return redirect()->route('admin.maintenance-records.index')
-                        ->with('success', 'Rekod penyelenggaraan berjaya dipadamkan.');
+            ->with('success', 'Rekod penyelenggaraan berjaya dipadamkan.');
     }
 }

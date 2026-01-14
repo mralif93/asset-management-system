@@ -16,38 +16,47 @@ class LossWriteoffController extends Controller
     public function index()
     {
         $query = LossWriteoff::with(['asset', 'asset.masjidSurau']);
-        
+
         // Filter by masjid/surau if user is not admin
         if (Auth::user()->role !== 'admin') {
-            $query->whereHas('asset', function($q) {
+            $query->whereHas('asset', function ($q) {
                 $q->where('masjid_surau_id', Auth::user()->masjid_surau_id);
             });
         }
-        
+
         $lossWriteoffs = $query->latest()->paginate(15);
-        
+
         // Calculate statistics
         $statsQuery = LossWriteoff::query();
-        
+
         // Apply same filter for statistics
         if (Auth::user()->role !== 'admin') {
-            $statsQuery->whereHas('asset', function($q) {
+            $statsQuery->whereHas('asset', function ($q) {
                 $q->where('masjid_surau_id', Auth::user()->masjid_surau_id);
             });
         }
-        
+
         $totalLosses = $statsQuery->count();
         $pendingLosses = $statsQuery->where('status_kejadian', 'Dilaporkan')->count();
         $approvedLosses = $statsQuery->where('status_kejadian', 'Diluluskan')->count();
         $totalLossValue = $statsQuery->sum('nilai_kehilangan');
-        
+
         return view('admin.loss-writeoffs.index', compact(
-            'lossWriteoffs', 
-            'totalLosses', 
-            'pendingLosses', 
-            'approvedLosses', 
+            'lossWriteoffs',
+            'totalLosses',
+            'pendingLosses',
+            'approvedLosses',
             'totalLossValue'
         ));
+    }
+
+    /**
+     * Export loss/write-offs to Excel
+     */
+    public function export(Request $request)
+    {
+        $filename = 'loss_writeoffs_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\LossWriteoffExport($request), $filename);
     }
 
     /**
@@ -56,14 +65,14 @@ class LossWriteoffController extends Controller
     public function create()
     {
         $query = Asset::with('masjidSurau');
-        
+
         // Filter assets by masjid/surau if user is not admin
         if (Auth::user()->role !== 'admin') {
             $query->where('masjid_surau_id', Auth::user()->masjid_surau_id);
         }
-        
+
         $assets = $query->get();
-        
+
         return view('admin.loss-writeoffs.create', compact('assets'));
     }
 
@@ -100,7 +109,7 @@ class LossWriteoffController extends Controller
         $lossWriteoff = LossWriteoff::create($validated);
 
         return redirect()->route('admin.loss-writeoffs.show', $lossWriteoff)
-                        ->with('success', 'Laporan kehilangan berjaya dihantar.');
+            ->with('success', 'Laporan kehilangan berjaya dihantar.');
     }
 
     /**
@@ -109,7 +118,7 @@ class LossWriteoffController extends Controller
     public function show(LossWriteoff $lossWriteoff)
     {
         $lossWriteoff->load(['asset', 'asset.masjidSurau', 'user']);
-        
+
         return view('admin.loss-writeoffs.show', compact('lossWriteoff'));
     }
 
@@ -124,14 +133,14 @@ class LossWriteoffController extends Controller
         }
 
         $query = Asset::with('masjidSurau');
-        
+
         // Filter assets by masjid/surau if user is not admin
         if (Auth::user()->role !== 'admin') {
             $query->where('masjid_surau_id', Auth::user()->masjid_surau_id);
         }
-        
+
         $assets = $query->get();
-        
+
         return view('admin.loss-writeoffs.edit', compact('lossWriteoff', 'assets'));
     }
 
@@ -170,7 +179,7 @@ class LossWriteoffController extends Controller
         $lossWriteoff->update($validated);
 
         return redirect()->route('admin.loss-writeoffs.show', $lossWriteoff)
-                        ->with('success', 'Laporan kehilangan berjaya dikemaskini.');
+            ->with('success', 'Laporan kehilangan berjaya dikemaskini.');
     }
 
     /**
@@ -186,7 +195,7 @@ class LossWriteoffController extends Controller
         $lossWriteoff->delete();
 
         return redirect()->route('admin.loss-writeoffs.index')
-                        ->with('success', 'Rekod kehilangan berjaya dipadamkan.');
+            ->with('success', 'Rekod kehilangan berjaya dipadamkan.');
     }
 
     /**
@@ -205,7 +214,7 @@ class LossWriteoffController extends Controller
         ]);
 
         return redirect()->route('admin.loss-writeoffs.show', $lossWriteoff)
-                        ->with('success', 'Laporan kehilangan telah diluluskan.');
+            ->with('success', 'Laporan kehilangan telah diluluskan.');
     }
 
     /**
@@ -229,6 +238,6 @@ class LossWriteoffController extends Controller
         ]);
 
         return redirect()->route('admin.loss-writeoffs.show', $lossWriteoff)
-                        ->with('success', 'Laporan kehilangan telah ditolak.');
+            ->with('success', 'Laporan kehilangan telah ditolak.');
     }
 }

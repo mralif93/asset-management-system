@@ -48,12 +48,12 @@ class AuditTrailController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('description', 'like', '%' . $search . '%')
-                  ->orWhere('user_name', 'like', '%' . $search . '%')
-                  ->orWhere('user_email', 'like', '%' . $search . '%')
-                  ->orWhere('model_name', 'like', '%' . $search . '%')
-                  ->orWhere('url', 'like', '%' . $search . '%');
+                    ->orWhere('user_name', 'like', '%' . $search . '%')
+                    ->orWhere('user_email', 'like', '%' . $search . '%')
+                    ->orWhere('model_name', 'like', '%' . $search . '%')
+                    ->orWhere('url', 'like', '%' . $search . '%');
             });
         }
 
@@ -69,10 +69,10 @@ class AuditTrailController extends Controller
         $stats = $this->getStatistics();
 
         return view('admin.audit-trails.index', compact(
-            'auditTrails', 
-            'users', 
-            'actions', 
-            'modelTypes', 
+            'auditTrails',
+            'users',
+            'actions',
+            'modelTypes',
             'statuses',
             'stats'
         ));
@@ -84,7 +84,7 @@ class AuditTrailController extends Controller
     public function show(AuditTrail $auditTrail)
     {
         $auditTrail->load('user');
-        
+
         // Get related audit trails for the same model
         $relatedTrails = collect();
         if ($auditTrail->model_type && $auditTrail->model_id) {
@@ -103,99 +103,13 @@ class AuditTrailController extends Controller
     /**
      * Export audit trails to CSV
      */
+    /**
+     * Export audit trails to Excel
+     */
     public function export(Request $request)
     {
-        $query = AuditTrail::with('user')->latest();
-
-        // Apply same filters as index
-        if ($request->filled('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        if ($request->filled('action')) {
-            $query->where('action', $request->action);
-        }
-
-        if ($request->filled('model_type')) {
-            $query->where('model_type', $request->model_type);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('description', 'like', '%' . $search . '%')
-                  ->orWhere('user_name', 'like', '%' . $search . '%')
-                  ->orWhere('user_email', 'like', '%' . $search . '%')
-                  ->orWhere('model_name', 'like', '%' . $search . '%');
-            });
-        }
-
-        $auditTrails = $query->limit(10000)->get(); // Limit to prevent memory issues
-
-        $filename = 'audit_trails_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function() use ($auditTrails) {
-            $file = fopen('php://output', 'w');
-            
-            // Write CSV headers
-            fputcsv($file, [
-                'ID',
-                'Tarikh/Masa',
-                'Pengguna',
-                'Email',
-                'Peranan',
-                'Tindakan',
-                'Model',
-                'Nama Model',
-                'IP Address',
-                'Pelayar',
-                'Platform',
-                'Status',
-                'Penerangan',
-                'URL'
-            ]);
-
-            // Write data rows
-            foreach ($auditTrails as $trail) {
-                fputcsv($file, [
-                    $trail->id,
-                    $trail->created_at->format('d/m/Y H:i:s'),
-                    $trail->user_name ?? 'Sistem',
-                    $trail->user_email ?? '-',
-                    $trail->user_role ?? '-',
-                    $trail->formatted_action,
-                    class_basename($trail->model_type ?? ''),
-                    $trail->model_name ?? '-',
-                    $trail->ip_address ?? '-',
-                    $trail->browser,
-                    $trail->platform,
-                    ucfirst($trail->status),
-                    $trail->description ?? '-',
-                    $trail->url ?? '-'
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return Response::stream($callback, 200, $headers);
+        $filename = 'audit_trails_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AuditTrailExport($request), $filename);
     }
 
     /**
@@ -209,7 +123,7 @@ class AuditTrailController extends Controller
 
         $days = $request->days;
         $cutoffDate = now()->subDays($days);
-        
+
         $deletedCount = AuditTrail::where('created_at', '<', $cutoffDate)->delete();
 
         return redirect()->route('admin.audit-trails.index')
@@ -265,7 +179,7 @@ class AuditTrailController extends Controller
         }
 
         $startDate = now()->subDays($days);
-        
+
         $activities = AuditTrail::where('user_id', $userId)
             ->where('created_at', '>=', $startDate)
             ->selectRaw('DATE(created_at) as date, action, COUNT(*) as count')

@@ -25,6 +25,15 @@ class InspectionController extends Controller
     }
 
     /**
+     * Export inspections to Excel
+     */
+    public function export(Request $request)
+    {
+        $filename = 'inspections_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\InspectionExport($request), $filename);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()

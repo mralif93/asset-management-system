@@ -16,12 +16,21 @@ class DisposalController extends Controller
     public function index()
     {
         $query = Disposal::with(['asset', 'asset.masjidSurau']);
-        
+
         // Admin can see all disposals
-        
+
         $disposals = $query->latest()->paginate(15);
-        
+
         return view('admin.disposals.index', compact('disposals'));
+    }
+
+    /**
+     * Export disposals to Excel
+     */
+    public function export(Request $request)
+    {
+        $filename = 'disposals_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\DisposalExport($request), $filename);
     }
 
     /**
@@ -30,7 +39,7 @@ class DisposalController extends Controller
     public function create()
     {
         $assets = Asset::with('masjidSurau')->get();
-        
+
         return view('admin.disposals.create', compact('assets'));
     }
 
@@ -67,7 +76,7 @@ class DisposalController extends Controller
         $disposal = Disposal::create($validated);
 
         return redirect()->route('admin.disposals.show', $disposal)
-                        ->with('success', 'Permohonan pelupusan berjaya dihantar.');
+            ->with('success', 'Permohonan pelupusan berjaya dihantar.');
     }
 
     /**
@@ -76,7 +85,7 @@ class DisposalController extends Controller
     public function show(Disposal $disposal)
     {
         $disposal->load(['asset', 'asset.masjidSurau', 'user']);
-        
+
         return view('admin.disposals.show', compact('disposal'));
     }
 
@@ -91,7 +100,7 @@ class DisposalController extends Controller
         }
 
         $assets = Asset::with('masjidSurau')->get();
-        
+
         return view('admin.disposals.edit', compact('disposal', 'assets'));
     }
 
@@ -130,7 +139,7 @@ class DisposalController extends Controller
         $disposal->update($validated);
 
         return redirect()->route('admin.disposals.show', $disposal)
-                        ->with('success', 'Permohonan pelupusan berjaya dikemaskini.');
+            ->with('success', 'Permohonan pelupusan berjaya dikemaskini.');
     }
 
     /**
@@ -141,7 +150,7 @@ class DisposalController extends Controller
         $disposal->delete();
 
         return redirect()->route('admin.disposals.index')
-                        ->with('success', 'Rekod pelupusan berjaya dipadamkan.');
+            ->with('success', 'Rekod pelupusan berjaya dipadamkan.');
     }
 
     /**
@@ -156,7 +165,7 @@ class DisposalController extends Controller
         ]);
 
         return redirect()->route('admin.disposals.show', $disposal)
-                        ->with('success', 'Permohonan pelupusan telah diluluskan.');
+            ->with('success', 'Permohonan pelupusan telah diluluskan.');
     }
 
     /**
@@ -176,6 +185,6 @@ class DisposalController extends Controller
         ]);
 
         return redirect()->route('admin.disposals.show', $disposal)
-                        ->with('success', 'Permohonan pelupusan telah ditolak.');
+            ->with('success', 'Permohonan pelupusan telah ditolak.');
     }
 }

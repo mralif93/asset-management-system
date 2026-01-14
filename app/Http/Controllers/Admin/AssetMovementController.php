@@ -57,6 +57,15 @@ class AssetMovementController extends Controller
     }
 
     /**
+     * Export asset movements to Excel
+     */
+    public function export(Request $request)
+    {
+        $filename = 'asset_movements_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssetMovementExport($request), $filename);
+    }
+
+    /**
      * borangMohonPergerakanPinjaman(): Display form interface for users to apply for asset movement/loan
      */
     public function create()

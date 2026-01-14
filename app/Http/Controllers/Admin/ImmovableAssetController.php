@@ -216,85 +216,12 @@ class ImmovableAssetController extends Controller
     }
 
     /**
-     * Export immovable assets to CSV
+     * Export immovable assets to Excel
      */
     public function export(Request $request)
     {
-        $query = ImmovableAsset::with('masjidSurau');
-
-        // Apply same filters as index
-        if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('nama_aset', 'like', "%{$searchTerm}%")
-                    ->orWhere('no_siri_pendaftaran', 'like', "%{$searchTerm}%")
-                    ->orWhere('alamat', 'like', "%{$searchTerm}%")
-                    ->orWhere('no_hakmilik', 'like', "%{$searchTerm}%")
-                    ->orWhere('no_lot', 'like', "%{$searchTerm}%");
-            });
-        }
-
-        if ($request->filled('jenis_aset')) {
-            $query->where('jenis_aset', $request->jenis_aset);
-        }
-
-        if ($request->filled('keadaan_semasa')) {
-            $query->where('keadaan_semasa', $request->keadaan_semasa);
-        }
-
-        $immovableAssets = $query->latest()->limit(10000)->get(); // Limit to prevent memory issues
-
-        $filename = 'immovable_assets_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function () use ($immovableAssets) {
-            $file = fopen('php://output', 'w');
-
-            // Add BOM for UTF-8 to support Malay characters
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            // Write CSV headers - matching import template order and format
-            fputcsv($file, [
-                'Masjid/Surau ID',
-                'Nama Aset',
-                'Jenis Aset (Tanah/Bangunan/Tanah dan Bangunan)',
-                'Alamat',
-                'No. Hakmilik',
-                'No. Lot',
-                'Luas Tanah/Bangunan (m²)',
-                'Tarikh Perolehan (DD/MM/YYYY)',
-                'Sumber Perolehan (Pembelian/Hibah/Wakaf/Derma/Lain-lain)',
-                'Kos Perolehan (RM)',
-                'Keadaan Semasa (Sangat Baik/Baik/Sederhana/Perlu Pembaikan/Rosak)',
-                'Catatan'
-            ]);
-
-            // Write data rows - matching import template column order
-            foreach ($immovableAssets as $asset) {
-                fputcsv($file, [
-                    $asset->masjid_surau_id,
-                    $asset->nama_aset,
-                    $asset->jenis_aset,
-                    $asset->alamat ?? '',
-                    $asset->no_hakmilik ?? '',
-                    $asset->no_lot ?? '',
-                    number_format($asset->luas_tanah_bangunan ?? 0, 2),
-                    $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('d/m/Y') : '',
-                    $asset->sumber_perolehan ?? '',
-                    number_format($asset->kos_perolehan ?? 0, 2),
-                    $asset->keadaan_semasa ?? '',
-                    $asset->catatan ?? ''
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        $filename = 'immovable_assets_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ImmovableAssetExport($request), $filename);
     }
 
     /**
@@ -302,103 +229,7 @@ class ImmovableAssetController extends Controller
      */
     public function downloadTemplate()
     {
-        $filename = 'immovable_assets_import_template_' . now()->format('Y-m-d') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function () {
-            $file = fopen('php://output', 'w');
-
-            // Add BOM for UTF-8
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            // Write CSV headers
-            fputcsv($file, [
-                'Masjid/Surau ID',
-                'Nama Aset',
-                'Jenis Aset (Tanah/Bangunan/Tanah dan Bangunan)',
-                'Alamat',
-                'No. Hakmilik',
-                'No. Lot',
-                'Luas Tanah/Bangunan (m²)',
-                'Tarikh Perolehan (DD/MM/YYYY)',
-                'Sumber Perolehan (Pembelian/Hibah/Wakaf/Derma/Lain-lain)',
-                'Kos Perolehan (RM)',
-                'Keadaan Semasa (Sangat Baik/Baik/Sederhana/Perlu Pembaikan/Rosak)',
-                'Catatan'
-            ]);
-
-            // Add example row
-            $masjidSuraus = MasjidSurau::limit(1)->first();
-
-            fputcsv($file, [
-                $masjidSuraus->id ?? '1',
-                'Contoh: Tanah Masjid',
-                'Tanah',
-                'Jalan Contoh, Taman Contoh',
-                '12345',
-                'Lot 123',
-                '500.00',
-                date('Y-m-d'),
-                'Pembelian',
-                '100000.00',
-                'Baik',
-                'Contoh catatan'
-            ]);
-
-            // Add blank rows for separation
-            fputcsv($file, []);
-            fputcsv($file, []);
-
-            // Add reference sections
-            fputcsv($file, ['=== RUJUKAN: SENARAI NILAI SAH ===']);
-            fputcsv($file, ['Gunakan nilai-nilai di bawah untuk mengisi template']);
-            fputcsv($file, []);
-
-            // 1. Asset Types Reference
-            fputcsv($file, ['--- JENIS ASET SAH ---']);
-            fputcsv($file, ['Tanah']);
-            fputcsv($file, ['Bangunan']);
-            fputcsv($file, ['Tanah dan Bangunan']);
-            fputcsv($file, []);
-
-            // 2. Asset Category Reference  
-            fputcsv($file, ['--- KATEGORI ASET SAH ---']);
-            fputcsv($file, ['asset', '(Aset bernilai)']);
-            fputcsv($file, ['non-asset', '(Bukan aset)']);
-            fputcsv($file, []);
-
-            // 3. Source Reference
-            fputcsv($file, ['--- SUMBER PEROLEHAN SAH ---']);
-            foreach (\App\Helpers\SystemData::getAcquisitionSources() as $source) {
-                fputcsv($file, [$source]);
-            }
-            fputcsv($file, []);
-
-            // 4. Condition Reference
-            fputcsv($file, ['--- KEADAAN SEMASA SAH (Sama seperti Keadaan Fizikal) ---']);
-            foreach (\App\Helpers\SystemData::getPhysicalConditions() as $condition) {
-                fputcsv($file, [$condition]);
-            }
-            fputcsv($file, []);
-
-            // Add important notes
-            fputcsv($file, ['=== NOTA PENTING ===']);
-            fputcsv($file, ['1. Format tarikh: YYYY-MM-DD (contoh: 2024-01-15)']);
-            fputcsv($file, ['2. Pastikan Masjid/Surau ID wujud dalam sistem']);
-            fputcsv($file, ['3. Nombor siri pendaftaran akan dijana automatik']);
-            fputcsv($file, ['4. Gunakan nilai TEPAT seperti dalam senarai rujukan']);
-            fputcsv($file, ['5. Kategori Aset: gunakan huruf kecil (asset atau non-asset)']);
-            fputcsv($file, ['6. Luas dalam meter persegi (m²)']);
-
-            fclose($file);
-
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ImmovableAssetImportTemplateExport, 'template_import_aset_tak_alih.xlsx');
     }
 
     /**
@@ -412,51 +243,47 @@ class ImmovableAssetController extends Controller
     }
 
     /**
-     * Import immovable assets from CSV
+     * Import immovable assets from Excel
      */
     public function import(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:51200', // 50MB max
+            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200', // Allow Excel
         ]);
 
         $file = $request->file('csv_file');
-        $path = $file->getRealPath();
 
-        // Read file line by line to handle large files efficiently
-        $handle = fopen($path, 'r');
-        if (!$handle) {
+        try {
+            // Use Laravel Excel to convert file to array
+            $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\ImmovableAssetImport, $file);
+            $rows = $sheets[0] ?? []; // Get first sheet
+        } catch (\Exception $e) {
             return redirect()->route('admin.immovable-assets.import')
-                ->with('error', 'Tidak dapat membaca fail CSV.');
-        }
-
-        // Read and skip header row
-        $header = fgetcsv($handle);
-        if ($header && isset($header[0]) && substr($header[0], 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
-            $header[0] = substr($header[0], 3);
+                ->with('error', 'Gagal membaca fail: ' . $e->getMessage());
         }
 
         $errors = [];
         $successCount = 0;
         $skipCount = 0;
+
+        // Skip header row
+        array_shift($rows);
+
         $rowIndex = 0;
 
-        // Process rows in batches for better performance
-        $batchSize = 100;
-        $batch = [];
-
-        while (($row = fgetcsv($handle)) !== false) {
+        foreach ($rows as $row) {
             $rowIndex++;
-            $rowNumber = $rowIndex + 1; // +1 because header is row 1
+            $rowNumber = $rowIndex + 1;
 
             // Skip empty rows
-            if (empty(array_filter($row))) {
+            if (empty(array_filter($row, function ($value) {
+                return !is_null($value) && $value !== ''; }))) {
                 $skipCount++;
                 continue;
             }
 
             try {
-                // Map CSV columns to immovable asset fields
+                // Map columns
                 $assetData = [
                     'masjid_surau_id' => $row[0] ?? null,
                     'nama_aset' => $row[1] ?? null,
@@ -465,7 +292,7 @@ class ImmovableAssetController extends Controller
                     'no_hakmilik' => $row[4] ?? null,
                     'no_lot' => $row[5] ?? null,
                     'luas_tanah_bangunan' => $row[6] ?? null,
-                    'tarikh_perolehan' => !empty($row[7]) ? $row[7] : null,
+                    'tarikh_perolehan' => $row[7] ?? null,
                     'sumber_perolehan' => $row[8] ?? null,
                     'kos_perolehan' => $row[9] ?? null,
                     'keadaan_semasa' => $row[10] ?? 'Baik',
@@ -493,9 +320,19 @@ class ImmovableAssetController extends Controller
                     continue;
                 }
 
-                // Validate date format
+                // Validate date format (Excel might return internal date, but since we use ToArray it might be raw string if cell is text, or calculation if general. 
+                // However, standard PHPSpreadsheet handles dates nicely usually returning serial or string depending on options.
+                // Since we didn't specify date formatting in Import, we assume input is YYYY-MM-DD string or recognizable.
+                // If Excel returns numeric date, we might need handling. For simplicity assuming text input YYYY-MM-DD as per template instructions.
                 try {
-                    $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                    // Check if it's numeric (Excel date serial)
+                    if (is_numeric($assetData['tarikh_perolehan'])) {
+                        $tarikhPerolehan = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($assetData['tarikh_perolehan']);
+                    } else {
+                        $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                    }
+                    $assetData['tarikh_perolehan'] = $tarikhPerolehan->format('Y-m-d');
+
                 } catch (\Exception $e) {
                     $errors[] = "Baris {$rowNumber}: Format tarikh perolehan tidak sah. Gunakan format YYYY-MM-DD";
                     continue;
@@ -518,7 +355,7 @@ class ImmovableAssetController extends Controller
                 // Generate registration number
                 $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable(
                     $assetData['masjid_surau_id'],
-                    $tarikhPerolehan->format('y')
+                    (new \Carbon\Carbon($assetData['tarikh_perolehan']))->format('y')
                 );
 
                 // Check if registration number already exists (duplicate check)
@@ -539,9 +376,6 @@ class ImmovableAssetController extends Controller
                 $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
             }
         }
-
-        // Close file handle
-        fclose($handle);
 
         $message = "Import selesai. {$successCount} aset tak alih berjaya diimport.";
         if ($skipCount > 0) {

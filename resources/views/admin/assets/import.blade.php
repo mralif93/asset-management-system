@@ -11,7 +11,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold mb-2">Import Aset</h1>
-                    <p class="text-emerald-100 text-lg">Muat naik senarai aset dari fail CSV</p>
+                    <p class="text-emerald-100 text-lg">Muat naik senarai aset dari fail Excel/CSV</p>
                     <div class="flex items-center space-x-4 mt-4">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-cloud-upload text-emerald-200'></i>
@@ -180,7 +180,7 @@
                                                         Pilih fail CSV
                                                     </span>
                                                     <input id="csv_file" name="csv_file" type="file" class="sr-only"
-                                                        accept=".csv,.txt" required>
+                                                        accept=".csv,.xlsx,.xls" required>
                                                 </label>
                                                 <p class="pl-3 text-gray-500 group-hover:text-emerald-600">atau drag and
                                                     drop di sini</p>
@@ -189,7 +189,7 @@
                                         <div class="space-y-2">
                                             <p class="text-xs text-gray-500 flex items-center justify-center">
                                                 <i class='bx bx-file-blank mr-1'></i>
-                                                CSV, TXT hingga 10MB
+                                                Excel (.xlsx), CSV hingga 50MB
                                             </p>
                                             <p
                                                 class="text-xs text-emerald-600 font-medium flex items-center justify-center">
@@ -251,8 +251,13 @@
 
                             <!-- Action Buttons -->
                             <div class="flex items-center space-x-4">
-                                <button type="submit"
-                                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                                <button type="button" id="previewBtn"
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                                    <i class='bx bx-show mr-2'></i>
+                                    Pratonton Data
+                                </button>
+                                <button type="submit" id="importBtn"
+                                    class="hidden flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
                                     <i class='bx bx-upload mr-2'></i>
                                     Muat Naik & Import
                                 </button>
@@ -264,6 +269,85 @@
                             </div>
                         </div>
                     </form>
+                </div>
+
+                <!-- Preview Container -->
+                <div id="previewContainer"
+                    class="hidden bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mt-6 flex flex-col min-h-[600px]">
+                    <div class="p-6 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Pratonton Data</h3>
+                            <p class="text-sm text-gray-600">Semak data sebelum import</p>
+                        </div>
+                        <div class="flex items-center space-x-4 text-sm">
+                            <div
+                                class="flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-lg border border-green-200 shadow-sm">
+                                <i class='bx bx-check-circle mr-2 text-xl'></i>
+                                <span class="font-bold text-lg mr-1" id="validCount">0</span>
+                                <span class="font-medium">Sah</span>
+                            </div>
+                            <div
+                                class="flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-lg border border-red-200 shadow-sm">
+                                <i class='bx bx-error-circle mr-2 text-xl'></i>
+                                <span class="font-bold text-lg mr-1" id="invalidCount">0</span>
+                                <span class="font-medium">Ralat</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto bg-white">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th class="px-6 py-3 bg-gray-50">Baris</th>
+                                    <th class="px-6 py-3 bg-gray-50">Status</th>
+                                    <th class="px-6 py-3 bg-gray-50">Nama Aset</th>
+                                    <th class="px-6 py-3 bg-gray-50">Jenis</th>
+                                    <th class="px-6 py-3 bg-gray-50">Tarikh</th>
+                                    <th class="px-6 py-3 bg-gray-50">Lokasi</th>
+                                    <th class="px-6 py-3 bg-gray-50">Ralat / Catatan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewTableBody" class="divide-y divide-gray-100">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div id="paginationControls"
+                        class="hidden flex items-center justify-between border-t border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6">
+                        <div class="flex flex-1 justify-between sm:hidden">
+                            <button id="mobilePrevBtn"
+                                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</button>
+                            <button id="mobileNextBtn"
+                                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</button>
+                        </div>
+                        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-xs text-gray-700">
+                                    Memaparkan <span class="font-medium" id="pageStart">1</span> hingga <span
+                                        class="font-medium" id="pageEnd">10</span> daripada <span class="font-medium"
+                                        id="totalRows">20</span> rekod
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                    <button id="prevBtn" type="button"
+                                        class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span class="sr-only">Previous</span>
+                                        <i class='bx bx-chevron-left text-xl'></i>
+                                    </button>
+                                    <button id="nextBtn" type="button"
+                                        class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span class="sr-only">Next</span>
+                                        <i class='bx bx-chevron-right text-xl'></i>
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Filler to maintain height -->
+                    <div class="flex-1 bg-white"></div>
                 </div>
             </div>
 
@@ -711,9 +795,9 @@
                     notification.className = `notification-toast fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                         }`;
                     notification.innerHTML = `
-                    <i class='bx bx-${type === 'success' ? 'check-circle' : 'error-circle'} text-xl'></i>
-                    <span class="font-medium">${message}</span>
-                `;
+                                                                                                            <i class='bx bx-${type === 'success' ? 'check-circle' : 'error-circle'} text-xl'></i>
+                                                                                                            <span class="font-medium">${message}</span>
+                                                                                                        `;
 
                     document.body.appendChild(notification);
 
@@ -729,6 +813,154 @@
                         notification.remove();
                     }, 3300);
                 }
+
+                // Preview Logic
+                const previewBtn = document.getElementById('previewBtn');
+                const importBtn = document.getElementById('importBtn');
+                const previewContainer = document.getElementById('previewContainer');
+                const previewTableBody = document.getElementById('previewTableBody');
+                const validCountSpan = document.getElementById('validCount');
+                const invalidCountSpan = document.getElementById('invalidCount');
+
+                // Pagination Elements
+                const paginationControls = document.getElementById('paginationControls');
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const pageStart = document.getElementById('pageStart');
+                const pageEnd = document.getElementById('pageEnd');
+                const totalRows = document.getElementById('totalRows');
+
+                let allRows = [];
+                let currentPage = 1;
+                const rowsPerPage = 10;
+
+                function renderTable(page) {
+                    const start = (page - 1) * rowsPerPage;
+                    const end = start + rowsPerPage;
+                    const pageRows = allRows.slice(start, end);
+
+                    previewTableBody.innerHTML = '';
+
+                    pageRows.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'bg-white border-b hover:bg-gray-50';
+
+                        const statusHtml = row.valid
+                            ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full">Sah</span>'
+                            : '<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Ralat</span>';
+
+                        let errorsHtml = '-';
+                        if (!row.valid) {
+                            errorsHtml = `<ul class="list-disc list-inside text-red-600 text-xs">
+                                                                ${row.errors.map(err => `<li>${err}</li>`).join('')}
+                                                            </ul>`;
+                        } else {
+                            errorsHtml = row.data.no_siri_pendaftaran
+                                ? `<span class="text-xs text-gray-500">ID Dijana: ${row.data.no_siri_pendaftaran}</span>`
+                                : '-';
+                        }
+
+                        tr.innerHTML = `
+                                                            <td class="px-6 py-4 font-medium text-gray-900">${row.row}</td>
+                                                            <td class="px-6 py-4">${statusHtml}</td>
+                                                            <td class="px-6 py-4">${row.data.nama_aset || '-'}</td>
+                                                            <td class="px-6 py-4">${row.data.jenis_aset || '-'}</td>
+                                                            <td class="px-6 py-4">${row.data.tarikh_perolehan || '-'}</td>
+                                                            <td class="px-6 py-4">${row.data.lokasi_penempatan || '-'}</td>
+                                                            <td class="px-6 py-4">${errorsHtml}</td>
+                                                        `;
+                        previewTableBody.appendChild(tr);
+                    });
+
+                    // Update Pagination Info
+                    const total = allRows.length;
+                    pageStart.textContent = total === 0 ? 0 : start + 1;
+                    pageEnd.textContent = Math.min(end, total);
+                    totalRows.textContent = total;
+
+                    // Update Buttons
+                    prevBtn.disabled = page === 1;
+                    nextBtn.disabled = end >= total;
+
+                    if (page === 1) prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    else prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                    if (end >= total) nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    else nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable(currentPage);
+                    }
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    if ((currentPage * rowsPerPage) < allRows.length) {
+                        currentPage++;
+                        renderTable(currentPage);
+                    }
+                });
+
+                previewBtn.addEventListener('click', function () {
+                    const fileInput = document.getElementById('csv_file');
+                    if (!fileInput.files.length) {
+                        showNotification('Sila pilih fail terlebih dahulu', 'error');
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('csv_file', fileInput.files[0]);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    // Show loading state
+                    previewBtn.disabled = true;
+                    previewBtn.innerHTML = '<i class="bx bx-loader-alt animate-spin mr-2"></i> Memproses...';
+
+                    fetch('{{ route("admin.assets.import.preview") }}', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Store data
+                                allRows = data.data;
+                                currentPage = 1;
+
+                                // Update counts
+                                validCountSpan.textContent = data.summary.valid;
+                                invalidCountSpan.textContent = data.summary.invalid;
+
+                                // Render first page
+                                renderTable(currentPage);
+
+                                // Show containers
+                                previewContainer.classList.remove('hidden');
+                                paginationControls.classList.remove('hidden');
+
+                                // Handle buttons
+                                if (data.summary.valid > 0) {
+                                    importBtn.classList.remove('hidden');
+                                    showNotification('Preview berjaya. Sila semak data.', 'success');
+                                } else {
+                                    importBtn.classList.add('hidden');
+                                    showNotification('Tiada data sah untuk diimport.', 'error');
+                                }
+                            } else {
+                                showNotification(data.message || 'Ralat memproses fail', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showNotification('Ralat sistem semasa preview', 'error');
+                        })
+                        .finally(() => {
+                            previewBtn.disabled = false;
+                            previewBtn.innerHTML = '<i class="bx bx-show mr-2"></i> Pratonton Data';
+                        });
+                });
             });
         </script>
     @endpush

@@ -101,7 +101,7 @@
             </a>
 
             <!-- Export Data -->
-            <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
+            <a href="{{ route('admin.asset-movements.export', request()->query()) }}" class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div
                         class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
@@ -110,8 +110,8 @@
                     <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-blue-600 transition-colors'></i>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-2">Eksport Data</h3>
-                <p class="text-sm text-gray-600">Muat turun senarai pergerakan</p>
-            </div>
+                <p class="text-sm text-gray-600">Muat turun senarai pergerakan (.xlsx)</p>
+            </a>
 
             <!-- Movement Reports -->
             <div class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
