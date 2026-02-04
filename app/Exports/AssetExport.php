@@ -52,6 +52,7 @@ class AssetExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSiz
     {
         return [
             'Masjid/Surau ID',
+            'No. Siri Pendaftaran',
             'Nama Aset',
             'Jenis Aset',
             'Kategori Aset (asset/non-asset)',
@@ -86,23 +87,24 @@ class AssetExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSiz
     {
         return [
             $asset->masjid_surau_id,
+            $asset->no_siri_pendaftaran,
             $asset->nama_aset,
             $asset->jenis_aset,
-            $asset->category,
+            $asset->kategori_aset,
             $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('d/m/Y') : '',
-            $asset->kaedah_perolehan, // Assuming correct field name
-            number_format($asset->harga_perolehan ?? 0, 2),
-            number_format($asset->discount ?? 0, 2),
-            $asset->useful_life ?? '',
-            number_format($asset->annual_depreciation ?? 0, 2),
+            $asset->kaedah_perolehan,
+            number_format($asset->nilai_perolehan ?? 0, 2),
+            number_format($asset->diskaun ?? 0, 2),
+            $asset->umur_faedah_tahunan ?? '',
+            number_format($asset->susut_nilai_tahunan ?? 0, 2),
             $asset->lokasi_penempatan,
-            $asset->pegawai_bertanggungjawab,
+            $asset->pegawai_bertanggungjawab_lokasi,
             $asset->jawatan_pegawai,
             $asset->status_aset,
             $asset->keadaan_fizikal,
             $asset->status_jaminan,
             $asset->tarikh_pemeriksaan_terakhir ? $asset->tarikh_pemeriksaan_terakhir->format('d/m/Y') : '',
-            $asset->tarikh_penyelenggaraan_seterusnya ? $asset->tarikh_penyelenggaraan_seterusnya->format('d/m/Y') : '',
+            $asset->tarikh_penyelenggaraan_akan_datang ? $asset->tarikh_penyelenggaraan_akan_datang->format('d/m/Y') : '',
             $asset->no_resit ?? '',
             $asset->tarikh_resit ? $asset->tarikh_resit->format('d/m/Y') : '',
             $asset->pembekal ?? '',
@@ -118,7 +120,7 @@ class AssetExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSiz
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:AB1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:AB1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('E2EFDA');
+        $sheet->getStyle('A1:AC1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:AC1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('E2EFDA');
     }
 }

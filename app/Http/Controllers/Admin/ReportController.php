@@ -37,6 +37,8 @@ class ReportController extends Controller
             'aktif' => Asset::where('status_aset', 'aktif')->count(),
             'maintenance' => Asset::where('status_aset', 'dalam_penyelenggaraan')->count(),
             'rosak' => Asset::where('status_aset', 'rosak')->count(),
+            'dilupuskan' => Asset::where('status_aset', Asset::STATUS_DISPOSED)->count(),
+            'kehilangan' => Asset::where('status_aset', Asset::STATUS_LOST)->count(),
         ];
 
         // Asset types

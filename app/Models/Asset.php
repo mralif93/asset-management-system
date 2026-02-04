@@ -73,6 +73,7 @@ class Asset extends Model
     public const STATUS_DAMAGED = 'Rosak';
     public const STATUS_ACTIVE = 'Aktif';
     public const STATUS_DISPOSED = 'Dilupuskan';
+    public const STATUS_LOST = 'Kehilangan';
 
     // Get all available statuses
     public static function getAvailableStatuses(): array
@@ -84,6 +85,7 @@ class Asset extends Model
             self::STATUS_DAMAGED,
             self::STATUS_ACTIVE,
             self::STATUS_DISPOSED,
+            self::STATUS_LOST,
         ];
     }
 

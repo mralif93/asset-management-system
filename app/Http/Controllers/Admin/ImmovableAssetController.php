@@ -276,8 +276,11 @@ class ImmovableAssetController extends Controller
             $rowNumber = $rowIndex + 1;
 
             // Skip empty rows
-            if (empty(array_filter($row, function ($value) {
-                return !is_null($value) && $value !== ''; }))) {
+            if (
+                empty(array_filter($row, function ($value) {
+                    return !is_null($value) && $value !== '';
+                }))
+            ) {
                 $skipCount++;
                 continue;
             }
@@ -329,12 +332,17 @@ class ImmovableAssetController extends Controller
                     if (is_numeric($assetData['tarikh_perolehan'])) {
                         $tarikhPerolehan = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($assetData['tarikh_perolehan']);
                     } else {
-                        $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                        // Check for DD/MM/YYYY format
+                        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $assetData['tarikh_perolehan'])) {
+                            $tarikhPerolehan = \Carbon\Carbon::createFromFormat('d/m/Y', $assetData['tarikh_perolehan']);
+                        } else {
+                            $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                        }
                     }
                     $assetData['tarikh_perolehan'] = $tarikhPerolehan->format('Y-m-d');
 
                 } catch (\Exception $e) {
-                    $errors[] = "Baris {$rowNumber}: Format tarikh perolehan tidak sah. Gunakan format YYYY-MM-DD";
+                    $errors[] = "Baris {$rowNumber}: Format tarikh perolehan tidak sah. Gunakan format YYYY-MM-DD atau DD/MM/YYYY";
                     continue;
                 }
 

@@ -469,18 +469,35 @@ class AssetController extends Controller
         }
 
         // Process valid rows
-        $successCount = 0;
+        $createdCount = 0;
+        $updatedCount = 0;
+
         foreach ($result['valid_rows'] as $row) {
             try {
-                Asset::create($row['data']);
-                $successCount++;
+                if (!empty($row['existing_id'])) {
+                    // Update existing
+                    $asset = Asset::find($row['existing_id']);
+                    if ($asset) {
+                        $asset->update($row['data']);
+                        $updatedCount++;
+                    }
+                } else {
+                    // Create new
+                    Asset::create($row['data']);
+                    $createdCount++;
+                }
             } catch (\Exception $e) {
                 // Log critical error if creation fails despite validation
-                \Illuminate\Support\Facades\Log::error('Asset Creation Failed in Import: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Asset Import Failed: ' . $e->getMessage());
             }
         }
 
-        $message = "Import selesai. {$successCount} aset berjaya diimport.";
+        $message = "Import selesai. ";
+        if ($createdCount > 0)
+            $message .= "{$createdCount} aset baru ditambah. ";
+        if ($updatedCount > 0)
+            $message .= "{$updatedCount} aset dikemaskini. ";
+
         if ($result['skipped_count'] > 0) {
             $message .= " {$result['skipped_count']} baris kosong dilangkau.";
         }
@@ -554,37 +571,47 @@ class AssetController extends Controller
             }
 
             try {
-                // Map columns
+                // Map columns - shifted by 1 because of new column
+                $noSiriPendaftaran = $row[1] ?? null;
                 $assetData = [
                     'masjid_surau_id' => $row[0] ?? null,
-                    'nama_aset' => $row[1] ?? null,
-                    'jenis_aset' => $row[2] ?? null,
-                    'kategori_aset' => $row[3] ?? null,
-                    'tarikh_perolehan' => $row[4] ?? null,
-                    'kaedah_perolehan' => $row[5] ?? null,
-                    'nilai_perolehan' => $row[6] ?? null,
-                    'diskaun' => $row[7] ?? 0,
-                    'umur_faedah_tahunan' => $row[8] ?? null,
-                    'susut_nilai_tahunan' => $row[9] ?? null,
-                    'lokasi_penempatan' => $row[10] ?? null,
-                    'pegawai_bertanggungjawab_lokasi' => $row[11] ?? null,
-                    'jawatan_pegawai' => $row[12] ?? null,
-                    'status_aset' => $row[13] ?? 'Sedang Digunakan',
-                    'keadaan_fizikal' => $row[14] ?? 'Baik',
-                    'status_jaminan' => $row[15] ?? 'Tiada Jaminan',
-                    'tarikh_pemeriksaan_terakhir' => !empty($row[16]) ? $row[16] : null,
-                    'tarikh_penyelenggaraan_akan_datang' => !empty($row[17]) ? $row[17] : null,
-                    'no_resit' => $row[18] ?? null,
-                    'tarikh_resit' => !empty($row[19]) ? $row[19] : null,
-                    'pembekal' => $row[20] ?? null,
-                    'jenama' => $row[21] ?? null,
-                    'no_pesanan_kerajaan' => $row[22] ?? null,
-                    'no_rujukan_kontrak' => $row[23] ?? null,
-                    'tempoh_jaminan' => $row[24] ?? null,
-                    'tarikh_tamat_jaminan' => !empty($row[25]) ? $row[25] : null,
-                    'catatan' => $row[26] ?? null,
-                    'catatan_jaminan' => $row[27] ?? null,
+                    'no_siri_pendaftaran' => $noSiriPendaftaran,
+                    'nama_aset' => $row[2] ?? null,
+                    'jenis_aset' => $row[3] ?? null,
+                    'kategori_aset' => $row[4] ?? null,
+                    'tarikh_perolehan' => $row[5] ?? null,
+                    'kaedah_perolehan' => $row[6] ?? null,
+                    'nilai_perolehan' => $row[7] ?? null,
+                    'diskaun' => $row[8] ?? 0,
+                    'umur_faedah_tahunan' => $row[9] ?? null,
+                    'susut_nilai_tahunan' => $row[10] ?? null,
+                    'lokasi_penempatan' => $row[11] ?? null,
+                    'pegawai_bertanggungjawab_lokasi' => $row[12] ?? null,
+                    'jawatan_pegawai' => $row[13] ?? null,
+                    'status_aset' => $row[14] ?? 'Sedang Digunakan',
+                    'keadaan_fizikal' => $row[15] ?? 'Baik',
+                    'status_jaminan' => $row[16] ?? 'Tiada Jaminan',
+                    'tarikh_pemeriksaan_terakhir' => !empty($row[17]) ? $row[17] : null,
+                    'tarikh_penyelenggaraan_akan_datang' => !empty($row[18]) ? $row[18] : null,
+                    'no_resit' => $row[19] ?? null,
+                    'tarikh_resit' => !empty($row[20]) ? $row[20] : null,
+                    'pembekal' => $row[21] ?? null,
+                    'jenama' => $row[22] ?? null,
+                    'no_pesanan_kerajaan' => $row[23] ?? null,
+                    'no_rujukan_kontrak' => $row[24] ?? null,
+                    'tempoh_jaminan' => $row[25] ?? null,
+                    'tarikh_tamat_jaminan' => !empty($row[26]) ? $row[26] : null,
+                    'catatan' => $row[27] ?? null,
+                    'catatan_jaminan' => $row[28] ?? null,
                 ];
+
+                $existingAsset = null;
+                if (!empty($noSiriPendaftaran)) {
+                    $existingAsset = Asset::where('no_siri_pendaftaran', $noSiriPendaftaran)->first();
+                    if (!$existingAsset) {
+                        $rowErrors[] = "No. Siri Pendaftaran '$noSiriPendaftaran' tidak dijumpai untuk kemaskini.";
+                    }
+                }
 
                 // Validate required fields
                 if (empty($assetData['nama_aset']))
@@ -606,9 +633,13 @@ class AssetController extends Controller
                     $rowErrors[] = "Tarikh Perolehan diperlukan";
                 } else {
                     try {
-                        $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $assetData['tarikh_perolehan'])) {
+                            $tarikhPerolehan = \Carbon\Carbon::createFromFormat('d/m/Y', $assetData['tarikh_perolehan']);
+                        } else {
+                            $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                        }
                     } catch (\Exception $e) {
-                        $rowErrors[] = "Format tarikh perolehan tidak sah (YYYY-MM-DD)";
+                        $rowErrors[] = "Format tarikh perolehan tidak sah (YYYY-MM-DD atau DD/MM/YYYY)";
                     }
                 }
 
@@ -616,9 +647,13 @@ class AssetController extends Controller
                 $validateDate = function ($date, $field) use (&$rowErrors) {
                     if (!empty($date)) {
                         try {
-                            \Carbon\Carbon::parse($date);
+                            if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+                                \Carbon\Carbon::createFromFormat('d/m/Y', $date);
+                            } else {
+                                \Carbon\Carbon::parse($date);
+                            }
                         } catch (\Exception $e) {
-                            $rowErrors[] = "Format $field tidak sah (YYYY-MM-DD)";
+                            $rowErrors[] = "Format $field tidak sah (YYYY-MM-DD atau DD/MM/YYYY)";
                         }
                     }
                 };
@@ -638,8 +673,8 @@ class AssetController extends Controller
                 if (empty($assetData['kaedah_perolehan']))
                     $rowErrors[] = "Kaedah Perolehan diperlukan";
 
-                // Generate ID if valid basic info
-                if (empty($rowErrors)) {
+                // Generate ID if valid basic info AND not updating existing
+                if (empty($rowErrors) && !$existingAsset) {
                     $year = $tarikhPerolehan->format('y');
                     $offsetKey = "{$assetData['masjid_surau_id']}_{$assetData['jenis_aset']}_{$year}";
                     $currentOffset = $sequenceOffsets[$offsetKey] ?? 0;
@@ -670,12 +705,31 @@ class AssetController extends Controller
                 $assetData['umur_faedah_tahunan'] = !empty($assetData['umur_faedah_tahunan']) ? (int) $assetData['umur_faedah_tahunan'] : null;
                 $assetData['susut_nilai_tahunan'] = !empty($assetData['susut_nilai_tahunan']) ? (float) $assetData['susut_nilai_tahunan'] : null;
 
+                // Dates for creating model
+                $formatDateForDB = function ($date) {
+                    if (empty($date))
+                        return null;
+                    if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+                        return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+                    }
+                    return \Carbon\Carbon::parse($date)->format('Y-m-d');
+                };
+
+                $assetData['tarikh_perolehan'] = $formatDateForDB($assetData['tarikh_perolehan']);
+                $assetData['tarikh_pemeriksaan_terakhir'] = $formatDateForDB($assetData['tarikh_pemeriksaan_terakhir']);
+                $assetData['tarikh_penyelenggaraan_akan_datang'] = $formatDateForDB($assetData['tarikh_penyelenggaraan_akan_datang']);
+                $assetData['tarikh_resit'] = $formatDateForDB($assetData['tarikh_resit']);
+                $assetData['tarikh_tamat_jaminan'] = $formatDateForDB($assetData['tarikh_tamat_jaminan']);
+
+
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $assetData,
+                    'existing_id' => $existingAsset ? $existingAsset->id : null,
                     'valid' => empty($rowErrors),
                     'errors' => array_map(function ($e) use ($rowNumber) {
-                        return "Baris $rowNumber: $e"; }, $rowErrors)
+                        return "Baris $rowNumber: $e";
+                    }, $rowErrors)
                 ];
 
                 $processedRows[] = $processedRow;

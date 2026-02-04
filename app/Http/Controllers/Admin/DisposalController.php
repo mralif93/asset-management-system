@@ -164,8 +164,13 @@ class DisposalController extends Controller
             'diluluskan_oleh' => Auth::id()
         ]);
 
+        // Update asset status
+        $disposal->asset->update([
+            'status_aset' => Asset::STATUS_DISPOSED
+        ]);
+
         return redirect()->route('admin.disposals.show', $disposal)
-            ->with('success', 'Permohonan pelupusan telah diluluskan.');
+            ->with('success', 'Permohonan pelupusan telah diluluskan dan status aset dikemaskini.');
     }
 
     /**

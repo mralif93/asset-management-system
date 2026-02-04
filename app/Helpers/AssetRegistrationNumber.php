@@ -65,13 +65,15 @@ class AssetRegistrationNumber
         // Get the latest sequence from both tables
         $latestAsset = Asset::where('masjid_surau_id', $masjidSurauId)
             ->where('no_siri_pendaftaran', 'LIKE', $pattern)
-            ->orderBy(DB::raw("CAST(SUBSTR(no_siri_pendaftaran, LENGTH(no_siri_pendaftaran) - 2) AS INTEGER)"), 'DESC')
+            ->orderByRaw('LENGTH(no_siri_pendaftaran) DESC')
+            ->orderBy('no_siri_pendaftaran', 'DESC')
             ->first();
 
         $latestImmovableAsset = DB::table('immovable_assets')
             ->where('masjid_surau_id', $masjidSurauId)
             ->where('no_siri_pendaftaran', 'LIKE', $pattern)
-            ->orderBy(DB::raw("CAST(SUBSTR(no_siri_pendaftaran, LENGTH(no_siri_pendaftaran) - 2) AS INTEGER)"), 'DESC')
+            ->orderByRaw('LENGTH(no_siri_pendaftaran) DESC')
+            ->orderBy('no_siri_pendaftaran', 'DESC')
             ->first();
 
         // Get the highest sequence number from both tables

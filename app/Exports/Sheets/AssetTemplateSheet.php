@@ -17,6 +17,7 @@ class AssetTemplateSheet implements FromArray, WithTitle, WithHeadings, WithStyl
         return [
             [
                 '1',
+                '', // No. Siri Pendaftaran
                 'Contoh: Komputer Desktop',
                 'Perabot', // Example
                 'asset',
@@ -52,10 +53,11 @@ class AssetTemplateSheet implements FromArray, WithTitle, WithHeadings, WithStyl
     {
         return [
             'Masjid/Surau ID',
+            'No. Siri Pendaftaran (Biar kosong untuk aset baru)',
             'Nama Aset',
             'Jenis Aset',
             'Kategori Aset (asset/non-asset)',
-            'Tarikh Perolehan (YYYY-MM-DD)',
+            'Tarikh Perolehan (YYYY-MM-DD atau DD/MM/YYYY)',
             'Kaedah Perolehan',
             'Nilai Perolehan (RM)',
             'Diskaun (RM)',
@@ -67,16 +69,16 @@ class AssetTemplateSheet implements FromArray, WithTitle, WithHeadings, WithStyl
             'Status Aset',
             'Keadaan Fizikal',
             'Status Jaminan',
-            'Tarikh Pemeriksaan Terakhir (YYYY-MM-DD)',
-            'Tarikh Penyelenggaraan Akan Datang (YYYY-MM-DD)',
+            'Tarikh Pemeriksaan Terakhir (YYYY-MM-DD atau DD/MM/YYYY)',
+            'Tarikh Penyelenggaraan Akan Datang (YYYY-MM-DD atau DD/MM/YYYY)',
             'No. Resit',
-            'Tarikh Resit (YYYY-MM-DD)',
+            'Tarikh Resit (YYYY-MM-DD atau DD/MM/YYYY)',
             'Pembekal',
             'Jenama',
             'No. Pesanan Kerajaan',
             'No. Rujukan Kontrak',
             'Tempoh Jaminan',
-            'Tarikh Tamat Jaminan (YYYY-MM-DD)',
+            'Tarikh Tamat Jaminan (YYYY-MM-DD atau DD/MM/YYYY)',
             'Catatan',
             'Catatan Jaminan'
         ];

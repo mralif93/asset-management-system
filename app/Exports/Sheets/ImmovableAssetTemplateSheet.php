@@ -40,7 +40,7 @@ class ImmovableAssetTemplateSheet implements FromCollection, WithTitle, WithHead
             'No. Hakmilik',
             'No. Lot',
             'Luas Tanah/Bangunan (m²)',
-            'Tarikh Perolehan (YYYY-MM-DD)',
+            'Tarikh Perolehan (YYYY-MM-DD atau DD/MM/YYYY)',
             'Sumber Perolehan',
             'Kos Perolehan (RM)',
             'Keadaan Semasa',

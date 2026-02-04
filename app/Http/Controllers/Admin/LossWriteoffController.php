@@ -213,8 +213,13 @@ class LossWriteoffController extends Controller
             'diluluskan_oleh' => Auth::id()
         ]);
 
+        // Update asset status
+        $lossWriteoff->asset->update([
+            'status_aset' => Asset::STATUS_LOST
+        ]);
+
         return redirect()->route('admin.loss-writeoffs.show', $lossWriteoff)
-            ->with('success', 'Laporan kehilangan telah diluluskan.');
+            ->with('success', 'Laporan kehilangan telah diluluskan dan status aset dikemaskini.');
     }
 
     /**
