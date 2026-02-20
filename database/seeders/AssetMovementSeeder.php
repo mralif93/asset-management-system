@@ -24,7 +24,11 @@ class AssetMovementSeeder extends Seeder
 
         foreach ($assets as $index => $asset) {
             if ($index % 2 == 0) { // Create movement for every second asset
-                $destinationMasjid = $masjidSuraus->where('id', '!=', $asset->masjid_surau_id)->random();
+                // Logic for destination: If multiple mosques, pick random different one. If single, pick itself (Internal Movement).
+                $destinationMasjid = $masjidSuraus->count() > 1
+                    ? $masjidSuraus->where('id', '!=', $asset->masjid_surau_id)->random()
+                    : $masjidSuraus->first();
+
                 $user = $users->where('masjid_surau_id', $asset->masjid_surau_id)->first() ?? $users->first();
 
                 // Randomly select status, heavily weighted towards 'menunggu_kelulusan' as requested

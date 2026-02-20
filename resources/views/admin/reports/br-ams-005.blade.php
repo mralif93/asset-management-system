@@ -230,101 +230,253 @@
 
                     <!-- Table Body -->
                     <tbody class="bg-white divide-y divide-gray-100">
-                        @forelse($assets as $index => $asset)
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td
-                                    class="px-4 py-3 text-center text-sm font-medium text-gray-900 border-r border-gray-200 w-12">
-                                    {{ $index + 1 }}
-                                </td>
-                                <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-32">
-                                    <div class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                                        {{ $asset->no_siri_pendaftaran ?? 'N/A' }}
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-24">
-                                    <span
-                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        <i class='bx bx-package mr-1'></i>
-                                        {{ $asset->jenis_aset ?? 'N/A' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-40">
-                                    <div class="text-xs text-gray-600 flex items-center justify-center">
-                                        <i class='bx bx-map-pin mr-1 text-blue-500'></i>
-                                        {{ $asset->lokasi_penempatan ?? 'N/A' }}
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-40">
-                                    <div class="text-xs text-gray-600 flex items-center justify-center">
-                                        <i class='bx bx-map-pin mr-1 text-emerald-500'></i>
-                                        {{ $asset->getCurrentLocation() }}
-                                    </div>
-                                </td>
-                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
-                                    <div class="flex justify-center">
-                                        <div
-                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Sedang Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
-                                            @if($asset->keadaan_fizikal === 'Sedang Digunakan')
-                                                <i class='bx bx-check text-emerald-600 text-xs'></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
-                                    <div class="flex justify-center">
-                                        <div
-                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Tidak Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
-                                            @if($asset->keadaan_fizikal === 'Tidak Digunakan')
-                                                <i class='bx bx-check text-emerald-600 text-xs'></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
-                                    <div class="flex justify-center">
-                                        <div
-                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Rosak' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
-                                            @if($asset->keadaan_fizikal === 'Rosak')
-                                                <i class='bx bx-check text-emerald-600 text-xs'></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
-                                    <div class="flex justify-center">
-                                        <div
-                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Sedang Diselenggara' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
-                                            @if($asset->keadaan_fizikal === 'Sedang Diselenggara')
-                                                <i class='bx bx-check text-emerald-600 text-xs'></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
-                                    <div class="flex justify-center">
-                                        <div
-                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Hilang' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
-                                            @if($asset->keadaan_fizikal === 'Hilang')
-                                                <i class='bx bx-check text-emerald-600 text-xs'></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-center text-sm text-gray-900 w-40">
-                                    <div class="text-xs text-gray-600">
-                                        @if($asset->inspections->count() > 0)
-                                            <div class="flex items-center justify-center space-x-1">
-                                                <i class='bx bx-search text-emerald-500'></i>
-                                                <span>Pemeriksaan:
-                                                    {{ $asset->inspections->first()->tarikh_pemeriksaan->format('d/m/Y') }}</span>
+                        @php
+                            $groupedAssets = $assets->groupBy(function ($item) {
+                                return $item->batch_id ?? 'SINGLE_' . $item->id;
+                            });
+                            $bil = 1;
+                        @endphp
+
+                        @forelse($groupedAssets as $groupKey => $group)
+                                @if($group->count() > 1 && !str_starts_with($groupKey, 'SINGLE_'))
+                                        <!-- Parent Row (Group Summary) -->
+                                    <tbody class="bg-white border-b border-gray-200" x-data="{ expanded: false }">
+                                        <tr class="hover:bg-emerald-50 transition-colors cursor-pointer bg-gray-50 group"
+                                            @click="expanded = !expanded">
+                                            <td
+                                                class="px-4 py-3 text-center text-sm font-medium text-gray-900 border-r border-gray-200 w-12 align-top">
+                                                {{ $bil++ }}
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-32 align-top">
+                                                <div class="flex items-center justify-center text-emerald-700 font-bold mb-1">
+                                                    <i class='bx bx-chevron-right text-xl transition-transform duration-200'
+                                                        :class="expanded ? 'rotate-90' : ''"></i>
+                                                    <span class="ml-1">{{ $group->count() }} Unit</span>
+                                                </div>
+                                                <div class="font-mono text-xs bg-gray-100 px-2 py-1 rounded inline-block">
+                                                    Batch: {{ substr($groupKey, 0, 8) }}...
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-24 align-top">
+                                                <span
+                                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+                                                    <i class='bx bx-package mr-1'></i>
+                                                    {{ $group->first()->jenis_aset ?? 'N/A' }}
+                                                </span>
+                                                <div class="text-xs text-gray-500 mt-1">{{ $group->first()->nama_aset }}</div>
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-40 align-top">
+                                                <div class="text-xs text-gray-600 flex items-center justify-center">
+                                                    <i class='bx bx-map-pin mr-1 text-blue-500'></i>
+                                                    {{ $group->first()->lokasi_penempatan ?? 'N/A' }}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-40 align-top">
+                                                <!-- Parent location assumption: same as first item or Mixed -->
+                                                <div class="text-xs text-gray-600 flex items-center justify-center">
+                                                    <i class='bx bx-map-pin mr-1 text-emerald-500'></i>
+                                                    {{ $group->first()->getCurrentLocation() }}
+                                                </div>
+                                                <div class="text-[10px] text-gray-400 mt-1">(Lihat butiran)</div>
+                                            </td>
+                                            <!-- Status Columns for Parent (Disabled/Summary) -->
+                                            @for($i = 0; $i < 5; $i++)
+                                                <td
+                                                    class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12 align-top bg-gray-50">
+                                                    <div class="h-4 w-4 border-2 border-gray-200 rounded mx-auto"></div>
+                                                </td>
+                                            @endfor
+                                            <td class="px-4 py-3 text-center text-sm text-gray-900 w-40 align-top">
+                                                <span class="text-xs text-gray-500 italic">Lihat butiran untuk status</span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Child Rows -->
+                                        @foreach($group as $index => $asset)
+                                            <tr x-show="expanded" x-transition:enter="transition ease-out duration-100"
+                                                x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                                x-transition:enter-end="opacity-100 transform translate-y-0"
+                                                class="bg-white hover:bg-emerald-50/50">
+                                                <td
+                                                    class="px-4 py-3 text-right text-sm text-gray-400 border-r border-gray-100 w-12 pl-8 font-mono">
+                                                    {{ $loop->iteration }}.
+                                                </td>
+                                                <td class="px-4 py-3 text-center text-sm text-gray-600 border-r border-gray-100 w-32">
+                                                    <div class="font-mono text-xs bg-gray-50 px-2 py-1 rounded border border-gray-100">
+                                                        {{ $asset->no_siri_pendaftaran ?? 'N/A' }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-3 text-center text-sm text-gray-500 border-r border-gray-100 w-24">
+                                                    {{ $asset->nama_aset }}
+                                                </td>
+                                                <td class="px-4 py-3 text-center text-sm text-gray-400 border-r border-gray-100 w-40">
+                                                    <span class="text-xs">"</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-center text-sm text-gray-600 border-r border-gray-100 w-40">
+                                                    <div class="text-xs flex items-center justify-center">
+                                                        {{ $asset->getCurrentLocation() }}
+                                                    </div>
+                                                </td>
+
+                                                <!-- Status Checkboxes -->
+                                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                                    <div class="flex justify-center">
+                                                        <div
+                                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Sedang Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                            @if($asset->keadaan_fizikal === 'Sedang Digunakan')<i
+                                                            class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                                    <div class="flex justify-center">
+                                                        <div
+                                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Tidak Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                            @if($asset->keadaan_fizikal === 'Tidak Digunakan')<i
+                                                            class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                                    <div class="flex justify-center">
+                                                        <div
+                                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Rosak' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                            @if($asset->keadaan_fizikal === 'Rosak')<i
+                                                            class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                                    <div class="flex justify-center">
+                                                        <div
+                                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Sedang Diselenggara' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                            @if($asset->keadaan_fizikal === 'Sedang Diselenggara')<i
+                                                            class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                                    <div class="flex justify-center">
+                                                        <div
+                                                            class="h-4 w-4 border-2 {{ $asset->keadaan_fizikal === 'Hilang' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                            @if($asset->keadaan_fizikal === 'Hilang')<i
+                                                            class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td class="px-4 py-3 text-center text-sm text-gray-900 w-40">
+                                                    <div class="text-xs text-gray-600">
+                                                        @if($asset->inspections->count() > 0)
+                                                            <div class="flex items-center justify-center space-x-1">
+                                                                <i class='bx bx-search text-emerald-500'></i>
+                                                                <span>{{ $asset->inspections->first()->tarikh_pemeriksaan->format('d/m/Y') }}</span>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-gray-400">-</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                @else
+                                <!-- Single Item Row (Standard) -->
+                                <tbody class="bg-white border-b border-gray-200">
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td
+                                            class="px-4 py-3 text-center text-sm font-medium text-gray-900 border-r border-gray-200 w-12">
+                                            {{ $bil++ }}
+                                        </td>
+                                        <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-32">
+                                            <div class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                                                {{ $group->first()->no_siri_pendaftaran ?? 'N/A' }}
                                             </div>
-                                        @else
-                                            <span class="text-gray-500 italic">Tiada pemeriksaan</span>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
+                                        </td>
+                                        <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-24">
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <i class='bx bx-package mr-1'></i>
+                                                {{ $group->first()->jenis_aset ?? 'N/A' }}
+                                            </span>
+                                            <div class="text-xs text-gray-500 mt-1">{{ $group->first()->nama_aset }}</div>
+                                        </td>
+                                        <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-40">
+                                            <div class="text-xs text-gray-600 flex items-center justify-center">
+                                                <i class='bx bx-map-pin mr-1 text-blue-500'></i>
+                                                {{ $group->first()->lokasi_penempatan ?? 'N/A' }}
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-40">
+                                            <div class="text-xs text-gray-600 flex items-center justify-center">
+                                                <i class='bx bx-map-pin mr-1 text-emerald-500'></i>
+                                                {{ $group->first()->getCurrentLocation() }}
+                                            </div>
+                                        </td>
+                                        <!-- Status Checkboxes -->
+                                        <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                            <div class="flex justify-center">
+                                                <div
+                                                    class="h-4 w-4 border-2 {{ $group->first()->keadaan_fizikal === 'Sedang Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                    @if($group->first()->keadaan_fizikal === 'Sedang Digunakan')<i
+                                                    class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                            <div class="flex justify-center">
+                                                <div
+                                                    class="h-4 w-4 border-2 {{ $group->first()->keadaan_fizikal === 'Tidak Digunakan' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                    @if($group->first()->keadaan_fizikal === 'Tidak Digunakan')<i
+                                                    class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                            <div class="flex justify-center">
+                                                <div
+                                                    class="h-4 w-4 border-2 {{ $group->first()->keadaan_fizikal === 'Rosak' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                    @if($group->first()->keadaan_fizikal === 'Rosak')<i
+                                                    class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                            <div class="flex justify-center">
+                                                <div
+                                                    class="h-4 w-4 border-2 {{ $group->first()->keadaan_fizikal === 'Sedang Diselenggara' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                    @if($group->first()->keadaan_fizikal === 'Sedang Diselenggara')<i
+                                                    class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 py-3 text-center text-sm text-gray-900 border-r border-gray-200 w-12">
+                                            <div class="flex justify-center">
+                                                <div
+                                                    class="h-4 w-4 border-2 {{ $group->first()->keadaan_fizikal === 'Hilang' ? 'border-emerald-500 bg-emerald-100' : 'border-gray-300' }} rounded flex items-center justify-center">
+                                                    @if($group->first()->keadaan_fizikal === 'Hilang')<i
+                                                    class='bx bx-check text-emerald-600 text-xs'></i>@endif
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td class="px-4 py-3 text-center text-sm text-gray-900 w-40">
+                                            <div class="text-xs text-gray-600">
+                                                @if($group->first()->inspections->count() > 0)
+                                                    <div class="flex items-center justify-center space-x-1">
+                                                        <i class='bx bx-search text-emerald-500'></i>
+                                                        <span>{{ $group->first()->inspections->first()->tarikh_pemeriksaan->format('d/m/Y') }}</span>
+                                                    </div>
+                                                @else
+                                                    <span class="text-gray-500 italic">Tiada pemeriksaan</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endif
                         @empty
+                        <tbody>
                             <tr>
                                 <td colspan="11" class="px-8 py-16 text-center text-gray-500">
                                     <div class="flex flex-col items-center">
@@ -334,15 +486,11 @@
                                         <h3 class="text-xl font-semibold text-gray-700 mb-2">Tiada aset ditemui</h3>
                                         <p class="text-sm text-gray-500 max-w-md">Tiada aset yang memenuhi kriteria carian. Cuba
                                             ubah penapis atau tambah aset baru.</p>
-                                        <button
-                                            class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                            <i class='bx bx-plus mr-1'></i>
-                                            Tambah Aset
-                                        </button>
                                     </div>
                                 </td>
                             </tr>
-                        @endforelse
+                        </tbody>
+                    @endforelse
                     </tbody>
                 </table>
             </div>
@@ -623,8 +771,7 @@
                 if (!previewWindow) {
                     alert('Sila benarkan pop-up untuk melihat pratonton PDF');
                 }
-            }, 2000);
-                                }
+            }
 
             // Print styles
             window.addEventListener('beforeprint', function () {

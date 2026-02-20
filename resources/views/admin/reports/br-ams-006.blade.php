@@ -298,7 +298,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="mt-8 flex flex-wrap gap-4 justify-center">
+    <div class="mt-8 flex flex-wrap gap-4 justify-end">
         <button onclick="window.print()"
             class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
             <i class='bx bx-printer mr-2'></i>
@@ -328,13 +328,12 @@
                 if (!previewWindow) {
                     alert('Sila benarkan pop-up untuk melihat pratonton PDF');
                 }
-            }, 2000);
-        }
+            }
 
             // Print styles
             window.addEventListener('beforeprint', function () {
                 // Hide action buttons when printing
-                const actionButtons = document.querySelector('.flex.flex-wrap.gap-4.justify-center');
+                const actionButtons = document.querySelector('.flex.flex-wrap.gap-4.justify-end');
                 if (actionButtons) {
                     actionButtons.style.display = 'none';
                 }
@@ -342,7 +341,7 @@
 
             window.addEventListener('afterprint', function () {
                 // Show action buttons after printing
-                const actionButtons = document.querySelector('.flex.flex-wrap.gap-4.justify-center');
+                const actionButtons = document.querySelector('.flex.flex-wrap.gap-4.justify-end');
                 if (actionButtons) {
                     actionButtons.style.display = 'flex';
                 }

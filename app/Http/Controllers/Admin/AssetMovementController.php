@@ -155,6 +155,12 @@ class AssetMovementController extends Controller
             'catatan' => 'nullable|string',
             'pembekal' => 'nullable|string|max:255',
             'pegawai_bertanggungjawab_signature' => 'required|string',
+            'disediakan_oleh_jawatan' => 'required|string|max:255',
+            'disediakan_oleh_tarikh' => 'required|date',
+            'disahkan_oleh_signature' => 'nullable|string',
+            'disahkan_oleh_nama' => 'nullable|string|max:255',
+            'disahkan_oleh_jawatan' => 'nullable|string|max:255',
+            'disahkan_oleh_tarikh' => 'nullable|date',
         ]);
 
         $validated['user_id'] = auth()->id();
@@ -269,10 +275,19 @@ class AssetMovementController extends Controller
             'catatan' => 'nullable|string',
             'pembekal' => 'nullable|string|max:255',
             'pegawai_bertanggungjawab_signature' => 'nullable|string',
+            'disediakan_oleh_jawatan' => 'nullable|string|max:255',
+            'disediakan_oleh_tarikh' => 'nullable|date',
+            'disahkan_oleh_signature' => 'nullable|string',
+            'disahkan_oleh_nama' => 'nullable|string|max:255',
+            'disahkan_oleh_jawatan' => 'nullable|string|max:255',
+            'disahkan_oleh_tarikh' => 'nullable|date',
         ]);
 
         if (empty($validated['pegawai_bertanggungjawab_signature'])) {
             unset($validated['pegawai_bertanggungjawab_signature']);
+        }
+        if (empty($validated['disahkan_oleh_signature'])) {
+            unset($validated['disahkan_oleh_signature']);
         }
 
         $assetMovement->update($validated);

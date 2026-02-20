@@ -33,7 +33,13 @@ class AssetMovement extends Model
         'pembekal',
         'pegawai_bertanggungjawab_signature',
         'tandatangan_penerima',
-        'tandatangan_pemulangan'
+        'tandatangan_pemulangan',
+        'disediakan_oleh_jawatan',
+        'disediakan_oleh_tarikh',
+        'disahkan_oleh_signature',
+        'disahkan_oleh_nama',
+        'disahkan_oleh_jawatan',
+        'disahkan_oleh_tarikh'
     ];
 
     protected $casts = [
@@ -43,6 +49,8 @@ class AssetMovement extends Model
         'tarikh_pulang_sebenar' => 'datetime',
         'kuantiti' => 'integer',
         'deleted_at' => 'datetime',
+        'disediakan_oleh_tarikh' => 'date',
+        'disahkan_oleh_tarikh' => 'date',
     ];
 
     /**

@@ -57,14 +57,14 @@ class LossWriteoffSeeder extends Seeder
         foreach ($lossWriteoffs as $index => $recordData) {
             if ($index < $assets->count()) {
                 $asset = $assets[$index];
-                
+
                 LossWriteoff::create(array_merge($recordData, [
                     'asset_id' => $asset->id,
                 ]));
 
                 // Update asset status if approved
                 if ($recordData['status_kejadian'] === 'Diluluskan') {
-                    $asset->update(['status_aset' => 'Dilupuskan']);
+                    $asset->update(['status_aset' => Asset::STATUS_LOST]);
                 }
             }
         }
@@ -79,8 +79,8 @@ class LossWriteoffSeeder extends Seeder
     {
         // Get some assets for additional records
         $assets = Asset::where('status_aset', '!=', 'Dilupuskan')
-                      ->limit(5)
-                      ->get();
+            ->limit(5)
+            ->get();
 
         $jenisKejadian = [
             'Kecurian',
@@ -159,7 +159,7 @@ class LossWriteoffSeeder extends Seeder
 
             // Add police report for theft cases
             if ($jenis === 'Kecurian') {
-                $record['laporan_polis'] = 'IPD/'. date('Y') . '/' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
+                $record['laporan_polis'] = 'IPD/' . date('Y') . '/' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
             }
 
             // Add approval date if status is approved
@@ -171,7 +171,7 @@ class LossWriteoffSeeder extends Seeder
 
             // Update asset status if approved
             if ($status === 'Diluluskan') {
-                $asset->update(['status_aset' => 'Dilupuskan']);
+                $asset->update(['status_aset' => Asset::STATUS_LOST]);
             }
         }
     }
@@ -223,7 +223,7 @@ class LossWriteoffSeeder extends Seeder
     private function generateCatatan($jenis, $status)
     {
         $catatan = '';
-        
+
         switch ($status) {
             case 'Dilaporkan':
                 $catatan = 'Laporan awal diterima. ';

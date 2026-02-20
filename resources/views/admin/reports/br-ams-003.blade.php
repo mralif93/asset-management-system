@@ -152,30 +152,103 @@
 
                     <!-- Table Body -->
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($assets as $index => $asset)
-                            <tr class="hover:bg-emerald-50 transition-colors">
-                                <td class="px-6 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
-                                    {{ $index + 1 }}
-                                </td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
-                                    <div class="font-medium text-gray-900">{{ $asset->no_siri_pendaftaran ?? 'N/A' }}</div>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200">
-                                    <div class="font-medium text-gray-900">{{ $asset->nama_aset }}</div>
-                                    <div class="text-gray-500 text-xs mt-1">{{ $asset->jenis_aset }}</div>
-                                    @if($asset->masjidSurau)
-                                        <div class="text-gray-500 text-xs mt-1">{{ $asset->masjidSurau->nama }}</div>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-900">
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                        <i class='bx bx-package mr-1'></i>
-                                        {{ $asset->kuantiti ?? 1 }}
-                                    </span>
-                                </td>
-                            </tr>
+                        @php
+                            $groupedAssets = $assets->groupBy(function ($item) {
+                                return $item->batch_id ?? 'SINGLE_' . $item->id;
+                            });
+                            $bil = 1;
+                        @endphp
+
+                        @forelse($groupedAssets as $groupKey => $group)
+                                @if($group->count() > 1 && !str_starts_with($groupKey, 'SINGLE_'))
+                                        <!-- Parent Row (Group Summary) -->
+                                    <tbody class="bg-white border-b border-gray-200" x-data="{ expanded: false }">
+                                        <tr class="hover:bg-emerald-50 transition-colors cursor-pointer bg-gray-50 group"
+                                            @click="expanded = !expanded">
+                                            <td
+                                                class="px-6 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 align-top">
+                                                {{ $bil++ }}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 align-top">
+                                                <div class="flex items-center justify-center text-emerald-700 font-bold">
+                                                    <i class='bx bx-chevron-right text-xl transition-transform duration-200'
+                                                        :class="expanded ? 'rotate-90' : ''"></i>
+                                                    <span class="ml-1">{{ $group->count() }} Unit</span>
+                                                </div>
+                                                <div class="text-xs text-gray-500 mt-1 text-center">
+                                                    Klik untuk lihat No. Siri
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200 align-top">
+                                                <div class="font-bold text-gray-900">{{ $group->first()->nama_aset }}</div>
+                                                <div class="text-gray-500 text-xs mt-1">{{ $group->first()->jenis_aset }}</div>
+                                                @if($group->first()->masjidSurau)
+                                                    <div class="text-gray-500 text-xs mt-1">{{ $group->first()->masjidSurau->nama }}</div>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-center text-sm text-gray-900 align-top">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                                    <i class='bx bx-package mr-1'></i>
+                                                    {{ $group->count() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Child Rows -->
+                                        @foreach($group as $index => $asset)
+                                            <tr x-show="expanded" x-transition:enter="transition ease-out duration-100"
+                                                x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                                x-transition:enter-end="opacity-100 transform translate-y-0"
+                                                class="bg-white hover:bg-emerald-50/50">
+                                                <td
+                                                    class="px-6 py-3 whitespace-nowrap text-sm text-gray-400 border-r border-gray-100 text-right pl-12 font-mono">
+                                                    {{ $loop->iteration }}.
+                                                </td>
+                                                <td
+                                                    class="px-6 py-3 whitespace-nowrap text-sm text-gray-600 border-r border-gray-100 font-mono text-center">
+                                                    {{ $asset->no_siri_pendaftaran ?? 'N/A' }}
+                                                </td>
+                                                <td class="px-6 py-3 text-sm text-gray-500 border-r border-gray-100">
+                                                    {{ $asset->nama_aset }}
+                                                </td>
+                                                <td class="px-6 py-3 text-center text-sm text-gray-400">
+                                                    1
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                @else
+                                <!-- Single Item Row (Standard) -->
+                                <tbody class="bg-white border-b border-gray-200">
+                                    <tr class="hover:bg-emerald-50 transition-colors">
+                                        <td class="px-6 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
+                                            {{ $bil++ }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                            <div class="font-medium text-gray-900">{{ $group->first()->no_siri_pendaftaran ?? 'N/A' }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200">
+                                            <div class="font-medium text-gray-900">{{ $group->first()->nama_aset }}</div>
+                                            <div class="text-gray-500 text-xs mt-1">{{ $group->first()->jenis_aset }}</div>
+                                            @if($group->first()->masjidSurau)
+                                                <div class="text-gray-500 text-xs mt-1">{{ $group->first()->masjidSurau->nama }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 text-center text-sm text-gray-900">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                                <i class='bx bx-package mr-1'></i>
+                                                {{ $group->first()->kuantiti ?? 1 }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endif
                         @empty
+                        <tbody>
                             <tr>
                                 <td colspan="4" class="px-6 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center">
@@ -185,87 +258,16 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforelse
+                        </tbody>
+                    @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Signature and Approval Sections -->
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <!-- Prepared by Section -->
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">(a) Disediakan oleh :</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tandatangan:</label>
-                        <div
-                            class="h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                            <span class="text-gray-400 text-sm">Tandatangan di sini</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama :</label>
-                        <div class="h-8 border-b border-gray-300"></div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Jawatan :</label>
-                        <div class="h-8 border-b border-gray-300"></div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tarikh:</label>
-                        <div class="h-8 border-b border-gray-300"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Verified by Section -->
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">(b) Disahkan oleh :</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tandatangan:</label>
-                        <div
-                            class="h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                            <span class="text-gray-400 text-sm">Tandatangan di sini</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama :</label>
-                        <div class="h-8 border-b border-gray-300"></div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Jawatan :</label>
-                        <div class="h-8 border-b border-gray-300"></div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tarikh :</label>
-                        <div class="h-8 border-b border-gray-300"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Combined Notes and Action Buttons -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-            <!-- Notes Section -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Nota</h3>
-                <div class="space-y-3 text-sm text-gray-700 mb-4">
-                    <p><strong>a) Disediakan oleh Pegawai Aset/ Pembantu Pegawai Aset.</strong></p>
-                    <p class="ml-4">Pegawai yang mengesahkan ialah pegawai yang bertanggungjawab ke atas aset alih
-                        berkenaan.</p>
-                    <p class="ml-4"><strong>Contohnya:-</strong></p>
-                    <p class="ml-8"><strong>i. Lokasi Bilik Mesyuarat - disahkan oleh pegawai yang menguruskan bilik
-                            mesyuarat.</strong></p>
-                    <p><strong>b) Dikemaskini apabila terdapat perubahan kuantiti, lokasi atau pegawai
-                            bertanggungjawab.</strong></p>
-                </div>
-
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-3 justify-center">
+        <!-- Action Buttons (Moved up since Signature and Notes are removed/adjusted) -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mt-8">
+            <div class="flex flex-wrap gap-3 justify-end">
                 <button onclick="exportToPDF()"
                     class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
                     <i class='bx bx-file-blank mr-2'></i>

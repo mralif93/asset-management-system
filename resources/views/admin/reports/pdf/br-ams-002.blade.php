@@ -253,7 +253,7 @@
                     </td>
                     <td class="text-center">
                         <span
-                            class="method-badge">{{ ucfirst(str_replace('_', ' ', $asset->cara_perolehan ?? 'N/A')) }}</span>
+                            class="method-badge">{{ ucfirst(str_replace('_', ' ', $asset->kaedah_perolehan ?? 'N/A')) }}</span>
                     </td>
                     <td class="text-center">
                         {{ $asset->tarikh_perolehan ? \Carbon\Carbon::parse($asset->tarikh_perolehan)->format('d/m/Y') : 'N/A' }}

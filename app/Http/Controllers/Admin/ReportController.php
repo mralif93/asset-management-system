@@ -548,14 +548,28 @@ class ReportController extends Controller
         }
 
         if ($bulan) {
-            $query->whereMonth('tarikh_mula', $bulan);
+            $query->whereMonth('tarikh_permohonan', $bulan);
         }
 
         if ($tahun) {
-            $query->whereYear('tarikh_mula', $tahun);
+            $query->whereYear('tarikh_permohonan', $tahun);
         }
 
         $movements = $query->orderBy('created_at', 'desc')->get();
+
+        // Group movements by batch_id (if available) to show combined quantity
+        $groupedMovements = $movements->groupBy(function ($movement) {
+            $batchId = $movement->asset->batch_id ?? $movement->asset_id;
+
+            // Create a unique key for grouping
+            // We group by: Batch ID + User + Date + Purpose + Status + Destination
+            return $batchId . '_' .
+                $movement->user_id . '_' .
+                ($movement->tarikh_permohonan ? $movement->tarikh_permohonan->format('Y-m-d') : '') . '_' .
+                $movement->tujuan_pergerakan . '_' .
+                $movement->status_pergerakan . '_' .
+                $movement->destination_masjid_surau_id;
+        });
 
         // Get all masjid/surau for filter dropdown
         $masjidSurauList = MasjidSurau::orderBy('nama')->get();
@@ -572,7 +586,7 @@ class ReportController extends Controller
         $lokasiList = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
 
         return view('admin.reports.br-ams-004', compact(
-            'movements',
+            'groupedMovements', // Pass the grouped collection
             'masjidSurauList',
             'statusOptions',
             'lokasiList',
@@ -1234,19 +1248,58 @@ class ReportController extends Controller
 
     public function brAms004Pdf(Request $request)
     {
-        $masjidSurauId = $request->masjid_surau_id;
-        $kategori = $request->kategori;
-        $query = Asset::query();
+        // Get filter parameters
+        $masjidSurauId = $request->get('masjid_surau_id');
+        $lokasi = $request->get('lokasi');
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
+        $status = $request->get('status');
+
+        // Build query for asset movements
+        $query = AssetMovement::with(['asset', 'asset.masjidSurau', 'user']);
+
         if ($masjidSurauId) {
-            $query->where('masjid_surau_id', $masjidSurauId);
+            $query->whereHas('asset', function ($q) use ($masjidSurauId) {
+                $q->where('masjid_surau_id', $masjidSurauId);
+            });
         }
-        if ($kategori) {
-            $query->where('kategori_aset', $kategori);
+
+        if ($status) {
+            $query->where('status_pergerakan', $status);
         }
-        $assets = $query->get();
-        $totalValue = $assets->sum('nilai_perolehan');
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-004', compact('assets', 'totalValue'));
+
+        if ($lokasi) {
+            $query->whereHas('asset', function ($q) use ($lokasi) {
+                $q->where('lokasi_penempatan', $lokasi);
+            });
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tarikh_permohonan', $bulan);
+        }
+
+        if ($tahun) {
+            $query->whereYear('tarikh_permohonan', $tahun);
+        }
+
+        $movements = $query->orderBy('created_at', 'desc')->get();
+
+        // Group movements by batch_id (if available) to show combined quantity
+        $groupedMovements = $movements->groupBy(function ($movement) {
+            $batchId = $movement->asset->batch_id ?? $movement->asset_id;
+
+            // Create a unique key for grouping
+            return $batchId . '_' .
+                $movement->user_id . '_' .
+                ($movement->tarikh_permohonan ? $movement->tarikh_permohonan->format('Y-m-d') : '') . '_' .
+                $movement->tujuan_pergerakan . '_' .
+                $movement->status_pergerakan . '_' .
+                $movement->destination_masjid_surau_id;
+        });
+
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-004', compact('groupedMovements'));
         $pdf->setPaper('a4', 'landscape');
+
         return $pdf->stream('BR-AMS-004-' . date('Y-m-d') . '.pdf');
     }
 

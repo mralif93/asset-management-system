@@ -105,11 +105,10 @@
                                             @foreach($assets as $asset)
                                                 <option value="{{ $asset->id }}"
                                                     data-quantity="{{ $asset->available_quantity ?? ($asset->batch_siblings_count ?? 1) }}"
-                                                    data-original-quantity="{{ $asset->batch_siblings_count ?? 1 }}"
-                                                    {{ (isset($asset->available_quantity) && $asset->available_quantity <= 0) ? 'disabled' : '' }}
-                                                    {{ old('asset_id', request('asset_id')) == $asset->id ? 'selected' : '' }}>
+                                                    data-original-quantity="{{ $asset->batch_siblings_count ?? 1 }}" {{ (isset($asset->available_quantity) && $asset->available_quantity <= 0) ? 'disabled' : '' }} {{ old('asset_id', request('asset_id')) == $asset->id ? 'selected' : '' }}>
                                                     {{ $asset->nama_aset }} - {{ $asset->no_siri_pendaftaran }}
-                                                    ({{ $asset->available_quantity ?? ($asset->batch_siblings_count ?? 1) }} Unit Available)
+                                                    ({{ $asset->available_quantity ?? ($asset->batch_siblings_count ?? 1) }}
+                                                    Unit Available)
                                                 </option>
                                             @endforeach
                                         </select>
@@ -148,7 +147,8 @@
                                         </div>
                                         <div>
                                             <span class="text-gray-600">Kuantiti Semasa:</span>
-                                            <span class="font-medium text-emerald-600" x-text="assetInfo.quantity || '-'"></span>
+                                            <span class="font-medium text-emerald-600"
+                                                x-text="assetInfo.quantity || '-'"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -289,7 +289,8 @@
                                                 <option value="">Pilih Masjid/Surau Asal</option>
                                                 @foreach($masjidSuraus as $masjid)
                                                     <option value="{{ $masjid->id }}" {{ old('origin_masjid_surau_id', $default_masjid_surau_id) == $masjid->id ? 'selected' : '' }}>
-                                                        {{ $masjid->nama }} {{ $masjid->nama !== 'Lain-lain' ? '('.$masjid->jenis.')' : '' }}
+                                                        {{ $masjid->nama }}
+                                                        {{ $masjid->nama !== 'Lain-lain' ? '(' . $masjid->jenis . ')' : '' }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -324,7 +325,8 @@
                                                 <option value="">Pilih Masjid/Surau Destinasi</option>
                                                 @foreach($masjidSuraus as $masjid)
                                                     <option value="{{ $masjid->id }}" {{ old('destination_masjid_surau_id', $default_destination_masjid_id ?? '') == $masjid->id ? 'selected' : '' }}>
-                                                        {{ $masjid->nama }} {{ $masjid->nama !== 'Lain-lain' ? '('.$masjid->jenis.')' : '' }}
+                                                        {{ $masjid->nama }}
+                                                        {{ $masjid->nama !== 'Lain-lain' ? '(' . $masjid->jenis . ')' : '' }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -398,8 +400,8 @@
                                                 class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-map-pin text-gray-400'></i>
                                             </div>
-                                            <select id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
-                                                required x-model="form.lokasi_destinasi_spesifik"
+                                            <select id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik" required
+                                                x-model="form.lokasi_destinasi_spesifik"
                                                 class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror appearance-none bg-white">
                                                 <option value="">Pilih Lokasi Destinasi</option>
                                                 @foreach($validLocations ?? [] as $location)
@@ -422,58 +424,132 @@
                                     </div>
                                 </div>
 
-                                <!-- ROW 5: Signature (Full Width) -->
-                                <div class="col-span-1 md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-pen mr-1'></i>
-                                        Tandatangan Pegawai Bertanggungjawab <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
-                                        <canvas id="signature-pad" class="w-full h-40 touch-none" width="800"
-                                            height="200"></canvas>
-                                        <div class="absolute top-2 right-2">
-                                            <button type="button" @click="clearSignature()"
-                                                class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded transition-colors">
-                                                Padam
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Sila tandatangan dalam kotak di atas.</p>
-                                    <input type="hidden" id="pegawai_bertanggungjawab_signature"
-                                        name="pegawai_bertanggungjawab_signature"
-                                        x-model="form.pegawai_bertanggungjawab_signature" required>
-                                    @error('pegawai_bertanggungjawab_signature')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
+                                <!-- ROW 5: Signatures (Dual Column) -->
+                                <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                <!-- ROW 6: Responsible Person (Full Width, Below Signature) -->
-                                <div class="col-span-1 md:col-span-2">
-                                    <label for="nama_peminjam_pegawai_bertanggungjawab"
-                                        class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-user mr-1'></i>
-                                        Pegawai Bertanggungjawab <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-user text-gray-400'></i>
+                                    <!-- (a) Disediakan oleh -->
+                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <h4 class="font-semibold text-gray-900 mb-4">(a) Disediakan oleh:</h4>
+
+                                        <!-- Signature Pad -->
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Tandatangan <span class="text-red-500">*</span>
+                                            </label>
+                                            <div
+                                                class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
+                                                <canvas id="signature-pad-creator"
+                                                    class="w-full h-32 touch-none border-b border-gray-100"></canvas>
+                                                <div class="absolute top-2 right-2 flex space-x-2">
+                                                    <button type="button" @click="clearCreatorSignature()"
+                                                        class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded transition-colors"
+                                                        title="Padam Tandatangan">
+                                                        <i class='bx bx-trash'></i>
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    class="absolute bottom-1 right-2 text-[10px] text-gray-400 pointer-events-none">
+                                                    Ruang Tandatangan
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="pegawai_bertanggungjawab_signature"
+                                                x-model="form.pegawai_bertanggungjawab_signature">
+                                            @error('pegawai_bertanggungjawab_signature')
+                                                <p class="mt-1 text-xs text-red-600 flex items-center">
+                                                    <i class='bx bx-error-circle mr-1'></i>{{ $message }}
+                                                </p>
+                                            @enderror
                                         </div>
-                                        <input type="text" id="nama_peminjam_pegawai_bertanggungjawab"
-                                            name="nama_peminjam_pegawai_bertanggungjawab"
-                                            value="{{ old('nama_peminjam_pegawai_bertanggungjawab') }}" required
-                                            x-model="form.nama_peminjam_pegawai_bertanggungjawab"
-                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_peminjam_pegawai_bertanggungjawab') border-red-500 @enderror bg-white"
-                                            placeholder="Nama pegawai yang bertanggungjawab">
+
+                                        <!-- Name -->
+                                        <div class="mb-4">
+                                            <label for="nama_peminjam_pegawai_bertanggungjawab"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                                            <input type="text" id="nama_peminjam_pegawai_bertanggungjawab"
+                                                name="nama_peminjam_pegawai_bertanggungjawab"
+                                                value="{{ old('nama_peminjam_pegawai_bertanggungjawab') }}" required
+                                                x-model="form.nama_peminjam_pegawai_bertanggungjawab"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+
+                                        <!-- Position -->
+                                        <div class="mb-4">
+                                            <label for="disediakan_oleh_jawatan"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Jawatan</label>
+                                            <input type="text" id="disediakan_oleh_jawatan" name="disediakan_oleh_jawatan"
+                                                value="{{ old('disediakan_oleh_jawatan') }}" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+
+                                        <!-- Date -->
+                                        <div>
+                                            <label for="disediakan_oleh_tarikh"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Tarikh</label>
+                                            <input type="date" id="disediakan_oleh_tarikh" name="disediakan_oleh_tarikh"
+                                                value="{{ old('disediakan_oleh_tarikh', date('Y-m-d')) }}" required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
                                     </div>
-                                    @error('nama_peminjam_pegawai_bertanggungjawab')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
+
+                                    <!-- (b) Disahkan oleh -->
+                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 opacity-70">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h4 class="font-semibold text-gray-900">(b) Disahkan oleh:</h4>
+                                            <span class="text-[10px] bg-gray-200 px-2 py-1 rounded text-gray-600">Untuk
+                                                Kegunaan Pejabat</span>
+                                        </div>
+
+                                        <!-- Signature Pad (Approver) - Generally verification happens later, but providing field as requested -->
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Tandatangan
+                                            </label>
+                                            <div
+                                                class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
+                                                <canvas id="signature-pad-approver"
+                                                    class="w-full h-32 touch-none border-b border-gray-100"></canvas>
+                                                <div class="absolute top-2 right-2 flex space-x-2">
+                                                    <button type="button" @click="clearApproverSignature()"
+                                                        class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded transition-colors"
+                                                        title="Padam Tandatangan">
+                                                        <i class='bx bx-trash'></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="disahkan_oleh_signature"
+                                                x-model="form.disahkan_oleh_signature">
+                                        </div>
+
+                                        <!-- Name -->
+                                        <div class="mb-4">
+                                            <label for="disahkan_oleh_nama"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                                            <input type="text" id="disahkan_oleh_nama" name="disahkan_oleh_nama"
+                                                value="{{ old('disahkan_oleh_nama') }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500"
+                                                placeholder="Nama Pegawai Pengesah">
+                                        </div>
+
+                                        <!-- Position -->
+                                        <div class="mb-4">
+                                            <label for="disahkan_oleh_jawatan"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Jawatan</label>
+                                            <input type="text" id="disahkan_oleh_jawatan" name="disahkan_oleh_jawatan"
+                                                value="{{ old('disahkan_oleh_jawatan') }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500"
+                                                placeholder="Jawatan">
+                                        </div>
+
+                                        <!-- Date -->
+                                        <div>
+                                            <label for="disahkan_oleh_tarikh"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Tarikh</label>
+                                            <input type="date" id="disahkan_oleh_tarikh" name="disahkan_oleh_tarikh"
+                                                value="{{ old('disahkan_oleh_tarikh') }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -696,107 +772,129 @@
         <script>
             function createMovementForm() {
                 return {
-                    signaturePad: null,
                     init() {
-                        const canvas = document.getElementById('signature-pad');
+                                this.setupSignaturePad('signature-pad-creator', 'pegawai_bertanggungjawab_signature');
+                                this.setupSignaturePad('signature-pad-approver', 'disahkan_oleh_signature');
+                            },
 
-                        // Resize canvas to fit container
-                        const resizeCanvas = () => {
-                            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                            canvas.width = canvas.offsetWidth * ratio;
-                            canvas.height = canvas.offsetHeight * ratio;
-                            canvas.getContext("2d").scale(ratio, ratio);
-                        };
+                            setupSignaturePad(canvasId, modelField) {
+                                const canvas = document.getElementById(canvasId);
+                                if (!canvas) return;
 
-                        window.addEventListener("resize", resizeCanvas);
-                        resizeCanvas();
+                                // Resize canvas to fit container
+                                const resizeCanvas = () => {
+                                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                                    // Store current content
+                                    const tempCanvas = document.createElement('canvas');
+                                    tempCanvas.width = canvas.width;
+                                    tempCanvas.height = canvas.height;
+                                    tempCanvas.getContext('2d').drawImage(canvas, 0, 0);
 
-                        // Simple drawing logic without external library to keep it lightweight
-                        const ctx = canvas.getContext('2d');
-                        let isDrawing = false;
-                        let lastX = 0;
-                        let lastY = 0;
+                                    canvas.width = canvas.offsetWidth * ratio;
+                                    canvas.height = canvas.offsetHeight * ratio;
+                                    canvas.getContext("2d").scale(ratio, ratio);
 
-                        function getPos(e) {
-                            const rect = canvas.getBoundingClientRect();
-                            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                            return {
-                                x: clientX - rect.left,
-                                y: clientY - rect.top
-                            };
-                        }
+                                    // You might want to redraw content here if needed, 
+                                    // but for a simple resize on load it's usually empty.
+                                };
 
-                        function startDrawing(e) {
-                            isDrawing = true;
-                            const pos = getPos(e);
-                            lastX = pos.x;
-                            lastY = pos.y;
-                            e.preventDefault();
-                        }
+                                window.addEventListener("resize", resizeCanvas);
+                                resizeCanvas();
 
-                        function stopDrawing() {
-                            if (isDrawing) {
-                                isDrawing = false;
-                                this.updateSignatureField();
-                            }
-                        }
+                                const ctx = canvas.getContext('2d');
+                                let isDrawing = false;
+                                let lastX = 0;
+                                let lastY = 0;
 
-                        function draw(e) {
-                            if (!isDrawing) return;
+                                function getPos(e) {
+                                    const rect = canvas.getBoundingClientRect();
+                                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                                    return {
+                                        x: clientX - rect.left,
+                                        y: clientY - rect.top
+                                    };
+                                }
 
-                            const pos = getPos(e);
-                            ctx.beginPath();
-                            ctx.moveTo(lastX, lastY);
-                            ctx.lineTo(pos.x, pos.y);
-                            ctx.strokeStyle = '#000';
-                            ctx.lineWidth = 2;
-                            ctx.lineCap = 'round';
-                            ctx.stroke();
+                                const startDrawing = (e) => {
+                                    isDrawing = true;
+                                    const pos = getPos(e);
+                                    lastX = pos.x;
+                                    lastY = pos.y;
+                                    e.preventDefault();
+                                };
 
-                            lastX = pos.x;
-                            lastY = pos.y;
-                            e.preventDefault();
-                        }
+                                const stopDrawing = () => {
+                                    if (isDrawing) {
+                                        isDrawing = false;
+                                        this.updateSignatureField(canvasId, modelField);
+                                    }
+                                };
 
-                        // Mouse events
-                        canvas.addEventListener('mousedown', startDrawing.bind(this));
-                        canvas.addEventListener('mousemove', draw.bind(this));
-                        canvas.addEventListener('mouseup', stopDrawing.bind(this));
-                        canvas.addEventListener('mouseout', stopDrawing.bind(this));
+                                const draw = (e) => {
+                                    if (!isDrawing) return;
+                                    const pos = getPos(e);
+                                    ctx.beginPath();
+                                    ctx.moveTo(lastX, lastY);
+                                    ctx.lineTo(pos.x, pos.y);
+                                    ctx.strokeStyle = '#000';
+                                    ctx.lineWidth = 2;
+                                    ctx.lineCap = 'round';
+                                    ctx.stroke();
+                                    lastX = pos.x;
+                                    lastY = pos.y;
+                                    e.preventDefault();
+                                };
 
-                        // Touch events
-                        canvas.addEventListener('touchstart', startDrawing.bind(this));
-                        canvas.addEventListener('touchmove', draw.bind(this));
-                        canvas.addEventListener('touchend', stopDrawing.bind(this));
-                    },
-                    clearSignature() {
-                        const canvas = document.getElementById('signature-pad');
-                        const ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        this.form.pegawai_bertanggungjawab_signature = '';
-                    },
-                    updateSignatureField() {
-                        const canvas = document.getElementById('signature-pad');
-                        // Only save if canvas is not empty
-                        if (this.isCanvasEmpty(canvas)) {
-                            this.form.pegawai_bertanggungjawab_signature = '';
-                        } else {
-                            this.form.pegawai_bertanggungjawab_signature = canvas.toDataURL();
-                        }
-                    },
-                    isCanvasEmpty(canvas) {
-                        const blank = document.createElement('canvas');
-                        blank.width = canvas.width;
-                        blank.height = canvas.height;
-                        return canvas.toDataURL() === blank.toDataURL();
-                    },
-                    form: {
-                        asset_id: '{{ old('asset_id') }}',
-                        jenis_pergerakan: '{{ old('jenis_pergerakan') }}',
-                        kuantiti: '{{ old('kuantiti', 1) }}',
-                        tarikh_pergerakan: '{{ old('tarikh_pergerakan', date('Y-m-d')) }}',
-                        origin_masjid_surau_id: '{{ old('origin_masjid_surau_id', $default_masjid_surau_id ?? '') }}',
+                                // Mouse events
+                                canvas.addEventListener('mousedown', startDrawing);
+                                canvas.addEventListener('mousemove', draw);
+                                canvas.addEventListener('mouseup', stopDrawing);
+                                canvas.addEventListener('mouseout', stopDrawing);
+
+                                // Touch events
+                                canvas.addEventListener('touchstart', startDrawing);
+                                canvas.addEventListener('touchmove', draw);
+                                canvas.addEventListener('touchend', stopDrawing);
+                            },
+
+                            clearCreatorSignature() {
+                                this.clearCanvas('signature-pad-creator', 'pegawai_bertanggungjawab_signature');
+                            },
+
+                            clearApproverSignature() {
+                                this.clearCanvas('signature-pad-approver', 'disahkan_oleh_signature');
+                            },
+
+                            clearCanvas(canvasId, modelField) {
+                                const canvas = document.getElementById(canvasId);
+                                const ctx = canvas.getContext('2d');
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                this.form[modelField] = '';
+                            },
+
+                            updateSignatureField(canvasId, modelField) {
+                                const canvas = document.getElementById(canvasId);
+                                if (this.isCanvasEmpty(canvas)) {
+                                    this.form[modelField] = '';
+                                } else {
+                                    this.form[modelField] = canvas.toDataURL();
+                                }
+                            },
+
+                            isCanvasEmpty(canvas) {
+                                const blank = document.createElement('canvas');
+                                blank.width = canvas.width;
+                                blank.height = canvas.height;
+                                return canvas.toDataURL() === blank.toDataURL();
+                            },
+
+                            form: {
+                                asset_id: '{{ old('asset_id') }}',
+                                jenis_pergerakan: '{{ old('jenis_pergerakan') }}',
+                                kuantiti: '{{ old('kuantiti', 1) }}',
+                                tarikh_pergerakan: '{{ old('tarikh_pergerakan', date('Y-m-d')) }}',
+                                origin_masjid_surau_id: '{{ old('origin_masjid_surau_id', $default_masjid_surau_id ?? '') }}',
                                 destination_masjid_surau_id: '{{ old('destination_masjid_surau_id', $default_destination_masjid_id ?? '') }}',
                                 lokasi_asal_spesifik: '{{ old('lokasi_asal_spesifik') }}',
                                 lokasi_destinasi_spesifik: '{{ old('lokasi_destinasi_spesifik') }}',
@@ -805,7 +903,13 @@
                                 tujuan_pergerakan: '{{ old('tujuan_pergerakan') }}',
                                 catatan: '{{ old('catatan') }}',
                                 pembekal: '{{ old('pembekal') }}',
-                                pegawai_bertanggungjawab_signature: ''
+                                pegawai_bertanggungjawab_signature: '',
+                                disediakan_oleh_jawatan: '{{ old('disediakan_oleh_jawatan') }}',
+                                disediakan_oleh_tarikh: '{{ old('disediakan_oleh_tarikh', date('Y-m-d')) }}',
+                                disahkan_oleh_signature: '',
+                                disahkan_oleh_nama: '{{ old('disahkan_oleh_nama') }}',
+                                disahkan_oleh_jawatan: '{{ old('disahkan_oleh_jawatan') }}',
+                                disahkan_oleh_tarikh: '{{ old('disahkan_oleh_tarikh') }}'
                             },
                             assetInfo: {
                                 current_location: '',
@@ -818,28 +922,22 @@
                             updateAssetInfo(e) {
                                 const selectedOption = e.target.options[e.target.selectedIndex];
                                 if (selectedOption.value) {
-                                    // Parse the quantity from the data attribute we will add
                                     const availableQty = parseInt(selectedOption.dataset.quantity) || 1;
-                                    
                                     const assets = @json($assets->keyBy('id'));
                                     const selectedAsset = assets[selectedOption.value];
-                                    
+
                                     if (selectedAsset) {
                                         this.assetInfo = {
                                             name: selectedOption.text.split(' - ')[0],
                                             regNo: selectedOption.text.split(' - ')[1],
-                                            quantity: availableQty, // Use the real available quantity
-                                            originalQty: parseInt(selectedOption.dataset.originalQuantity) || 1, // Keep original for reference
-                                            
-                                            // Restored fields
+                                            quantity: availableQty,
+                                            originalQty: parseInt(selectedOption.dataset.originalQuantity) || 1,
                                             current_location: selectedAsset.lokasi_penempatan || '-',
                                             status: selectedAsset.status_aset || '-',
                                             type: selectedAsset.jenis_aset || '-',
                                             value: 'RM ' + (selectedAsset.nilai_perolehan ? parseFloat(selectedAsset.nilai_perolehan).toLocaleString() : '0')
                                         };
-
                                         this.form.lokasi_asal_spesifik = selectedAsset.lokasi_penempatan || '';
-                                        // Auto-fill origin masjid
                                         this.form.origin_masjid_surau_id = selectedAsset.masjid_surau_id || '';
                                     }
                                 } else {
@@ -864,23 +962,15 @@
                     // Form validation
                     document.addEventListener('DOMContentLoaded', function () {
                         const form = document.querySelector('form');
-                        const requiredFields = form.querySelectorAll('[required]');
 
                         form.addEventListener('submit', function (e) {
-                            let hasErrors = false;
-
-                            requiredFields.forEach(field => {
-                                if (!field.value.trim()) {
-                                    hasErrors = true;
-                                    field.classList.add('border-red-500');
-                                } else {
-                                    field.classList.remove('border-red-500');
-                                }
-                            });
-
-                            if (hasErrors) {
+                            // Custom validation if needed, essentially just checking specific required fields
+                            // The browser's generic 'required' attribute handles most, but for hidden signature fields:
+                            const signatureInput = document.querySelector('input[name="pegawai_bertanggungjawab_signature"]');
+                            if (!signatureInput.value) {
                                 e.preventDefault();
-                                alert('Sila lengkapkan semua medan yang diperlukan.');
+                                alert('Sila tandatangan pada ruangan Disediakan oleh.');
+                                return;
                             }
                         });
                     });

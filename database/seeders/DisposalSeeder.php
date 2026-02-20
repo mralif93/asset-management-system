@@ -18,7 +18,7 @@ class DisposalSeeder extends Seeder
     {
         $assets = Asset::limit(3)->get(); // Only dispose some assets
         $users = User::where('role', 'admin')->get();
-        
+
         if ($users->isEmpty()) {
             $this->command->error('No admin users found. Please run UserSeeder first.');
             return;
@@ -64,13 +64,13 @@ class DisposalSeeder extends Seeder
         foreach ($disposals as $index => $disposalData) {
             if ($index < $assets->count()) {
                 $asset = $assets[$index];
-                
+
                 Disposal::create(array_merge($disposalData, [
                     'asset_id' => $asset->id,
                 ]));
 
                 // Update asset status to disposed
-                $asset->update(['status_aset' => 'Dilupuskan']);
+                $asset->update(['status_aset' => Asset::STATUS_DISPOSED]);
             }
         }
 
@@ -84,9 +84,9 @@ class DisposalSeeder extends Seeder
     {
         // Get some older assets for disposal
         $olderAssets = Asset::where('tarikh_perolehan', '<', Carbon::now()->subYears(5))
-                           ->where('status_aset', '!=', 'Dilupuskan')
-                           ->limit(5)
-                           ->get();
+            ->where('status_aset', '!=', 'Dilupuskan')
+            ->limit(5)
+            ->get();
 
         $justifikasi = [
             'Aset sudah rosak dan tidak boleh dibaiki lagi',
@@ -115,7 +115,7 @@ class DisposalSeeder extends Seeder
             $kaedah = $kaedahPelupusan[array_rand($kaedahPelupusan)];
             $user = $users->random();
             $approver = $users->where('id', '!=', $user->id)->first() ?? $user;
-            
+
             $tarikhPermohonan = Carbon::now()->subDays(rand(30, 180));
             $tarikhKelulusan = null;
             $noRujukan = null;
@@ -141,7 +141,7 @@ class DisposalSeeder extends Seeder
 
             // Update asset status if approved
             if ($status === 'Diluluskan') {
-                $asset->update(['status_aset' => 'Dilupuskan']);
+                $asset->update(['status_aset' => Asset::STATUS_DISPOSED]);
             }
         }
     }

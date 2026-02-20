@@ -186,62 +186,163 @@
                     </thead>
 
                     <!-- Table Body -->
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($assets as $index => $asset)
-                            <tr class="hover:bg-emerald-50 transition-colors">
-                                <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                                    {{ $index + 1 }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
-                                    <div class="font-medium text-gray-900">{{ $asset->no_siri_pendaftaran ?? 'N/A' }}</div>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200">
-                                    <div class="font-medium text-gray-900">{{ $asset->nama_aset }}</div>
-                                    <div class="text-gray-500 text-xs mt-1">{{ $asset->jenis_aset }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        {{ ucfirst(str_replace('_', ' ', $asset->kaedah_perolehan ?? 'N/A')) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
-                                    {{ $asset->tarikh_perolehan ? \Carbon\Carbon::parse($asset->tarikh_perolehan)->format('d/m/Y') : 'N/A' }}
-                                </td>
-                                <td
-                                    class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 text-right">
-                                    {{ number_format($asset->nilai_perolehan, 2) }}
-                                </td>
-                                <td class="px-4 py-4 text-sm text-gray-900 border-r border-gray-200">
-                                    <div>{{ $asset->lokasi_penempatan ?? 'N/A' }}</div>
-                                    @if($asset->masjidSurau)
-                                        <div class="text-gray-500 text-xs">{{ $asset->masjidSurau->nama }}</div>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-4 whitespace-nowrap text-sm border-r border-gray-200">
-                                    @if($asset->status_aset == 'dilupuskan')
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            Dilupuskan
+                    <!-- Table Body -->
+                    @php
+                        $groupedAssets = $assets->groupBy(function($item) {
+                            return $item->batch_id ?? 'SINGLE_' . $item->id;
+                        });
+                        $bil = 1;
+                    @endphp
+
+                    @forelse($groupedAssets as $groupKey => $group)
+                        <tbody class="bg-white divide-y divide-gray-200 border-b border-gray-200" x-data="{ expanded: false }">
+                            @if($group->count() > 1 && !str_starts_with($groupKey, 'SINGLE_'))
+                                <!-- Parent Row (Group Summary) -->
+                                <tr class="hover:bg-emerald-50 transition-colors cursor-pointer bg-gray-50 group" @click="expanded = !expanded">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200 align-top">
+                                        {{ $bil++ }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 align-top">
+                                        <div class="flex items-center text-emerald-700 font-bold">
+                                            <i class='bx bx-chevron-right text-xl transition-transform duration-200' :class="expanded ? 'rotate-90' : ''"></i>
+                                            <span class="ml-1">{{ $group->count() }} Unit</span>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1 pl-6">
+                                            Klik untuk lihat No. Siri
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200 align-top">
+                                        <div class="font-bold text-gray-900">{{ $group->first()->nama_aset }}</div>
+                                        <div class="text-gray-500 text-xs mt-1">{{ $group->first()->jenis_aset }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 align-top">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ ucfirst(str_replace('_', ' ', $group->first()->kaedah_perolehan ?? 'N/A')) }}
                                         </span>
-                                    @elseif($asset->status_aset == 'hapus_kira')
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            Hapus Kira
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 align-top">
+                                        {{ $group->first()->tarikh_perolehan ? \Carbon\Carbon::parse($group->first()->tarikh_perolehan)->format('d/m/Y') : 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 text-right align-top">
+                                        {{ number_format($group->first()->nilai_perolehan, 2) }}
+                                    </td>
+                                    <td class="px-4 py-4 text-sm text-gray-900 border-r border-gray-200 align-top">
+                                        <div>{{ $group->first()->lokasi_penempatan ?? 'N/A' }}</div>
+                                        @if($group->first()->masjidSurau)
+                                            <div class="text-gray-500 text-xs">{{ $group->first()->masjidSurau->nama }}</div>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm border-r border-gray-200 align-top">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            Pelbagai Status
                                         </span>
-                                    @else
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            {{ ucfirst(str_replace('_', ' ', $asset->status_aset)) }}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-bold align-top">
+                                        {{ number_format($group->sum('nilai_perolehan'), 2) }}
+                                    </td>
+                                </tr>
+
+                                <!-- Child Rows -->
+                                @foreach($group as $index => $asset)
+                                    <tr x-show="expanded" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" class="bg-white hover:bg-emerald-50/50">
+                                        <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-400 border-r border-gray-100 text-right pl-12 font-mono">
+                                            {{ $loop->iteration }}.
+                                        </td>
+                                        <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-600 border-r border-gray-100 font-mono pl-12">
+                                            {{ $asset->no_siri_pendaftaran ?? 'N/A' }}
+                                        </td>
+                                        <td class="px-6 py-3 text-sm text-gray-500 border-r border-gray-100">
+                                            {{ $asset->nama_aset }}
+                                        </td>
+                                        <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-500 border-r border-gray-100">
+                                            -
+                                        </td>
+                                        <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-500 border-r border-gray-100">
+                                            -
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 border-r border-gray-100 text-right">
+                                            {{ number_format($asset->nilai_perolehan, 2) }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-500 border-r border-gray-100">
+                                            {{ $asset->lokasi_penempatan ?? 'N/A' }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm border-r border-gray-100">
+                                            @if($asset->status_aset == 'dilupuskan')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700">
+                                                    Dilupuskan
+                                                </span>
+                                            @elseif($asset->status_aset == 'kehilangan')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-50 text-orange-700">
+                                                    Kehilangan
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700">
+                                                    {{ ucfirst(str_replace('_', ' ', $asset->status_aset)) }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">
+                                            {{ number_format($asset->nilai_perolehan, 2) }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <!-- Single Item Row (Standard) -->
+                                <tr class="hover:bg-emerald-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+                                        {{ $bil++ }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                                        <div class="font-medium text-gray-900">{{ $group->first()->no_siri_pendaftaran ?? 'N/A' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200">
+                                        <div class="font-medium text-gray-900">{{ $group->first()->nama_aset }}</div>
+                                        <div class="text-gray-500 text-xs mt-1">{{ $group->first()->jenis_aset }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ ucfirst(str_replace('_', ' ', $group->first()->kaedah_perolehan ?? 'N/A')) }}
                                         </span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                                    {{ number_format($asset->nilai_perolehan, 2) }}
-                                </td>
-                            </tr>
-                        @empty
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                                        {{ $group->first()->tarikh_perolehan ? \Carbon\Carbon::parse($group->first()->tarikh_perolehan)->format('d/m/Y') : 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200 text-right">
+                                        {{ number_format($group->first()->nilai_perolehan, 2) }}
+                                    </td>
+                                    <td class="px-4 py-4 text-sm text-gray-900 border-r border-gray-200">
+                                        <div>{{ $group->first()->lokasi_penempatan ?? 'N/A' }}</div>
+                                        @if($group->first()->masjidSurau)
+                                            <div class="text-gray-500 text-xs">{{ $group->first()->masjidSurau->nama }}</div>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm border-r border-gray-200">
+                                        @if($group->first()->status_aset == 'dilupuskan')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                Dilupuskan
+                                            </span>
+                                        @elseif($group->first()->status_aset == 'kehilangan')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                Kehilangan
+                                            </span>
+                                        @elseif($group->first()->status_aset == 'hapus_kira')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                Hapus Kira
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                {{ ucfirst(str_replace('_', ' ', $group->first()->status_aset)) }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                                        {{ number_format($group->first()->nilai_perolehan, 2) }}
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    @empty
+                        <tbody>
                             <tr>
                                 <td colspan="9" class="px-4 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center">
@@ -251,15 +352,14 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforelse
-                    </tbody>
+                        </tbody>
+                    @endforelse
 
                     <!-- Summary Rows -->
                     @if($assets->count() > 0)
                         <tfoot class="bg-gray-100">
                             <tr>
-                                <td colspan="8"
-                                    class="px-4 py-3 text-right text-sm font-medium text-gray-900 border-r border-gray-200">
+                                <td colspan="8" class="px-4 py-3 text-right text-sm font-medium text-gray-900 border-r border-gray-200">
                                     JUMLAH (RM)
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm font-bold text-gray-900">
@@ -267,8 +367,7 @@
                                 </td>
                             </tr>
                             <tr class="bg-gray-200">
-                                <td colspan="8"
-                                    class="px-4 py-3 text-right text-sm font-bold text-gray-900 border-r border-gray-200">
+                                <td colspan="8" class="px-4 py-3 text-right text-sm font-bold text-gray-900 border-r border-gray-200">
                                     JUMLAH KESELURUHAN (RM)*
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm font-bold text-gray-900">

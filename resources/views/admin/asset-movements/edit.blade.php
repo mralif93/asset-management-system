@@ -12,7 +12,8 @@
                 <div>
                     <h1 class="text-3xl font-bold mb-2">Edit Pergerakan Aset</h1>
                     <p class="text-emerald-100 text-lg">Kemaskini maklumat pergerakan untuk
-                        {{ $assetMovement->asset->nama_aset }}</p>
+                        {{ $assetMovement->asset->nama_aset }}
+                    </p>
                     <div class="flex items-center space-x-4 mt-4">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-edit text-emerald-200'></i>
@@ -142,7 +143,9 @@
                                         </div>
                                         <div>
                                             <span class="text-gray-600">Kuantiti Semasa:</span>
-                                            <span class="font-medium text-emerald-600">{{ $assetMovement->asset->batch_siblings_count ?? 1 }} unit</span>
+                                            <span
+                                                class="font-medium text-emerald-600">{{ $assetMovement->asset->batch_siblings_count ?? 1 }}
+                                                unit</span>
                                         </div>
                                     </div>
                                 </div>
@@ -207,8 +210,9 @@
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <i class='bx bx-abacus text-gray-400'></i>
                                         </div>
-                                        <input type="number" id="kuantiti" name="kuantiti" value="{{ old('kuantiti', $assetMovement->kuantiti ?? 1) }}"
-                                            min="1" required x-model="form.kuantiti"
+                                        <input type="number" id="kuantiti" name="kuantiti"
+                                            value="{{ old('kuantiti', $assetMovement->kuantiti ?? 1) }}" min="1" required
+                                            x-model="form.kuantiti"
                                             class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('kuantiti') border-red-500 @enderror bg-white"
                                             placeholder="1">
                                     </div>
@@ -277,7 +281,8 @@
                                             Masjid/Surau Asal <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-building-house text-gray-400'></i>
                                             </div>
                                             <select id="origin_masjid_surau_id" name="origin_masjid_surau_id" required
@@ -290,7 +295,8 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-chevron-down text-gray-400'></i>
                                             </div>
                                         </div>
@@ -301,7 +307,7 @@
                                             </p>
                                         @enderror
                                     </div>
-    
+
                                     <!-- Destination Masjid/Surau -->
                                     <div>
                                         <label for="destination_masjid_surau_id"
@@ -310,11 +316,12 @@
                                             Masjid/Surau Destinasi <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-building-house text-gray-400'></i>
                                             </div>
-                                            <select id="destination_masjid_surau_id" name="destination_masjid_surau_id" required
-                                                x-model="form.destination_masjid_surau_id"
+                                            <select id="destination_masjid_surau_id" name="destination_masjid_surau_id"
+                                                required x-model="form.destination_masjid_surau_id"
                                                 class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('destination_masjid_surau_id') border-red-500 @enderror appearance-none bg-white">
                                                 <option value="">Pilih Masjid/Surau Destinasi</option>
                                                 @foreach($masjidSuraus as $masjid)
@@ -323,7 +330,8 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-chevron-down text-gray-400'></i>
                                             </div>
                                         </div>
@@ -347,16 +355,18 @@
                                 <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <!-- Detailed Source Location -->
                                     <div>
-                                        <label for="lokasi_asal_spesifik" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <label for="lokasi_asal_spesifik"
+                                            class="block text-sm font-medium text-gray-700 mb-2">
                                             <i class='bx bx-map-pin mr-1'></i>
                                             Lokasi Terperinci Asal <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-map-pin text-gray-400'></i>
                                             </div>
-                                            <select id="lokasi_asal_spesifik" name="lokasi_asal_spesifik"
-                                                required x-model="form.lokasi_asal_spesifik"
+                                            <select id="lokasi_asal_spesifik" name="lokasi_asal_spesifik" required
+                                                x-model="form.lokasi_asal_spesifik"
                                                 class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_asal_spesifik') border-red-500 @enderror appearance-none bg-white">
                                                 <option value="">Pilih Lokasi Asal</option>
                                                 @foreach($validLocations ?? [] as $location)
@@ -365,7 +375,8 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-chevron-down text-gray-400'></i>
                                             </div>
                                         </div>
@@ -376,7 +387,7 @@
                                             </p>
                                         @enderror
                                     </div>
-    
+
                                     <!-- Detailed Destination Location -->
                                     <div>
                                         <label for="lokasi_destinasi_spesifik"
@@ -385,11 +396,12 @@
                                             Lokasi Terperinci Destinasi <span class="text-red-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-map-pin text-gray-400'></i>
                                             </div>
-                                            <select id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik"
-                                                required x-model="form.lokasi_destinasi_spesifik"
+                                            <select id="lokasi_destinasi_spesifik" name="lokasi_destinasi_spesifik" required
+                                                x-model="form.lokasi_destinasi_spesifik"
                                                 class="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('lokasi_destinasi_spesifik') border-red-500 @enderror appearance-none bg-white">
                                                 <option value="">Pilih Lokasi Destinasi</option>
                                                 @foreach($validLocations ?? [] as $location)
@@ -398,7 +410,8 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <div
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <i class='bx bx-chevron-down text-gray-400'></i>
                                             </div>
                                         </div>
@@ -411,57 +424,136 @@
                                     </div>
                                 </div>
 
-                                <!-- ROW 5: Signature (Full Width) -->
-                                <div class="col-span-1 md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-pen mr-1'></i>
-                                        Tandatangan Pegawai Bertanggungjawab
-                                    </label>
-                                    <div class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
-                                        <canvas id="signature-pad" class="w-full h-40 touch-none" width="800" height="200"></canvas>
-                                        <div class="absolute top-2 right-2">
-                                            <button type="button" @click="clearSignature()"
-                                                class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded transition-colors">
-                                                Padam
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Sila tandatangan dalam kotak di atas jika ingin mengemaskini.</p>
-                                    <input type="hidden" id="pegawai_bertanggungjawab_signature"
-                                        name="pegawai_bertanggungjawab_signature"
-                                        x-model="form.pegawai_bertanggungjawab_signature">
-                                    @error('pegawai_bertanggungjawab_signature')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
+                                <!-- ROW 5: Signatures (Dual Column) -->
+                                <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                <!-- ROW 6: Responsible Person (Full Width, Below Signature) -->
-                                <div class="col-span-1 md:col-span-2">
-                                    <label for="nama_peminjam_pegawai_bertanggungjawab"
-                                        class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class='bx bx-user mr-1'></i>
-                                        Pegawai Bertanggungjawab <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class='bx bx-user text-gray-400'></i>
+                                    <!-- (a) Disediakan oleh -->
+                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <h4 class="font-semibold text-gray-900 mb-4">(a) Disediakan oleh:</h4>
+
+                                        <!-- Signature Pad -->
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Tandatangan <span class="text-red-500">*</span>
+                                            </label>
+                                            <div
+                                                class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
+                                                <canvas id="signature-pad-creator"
+                                                    class="w-full h-32 touch-none border-b border-gray-100"></canvas>
+                                                <div class="absolute top-2 right-2 flex space-x-2">
+                                                    <button type="button" @click="clearCreatorSignature()"
+                                                        class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded transition-colors"
+                                                        title="Padam Tandatangan">
+                                                        <i class='bx bx-trash'></i>
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    class="absolute bottom-1 right-2 text-[10px] text-gray-400 pointer-events-none">
+                                                    Ruang Tandatangan
+                                                </div>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">Sila tandatangan jika ingin mengemaskini.
+                                            </p>
+                                            <input type="hidden" name="pegawai_bertanggungjawab_signature"
+                                                x-model="form.pegawai_bertanggungjawab_signature">
+                                            @error('pegawai_bertanggungjawab_signature')
+                                                <p class="mt-1 text-xs text-red-600 flex items-center">
+                                                    <i class='bx bx-error-circle mr-1'></i>{{ $message }}
+                                                </p>
+                                            @enderror
                                         </div>
-                                        <input type="text" id="nama_peminjam_pegawai_bertanggungjawab"
-                                            name="nama_peminjam_pegawai_bertanggungjawab"
-                                            value="{{ old('nama_peminjam_pegawai_bertanggungjawab', $assetMovement->nama_peminjam_pegawai_bertanggungjawab) }}"
-                                            required x-model="form.nama_peminjam_pegawai_bertanggungjawab"
-                                            class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_peminjam_pegawai_bertanggungjawab') border-red-500 @enderror bg-white"
-                                            placeholder="Nama pegawai yang bertanggungjawab">
+
+                                        <!-- Name -->
+                                        <div class="mb-4">
+                                            <label for="nama_peminjam_pegawai_bertanggungjawab"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                                            <input type="text" id="nama_peminjam_pegawai_bertanggungjawab"
+                                                name="nama_peminjam_pegawai_bertanggungjawab"
+                                                value="{{ old('nama_peminjam_pegawai_bertanggungjawab', $assetMovement->nama_peminjam_pegawai_bertanggungjawab) }}"
+                                                required x-model="form.nama_peminjam_pegawai_bertanggungjawab"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+
+                                        <!-- Position -->
+                                        <div class="mb-4">
+                                            <label for="disediakan_oleh_jawatan"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Jawatan</label>
+                                            <input type="text" id="disediakan_oleh_jawatan" name="disediakan_oleh_jawatan"
+                                                value="{{ old('disediakan_oleh_jawatan', $assetMovement->disediakan_oleh_jawatan) }}"
+                                                required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+
+                                        <!-- Date -->
+                                        <div>
+                                            <label for="disediakan_oleh_tarikh"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Tarikh</label>
+                                            <input type="date" id="disediakan_oleh_tarikh" name="disediakan_oleh_tarikh"
+                                                value="{{ old('disediakan_oleh_tarikh', $assetMovement->disediakan_oleh_tarikh ? $assetMovement->disediakan_oleh_tarikh->format('Y-m-d') : '') }}"
+                                                required
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
                                     </div>
-                                    @error('nama_peminjam_pegawai_bertanggungjawab')
-                                        <p class="mt-1 text-sm text-red-600 flex items-center">
-                                            <i class='bx bx-error-circle mr-1'></i>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
+
+                                    <!-- (b) Disahkan oleh -->
+                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 opacity-70">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h4 class="font-semibold text-gray-900">(b) Disahkan oleh:</h4>
+                                            <span class="text-[10px] bg-gray-200 px-2 py-1 rounded text-gray-600">Untuk
+                                                Kegunaan Pejabat</span>
+                                        </div>
+
+                                        <!-- Signature Pad (Approver) -->
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Tandatangan
+                                            </label>
+                                            <div
+                                                class="border border-gray-300 rounded-lg overflow-hidden bg-white relative">
+                                                <canvas id="signature-pad-approver"
+                                                    class="w-full h-32 touch-none border-b border-gray-100"></canvas>
+                                                <div class="absolute top-2 right-2 flex space-x-2">
+                                                    <button type="button" @click="clearApproverSignature()"
+                                                        class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded transition-colors"
+                                                        title="Padam Tandatangan">
+                                                        <i class='bx bx-trash'></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="disahkan_oleh_signature"
+                                                x-model="form.disahkan_oleh_signature">
+                                        </div>
+
+                                        <!-- Name -->
+                                        <div class="mb-4">
+                                            <label for="disahkan_oleh_nama"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                                            <input type="text" id="disahkan_oleh_nama" name="disahkan_oleh_nama"
+                                                value="{{ old('disahkan_oleh_nama', $assetMovement->disahkan_oleh_nama) }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500"
+                                                placeholder="Nama Pegawai Pengesah">
+                                        </div>
+
+                                        <!-- Position -->
+                                        <div class="mb-4">
+                                            <label for="disahkan_oleh_jawatan"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Jawatan</label>
+                                            <input type="text" id="disahkan_oleh_jawatan" name="disahkan_oleh_jawatan"
+                                                value="{{ old('disahkan_oleh_jawatan', $assetMovement->disahkan_oleh_jawatan) }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500"
+                                                placeholder="Jawatan">
+                                        </div>
+
+                                        <!-- Date -->
+                                        <div>
+                                            <label for="disahkan_oleh_tarikh"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Tarikh</label>
+                                            <input type="date" id="disahkan_oleh_tarikh" name="disahkan_oleh_tarikh"
+                                                value="{{ old('disahkan_oleh_tarikh', $assetMovement->disahkan_oleh_tarikh ? $assetMovement->disahkan_oleh_tarikh->format('Y-m-d') : '') }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -512,7 +604,8 @@
                                         Pembekal / Vendor (Jika ada)
                                     </label>
                                     <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                                             <i class='bx bx-store-alt text-gray-400'></i>
                                         </div>
                                         <input type="text" id="pembekal" name="pembekal" x-model="form.pembekal"
@@ -575,7 +668,8 @@
                                         <div>
                                             <p class="font-medium text-gray-900"
                                                 x-text="form.jenis_pergerakan || '{{ $assetMovement->jenis_pergerakan }}'">
-                                                {{ $assetMovement->jenis_pergerakan }}</p>
+                                                {{ $assetMovement->jenis_pergerakan }}
+                                            </p>
                                             <p class="text-sm text-gray-500">Permohonan: <span
                                                     x-text="form.tarikh_permohonan || '{{ $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('d/m/Y') : '' }}'">{{ $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('d/m/Y') : '' }}</span>
                                             </p>
@@ -702,157 +796,185 @@
 
     @push('scripts')
         <script>
-            function editMovementForm() {
-                return {
-                    form: {
-                        jenis_pergerakan: '{{ old('jenis_pergerakan', $assetMovement->jenis_pergerakan) }}',
-                        kuantiti: '{{ old('kuantiti', $assetMovement->kuantiti ?? 1) }}',
-                        tarikh_permohonan: '{{ old('tarikh_permohonan', $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('Y-m-d') : '') }}',
-                        tarikh_pergerakan: '{{ old('tarikh_pergerakan', $assetMovement->tarikh_pergerakan ? $assetMovement->tarikh_pergerakan->format('Y-m-d') : '') }}',
-                        masjid_surau_asal_id: '{{ old('origin_masjid_surau_id', $assetMovement->origin_masjid_surau_id) }}',
-                        destination_masjid_surau_id: '{{ old('destination_masjid_surau_id', $assetMovement->destination_masjid_surau_id) }}',
-                        lokasi_asal_spesifik: '{{ old('lokasi_asal_spesifik', $assetMovement->lokasi_asal_spesifik) }}',
-                        lokasi_destinasi_spesifik: '{{ old('lokasi_destinasi_spesifik', $assetMovement->lokasi_destinasi_spesifik) }}',
-                        tarikh_jangka_pulang: '{{ old('tarikh_jangka_pulang', $assetMovement->tarikh_jangka_pulang ? $assetMovement->tarikh_jangka_pulang->format('Y-m-d') : '') }}',
-                        nama_peminjam_pegawai_bertanggungjawab: '{{ old('nama_peminjam_pegawai_bertanggungjawab', $assetMovement->nama_peminjam_pegawai_bertanggungjawab) }}',
-                        tujuan_pergerakan: '{{ old('tujuan_pergerakan', $assetMovement->tujuan_pergerakan) }}',
-                        catatan: '{{ old('catatan', $assetMovement->catatan) }}',
-                        pegawai_bertanggungjawab_signature: '{{ old('pegawai_bertanggungjawab_signature', $assetMovement->pegawai_bertanggungjawab_signature) }}'
-                    },
+            <script>
+                    function editMovementForm() {
+                        return {
+                            form: {
+                                jenis_pergerakan: '{{ old('jenis_pergerakan', $assetMovement->jenis_pergerakan) }}',
+                                kuantiti: '{{ old('kuantiti', $assetMovement->kuantiti ?? 1) }}',
+                                tarikh_permohonan: '{{ old('tarikh_permohonan', $assetMovement->tarikh_permohonan ? $assetMovement->tarikh_permohonan->format('Y-m-d') : '') }}',
+                                tarikh_pergerakan: '{{ old('tarikh_pergerakan', $assetMovement->tarikh_pergerakan ? $assetMovement->tarikh_pergerakan->format('Y-m-d') : '') }}',
+                                masjid_surau_asal_id: '{{ old('origin_masjid_surau_id', $assetMovement->origin_masjid_surau_id) }}',
+                                destination_masjid_surau_id: '{{ old('destination_masjid_surau_id', $assetMovement->destination_masjid_surau_id) }}',
+                                lokasi_asal_spesifik: '{{ old('lokasi_asal_spesifik', $assetMovement->lokasi_asal_spesifik) }}',
+                                lokasi_destinasi_spesifik: '{{ old('lokasi_destinasi_spesifik', $assetMovement->lokasi_destinasi_spesifik) }}',
+                                tarikh_jangka_pulang: '{{ old('tarikh_jangka_pulang', $assetMovement->tarikh_jangka_pulang ? $assetMovement->tarikh_jangka_pulang->format('Y-m-d') : '') }}',
+                                nama_peminjam_pegawai_bertanggungjawab: '{{ old('nama_peminjam_pegawai_bertanggungjawab', $assetMovement->nama_peminjam_pegawai_bertanggungjawab) }}',
+                                tujuan_pergerakan: '{{ old('tujuan_pergerakan', $assetMovement->tujuan_pergerakan) }}',
+                                catatan: '{{ old('catatan', $assetMovement->catatan) }}',
+                                pegawai_bertanggungjawab_signature: '{{ old('pegawai_bertanggungjawab_signature', $assetMovement->pegawai_bertanggungjawab_signature) }}',
+                                disahkan_oleh_signature: '{{ old('disahkan_oleh_signature', $assetMovement->disahkan_oleh_signature) }}',
+                            },
 
-                    toggleReturnDate() {
-                        if (this.form.jenis_pergerakan !== 'Peminjaman') {
-                            this.form.tarikh_jangka_pulang = '';
-                        }
-                    },
-                    
-                    signaturePad: null,
-                    canvas: null,
-                    ctx: null,
-                    isDrawing: false,
+                            toggleReturnDate() {
+                                if (this.form.jenis_pergerakan !== 'Peminjaman') {
+                                    this.form.tarikh_jangka_pulang = '';
+                                }
+                            },
 
-                    init() {
-                        this.canvas = document.getElementById('signature-pad');
-                        if (this.canvas) {
-                            this.ctx = this.canvas.getContext('2d');
-                            this.resizeCanvas();
-                            window.addEventListener('resize', () => this.resizeCanvas());
+                            init() {
+                                this.setupSignaturePad('signature-pad-creator', 'pegawai_bertanggungjawab_signature');
+                                this.setupSignaturePad('signature-pad-approver', 'disahkan_oleh_signature');
+                            },
 
-                            // Load existing signature if available
-                            if (this.form.pegawai_bertanggungjawab_signature) {
-                                const img = new Image();
-                                img.onload = () => {
-                                    this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+                            setupSignaturePad(canvasId, modelField) {
+                                const canvas = document.getElementById(canvasId);
+                                if (!canvas) return;
+
+                                const ctx = canvas.getContext('2d');
+
+                                // Resize canvas to fit container
+                                const resizeCanvas = () => {
+                                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                                    // Store current content
+                                    const tempCanvas = document.createElement('canvas');
+                                    tempCanvas.width = canvas.width;
+                                    tempCanvas.height = canvas.height;
+                                    tempCanvas.getContext('2d').drawImage(canvas, 0, 0);
+
+                                    canvas.width = canvas.offsetWidth * ratio;
+                                    canvas.height = canvas.offsetHeight * ratio;
+                                    ctx.scale(ratio, ratio);
+
+                                    // Load existing signature if available and canvas was just initialized (empty)
+                                    // Or redraw from tempCanvas if resizing dynamically
+                                    if (this.form[modelField] && this.isCanvasEmpty(tempCanvas)) {
+                                        const img = new Image();
+                                        img.onload = () => {
+                                            // Need to draw with correct scaling
+                                            // Reset transform to draw image at full resolution then restore?
+                                            // Simpler: Draw image to fill 0,0 to canvas.width/ratio, canvas.height/ratio
+                                            ctx.drawImage(img, 0, 0, canvas.width / ratio, canvas.height / ratio);
+                                        };
+                                        img.src = this.form[modelField];
+                                    }
                                 };
-                                img.src = this.form.pegawai_bertanggungjawab_signature;
+
+                                window.addEventListener("resize", resizeCanvas);
+                                resizeCanvas();
+
+                                let isDrawing = false;
+                                let lastX = 0;
+                                let lastY = 0;
+
+                                function getPos(e) {
+                                    const rect = canvas.getBoundingClientRect();
+                                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                                    return {
+                                        x: clientX - rect.left,
+                                        y: clientY - rect.top
+                                    };
+                                }
+
+                                const startDrawing = (e) => {
+                                    isDrawing = true;
+                                    const pos = getPos(e);
+                                    lastX = pos.x;
+                                    lastY = pos.y;
+                                    e.preventDefault();
+                                };
+
+                                const stopDrawing = () => {
+                                    if (isDrawing) {
+                                        isDrawing = false;
+                                        this.updateSignatureField(canvasId, modelField);
+                                    }
+                                };
+
+                                const draw = (e) => {
+                                    if (!isDrawing) return;
+                                    const pos = getPos(e);
+                                    ctx.beginPath();
+                                    ctx.moveTo(lastX, lastY);
+                                    ctx.lineTo(pos.x, pos.y);
+                                    ctx.strokeStyle = '#000';
+                                    ctx.lineWidth = 2;
+                                    ctx.lineCap = 'round';
+                                    ctx.stroke();
+                                    lastX = pos.x;
+                                    lastY = pos.y;
+                                    e.preventDefault();
+                                };
+
+                                // Mouse events
+                                canvas.addEventListener('mousedown', startDrawing);
+                                canvas.addEventListener('mousemove', draw);
+                                canvas.addEventListener('mouseup', stopDrawing);
+                                canvas.addEventListener('mouseout', stopDrawing);
+
+                                // Touch events
+                                canvas.addEventListener('touchstart', startDrawing);
+                                canvas.addEventListener('touchmove', draw);
+                                canvas.addEventListener('touchend', stopDrawing);
+                            },
+
+                            clearCreatorSignature() {
+                                this.clearCanvas('signature-pad-creator', 'pegawai_bertanggungjawab_signature');
+                            },
+
+                            clearApproverSignature() {
+                                this.clearCanvas('signature-pad-approver', 'disahkan_oleh_signature');
+                            },
+
+                            clearCanvas(canvasId, modelField) {
+                                const canvas = document.getElementById(canvasId);
+                                const ctx = canvas.getContext('2d');
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                this.form[modelField] = '';
+                            },
+
+                            updateSignatureField(canvasId, modelField) {
+                                const canvas = document.getElementById(canvasId);
+                                if (this.isCanvasEmpty(canvas)) {
+                                    this.form[modelField] = '';
+                                } else {
+                                    this.form[modelField] = canvas.toDataURL();
+                                }
+                            },
+
+                            isCanvasEmpty(canvas) {
+                                const blank = document.createElement('canvas');
+                                blank.width = canvas.width;
+                                blank.height = canvas.height;
+                                return canvas.toDataURL() === blank.toDataURL();
                             }
-
-                            // Mouse events
-                            this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
-                            this.canvas.addEventListener('mousemove', (e) => this.draw(e));
-                            this.canvas.addEventListener('mouseup', () => this.stopDrawing());
-                            this.canvas.addEventListener('mouseout', () => this.stopDrawing());
-
-                            // Touch events
-                            this.canvas.addEventListener('touchstart', (e) => {
-                                e.preventDefault();
-                                this.startDrawing(e.touches[0]);
-                            });
-                            this.canvas.addEventListener('touchmove', (e) => {
-                                e.preventDefault();
-                                this.draw(e.touches[0]);
-                            });
-                            this.canvas.addEventListener('touchend', (e) => {
-                                e.preventDefault();
-                                this.stopDrawing();
-                            });
                         }
-                    },
-
-                    resizeCanvas() {
-                        if (this.canvas) {
-                            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                            this.canvas.width = this.canvas.offsetWidth * ratio;
-                            this.canvas.height = this.canvas.offsetHeight * ratio;
-                            this.ctx.scale(ratio, ratio);
-                        }
-                    },
-
-                    startDrawing(e) {
-                        this.isDrawing = true;
-                        const rect = this.canvas.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(x, y);
-                    },
-
-                    draw(e) {
-                        if (!this.isDrawing) return;
-                        const rect = this.canvas.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        this.ctx.lineWidth = 2;
-                        this.ctx.lineCap = 'round';
-                        this.ctx.strokeStyle = '#000';
-                        this.ctx.lineTo(x, y);
-                        this.ctx.stroke();
-                    },
-
-                    stopDrawing() {
-                        if (this.isDrawing) {
-                            this.isDrawing = false;
-                            this.updateSignatureField();
-                        }
-                    },
-
-                    clearSignature() {
-                        if (this.ctx) {
-                            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                            this.form.pegawai_bertanggungjawab_signature = '';
-                            document.getElementById('pegawai_bertanggungjawab_signature').value = '';
-                        }
-                    },
-
-                    updateSignatureField() {
-                        if (!this.isCanvasEmpty()) {
-                            this.form.pegawai_bertanggungjawab_signature = this.canvas.toDataURL();
-                            document.getElementById('pegawai_bertanggungjawab_signature').value = this.form.pegawai_bertanggungjawab_signature;
-                        }
-                    },
-
-                    isCanvasEmpty() {
-                        const blank = document.createElement('canvas');
-                        blank.width = this.canvas.width;
-                        blank.height = this.canvas.height;
-                        return this.canvas.toDataURL() === blank.toDataURL();
                     }
-                }
-            }
 
-            // Form validation
-            document.addEventListener('DOMContentLoaded', function () {
-                const form = document.querySelector('form');
-                const requiredFields = form.querySelectorAll('[required]');
+                    // Form validation
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.querySelector('form');
+                        const requiredFields = form.querySelectorAll('[required]');
 
-                form.addEventListener('submit', function (e) {
-                    let hasErrors = false;
+                        form.addEventListener('submit', function (e) {
+                            let hasErrors = false;
 
-                    requiredFields.forEach(field => {
-                        if (!field.value.trim()) {
-                            hasErrors = true;
-                            field.classList.add('border-red-500');
-                        } else {
-                            field.classList.remove('border-red-500');
-                        }
+                            requiredFields.forEach(field => {
+                                if (!field.value.trim()) {
+                                    hasErrors = true;
+                                    field.classList.add('border-red-500');
+                                } else {
+                                    field.classList.remove('border-red-500');
+                                }
+                            });
+
+                            if (hasErrors) {
+                                e.preventDefault();
+                                alert('Sila lengkapkan semua medan yang diperlukan.');
+                            }
+                        });
                     });
-
-                    if (hasErrors) {
-                        e.preventDefault();
-                        alert('Sila lengkapkan semua medan yang diperlukan.');
-                    }
-                });
-            });
-        </script>
+                </script>
     @endpush
 @endsection
