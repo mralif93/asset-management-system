@@ -2,7 +2,7 @@
 
 @section('title', 'Laporan Sistem BR-AMS')
 @section('page-title', 'Laporan Sistem BR-AMS')
-@section('page-description', 'Borang Aset Masjid dan Surau (BR-AMS) - Garis Panduan Negeri Selangor')
+@section('page-description', 'Laporan Aset Masjid dan Surau (BR-AMS) - Garis Panduan Negeri Selangor')
 
 @section('content')
 <div class="p-6">
@@ -10,12 +10,12 @@
     <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white mb-8 shadow-lg">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold mb-2">Borang Aset Masjid dan Surau (BR-AMS)</h1>
+                <h1 class="text-3xl font-bold mb-2">Laporan Aset Masjid dan Surau (BR-AMS)</h1>
                 <p class="text-emerald-100 text-lg">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor</p>
                 <div class="flex items-center space-x-4 mt-4">
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-file-blank text-emerald-200'></i>
-                        <span class="text-emerald-100">11 Borang Tersedia</span>
+                        <span class="text-emerald-100">11 Laporan Tersedia</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-shield-check text-emerald-200'></i>
@@ -34,7 +34,7 @@
     <div class="mb-8">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">Semua Borang BR-AMS</h2>
+                <h2 class="text-2xl font-bold text-gray-900">Semua Laporan BR-AMS</h2>
                 <p class="text-gray-600">Klik pada borang untuk mengakses dan menjana laporan</p>
             </div>
             <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
@@ -66,7 +66,7 @@
                     <a href="{{ route('admin.reports.br-ams-001') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -95,7 +95,7 @@
                     <a href="{{ route('admin.reports.br-ams-002') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -124,7 +124,7 @@
                     <a href="{{ route('admin.reports.br-ams-003') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -147,13 +147,13 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <h4 class="font-semibold text-gray-900 mb-2">Borang Permohonan Pergerakan/ Pinjaman Aset Alih</h4>
-                        <p class="text-sm text-gray-600 mb-3">Movable Asset Movement/Loan Application Form</p>
+                        <h4 class="font-semibold text-gray-900 mb-2">Laporan Pergerakan / Pinjaman Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Movable Asset Movement/Loan Report</p>
                     </div>
                     <a href="{{ route('admin.reports.br-ams-004') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -176,13 +176,13 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <h4 class="font-semibold text-gray-900 mb-2">Borang Pemeriksaan Aset Alih</h4>
-                        <p class="text-sm text-gray-600 mb-3">Movable Asset Inspection Form</p>
+                        <h4 class="font-semibold text-gray-900 mb-2">Laporan Pemeriksaan Aset Alih</h4>
+                        <p class="text-sm text-gray-600 mb-3">Movable Asset Inspection Report</p>
                     </div>
                     <a href="{{ route('admin.reports.br-ams-005') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -211,7 +211,7 @@
                     <a href="{{ route('admin.reports.br-ams-006') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -240,7 +240,7 @@
                     <a href="{{ route('admin.reports.br-ams-007') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -269,7 +269,7 @@
                     <a href="{{ route('admin.reports.br-ams-008') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -298,7 +298,7 @@
                     <a href="{{ route('admin.reports.br-ams-009') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -327,7 +327,7 @@
                     <a href="{{ route('admin.reports.br-ams-010') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -356,7 +356,7 @@
                     <a href="{{ route('admin.reports.br-ams-011') }}" 
                        class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                        Akses Borang
+                        Akses Laporan
                     </a>
                 </div>
             </div>
@@ -373,7 +373,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Maklumat Penting</h3>
                 <div class="space-y-2 text-sm text-gray-600">
                     <p>• Semua borang BR-AMS mengikut garis panduan rasmi Negeri Selangor</p>
-                    <p>• Borang ini digunakan untuk pengurusan aset masjid dan surau di seluruh Selangor</p>
+                    <p>• Laporan ini digunakan untuk pengurusan aset masjid dan surau di seluruh Selangor</p>
                     <p>• Setiap borang mempunyai fungsi dan kegunaan yang spesifik dalam kitaran hayat aset</p>
                     <p>• Pastikan data yang dimasukkan adalah tepat dan lengkap mengikut keperluan</p>
                 </div>

@@ -2,7 +2,7 @@
 
 @section('title', 'BR-AMS 009 - Laporan Kehilangan / Hapus Kira Aset Alih')
 @section('page-title', 'BR-AMS 009 - Laporan Kehilangan / Hapus Kira Aset Alih')
-@section('page-description', 'Borang rasmi laporan kehilangan / hapus kira aset alih')
+@section('page-description', 'Laporan rasmi laporan kehilangan / hapus kira aset alih')
 
 @section('content')
     <div class="p-6">
@@ -16,7 +16,7 @@
                     <div class="flex items-center space-x-4 mt-4">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-error-circle text-emerald-200'></i>
-                            <span class="text-emerald-100">Borang Rasmi</span>
+                            <span class="text-emerald-100">Laporan Rasmi</span>
                         </div>
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-shield-check text-emerald-200'></i>
@@ -321,7 +321,7 @@
         <a href="{{ route('admin.reports.br-ams-forms') }}"
             class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
             <i class='bx bx-arrow-back mr-2'></i>
-            Kembali ke Senarai Borang
+            Kembali ke Senarai Laporan
         </a>
     </div>
     </div>

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Borang Aset Masjid dan Surau (BR-AMS)')
-@section('page-title', 'Borang Aset Masjid dan Surau (BR-AMS)')
+@section('title', 'Laporan Aset Masjid dan Surau (BR-AMS)')
+@section('page-title', 'Laporan Aset Masjid dan Surau (BR-AMS)')
 @section('page-description', 'Senarai lengkap borang rasmi pengurusan aset mengikut garis panduan Negeri Selangor')
 
 @section('content')
@@ -10,7 +10,7 @@
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white mb-8 shadow-lg">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold mb-2">Borang Aset Masjid dan Surau (BR-AMS)</h1>
+                <h1 class="text-3xl font-bold mb-2">Laporan Aset Masjid dan Surau (BR-AMS)</h1>
                 <p class="text-blue-100 text-lg">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor</p>
                 <div class="flex items-center space-x-4 mt-4">
                     <div class="flex items-center space-x-2">
@@ -34,7 +34,7 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Jumlah Borang</p>
+                    <p class="text-sm text-gray-600">Jumlah Laporan</p>
                     <p class="text-2xl font-bold text-gray-900">{{ count($brAmsForms) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -163,7 +163,7 @@
                         <a href="{{ route($form['route']) }}" 
                            class="group/btn w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-{{ $form['color'] }}-600 hover:bg-{{ $form['color'] }}-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $form['color'] }}-500 transition-colors">
                             <i class='bx bx-right-arrow-alt text-lg mr-2 group-hover/btn:translate-x-1 transition-transform'></i>
-                            Akses Borang
+                            Akses Laporan
                         </a>
                     @else
                         <button disabled 
@@ -189,7 +189,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Maklumat Penting</h3>
                 <div class="space-y-2 text-sm text-gray-600">
                     <p>• Semua borang BR-AMS mengikut garis panduan rasmi Negeri Selangor</p>
-                    <p>• Borang ini digunakan untuk pengurusan aset masjid dan surau di seluruh Selangor</p>
+                    <p>• Laporan ini digunakan untuk pengurusan aset masjid dan surau di seluruh Selangor</p>
                     <p>• Setiap borang mempunyai fungsi dan kegunaan yang spesifik dalam kitaran hayat aset</p>
                     <p>• Pastikan data yang dimasukkan adalah tepat dan lengkap mengikut keperluan</p>
                 </div>

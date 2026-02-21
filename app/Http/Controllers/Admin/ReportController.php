@@ -240,8 +240,8 @@ class ReportController extends Controller
             ],
             [
                 'code' => 'BR-AMS 004',
-                'title' => 'Borang Permohonan Pergerakan/ Pinjaman Aset Alih',
-                'description' => 'Movable Asset Movement/Loan Application Form',
+                'title' => 'Laporan Pergerakan / Pinjaman Aset Alih',
+                'description' => 'Movable Asset Movement/Loan Report',
                 'category' => 'Movement',
                 'icon' => 'bx-transfer',
                 'color' => 'purple',
@@ -250,8 +250,8 @@ class ReportController extends Controller
             ],
             [
                 'code' => 'BR-AMS 005',
-                'title' => 'Borang Pemeriksaan Aset Alih',
-                'description' => 'Movable Asset Inspection Form',
+                'title' => 'Laporan Pemeriksaan Aset Alih',
+                'description' => 'Movable Asset Inspection Report',
                 'category' => 'Inspection',
                 'icon' => 'bx-search',
                 'color' => 'orange',
@@ -517,7 +517,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Generate BR-AMS 004: Borang Permohonan Pergerakan / Pinjaman Aset Alih
+     * Generate BR-AMS 004: Laporan Pergerakan / Pinjaman Aset Alih
      */
     public function brAms004(Request $request)
     {
@@ -599,7 +599,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Generate BR-AMS 005: Borang Pemeriksaan Aset Alih (Movable Asset Inspection Form)
+     * Generate BR-AMS 005: Laporan Pemeriksaan Aset Alih (Movable Asset Inspection Report)
      */
     public function brAms005(Request $request)
     {

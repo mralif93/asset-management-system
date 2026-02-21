@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>BR-AMS 004 - Borang Permohonan Pergerakan / Pinjaman Aset Alih</title>
+    <title>BR-AMS 004 - Laporan Pergerakan / Pinjaman Aset Alih</title>
     <style>
         @page {
             margin: 0;
@@ -187,11 +187,11 @@
 
 <body>
     <div class="header">
-        <h1>BR-AMS 004 - BORANG PERMOHONAN PERGERAKAN / PINJAMAN ASET ALIH</h1>
+        <h1>BR-AMS 004 - LAPORAN PERGERAKAN / PINJAMAN ASET ALIH</h1>
         <div class="subtitle">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor
         </div>
         <div class="info-badges">
-            <div class="badge">📋 Borang Rasmi</div>
+            <div class="badge">📋 Laporan Rasmi</div>
             <div class="badge">🛡️ Negeri Selangor</div>
         </div>
     </div>

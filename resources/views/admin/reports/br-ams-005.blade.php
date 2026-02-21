@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'BR-AMS 005 - Borang Pemeriksaan Aset Alih')
-@section('page-title', 'BR-AMS 005 - Borang Pemeriksaan Aset Alih')
-@section('page-description', 'Borang rasmi pemeriksaan aset alih oleh pegawai pemeriksa')
+@section('title', 'BR-AMS 005 - Laporan Pemeriksaan Aset Alih')
+@section('page-title', 'BR-AMS 005 - Laporan Pemeriksaan Aset Alih')
+@section('page-description', 'Laporan rasmi pemeriksaan aset alih oleh pegawai pemeriksa')
 
 @section('content')
     <div class="p-6">
@@ -10,13 +10,13 @@
         <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white mb-8 shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold mb-2">BR-AMS 005 - Borang Pemeriksaan Aset Alih</h1>
+                    <h1 class="text-3xl font-bold mb-2">BR-AMS 005 - Laporan Pemeriksaan Aset Alih</h1>
                     <p class="text-emerald-100 text-lg">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan
                         Surau Negeri Selangor</p>
                     <div class="flex items-center space-x-4 mt-4">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-search-alt text-emerald-200'></i>
-                            <span class="text-emerald-100">Borang Rasmi</span>
+                            <span class="text-emerald-100">Laporan Rasmi</span>
                         </div>
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-shield-check text-emerald-200'></i>
@@ -155,7 +155,7 @@
                     <div>
                         <h3 class="text-xl font-bold text-gray-900 flex items-center">
                             <i class='bx bx-clipboard text-emerald-600 mr-3'></i>
-                            Borang Pemeriksaan Aset Alih
+                            Laporan Pemeriksaan Aset Alih
                         </h3>
                         <p class="text-sm text-gray-600 mt-1">Form pemeriksaan aset mengikut kriteria yang dipilih</p>
                     </div>
@@ -654,7 +654,7 @@
                     <a href="{{ route('admin.reports.index') }}"
                         class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
                         <i class='bx bx-arrow-back mr-2'></i>
-                        Kembali ke Senarai Borang
+                        Kembali ke Senarai Laporan
                     </a>
                 </div>
             </div>

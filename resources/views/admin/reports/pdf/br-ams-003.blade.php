@@ -165,7 +165,7 @@
         <div class="subtitle">Garis Panduan Pengurusan Kewangan, Perolehan Dan Aset Masjid Dan Surau Negeri Selangor
         </div>
         <div class="info-badges">
-            <div class="badge">📋 Borang Rasmi</div>
+            <div class="badge">📋 Laporan Rasmi</div>
             <div class="badge">🛡️ Negeri Selangor</div>
         </div>
     </div>
