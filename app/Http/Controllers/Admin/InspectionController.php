@@ -5,23 +5,64 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Inspection;
 use App\Models\Asset;
+use App\Models\MasjidSurau;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class InspectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
+        $this->authorize('viewAny', Inspection::class);
+        
         $query = Inspection::with(['asset', 'asset.masjidSurau']);
 
-        // Admin can see all inspections
+        // Search by asset name or registration number
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('asset', function ($q) use ($search) {
+                $q->where('nama_aset', 'like', "%{$search}%")
+                    ->orWhere('no_siri_pendaftaran', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by asset condition
+        if ($request->filled('kondisi_aset')) {
+            $query->where('kondisi_aset', $request->kondisi_aset);
+        }
+
+        // Filter by masjid/surau
+        if ($request->filled('masjid_surau_id')) {
+            $query->whereHas('asset', function ($q) use ($request) {
+                $q->where('masjid_surau_id', $request->masjid_surau_id);
+            });
+        }
+
+        // Filter by date range
+        if ($request->filled('tarikh_dari')) {
+            $query->whereDate('tarikh_pemeriksaan', '>=', $request->tarikh_dari);
+        }
+        if ($request->filled('tarikh_hingga')) {
+            $query->whereDate('tarikh_pemeriksaan', '<=', $request->tarikh_hingga);
+        }
+
+        // Filter by inspector
+        if ($request->filled('pegawai_pemeriksa')) {
+            $query->where('pegawai_pemeriksa', 'like', "%{$request->pegawai_pemeriksa}%");
+        }
+
+        // Filter by recommended action
+        if ($request->filled('cadangan_tindakan')) {
+            $query->where('cadangan_tindakan', $request->cadangan_tindakan);
+        }
 
         $inspections = $query->latest()->paginate(15);
+        
+        $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        $conditions = ['Baik', 'Sederhana', 'Rosak', 'Sedang Digunakan', 'Tidak Digunakan'];
+        $actions = ['Tiada Tindakan', 'Penyelenggaraan', 'Pelupusan', 'Hapus Kira'];
 
-        return view('admin.inspections.index', compact('inspections'));
+        return view('admin.inspections.index', compact('inspections', 'masjidSuraus', 'conditions', 'actions'));
     }
 
     /**
@@ -33,21 +74,19 @@ class InspectionController extends Controller
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\InspectionExport($request), $filename);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
+        $this->authorize('create', Inspection::class);
+        
         $assets = Asset::with('masjidSurau')->get();
 
         return view('admin.inspections.create', compact('assets'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        $this->authorize('create', Inspection::class);
+        
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'tarikh_pemeriksaan' => 'required|date',
@@ -89,17 +128,19 @@ class InspectionController extends Controller
         $validated['catatan_pemeriksa'] = $validated['catatan_pemeriksaan'] ?? '-';
         unset($validated['catatan_pemeriksaan']);
 
+        // Set user_id
+        $validated['user_id'] = Auth::id();
+
         $inspection = Inspection::create($validated);
 
         return redirect()->route('admin.inspections.show', $inspection)
             ->with('success', 'Pemeriksaan berjaya direkodkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Inspection $inspection)
     {
+        $this->authorize('view', $inspection);
+        
         $inspection->load(['asset', 'asset.masjidSurau']);
 
         // Get related inspections for the same asset
@@ -112,21 +153,19 @@ class InspectionController extends Controller
         return view('admin.inspections.show', compact('inspection', 'relatedInspections'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Inspection $inspection)
     {
+        $this->authorize('update', $inspection);
+        
         $assets = Asset::with('masjidSurau')->get();
 
         return view('admin.inspections.edit', compact('inspection', 'assets'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Inspection $inspection)
     {
+        $this->authorize('update', $inspection);
+        
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'tarikh_pemeriksaan' => 'required|date',
@@ -173,14 +212,42 @@ class InspectionController extends Controller
             ->with('success', 'Rekod pemeriksaan berjaya dikemaskini.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Inspection $inspection)
     {
+        $this->authorize('delete', $inspection);
+        
         $inspection->delete();
 
         return redirect()->route('admin.inspections.index')
             ->with('success', 'Rekod pemeriksaan berjaya dipadamkan.');
+    }
+
+    /**
+     * Display a listing of trashed inspections.
+     */
+    public function trashed()
+    {
+        $this->authorize('viewAny', Inspection::class);
+        
+        $trashedInspections = Inspection::onlyTrashed()
+            ->with(['asset', 'asset.masjidSurau'])
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.inspections.trashed', compact('trashedInspections'));
+    }
+
+    /**
+     * Restore a soft-deleted inspection.
+     */
+    public function restore($id)
+    {
+        $this->authorize('restore', Inspection::class);
+        
+        $inspection = Inspection::onlyTrashed()->findOrFail($id);
+        $inspection->restore();
+
+        return redirect()->route('admin.inspections.trashed')
+            ->with('success', 'Rekod pemeriksaan berjaya dipulihkan.');
     }
 }

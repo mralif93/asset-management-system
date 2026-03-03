@@ -117,13 +117,42 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('admin.profile.update') }}" class="p-6 space-y-6">
+                    <form method="POST" action="{{ route('admin.profile.update') }}" class="p-6 space-y-6" enctype="multipart/form-data">
                         @csrf
                         @method('patch')
 
                         <!-- Basic Information -->
                         <div class="space-y-6">
                             <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">Maklumat Asas</h3>
+                            
+                            <!-- Profile Picture -->
+                            <div class="flex items-center space-x-6">
+                                <div class="shrink-0">
+                                    <img src="{{ $user->profile_picture_url }}" 
+                                         alt="Profile" 
+                                         class="w-20 h-20 rounded-full object-cover border-2 border-gray-200">
+                                </div>
+                                <div class="flex-1">
+                                    <label for="profile_picture" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Gambar Profil
+                                    </label>
+                                    <input type="file" 
+                                           name="profile_picture" 
+                                           id="profile_picture"
+                                           accept="image/jpeg,image/png,image/jpg,image/gif"
+                                           class="block w-full text-sm text-gray-500
+                                                  file:mr-4 file:py-2 file:px-4
+                                                  file:rounded-lg file:border-0
+                                                  file:text-sm file:font-medium
+                                                  file:bg-emerald-50 file:text-emerald-700
+                                                  hover:file:bg-emerald-100
+                                                  border border-gray-300 rounded-lg cursor-pointer">
+                                    <p class="text-xs text-gray-500 mt-1">JPG, PNG atau GIF. Maksimum 2MB.</p>
+                                    @error('profile_picture')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Name -->

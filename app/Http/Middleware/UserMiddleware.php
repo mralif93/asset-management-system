@@ -20,10 +20,10 @@ class UserMiddleware
             return redirect()->route('login');
         }
 
-        if (Auth::user()->role !== 'user') {
+        if (!in_array(Auth::user()->role, ['user'])) {
             abort(403, 'Akses ditolak. Halaman ini hanya untuk pengguna biasa.');
         }
 
         return $next($request);
     }
-} 
+}

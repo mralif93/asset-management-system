@@ -87,6 +87,10 @@ class SmokeTest extends TestCase
             'lokasi_penempatan' => 'Smoke Test Location',
             'pegawai_bertanggungjawab_lokasi' => 'Smoke Test Officer',
             'status_aset' => 'Aktif',
+            'kuantiti' => 1,
+            'kategori_aset' => 'asset',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Tiada Jaminan',
         ]);
         $response->assertStatus(302);
 
@@ -113,16 +117,18 @@ class SmokeTest extends TestCase
         $response = $this->actingAs($this->admin)->post('/admin/asset-movements', [
             'asset_id' => $this->asset->id,
             'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurau->id,
-            'masjid_surau_destinasi_id' => $destinationMasjid->id,
-            'lokasi_asal' => 'Test Location',
-            'lokasi_terperinci_asal' => 'Test Location Detail',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location Detail',
+            'origin_masjid_surau_id' => $this->masjidSurau->id,
+            'destination_masjid_surau_id' => $destinationMasjid->id,
+            'lokasi_asal_spesifik' => 'Test Location Detail',
+            'lokasi_destinasi_spesifik' => 'New Location Detail',
             'tarikh_permohonan' => now()->format('Y-m-d'),
             'tarikh_pergerakan' => now()->format('Y-m-d'),
             'nama_peminjam_pegawai_bertanggungjawab' => 'Smoke Test Officer',
-            'sebab_pergerakan' => 'Smoke Testing',
+            'tujuan_pergerakan' => 'Smoke Testing',
+            'kuantiti' => 1,
+            'pegawai_bertanggungjawab_signature' => 'test-signature',
+            'disediakan_oleh_jawatan' => 'Pegawai Aset',
+            'disediakan_oleh_tarikh' => now()->format('Y-m-d')
         ]);
         $response->assertStatus(302);
 
@@ -146,6 +152,8 @@ class SmokeTest extends TestCase
             'catatan_pemeriksaan' => 'Smoke test inspection',
             'tindakan_diperlukan' => 'None',
             'tarikh_pemeriksaan_akan_datang' => now()->addDays(90)->format('Y-m-d'),
+            'signature' => 'test-signature',
+            'jawatan_pemeriksa' => 'Pegawai Aset',
         ]);
         $response->assertStatus(302);
         $this->assertDatabaseHas('inspections', [
@@ -184,4 +192,4 @@ class SmokeTest extends TestCase
         $response->assertStatus(302);
         $this->assertGuest();
     }
-} 
+}

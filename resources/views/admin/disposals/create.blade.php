@@ -135,6 +135,9 @@
                                                     data-serial="{{ $asset->no_siri_pendaftaran }}"
                                                     data-type="{{ $asset->jenis_aset }}"
                                                     data-value="{{ $asset->nilai_perolehan }}"
+                                                    data-diskaun="{{ $asset->diskaun ?? 0 }}"
+                                                    data-umur-faedah="{{ $asset->umur_faedah_tahunan ?? 0 }}"
+                                                    data-tarikh-perolehan="{{ $asset->tarikh_perolehan ? $asset->tarikh_perolehan->format('Y-m-d') : '' }}"
                                                     data-location="{{ $asset->lokasi_penempatan }}"
                                                     data-masjid="{{ $asset->masjidSurau->nama ?? '' }}"
                                                     {{ old('asset_id') == $asset->id ? 'selected' : '' }}>
@@ -306,6 +309,34 @@
                                     </p>
                                 @enderror
                             </div>
+
+                            <!-- Disposal Proceeds (Hasil Pelupusan) - only shown when method is Dijual -->
+                            <div x-show="form.kaedah_pelupusan === 'Dijual'" x-cloak>
+                                <label for="hasil_pelupusan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class='bx bx-money mr-1'></i>
+                                    Hasil Pelupusan (RM) <span class="text-xs text-gray-500">- Wang diterima dari jualan</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" 
+                                           id="hasil_pelupusan_display"
+                                           value="{{ old('hasil_pelupusan') ? number_format(old('hasil_pelupusan'), 2) : '' }}" 
+                                           oninput="formatDisposalPrice(event, 'hasil_pelupusan')"
+                                           onblur="formatDisposalPriceBlur(event, 'hasil_pelupusan')"
+                                           class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('hasil_pelupusan') border-red-500 @enderror bg-white"
+                                           placeholder="0.00">
+                                    <input type="hidden"
+                                           name="hasil_pelupusan" 
+                                           id="hasil_pelupusan" 
+                                           x-model="form.hasil_pelupusan">
+                                    <i class='bx bx-money absolute left-3 top-3.5 text-gray-400'></i>
+                                </div>
+                                @error('hasil_pelupusan')
+                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                        <i class='bx bx-error-circle mr-1'></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
                         </div>
 
                         <!-- Notes -->
@@ -429,6 +460,93 @@
                             <div x-show="!form.asset_id" class="text-center py-8">
                                 <i class='bx bx-package text-4xl text-gray-400 mb-2'></i>
                                 <p class="text-gray-500 text-sm">Pilih aset untuk melihat pratonton</p>
+                            </div>
+                        </div>
+
+                        <!-- Nilai Pelupusan Table -->
+                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden" x-show="form.asset_id">
+                            <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                                <h3 class="text-base font-semibold text-gray-900">Jadual Nilai Pelupusan</h3>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-emerald-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase">Keterangan</th>
+                                            <th class="px-4 py-3 text-right text-xs font-semibold text-emerald-800 uppercase">Nilai (RM)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                                <i class='bx bx-dollar-circle text-blue-500 mr-2'></i>
+                                                Nilai Perolehan
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right" x-text="selectedAsset.value ? parseFloat(selectedAsset.value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'">0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                                <i class='bx bx-sale text-red-500 mr-2'></i>
+                                                Diskaun
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right" x-text="selectedAsset.diskaun ? parseFloat(selectedAsset.diskaun).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'">0.00</td>
+                                        </tr>
+                                        <tr class="bg-emerald-50">
+                                            <td class="px-4 py-3 text-sm font-medium text-emerald-700">
+                                                <i class='bx bx-calculator text-emerald-600 mr-2'></i>
+                                                Nilai Boleh Susut
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-bold text-emerald-800 text-right" x-text="depreciationData.depreciableBase.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})">0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                                <i class='bx bx-trending-down text-amber-500 mr-2'></i>
+                                                Susut Nilai Tahunan
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right" x-text="depreciationData.annualDepreciation.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})">0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                                <i class='bx bx-time-five text-purple-500 mr-2'></i>
+                                                Tempoh Hayat (Tahun)
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right" x-text="selectedAsset.umurFaedah || '-'">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                                <i class='bx bx-calendar-event text-indigo-500 mr-2'></i>
+                                                Tahun Berlalu
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right" x-text="depreciationData.yearsElapsed + ' tahun'">0 tahun</td>
+                                        </tr>
+                                        <tr class="bg-red-50">
+                                            <td class="px-4 py-3 text-sm font-medium text-red-700">
+                                                <i class='bx bx-minus-circle text-red-600 mr-2'></i>
+                                                Susut Nilai Terkumpul
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-bold text-red-800 text-right" x-text="depreciationData.totalDepreciation.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})">0.00</td>
+                                        </tr>
+                                        <tr class="bg-blue-50">
+                                            <td class="px-4 py-3 text-sm font-medium text-blue-700">
+                                                <i class='bx bx-current-location text-blue-600 mr-2'></i>
+                                                Nilai Semasa (NBV)
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-bold text-blue-800 text-right" x-text="depreciationData.currentValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})">0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Recommended Disposal Value -->
+                            <div class="px-4 py-3 bg-gradient-to-r from-emerald-50 to-green-50 border-t border-emerald-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class='bx bx-check-circle text-emerald-600 text-lg mr-2'></i>
+                                        <span class="text-sm font-medium text-emerald-800">Nilai Disyorkan untuk Pelupusan:</span>
+                                    </div>
+                                    <span class="text-lg font-bold text-emerald-900" x-text="'RM ' + depreciationData.currentValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})">RM 0.00</span>
+                                </div>
                             </div>
                         </div>
 
@@ -561,6 +679,7 @@
                 kaedah_pelupusan: '{{ old('kaedah_pelupusan') }}',
                 nilai_pelupusan: '{{ old('nilai_pelupusan') }}',
                 nilai_baki: '{{ old('nilai_baki') }}',
+                hasil_pelupusan: '{{ old('hasil_pelupusan') }}',
                 catatan: '{{ old('catatan') }}'
             },
             selectedAsset: {
@@ -568,8 +687,18 @@
                 serial: '',
                 type: '',
                 value: '',
+                diskaun: '',
+                umurFaedah: '',
+                tarikhPerolehan: '',
                 location: '',
                 masjid: ''
+            },
+            depreciationData: {
+                depreciableBase: 0,
+                annualDepreciation: 0,
+                yearsElapsed: 0,
+                totalDepreciation: 0,
+                currentValue: 0
             },
             
             updateAssetPreview() {
@@ -581,20 +710,79 @@
                         name: selectedOption.dataset.name || '',
                         serial: selectedOption.dataset.serial || '',
                         type: selectedOption.dataset.type || '',
-                        value: selectedOption.dataset.value || '',
+                        value: selectedOption.dataset.value || '0',
+                        diskaun: selectedOption.dataset.diskaun || '0',
+                        umurFaedah: selectedOption.dataset.umurFaedah || '0',
+                        tarikhPerolehan: selectedOption.dataset.tarikhPerolehan || '',
                         location: selectedOption.dataset.location || '',
                         masjid: selectedOption.dataset.masjid || ''
                     };
+                    
+                    // Calculate depreciation
+                    this.calculateDepreciation();
                 } else {
                     this.selectedAsset = {
                         name: '',
                         serial: '',
                         type: '',
                         value: '',
+                        diskaun: '',
+                        umurFaedah: '',
+                        tarikhPerolehan: '',
                         location: '',
                         masjid: ''
                     };
+                    this.depreciationData = {
+                        depreciableBase: 0,
+                        annualDepreciation: 0,
+                        yearsElapsed: 0,
+                        totalDepreciation: 0,
+                        currentValue: 0
+                    };
                 }
+            },
+            
+            calculateDepreciation() {
+                const nilaiPerolehan = parseFloat(this.selectedAsset.value) || 0;
+                const diskaun = parseFloat(this.selectedAsset.diskaun) || 0;
+                const umurFaedah = parseInt(this.selectedAsset.umurFaedah) || 0;
+                const tarikhPerolehan = this.selectedAsset.tarikhPerolehan;
+                
+                // Calculate depreciable base
+                const depreciableBase = nilaiPerolehan - diskaun;
+                
+                // Calculate years elapsed
+                let yearsElapsed = 0;
+                if (tarikhPerolehan) {
+                    const acquisitionDate = new Date(tarikhPerolehan);
+                    const today = new Date();
+                    yearsElapsed = Math.floor((today - acquisitionDate) / (365.25 * 24 * 60 * 60 * 1000));
+                }
+                
+                // Calculate annual depreciation
+                let annualDepreciation = 0;
+                if (umurFaedah > 0) {
+                    annualDepreciation = depreciableBase / umurFaedah;
+                }
+                
+                // Calculate total depreciation (don't exceed depreciable base)
+                let totalDepreciation = annualDepreciation * yearsElapsed;
+                if (umurFaedah > 0 && yearsElapsed > umurFaedah) {
+                    yearsElapsed = umurFaedah;
+                    totalDepreciation = depreciableBase;
+                }
+                totalDepreciation = Math.min(totalDepreciation, depreciableBase);
+                
+                // Calculate current value (NBV)
+                const currentValue = Math.max(0, depreciableBase - totalDepreciation);
+                
+                this.depreciationData = {
+                    depreciableBase: depreciableBase,
+                    annualDepreciation: annualDepreciation,
+                    yearsElapsed: yearsElapsed,
+                    totalDepreciation: totalDepreciation,
+                    currentValue: currentValue
+                };
             }
         }
     }

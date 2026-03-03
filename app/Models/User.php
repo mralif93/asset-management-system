@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -28,6 +29,7 @@ class User extends Authenticatable
         'masjid_surau_id',
         'phone',
         'position',
+        'profile_picture',
     ];
 
     /**
@@ -65,5 +67,82 @@ class User extends Authenticatable
     public function assets(): HasManyThrough
     {
         return $this->hasManyThrough(Asset::class, MasjidSurau::class, 'id', 'masjid_surau_id', 'masjid_surau_id', 'id');
+    }
+
+    /**
+     * Get the user's asset movements.
+     */
+    public function assetMovements(): HasMany
+    {
+        return $this->hasMany(AssetMovement::class, 'user_id');
+    }
+
+    /**
+     * Get the user's inspections.
+     */
+    public function inspections(): HasMany
+    {
+        return $this->hasMany(Inspection::class, 'user_id');
+    }
+
+    /**
+     * Get the user's maintenance records.
+     */
+    public function maintenanceRecords(): HasMany
+    {
+        return $this->hasMany(MaintenanceRecord::class, 'user_id');
+    }
+
+    /**
+     * Get the user's disposal requests.
+     */
+    public function disposals(): HasMany
+    {
+        return $this->hasMany(Disposal::class, 'user_id');
+    }
+
+    /**
+     * Get the user's loss/writeoff reports.
+     */
+    public function lossWriteoffs(): HasMany
+    {
+        return $this->hasMany(LossWriteoff::class, 'user_id');
+    }
+
+    /**
+     * Get the user's audit trails.
+     */
+    public function auditTrails(): HasMany
+    {
+        return $this->hasMany(AuditTrail::class, 'user_id');
+    }
+
+    /**
+     * Get the profile picture URL.
+     */
+    public function getProfilePictureUrlAttribute(): string
+    {
+        if ($this->profile_picture) {
+            return asset('storage/' . $this->profile_picture);
+        }
+        
+        // Return default avatar based on user's initials
+        $initials = collect(explode(' ', $this->name))
+            ->take(2)
+            ->map(fn($word) => strtoupper(substr($word, 0, 1)))
+            ->join('');
+        
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=059669&background=d1fae5&size=200';
+    }
+
+    /**
+     * Get user's initials.
+     */
+    public function getInitialsAttribute(): string
+    {
+        return collect(explode(' ', $this->name))
+            ->take(2)
+            ->map(fn($word) => strtoupper(substr($word, 0, 1)))
+            ->join('');
     }
 }

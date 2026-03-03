@@ -26,20 +26,7 @@ class AssetWorkflowTest extends TestCase
     {
         parent::setUp();
 
-        // Create test users
-        $this->admin = User::factory()->create([
-            'name' => 'Test Admin',
-            'email' => 'admin@test.com',
-            'role' => 'admin'
-        ]);
-
-        $this->user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'user@test.com',
-            'role' => 'user'
-        ]);
-
-        // Create test masjids
+        // Create test masjids FIRST
         $this->sourceMasjid = MasjidSurau::create([
             'nama' => 'Source Masjid',
             'jenis' => 'Masjid',
@@ -53,6 +40,23 @@ class AssetWorkflowTest extends TestCase
             'status' => 'Aktif',
             'singkatan_nama' => 'DM'
         ]);
+
+        // Create test users
+        $this->admin = User::factory()->create([
+            'name' => 'Test Admin',
+            'email' => 'admin@test.com',
+            'role' => 'admin',
+            'masjid_surau_id' => $this->sourceMasjid->id
+        ]);
+
+        $this->user = User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'user@test.com',
+            'role' => 'user',
+            'masjid_surau_id' => $this->sourceMasjid->id
+        ]);
+
+        // Masjids already created above
     }
 
     #[Test]
@@ -67,11 +71,16 @@ class AssetWorkflowTest extends TestCase
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'Integration Test Location',
+            'lokasi_penempatan' => 'Lain-lain',
             'pegawai_bertanggungjawab_lokasi' => 'Integration Test Officer',
-            'status_aset' => 'Aktif'
+            'status_aset' => 'Aktif',
+            'kuantiti' => 1,
+            'kategori_aset' => 'asset',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Tiada Jaminan'
         ]);
 
+        $response->assertSessionHasNoErrors();
         $response->assertStatus(302);
         $asset = Asset::latest()->first();
         $this->assertNotNull($asset);
@@ -84,7 +93,9 @@ class AssetWorkflowTest extends TestCase
             'nama_pemeriksa' => 'Integration Test Inspector',
             'catatan_pemeriksaan' => 'Initial inspection',
             'tindakan_diperlukan' => 'None',
-            'tarikh_pemeriksaan_akan_datang' => now()->addDays(90)->format('Y-m-d')
+            'tarikh_pemeriksaan_akan_datang' => now()->addDays(90)->format('Y-m-d'),
+            'signature' => 'test-signature',
+            'jawatan_pemeriksa' => 'Pegawai Aset'
         ]);
 
         $response->assertStatus(302);
@@ -117,18 +128,21 @@ class AssetWorkflowTest extends TestCase
         $response = $this->actingAs($this->admin)->post('/admin/asset-movements', [
             'asset_id' => $asset->id,
             'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->sourceMasjid->id,
-            'masjid_surau_destinasi_id' => $this->destinationMasjid->id,
-            'lokasi_asal' => 'Integration Test Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location Details',
+            'origin_masjid_surau_id' => $this->sourceMasjid->id,
+            'destination_masjid_surau_id' => $this->destinationMasjid->id,
+            'lokasi_asal_spesifik' => 'Original Location',
+            'lokasi_destinasi_spesifik' => 'New Location',
             'tarikh_permohonan' => now()->format('Y-m-d'),
             'tarikh_pergerakan' => now()->addDays(1)->format('Y-m-d'),
             'nama_peminjam_pegawai_bertanggungjawab' => 'Integration Test Officer',
-            'sebab_pergerakan' => 'Integration testing'
+            'tujuan_pergerakan' => 'Integration testing',
+            'kuantiti' => 1,
+            'pegawai_bertanggungjawab_signature' => 'test-signature',
+            'disediakan_oleh_jawatan' => 'Pegawai Aset',
+            'disediakan_oleh_tarikh' => now()->format('Y-m-d')
         ]);
 
+        $response->assertSessionHasNoErrors();
         $response->assertStatus(302);
         $movement = AssetMovement::latest()->first();
         $this->assertNotNull($movement);
@@ -155,15 +169,19 @@ class AssetWorkflowTest extends TestCase
 
         // 7. Record asset return
         $response = $this->actingAs($this->admin)
-            ->patch("/admin/asset-movements/{$movement->id}/return", [
+            ->patch("/admin/asset-movements/{$movement->id}/process-return", [
                 'tarikh_pulang_sebenar' => now()->addDays(7)->format('Y-m-d'),
-                'catatan_pergerakan' => 'Asset returned in good condition'
+                'catatan' => 'Asset returned in good condition',
+                'tandatangan_penerima' => 'test-penerima',
+                'tandatangan_pemulangan' => 'test-pemulangan'
             ]);
+
+        $response->assertSessionHasNoErrors();
 
         $response->assertStatus(302);
         $this->assertDatabaseHas('asset_movements', [
             'id' => $movement->id,
-            'status_pergerakan' => 'selesai'
+            'status_pergerakan' => 'dipulangkan'
         ]);
 
         // 8. Verify final asset location
@@ -203,9 +221,12 @@ class AssetWorkflowTest extends TestCase
             'nama_pemeriksa' => 'Integration Test Inspector',
             'catatan_pemeriksaan' => 'Issues found during inspection',
             'tindakan_diperlukan' => 'Maintenance required',
-            'tarikh_pemeriksaan_akan_datang' => now()->addDays(30)->format('Y-m-d')
+            'tarikh_pemeriksaan_akan_datang' => now()->addDays(30)->format('Y-m-d'),
+            'signature' => 'test-signature',
+            'jawatan_pemeriksa' => 'Pegawai Aset'
         ]);
 
+        $response->assertSessionHasNoErrors();
         $response->assertStatus(302);
         $inspection = Inspection::latest()->first();
         $this->assertEquals('Memerlukan Pembaikan', $inspection->kondisi_aset);
@@ -253,11 +274,13 @@ class AssetWorkflowTest extends TestCase
             'nama_pemeriksa' => 'Integration Test Inspector',
             'catatan_pemeriksaan' => 'Post-maintenance inspection',
             'tindakan_diperlukan' => 'Further maintenance required',
-            'tarikh_pemeriksaan_akan_datang' => now()->addDays(90)->format('Y-m-d')
+            'tarikh_pemeriksaan_akan_datang' => now()->addDays(90)->format('Y-m-d'),
+            'signature' => 'test-signature',
+            'jawatan_pemeriksa' => 'Pegawai Aset'
         ]);
 
         $response->assertStatus(302);
         $followUpInspection = Inspection::latest()->first();
         $this->assertEquals('Memerlukan Pembaikan', $followUpInspection->kondisi_aset);
     }
-} 
+}

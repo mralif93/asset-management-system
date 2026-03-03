@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
@@ -47,7 +48,19 @@ class AdminProfileController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'position' => ['nullable', 'string', 'max:255'],
             'masjid_surau_id' => ['nullable', 'exists:masjid_surau,id'],
+            'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
+
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            // Delete old profile picture if exists
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+            
+            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
+            $validated['profile_picture'] = $path;
+        }
         
         $user->fill($validated);
 

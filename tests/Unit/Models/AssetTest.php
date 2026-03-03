@@ -44,11 +44,13 @@ class AssetTest extends TestCase
     public function it_has_fillable_attributes()
     {
         $asset = new Asset();
-        
+
         $fillable = [
             'masjid_surau_id',
             'no_siri_pendaftaran',
             'nama_aset',
+            'kuantiti',
+            'batch_id',
             'jenis_aset',
             'kategori_aset',
             'tarikh_perolehan',
@@ -71,6 +73,8 @@ class AssetTest extends TestCase
             'tarikh_resit',
             'dokumen_resit_url',
             'pembekal',
+            'pembekal_alamat',
+            'pembekal_no_telefon',
             'jenama',
             'no_pesanan_kerajaan',
             'no_rujukan_kontrak',
@@ -86,7 +90,7 @@ class AssetTest extends TestCase
     public function it_casts_attributes_correctly()
     {
         $asset = new Asset();
-        
+
         $expectedCasts = [
             'tarikh_perolehan' => 'date',
             'tarikh_resit' => 'datetime',
@@ -96,6 +100,7 @@ class AssetTest extends TestCase
             'nilai_perolehan' => 'decimal:2',
             'diskaun' => 'decimal:2',
             'susut_nilai_tahunan' => 'decimal:2',
+            'kuantiti' => 'integer',
             'gambar_aset' => 'array',
             'deleted_at' => 'datetime',
             'id' => 'int',
@@ -108,7 +113,7 @@ class AssetTest extends TestCase
     public function it_belongs_to_masjid_surau()
     {
         $asset = new Asset();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $asset->masjidSurau()
@@ -119,7 +124,7 @@ class AssetTest extends TestCase
     public function it_has_many_asset_movements()
     {
         $asset = new Asset();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $asset->assetMovements()
@@ -130,7 +135,7 @@ class AssetTest extends TestCase
     public function movements_is_alias_for_asset_movements()
     {
         $asset = new Asset();
-        
+
         $this->assertEquals(
             $asset->assetMovements()->getQuery()->toSql(),
             $asset->movements()->getQuery()->toSql()
@@ -141,7 +146,7 @@ class AssetTest extends TestCase
     public function it_has_many_inspections()
     {
         $asset = new Asset();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $asset->inspections()
@@ -152,7 +157,7 @@ class AssetTest extends TestCase
     public function it_has_many_maintenance_records()
     {
         $asset = new Asset();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $asset->maintenanceRecords()
@@ -163,7 +168,7 @@ class AssetTest extends TestCase
     public function it_has_many_disposals()
     {
         $asset = new Asset();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $asset->disposals()
@@ -174,7 +179,7 @@ class AssetTest extends TestCase
     public function it_has_many_loss_writeoffs()
     {
         $asset = new Asset();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $asset->lossWriteoffs()
@@ -225,7 +230,7 @@ class AssetTest extends TestCase
             'lokasi_penempatan' => 'Test Location',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
         ]);
-        
+
         // No inspections
         $this->assertTrue($asset->needsInspection());
 
@@ -233,19 +238,19 @@ class AssetTest extends TestCase
         $inspection = new Inspection([
             'tarikh_pemeriksaan' => now()->subDays(30),
             'asset_id' => $asset->id,
-            'keadaan_aset' => 'baik',
+            'kondisi_aset' => 'baik',
             'lokasi_semasa_pemeriksaan' => 'Test Location',
             'cadangan_tindakan' => 'Tiada',
             'pegawai_pemeriksa' => 'Test Inspector',
         ]);
         $asset->inspections()->save($inspection);
-        
+
         $this->assertFalse($asset->needsInspection());
 
         // Old inspection
         $inspection->tarikh_pemeriksaan = now()->subDays(180);
         $inspection->save();
-        
+
         $this->assertTrue($asset->needsInspection());
     }
 
@@ -264,7 +269,7 @@ class AssetTest extends TestCase
             'lokasi_penempatan' => 'Test Location',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
         ]);
-        
+
         // No maintenance records
         $this->assertTrue($asset->needsMaintenance());
 
@@ -279,13 +284,13 @@ class AssetTest extends TestCase
             'pegawai_bertanggungjawab' => 'Test Officer',
         ]);
         $asset->maintenanceRecords()->save($maintenance);
-        
+
         $this->assertFalse($asset->needsMaintenance());
 
         // Old maintenance
         $maintenance->tarikh_penyelenggaraan = now()->subDays(365);
         $maintenance->save();
-        
+
         $this->assertTrue($asset->needsMaintenance());
     }
 
@@ -403,13 +408,13 @@ class AssetTest extends TestCase
             'kaedah_pelupusan_dicadang' => 'jualan',
             'pegawai_pemohon' => 'Test Officer',
         ]);
-        
+
         $this->assertFalse($asset->isDisposed());
 
         // With approved disposal
         $disposal->status_pelupusan = 'diluluskan';
         $disposal->save();
-        
+
         $this->assertTrue($asset->isDisposed());
     }
 
@@ -442,13 +447,13 @@ class AssetTest extends TestCase
             'butiran_kejadian' => 'Aset hilang dari lokasi asal',
             'pegawai_pelapor' => 'Test Officer',
         ]);
-        
+
         $this->assertFalse($asset->isWrittenOff());
 
         // With approved writeoff
         $writeoff->status_kejadian = 'diluluskan';
         $writeoff->save();
-        
+
         $this->assertTrue($asset->isWrittenOff());
     }
-} 
+}

@@ -18,14 +18,19 @@ class UserController extends Controller
     {
         $query = User::with('masjidSurau');
 
+        // Apply masjid_surau isolation for admins
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $query->where('masjid_surau_id', auth()->user()->masjid_surau_id);
+        }
+
         // Search functionality
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('position', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('position', 'like', "%{$search}%");
             });
         }
 
@@ -49,7 +54,12 @@ class UserController extends Controller
         }
 
         $users = $query->latest()->paginate(15)->withQueryString();
-        $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $masjidSuraus = MasjidSurau::where('id', auth()->user()->masjid_surau_id)->get();
+        } else {
+            $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        }
 
         return view('admin.users.index', compact('users', 'masjidSuraus'));
     }
@@ -59,7 +69,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $masjidSuraus = MasjidSurau::where('id', auth()->user()->masjid_surau_id)->get();
+        } else {
+            $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        }
         return view('admin.users.create', compact('masjidSuraus'));
     }
 
@@ -80,17 +94,21 @@ class UserController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        
+
         if (isset($validated['email_verified_at']) && $validated['email_verified_at']) {
             $validated['email_verified_at'] = now();
         } else {
             unset($validated['email_verified_at']);
         }
 
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $validated['masjid_surau_id'] = auth()->user()->masjid_surau_id;
+        }
+
         $user = User::create($validated);
 
         return redirect()->route('admin.users.index')
-                        ->with('success', 'Pengguna berjaya dicipta.');
+            ->with('success', 'Pengguna berjaya dicipta.');
     }
 
     /**
@@ -98,31 +116,35 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak. Pengguna ini bukan dari masjid/surau anda.');
+        }
+
         $user->load('masjidSurau');
-        
+
         // Get user statistics based on actual database structure
         $stats = [
             // Count assets from user's masjid/surau
             'total_assets' => $user->masjidSurau ? $user->masjidSurau->assets()->count() : 0,
-            
+
             // Since asset_movements, inspections etc don't have user_id in the original structure,
             // we'll calculate based on the user's masjid/surau assets
-            'pending_movements' => $user->masjidSurau ? 
+            'pending_movements' => $user->masjidSurau ?
                 \App\Models\AssetMovement::whereIn('asset_id', $user->masjidSurau->assets()->pluck('id'))
                     ->where('status_pergerakan', 'Dimohon')
                     ->count() : 0,
-                    
+
             'completed_inspections' => $user->masjidSurau ?
                 \App\Models\Inspection::whereIn('asset_id', $user->masjidSurau->assets()->pluck('id'))
                     ->count() : 0,
-                    
+
             'recent_activities' => $user->masjidSurau ?
                 \App\Models\AssetMovement::whereIn('asset_id', $user->masjidSurau->assets()->pluck('id'))
                     ->latest()
                     ->take(5)
                     ->get() : collect(),
         ];
-        
+
         return view('admin.users.show', compact('user', 'stats'));
     }
 
@@ -131,7 +153,15 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $masjidSuraus = MasjidSurau::where('id', auth()->user()->masjid_surau_id)->get();
+        } else {
+            $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        }
         return view('admin.users.edit', compact('user', 'masjidSuraus'));
     }
 
@@ -140,6 +170,10 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
@@ -156,7 +190,7 @@ class UserController extends Controller
         } else {
             unset($validated['password']);
         }
-        
+
         if (isset($validated['email_verified_at']) && $validated['email_verified_at']) {
             $validated['email_verified_at'] = now();
         } elseif (isset($validated['email_verified_at']) && !$validated['email_verified_at']) {
@@ -165,10 +199,14 @@ class UserController extends Controller
             unset($validated['email_verified_at']);
         }
 
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $validated['masjid_surau_id'] = auth()->user()->masjid_surau_id;
+        }
+
         $user->update($validated);
 
         return redirect()->route('admin.users.index')
-                        ->with('success', 'Pengguna berjaya dikemaskini.');
+            ->with('success', 'Pengguna berjaya dikemaskini.');
     }
 
     /**
@@ -176,16 +214,20 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         // Prevent deletion of current user
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users.index')
-                            ->with('error', 'Anda tidak boleh memadam akaun anda sendiri.');
+                ->with('error', 'Anda tidak boleh memadam akaun anda sendiri.');
         }
 
         $user->delete();
 
         return redirect()->route('admin.users.index')
-                        ->with('success', 'Pengguna berjaya dipadamkan.');
+            ->with('success', 'Pengguna berjaya dipadamkan.');
     }
 
     /**
@@ -193,19 +235,23 @@ class UserController extends Controller
      */
     public function toggleStatus(User $user)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         // Prevent deactivating current user
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users.index')
-                            ->with('error', 'Anda tidak boleh menyahaktifkan akaun anda sendiri.');
+                ->with('error', 'Anda tidak boleh menyahaktifkan akaun anda sendiri.');
         }
 
         $user->email_verified_at = $user->email_verified_at ? null : now();
         $user->save();
 
         $status = $user->email_verified_at ? 'aktif' : 'tidak aktif';
-        
+
         return redirect()->back()
-                        ->with('success', "Status pengguna berjaya ditukar kepada {$status}.");
+            ->with('success', "Status pengguna berjaya ditukar kepada {$status}.");
     }
 
     /**
@@ -213,17 +259,21 @@ class UserController extends Controller
      */
     public function resetPassword(User $user)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         // Prevent resetting current user's password
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users.index')
-                            ->with('error', 'Anda tidak boleh mereset kata laluan anda sendiri.');
+                ->with('error', 'Anda tidak boleh mereset kata laluan anda sendiri.');
         }
 
         $user->password = Hash::make('password123');
         $user->save();
 
         return redirect()->back()
-                        ->with('success', 'Kata laluan pengguna berjaya direset kepada "password123".');
+            ->with('success', 'Kata laluan pengguna berjaya direset kepada "password123".');
     }
 
     /**
@@ -232,20 +282,20 @@ class UserController extends Controller
     public function bulkDelete(Request $request)
     {
         $userIds = $request->input('user_ids', []);
-        
+
         // Prevent deletion of current user
-        $userIds = array_filter($userIds, function($id) {
+        $userIds = array_filter($userIds, function ($id) {
             return $id != auth()->id();
         });
 
         if (empty($userIds)) {
             return redirect()->route('admin.users.index')
-                            ->with('error', 'Tiada pengguna dipilih untuk dipadamkan.');
+                ->with('error', 'Tiada pengguna dipilih untuk dipadamkan.');
         }
 
         $deletedCount = User::whereIn('id', $userIds)->delete();
 
         return redirect()->route('admin.users.index')
-                        ->with('success', "Berjaya memadam {$deletedCount} pengguna.");
+            ->with('success', "Berjaya memadam {$deletedCount} pengguna.");
     }
-} 
+}

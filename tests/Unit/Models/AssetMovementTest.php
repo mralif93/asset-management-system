@@ -17,9 +17,10 @@ class AssetMovementTest extends TestCase
     public function it_has_fillable_attributes()
     {
         $assetMovement = new AssetMovement();
-        
+
         $fillable = [
             'asset_id',
+            'kuantiti',
             'user_id',
             'origin_masjid_surau_id',
             'destination_masjid_surau_id',
@@ -34,7 +35,17 @@ class AssetMovementTest extends TestCase
             'tarikh_pulang_sebenar',
             'status_pergerakan',
             'pegawai_meluluskan',
-            'catatan'
+            'catatan',
+            'pembekal',
+            'pegawai_bertanggungjawab_signature',
+            'tandatangan_penerima',
+            'tandatangan_pemulangan',
+            'disediakan_oleh_jawatan',
+            'disediakan_oleh_tarikh',
+            'disahkan_oleh_signature',
+            'disahkan_oleh_nama',
+            'disahkan_oleh_jawatan',
+            'disahkan_oleh_tarikh'
         ];
 
         $this->assertEquals($fillable, $assetMovement->getFillable());
@@ -44,14 +55,17 @@ class AssetMovementTest extends TestCase
     public function it_casts_attributes_correctly()
     {
         $assetMovement = new AssetMovement();
-        
+
         $expectedCasts = [
             'tarikh_permohonan' => 'datetime',
             'tarikh_pergerakan' => 'datetime',
             'tarikh_jangka_pulang' => 'datetime',
             'tarikh_pulang_sebenar' => 'datetime',
-            'id' => 'int',
+            'kuantiti' => 'integer',
             'deleted_at' => 'datetime',
+            'disediakan_oleh_tarikh' => 'date',
+            'disahkan_oleh_tarikh' => 'date',
+            'id' => 'int',
         ];
 
         $this->assertEquals($expectedCasts, $assetMovement->getCasts());
@@ -61,7 +75,7 @@ class AssetMovementTest extends TestCase
     public function it_belongs_to_asset()
     {
         $assetMovement = new AssetMovement();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $assetMovement->asset()
@@ -72,7 +86,7 @@ class AssetMovementTest extends TestCase
     public function it_belongs_to_user()
     {
         $assetMovement = new AssetMovement();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $assetMovement->user()
@@ -83,7 +97,7 @@ class AssetMovementTest extends TestCase
     public function it_belongs_to_approved_by_user()
     {
         $assetMovement = new AssetMovement();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $assetMovement->approvedBy()
@@ -94,7 +108,7 @@ class AssetMovementTest extends TestCase
     public function it_belongs_to_masjid_surau_asal()
     {
         $assetMovement = new AssetMovement();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $assetMovement->masjidSurauAsal()
@@ -105,7 +119,7 @@ class AssetMovementTest extends TestCase
     public function it_belongs_to_masjid_surau_destinasi()
     {
         $assetMovement = new AssetMovement();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $assetMovement->masjidSurauDestinasi()
@@ -116,7 +130,7 @@ class AssetMovementTest extends TestCase
     public function it_belongs_to_approved_by_asal_user()
     {
         $assetMovement = new AssetMovement();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $assetMovement->approvedByAsal()
@@ -127,10 +141,10 @@ class AssetMovementTest extends TestCase
     public function it_belongs_to_approved_by_destinasi_user()
     {
         $assetMovement = new AssetMovement();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $assetMovement->approvedByDestinasi()
         );
     }
-} 
+}

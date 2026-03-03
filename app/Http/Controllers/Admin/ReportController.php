@@ -29,14 +29,15 @@ class ReportController extends Controller
         $totalInspections = Inspection::count();
         $totalMaintenance = MaintenanceRecord::count();
         $pendingApprovals = AssetMovement::where('status_pergerakan', 'menunggu_kelulusan')->count() +
-            Disposal::where('status_kelulusan', 'menunggu')->count() +
-            LossWriteoff::where('status_kelulusan', 'menunggu')->count();
+            Disposal::where('status_pelupusan', 'Dimohon')->count() +
+            LossWriteoff::where('status_kejadian', 'Dilaporkan')->count();
 
         // Asset status counts
         $statusCounts = [
-            'aktif' => Asset::where('status_aset', 'aktif')->count(),
-            'maintenance' => Asset::where('status_aset', 'dalam_penyelenggaraan')->count(),
-            'rosak' => Asset::where('status_aset', 'rosak')->count(),
+            'aktif' => Asset::where('status_aset', 'Aktif')->count(),
+            'sedang_digunakan' => Asset::where('status_aset', 'Sedang Digunakan')->count(),
+            'maintenance' => Asset::where('status_aset', 'Dalam Penyelenggaraan')->count(),
+            'rosak' => Asset::where('status_aset', 'Rosak')->count(),
             'dilupuskan' => Asset::where('status_aset', Asset::STATUS_DISPOSED)->count(),
             'kehilangan' => Asset::where('status_aset', Asset::STATUS_LOST)->count(),
         ];
@@ -827,11 +828,12 @@ class ReportController extends Controller
         $masjidSurauId = $request->get('masjid_surau_id');
         $lokasi = $request->get('lokasi');
         $bulan = $request->get('bulan');
-        $tahun = $request->get('tahun', date('Y'));
+        $tahun = $request->get('tahun');
         $daerah = $request->get('daerah');
 
-        // Build query for disposal records
-        $query = Disposal::with(['asset', 'asset.masjidSurau']);
+        // Build query for disposal records - only show approved disposals
+        $query = Disposal::with(['asset', 'asset.masjidSurau'])
+            ->where('status_pelupusan', 'Diluluskan');
 
         if ($masjidSurauId) {
             $query->whereHas('asset', function ($q) use ($masjidSurauId) {
@@ -1312,7 +1314,7 @@ class ReportController extends Controller
         }
         $assets = $query->get();
         $totalValue = $assets->sum('nilai_perolehan');
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-005', compact('assets', 'totalValue'));
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-005', compact('assets', 'totalValue'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-005-' . date('Y-m-d') . '.pdf');
     }
@@ -1330,7 +1332,7 @@ class ReportController extends Controller
         }
         $assets = $query->get();
         $totalValue = $assets->sum('nilai_perolehan');
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-006', compact('assets', 'totalValue'));
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-006', compact('assets', 'totalValue'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-006-' . date('Y-m-d') . '.pdf');
     }
@@ -1346,7 +1348,7 @@ class ReportController extends Controller
         }
         $disposals = $query->get();
         $totalValue = $disposals->sum('nilai_pelupusan');
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-007', compact('disposals', 'totalValue'));
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-007', compact('disposals', 'totalValue'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-007-' . date('Y-m-d') . '.pdf');
     }
@@ -1354,15 +1356,25 @@ class ReportController extends Controller
     public function brAms008Pdf(Request $request)
     {
         $masjidSurauId = $request->masjid_surau_id;
-        $query = LossWriteoff::query();
+        $tahun = $request->tahun;
+        
+        $query = Disposal::with(['asset', 'asset.masjidSurau'])
+            ->where('status_pelupusan', 'Diluluskan');
+            
         if ($masjidSurauId) {
             $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        $lossWriteoffs = $query->get();
-        $totalValue = $lossWriteoffs->sum('nilai_buku');
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-008', compact('lossWriteoffs', 'totalValue'));
+        
+        if ($tahun) {
+            $query->whereYear('tarikh_pelupusan', $tahun);
+        }
+        
+        $disposals = $query->orderBy('tarikh_pelupusan', 'desc')->get();
+        $totalProceeds = $disposals->sum('hasil_pelupusan');
+        
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-008', compact('disposals', 'totalProceeds'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-008-' . date('Y-m-d') . '.pdf');
     }
@@ -1370,14 +1382,24 @@ class ReportController extends Controller
     public function brAms009Pdf(Request $request)
     {
         $masjidSurauId = $request->masjid_surau_id;
-        $query = AssetMovement::query();
+        $tahun = $request->tahun;
+        
+        $query = LossWriteoff::with(['asset', 'asset.masjidSurau']);
+            
         if ($masjidSurauId) {
             $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        $movements = $query->get();
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-009', compact('movements'));
+        
+        if ($tahun) {
+            $query->whereYear('tarikh_kehilangan', $tahun);
+        }
+        
+        $lossWriteoffs = $query->orderBy('tarikh_kehilangan', 'desc')->get();
+        $totalValue = $lossWriteoffs->sum('nilai_kehilangan');
+        
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-009', compact('lossWriteoffs', 'totalValue'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-009-' . date('Y-m-d') . '.pdf');
     }
@@ -1391,7 +1413,7 @@ class ReportController extends Controller
         }
         $assets = $query->get();
         $totalValue = $assets->sum('nilai_perolehan');
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-010', compact('assets', 'totalValue'));
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-010', compact('assets', 'totalValue'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-010-' . date('Y-m-d') . '.pdf');
     }
@@ -1405,7 +1427,7 @@ class ReportController extends Controller
         }
         $assets = $query->get();
         $totalValue = $assets->sum('nilai_perolehan');
-        $pdf = DomPDF::loadView('admin.reports.pdf.br-ams-011', compact('assets', 'totalValue'));
+        $pdf = Pdf::loadView('admin.reports.pdf.br-ams-011', compact('assets', 'totalValue'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-011-' . date('Y-m-d') . '.pdf');
     }

@@ -248,37 +248,65 @@
                                 </tbody>
                             @endif
                         @empty
-                        <tbody>
-                            <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-gray-500">
-                                    <div class="flex flex-col items-center">
-                                        <i class='bx bx-package text-4xl text-gray-300 mb-4'></i>
-                                        <p class="text-lg font-medium">Tiada aset ditemui</p>
-                                        <p class="text-sm">Tiada aset yang memenuhi kriteria carian</p>
+                        <tr>
+                            <td colspan="4" class="px-8 py-16 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="bg-emerald-50 rounded-full p-6 mb-4">
+                                        <i class='bx bx-package text-5xl text-emerald-400'></i>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
+                                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Tiada Aset Ditemui</h3>
+                                    <p class="text-sm text-gray-500 max-w-md">Tiada aset yang memenuhi kriteria carian. Cuba ubah penapis untuk melihat data.</p>
+                                </div>
+                            </td>
+                        </tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Action Buttons (Moved up since Signature and Notes are removed/adjusted) -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mt-8">
-            <div class="flex flex-wrap gap-3 justify-end">
-                <button onclick="exportToPDF()"
-                    class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
-                    <i class='bx bx-file-blank mr-2'></i>
-                    Muat Turun / Cetak Laporan
-                </button>
+        <!-- Notes Section -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Nota:</h3>
+            <div class="space-y-4 text-sm text-gray-700">
+                <div>
+                    <p><strong>Laporan Pergerakan Aset:</strong> Senarai ini memaparkan semua rekod pergerakan aset alih termasuk perpindahan lokasi dan perubahan status.</p>
+                </div>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                    <p><strong>Maklumat Penting:</strong></p>
+                    <ul class="mt-2 space-y-1 text-xs">
+                        <li>• <strong>Tarikh Pergerakan:</strong> Tarikh aset dipindahkan</li>
+                        <li>• <strong>Lokasi Asal:</strong> Lokasi aset sebelum perpindahan</li>
+                        <li>• <strong>Lokasi Baru:</strong> Lokasi aset selepas perpindahan</li>
+                        <li>• <strong>Status:</strong> Status semasa aset</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-                <a href="{{ route('admin.reports.index') }}"
-                    class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
-                    <i class='bx bx-arrow-back mr-2'></i>
-                    Kembali ke Senarai Laporan
-                </a>
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="flex-1">
+                    <p class="text-sm text-gray-600">
+                        <i class='bx bx-info-circle text-blue-500 mr-1'></i>
+                        *NOTA: Laporan ini melaporkan semua pergerakan aset alih yang telah direkodkan dalam sistem
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="exportToPDF()"
+                        class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
+                        <i class='bx bx-file-blank mr-2'></i>
+                        Muat Turun / Cetak Laporan
+                    </button>
+
+                    <a href="{{ route('admin.reports.index') }}"
+                        class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+                        <i class='bx bx-arrow-back mr-2'></i>
+                        Kembali ke Senarai Laporan
+                    </a>
+                </div>
             </div>
         </div>
     </div>

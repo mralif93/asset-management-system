@@ -9,12 +9,15 @@ use App\Helpers\AssetRegistrationNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class AssetController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
     // Valid locations moved to App\Helpers\SystemData
 
     /**
@@ -22,13 +25,24 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Asset::class);
+        
         $query = Asset::with('masjidSurau')->withCount('batchSiblings');
 
-        // Admin can see all assets
+        // Search by name or registration number
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_aset', 'like', "%{$search}%")
+                    ->orWhere('no_siri_pendaftaran', 'like', "%{$search}%")
+                    ->orWhere('jenama', 'like', "%{$search}%")
+                    ->orWhere('pembekal', 'like', "%{$search}%");
+            });
+        }
 
-        // Filter by location if requested
-        if ($request->filled('lokasi')) {
-            $query->where('lokasi_penempatan', 'like', '%' . $request->lokasi . '%');
+        // Filter by masjid/surau
+        if ($request->filled('masjid_surau_id')) {
+            $query->where('masjid_surau_id', $request->masjid_surau_id);
         }
 
         // Filter by asset type
@@ -36,19 +50,19 @@ class AssetController extends Controller
             $query->where('jenis_aset', $request->jenis_aset);
         }
 
-        // Filter by type of asset
+        // Filter by category (asset/non-asset)
         if ($request->filled('kategori_aset')) {
             $query->where('kategori_aset', $request->kategori_aset);
         }
 
         // Filter by location
         if ($request->filled('lokasi_penempatan')) {
-            $query->where('lokasi_penempatan', $request->lokasi_penempatan);
+            $query->where('lokasi_penempatan', 'like', '%' . $request->lokasi_penempatan . '%');
         }
 
         // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status_aset', $request->status);
+        if ($request->filled('status_aset')) {
+            $query->where('status_aset', $request->status_aset);
         }
 
         // Filter by physical condition
@@ -56,18 +70,37 @@ class AssetController extends Controller
             $query->where('keadaan_fizikal', $request->keadaan_fizikal);
         }
 
+        // Filter by date range (acquisition date)
+        if ($request->filled('tarikh_dari')) {
+            $query->whereDate('tarikh_perolehan', '>=', $request->tarikh_dari);
+        }
+        if ($request->filled('tarikh_hingga')) {
+            $query->whereDate('tarikh_perolehan', '<=', $request->tarikh_hingga);
+        }
+
+        // Filter by value range
+        if ($request->filled('nilai_min')) {
+            $query->where('nilai_perolehan', '>=', $request->nilai_min);
+        }
+        if ($request->filled('nilai_max')) {
+            $query->where('nilai_perolehan', '<=', $request->nilai_max);
+        }
+
         $assets = $query->where(function ($q) {
             $q->whereNull('batch_id')
-                ->orWhereIn('id', function ($sub) {
-                    $sub->selectRaw('MIN(id)')
-                        ->from('assets')
-                        ->whereNotNull('batch_id')
-                        ->groupBy('batch_id');
-                });
+                 ->orWhereIn('id', function ($sub) {
+                     $sub->selectRaw('MIN(id)')
+                         ->from('assets')
+                         ->whereNotNull('batch_id')
+                         ->groupBy('batch_id');
+                 });
         })->latest()->paginate(15);
+        
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
+        $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        $locations = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
 
-        return view('admin.assets.index', compact('assets', 'assetTypes'));
+        return view('admin.assets.index', compact('assets', 'assetTypes', 'masjidSuraus', 'locations'));
     }
 
     /**
@@ -663,7 +696,7 @@ class AssetController extends Controller
                 $validateDate($assetData['tarikh_resit'], 'tarikh resit');
                 $validateDate($assetData['tarikh_tamat_jaminan'], 'tarikh tamat jaminan');
 
-                $validLocations = ['Anjung kiri', 'Anjung kanan', 'Anjung Depan(Ruang Pengantin)', 'Ruang Utama (tingkat atas, tingkat bawah)', 'Bilik Mesyuarat', 'Bilik Kuliah', 'Bilik Bendahari', 'Bilik Setiausaha', 'Bilik Nazir & Imam', 'Bangunan Jenazah', 'Lain-lain'];
+                $validLocations = \App\Helpers\SystemData::getValidLocations();
                 if (empty($assetData['lokasi_penempatan']) || !in_array($assetData['lokasi_penempatan'], $validLocations)) {
                     $rowErrors[] = "Lokasi Penempatan tidak sah";
                 }
@@ -757,5 +790,56 @@ class AssetController extends Controller
             'errors' => $errorRows,
             'skipped_count' => $skippedCount
         ];
+    }
+
+    /**
+     * Display a listing of trashed assets.
+     */
+    public function trashed()
+    {
+        $this->authorize('viewAny', Asset::class);
+        
+        $trashedAssets = Asset::onlyTrashed()
+            ->with('masjidSurau')
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.assets.trashed', compact('trashedAssets'));
+    }
+
+    /**
+     * Restore a soft-deleted asset.
+     */
+    public function restore($id)
+    {
+        $this->authorize('restore', Asset::class);
+        
+        $asset = Asset::onlyTrashed()->findOrFail($id);
+        $asset->restore();
+
+        return redirect()->route('admin.assets.trashed')
+            ->with('success', 'Aset berjaya dipulihkan.');
+    }
+
+    /**
+     * Permanently delete an asset.
+     */
+    public function forceDelete($id)
+    {
+        $this->authorize('forceDelete', Asset::class);
+        
+        $asset = Asset::onlyTrashed()->findOrFail($id);
+        
+        // Delete associated images
+        if ($asset->gambar_aset) {
+            foreach ($asset->gambar_aset as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
+        
+        $asset->forceDelete();
+
+        return redirect()->route('admin.assets.trashed')
+            ->with('success', 'Aset telah dipadamkan secara kekal.');
     }
 }

@@ -52,7 +52,7 @@
                     <span class="text-sm text-amber-600 bg-amber-100 px-2 py-1 rounded-full font-medium">Menunggu</span>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-1">
-                    {{ $disposals->where('status_kelulusan', 'menunggu')->count() }}</h3>
+                    {{ $disposals->where('status_pelupusan', 'Dimohon')->count() }}</h3>
                 <p class="text-sm text-gray-600">Menunggu Kelulusan</p>
             </div>
 
@@ -65,7 +65,7 @@
                     <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">Lulus</span>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-1">
-                    {{ $disposals->where('status_kelulusan', 'diluluskan')->count() }}</h3>
+                    {{ $disposals->where('status_pelupusan', 'Diluluskan')->count() }}</h3>
                 <p class="text-sm text-gray-600">Diluluskan</p>
             </div>
 
@@ -171,11 +171,9 @@
                         <select id="status" name="status"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">Semua Status</option>
-                            <option value="menunggu" {{ request('status') === 'menunggu' ? 'selected' : '' }}>Menunggu
-                            </option>
-                            <option value="diluluskan" {{ request('status') === 'diluluskan' ? 'selected' : '' }}>Diluluskan
-                            </option>
-                            <option value="ditolak" {{ request('status') === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                            <option value="Dimohon" {{ request('status') === 'Dimohon' ? 'selected' : '' }}>Menunggu</option>
+                            <option value="Diluluskan" {{ request('status') === 'Diluluskan' ? 'selected' : '' }}>Diluluskan</option>
+                            <option value="Ditolak" {{ request('status') === 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
                         </select>
                     </div>
 
@@ -256,14 +254,14 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">{{ $disposal->sebab_pelupusan }}</div>
-                                    <div class="text-sm text-gray-500">{{ $disposal->kaedah_pelupusan }}</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $disposal->justifikasi_pelupusan }}</div>
+                                    <div class="text-sm text-gray-500">{{ $disposal->formatted_disposal_method }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
-                                        {{ \Carbon\Carbon::parse($disposal->tarikh_pelupusan)->format('d/m/Y') }}</div>
+                                        {{ $disposal->tarikh_pelupusan ? \Carbon\Carbon::parse($disposal->tarikh_pelupusan)->format('d/m/Y') : '-' }}</div>
                                     <div class="text-xs text-gray-500">
-                                        {{ \Carbon\Carbon::parse($disposal->tarikh_pelupusan)->diffForHumans() }}</div>
+                                        {{ $disposal->tarikh_pelupusan ? \Carbon\Carbon::parse($disposal->tarikh_pelupusan)->diffForHumans() : '-' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">RM
@@ -275,14 +273,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                        @if($disposal->status_kelulusan === 'menunggu') bg-amber-100 text-amber-800
-                                        @elseif($disposal->status_kelulusan === 'diluluskan') bg-green-100 text-green-800
+                                        @if($disposal->status_pelupusan === 'Dimohon') bg-amber-100 text-amber-800
+                                        @elseif($disposal->status_pelupusan === 'Diluluskan') bg-green-100 text-green-800
                                         @else bg-red-100 text-red-800 @endif">
                                         <div class="w-2 h-2 
-                                            @if($disposal->status_kelulusan === 'menunggu') bg-amber-500
-                                            @elseif($disposal->status_kelulusan === 'diluluskan') bg-green-500
+                                            @if($disposal->status_pelupusan === 'Dimohon') bg-amber-500
+                                            @elseif($disposal->status_pelupusan === 'Diluluskan') bg-green-500
                                             @else bg-red-500 @endif rounded-full mr-2"></div>
-                                        {{ ucfirst($disposal->status_kelulusan) }}
+                                        {{ $disposal->status_pelupusan }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -293,7 +291,7 @@
                                             <i class='bx bx-show text-sm'></i>
                                         </a>
 
-                                        @if($disposal->status_kelulusan === 'menunggu')
+                                        @if($disposal->status_pelupusan === 'Dimohon')
                                             <a href="{{ route('admin.disposals.edit', $disposal) }}"
                                                 class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
                                                 title="Edit">

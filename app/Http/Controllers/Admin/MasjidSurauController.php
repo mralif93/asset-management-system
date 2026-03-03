@@ -16,16 +16,20 @@ class MasjidSurauController extends Controller
     {
         $query = MasjidSurau::withCount(['assets', 'users']);
 
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $query->where('id', auth()->user()->masjid_surau_id);
+        }
+
         // Apply filters
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('singkatan_nama', 'like', "%{$search}%")
-                  ->orWhere('imam_ketua', 'like', "%{$search}%")
-                  ->orWhere('bandar', 'like', "%{$search}%")
-                  ->orWhere('daerah', 'like', "%{$search}%")
-                  ->orWhere('negeri', 'like', "%{$search}%");
+                    ->orWhere('singkatan_nama', 'like', "%{$search}%")
+                    ->orWhere('imam_ketua', 'like', "%{$search}%")
+                    ->orWhere('bandar', 'like', "%{$search}%")
+                    ->orWhere('daerah', 'like', "%{$search}%")
+                    ->orWhere('negeri', 'like', "%{$search}%");
             });
         }
 
@@ -44,12 +48,21 @@ class MasjidSurauController extends Controller
         $masjidSuraus = $query->latest()->paginate(10);
 
         // Statistics for the index page
-        $statistics = [
-            'total_masjid_surau' => MasjidSurau::count(),
-            'total_masjid' => MasjidSurau::where('jenis', 'Masjid')->count(),
-            'total_surau' => MasjidSurau::where('jenis', 'Surau')->count(),
-            'total_assets' => DB::table('assets')->count(),
-        ];
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+            $statistics = [
+                'total_masjid_surau' => 1,
+                'total_masjid' => MasjidSurau::where('id', auth()->user()->masjid_surau_id)->where('jenis', 'Masjid')->count(),
+                'total_surau' => MasjidSurau::where('id', auth()->user()->masjid_surau_id)->where('jenis', 'Surau')->count(),
+                'total_assets' => DB::table('assets')->where('masjid_surau_id', auth()->user()->masjid_surau_id)->whereNull('deleted_at')->count(),
+            ];
+        } else {
+            $statistics = [
+                'total_masjid_surau' => MasjidSurau::count(),
+                'total_masjid' => MasjidSurau::where('jenis', 'Masjid')->count(),
+                'total_surau' => MasjidSurau::where('jenis', 'Surau')->count(),
+                'total_assets' => DB::table('assets')->whereNull('deleted_at')->count(),
+            ];
+        }
 
         return view('admin.masjid-surau.index', compact('masjidSuraus', 'statistics'));
     }
@@ -59,6 +72,10 @@ class MasjidSurauController extends Controller
      */
     public function create()
     {
+        if (auth()->user()->role !== 'superadmin') {
+            abort(403, 'Akses ditolak. Anda tidak dibenarkan menambah Masjid/Surau baru.');
+        }
+
         return view('admin.masjid-surau.create');
     }
 
@@ -67,6 +84,10 @@ class MasjidSurauController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'superadmin') {
+            abort(403, 'Akses ditolak.');
+        }
+
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'nama_rasmi' => 'nullable|string|max:255',
@@ -95,7 +116,7 @@ class MasjidSurauController extends Controller
         MasjidSurau::create($validated);
 
         return redirect()->route('admin.masjid-surau.index')
-                        ->with('success', 'Masjid/Surau berjaya ditambah.');
+            ->with('success', 'Masjid/Surau berjaya ditambah.');
     }
 
     /**
@@ -103,15 +124,20 @@ class MasjidSurauController extends Controller
      */
     public function show(MasjidSurau $masjidSurau)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $masjidSurau->load(['assets', 'users']);
-        
+
         // Get asset statistics for this masjid/surau
         $assetStats = [
             'total_assets' => $masjidSurau->assets->count(),
             'total_value' => $masjidSurau->assets->sum('nilai_perolehan'),
-            'active_assets' => $masjidSurau->assets->where('status_aset', 'aktif')->count(),
-            'maintenance_assets' => $masjidSurau->assets->where('status_aset', 'dalam_penyelenggaraan')->count(),
-            'damaged_assets' => $masjidSurau->assets->where('status_aset', 'rosak')->count(),
+            'active_assets' => $masjidSurau->assets->where('status_aset', 'Aktif')->count(),
+            'sedang_digunakan' => $masjidSurau->assets->where('status_aset', 'Sedang Digunakan')->count(),
+            'maintenance_assets' => $masjidSurau->assets->where('status_aset', 'Dalam Penyelenggaraan')->count(),
+            'damaged_assets' => $masjidSurau->assets->where('status_aset', 'Rosak')->count(),
         ];
 
         // Get recent activities
@@ -126,6 +152,10 @@ class MasjidSurauController extends Controller
      */
     public function edit(MasjidSurau $masjidSurau)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         return view('admin.masjid-surau.edit', compact('masjidSurau'));
     }
 
@@ -134,6 +164,10 @@ class MasjidSurauController extends Controller
      */
     public function update(Request $request, MasjidSurau $masjidSurau)
     {
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'nama_rasmi' => 'nullable|string|max:255',
@@ -162,7 +196,7 @@ class MasjidSurauController extends Controller
         $masjidSurau->update($validated);
 
         return redirect()->route('admin.masjid-surau.index')
-                        ->with('success', 'Masjid/Surau berjaya dikemas kini.');
+            ->with('success', 'Masjid/Surau berjaya dikemas kini.');
     }
 
     /**
@@ -170,22 +204,26 @@ class MasjidSurauController extends Controller
      */
     public function destroy(MasjidSurau $masjidSurau)
     {
+        if (auth()->user()->role !== 'superadmin') {
+            abort(403, 'Akses ditolak. Anda tidak dibenarkan memadam Masjid/Surau.');
+        }
+
         // Check if masjid/surau has assets
         if ($masjidSurau->assets()->count() > 0) {
             return redirect()->route('admin.masjid-surau.index')
-                            ->with('error', 'Tidak dapat memadamkan. Masjid/Surau ini mempunyai aset yang berkaitan.');
+                ->with('error', 'Tidak dapat memadamkan. Masjid/Surau ini mempunyai aset yang berkaitan.');
         }
 
         // Check if masjid/surau has users
         if ($masjidSurau->users()->count() > 0) {
             return redirect()->route('admin.masjid-surau.index')
-                            ->with('error', 'Tidak dapat memadamkan. Masjid/Surau ini mempunyai pengguna yang berkaitan.');
+                ->with('error', 'Tidak dapat memadamkan. Masjid/Surau ini mempunyai pengguna yang berkaitan.');
         }
 
         $masjidSurau->delete();
 
         return redirect()->route('admin.masjid-surau.index')
-                        ->with('success', 'Masjid/Surau berjaya dipadamkan.');
+            ->with('success', 'Masjid/Surau berjaya dipadamkan.');
     }
 
     /**
@@ -193,11 +231,15 @@ class MasjidSurauController extends Controller
      */
     public function toggleStatus(MasjidSurau $masjidSurau)
     {
+        if (auth()->user()->role !== 'superadmin') {
+            abort(403, 'Akses ditolak.');
+        }
+
         $newStatus = $masjidSurau->status === 'Aktif' ? 'Tidak Aktif' : 'Aktif';
         $masjidSurau->update(['status' => $newStatus]);
 
         return redirect()->route('admin.masjid-surau.index')
-                        ->with('success', 'Status Masjid/Surau berjaya dikemas kini.');
+            ->with('success', 'Status Masjid/Surau berjaya dikemas kini.');
     }
 
     /**
@@ -205,27 +247,31 @@ class MasjidSurauController extends Controller
      */
     public function bulkDelete(Request $request)
     {
+        if (auth()->user()->role !== 'superadmin') {
+            abort(403, 'Akses ditolak.');
+        }
+
         $ids = $request->input('ids', []);
-        
+
         if (empty($ids)) {
             return redirect()->route('admin.masjid-surau.index')
-                            ->with('error', 'Tiada Masjid/Surau dipilih.');
+                ->with('error', 'Tiada Masjid/Surau dipilih.');
         }
 
         // Check if any selected masjid/surau has assets or users
         $hasRelatedData = MasjidSurau::whereIn('id', $ids)
-                                   ->where(function($query) {
-                                       $query->has('assets')->orHas('users');
-                                   })->exists();
+            ->where(function ($query) {
+                $query->has('assets')->orHas('users');
+            })->exists();
 
         if ($hasRelatedData) {
             return redirect()->route('admin.masjid-surau.index')
-                            ->with('error', 'Tidak dapat memadamkan. Sebahagian Masjid/Surau mempunyai data berkaitan.');
+                ->with('error', 'Tidak dapat memadamkan. Sebahagian Masjid/Surau mempunyai data berkaitan.');
         }
 
         MasjidSurau::whereIn('id', $ids)->delete();
 
         return redirect()->route('admin.masjid-surau.index')
-                        ->with('success', count($ids) . ' Masjid/Surau berjaya dipadamkan.');
+            ->with('success', count($ids) . ' Masjid/Surau berjaya dipadamkan.');
     }
-} 
+}

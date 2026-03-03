@@ -478,14 +478,13 @@
                         @empty
                         <tbody>
                             <tr>
-                                <td colspan="11" class="px-8 py-16 text-center text-gray-500">
+                                <td colspan="11" class="px-8 py-16 text-center">
                                     <div class="flex flex-col items-center">
-                                        <div class="bg-gray-100 rounded-full p-6 mb-4">
-                                            <i class='bx bx-search text-6xl text-gray-400'></i>
+                                        <div class="bg-emerald-50 rounded-full p-6 mb-4">
+                                            <i class='bx bx-search text-5xl text-emerald-400'></i>
                                         </div>
-                                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Tiada aset ditemui</h3>
-                                        <p class="text-sm text-gray-500 max-w-md">Tiada aset yang memenuhi kriteria carian. Cuba
-                                            ubah penapis atau tambah aset baru.</p>
+                                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Tiada Aset Ditemui</h3>
+                                        <p class="text-sm text-gray-500 max-w-md">Tiada aset yang memenuhi kriteria carian. Cuba ubah penapis atau tambah aset baru.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -545,92 +544,6 @@
             </div>
         </div>
 
-        <!-- Signature Section -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-6">(a) Disediakan oleh :</h3>
-
-            <div class="space-y-6">
-                <!-- Signature Field -->
-                <div x-data="signatureHandler()">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Tandatangan:</label>
-
-                    <!-- Signature Display / Placeholder -->
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center bg-gray-50 relative"
-                        :class="{'border-emerald-500 bg-white': signature}">
-
-                        <!-- Empty State -->
-                        <div x-show="!signature && !showPad" class="py-6">
-                            <div class="text-gray-400 text-sm mb-3">
-                                <i class='bx bx-edit text-2xl mb-1 block'></i>
-                                Tiada tandatangan
-                            </div>
-                            <button @click="openPad()" type="button"
-                                class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-md transition-colors no-print">
-                                <i class='bx bx-pen mr-2'></i>
-                                Tandatangan Digital
-                            </button>
-                        </div>
-
-                        <!-- Image Display State -->
-                        <div x-show="signature && !showPad" class="relative group">
-                            <img :src="signature" class="h-32 mx-auto object-contain">
-                            <button @click="clearSignature()" type="button"
-                                class="absolute top-2 right-2 p-1 bg-red-100 text-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity no-print"
-                                title="Padam">
-                                <i class='bx bx-x'></i>
-                            </button>
-                        </div>
-
-                        <!-- Drawing Pad State -->
-                        <div x-show="showPad" class="relative">
-                            <canvas id="report-signature-pad"
-                                class="w-full h-48 border border-gray-200 rounded bg-white cursor-crosshair touch-none"></canvas>
-                            <div class="mt-2 flex justify-end space-x-2">
-                                <button @click="cancelPad()" type="button"
-                                    class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200">
-                                    Batal
-                                </button>
-                                <button @click="clearPad()" type="button"
-                                    class="px-3 py-1 text-sm text-red-600 bg-red-50 rounded hover:bg-red-100">
-                                    Padam
-                                </button>
-                                <button @click="saveSignature()" type="button"
-                                    class="px-3 py-1 text-sm text-white bg-emerald-600 rounded hover:bg-emerald-700">
-                                    Simpan
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Name Field -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama:</label>
-                    <div class="border-b-2 border-gray-300 pb-1">
-                        <input type="text" class="w-full bg-transparent border-none outline-none text-gray-700"
-                            placeholder="Masukkan nama">
-                    </div>
-                </div>
-
-                <!-- Position Field -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Jawatan:</label>
-                    <div class="border-b-2 border-gray-300 pb-1">
-                        <input type="text" class="w-full bg-transparent border-none outline-none text-gray-700"
-                            placeholder="Masukkan jawatan">
-                    </div>
-                </div>
-
-                <!-- Date Field -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tarikh:</label>
-                    <div class="border-b-2 border-gray-300 pb-1">
-                        <input type="date" class="w-full bg-transparent border-none outline-none text-gray-700">
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Action Buttons -->
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -664,106 +577,6 @@
 
     @push('scripts')
         <script>
-            function signatureHandler() {
-                return {
-                    signature: null,
-                    showPad: false,
-                    pad: null,
-                    ctx: null,
-
-                    openPad() {
-                        this.showPad = true;
-                        this.$nextTick(() => {
-                            this.initPad();
-                        });
-                    },
-
-                    cancelPad() {
-                        this.showPad = false;
-                    },
-
-                    clearPad() {
-                        if (this.ctx && this.pad) {
-                            this.ctx.clearRect(0, 0, this.pad.width, this.pad.height);
-                        }
-                    },
-
-                    saveSignature() {
-                        if (this.pad) {
-                            this.signature = this.pad.toDataURL();
-                            this.showPad = false;
-                        }
-                    },
-
-                    clearSignature() {
-                        this.signature = null;
-                    },
-
-                    initPad() {
-                        const canvas = document.getElementById('report-signature-pad');
-                        if (!canvas) return;
-
-                        this.pad = canvas;
-                        this.ctx = canvas.getContext('2d');
-                        const ctx = this.ctx;
-
-                        // Set canvas size
-                        const rect = canvas.getBoundingClientRect();
-                        canvas.width = rect.width;
-                        canvas.height = rect.height;
-
-                        ctx.lineWidth = 2;
-                        ctx.lineCap = 'round';
-                        ctx.strokeStyle = '#000';
-
-                        let isDrawing = false;
-                        let lastX = 0;
-                        let lastY = 0;
-
-                        const getCoords = (e) => {
-                            const rect = canvas.getBoundingClientRect();
-                            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                            return [
-                                clientX - rect.left,
-                                clientY - rect.top
-                            ];
-                        };
-
-                        const startDrawing = (e) => {
-                            isDrawing = true;
-                            [lastX, lastY] = getCoords(e);
-                        };
-
-                        const draw = (e) => {
-                            if (!isDrawing) return;
-                            e.preventDefault();
-                            const [x, y] = getCoords(e);
-
-                            ctx.beginPath();
-                            ctx.moveTo(lastX, lastY);
-                            ctx.lineTo(x, y);
-                            ctx.stroke();
-
-                            [lastX, lastY] = [x, y];
-                        };
-
-                        const stopDrawing = () => {
-                            isDrawing = false;
-                        };
-
-                        canvas.addEventListener('mousedown', startDrawing);
-                        canvas.addEventListener('mousemove', draw);
-                        canvas.addEventListener('mouseup', stopDrawing);
-                        canvas.addEventListener('mouseout', stopDrawing);
-
-                        canvas.addEventListener('touchstart', startDrawing);
-                        canvas.addEventListener('touchmove', draw);
-                        canvas.addEventListener('touchend', stopDrawing);
-                    }
-                }
-            }
-
             function exportToPDF() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const pdfUrl = '{{ route("admin.reports.br-ams-005.pdf") }}?' + urlParams.toString();

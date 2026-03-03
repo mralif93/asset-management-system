@@ -8,14 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\Auditable;
+use App\Traits\ScopesToMasjidSurau;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspection extends Model
 {
-    use HasFactory, Auditable, SoftDeletes;
+    use HasFactory, Auditable, SoftDeletes, ScopesToMasjidSurau;
 
     protected $fillable = [
         'asset_id',
+        'user_id',
         'tarikh_pemeriksaan',
         'kondisi_aset',
         'lokasi_semasa_pemeriksaan',
@@ -24,11 +26,14 @@ class Inspection extends Model
         'catatan_pemeriksa',
         'signature',
         'jawatan_pemeriksa',
-        'tarikh_pemeriksaan_akan_datang'
+        'tarikh_pemeriksaan_akan_datang',
+        'gambar_pemeriksaan',
     ];
 
     protected $casts = [
         'tarikh_pemeriksaan' => 'datetime',
+        'tarikh_pemeriksaan_akan_datang' => 'datetime',
+        'gambar_pemeriksaan' => 'array',
         'deleted_at' => 'datetime',
     ];
 
@@ -43,9 +48,17 @@ class Inspection extends Model
     /**
      * Get the user who performed the inspection.
      */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the user who performed the inspection (alias).
+     */
     public function inspector(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'nama_pemeriksa', 'name');
+        return $this->user();
     }
 
     /**
@@ -91,9 +104,11 @@ class Inspection extends Model
             'rosak' => 'Rosak',
             'sedang_diselenggara' => 'Sedang Diselenggara',
             'hilang' => 'Hilang',
+            'baik' => 'Baik',
+            'sederhana' => 'Sederhana',
         ];
 
-        return $conditions[strtolower($this->kondisi_aset)] ?? ucfirst($this->kondisi_aset);
+        return $conditions[strtolower($this->kondisi_aset)] ?? $this->kondisi_aset;
     }
 
     /**
@@ -101,7 +116,7 @@ class Inspection extends Model
      */
     public function needsAction(): bool
     {
-        return $this->tindakan_diperlukan;
+        return in_array($this->cadangan_tindakan, ['Penyelenggaraan', 'Pelupusan', 'Hapus Kira']);
     }
 
     /**

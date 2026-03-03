@@ -141,13 +141,61 @@
         }
 
         .footer {
-            margin-top: 10px;
-            padding-top: 6px;
-            border-top: 1px solid #e5e7eb;
-            font-size: 6px;
-            color: #6b7280;
-            text-align: center;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-top: 2px solid #059669;
+            border-radius: 4px;
             page-break-inside: avoid;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 6px;
+            color: #374151;
+        }
+        
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-right {
+            text-align: right;
+        }
+        
+        .footer-logo {
+            width: 16px;
+            height: 16px;
+            background: #059669;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+        }
+        
+        .footer-system {
+            font-weight: 600;
+            color: #059669;
+        }
+        
+        .footer-date {
+            color: #6b7280;
+        }
+        
+        .footer-official {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #ecfdf5;
+            color: #059669;
+            border-radius: 2px;
+            font-weight: 600;
         }
 
         .empty-state {
@@ -215,7 +263,18 @@
 
     <!-- Footer -->
     <div class="footer">
-        Dijana pada: {{ now()->format('d/m/Y H:i:s') }} | Sistem Pengurusan Aset Masjid & Surau
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">AMS</div>
+                <div>
+                    <div class="footer-system">Sistem Pengurusan Aset Masjid & Surau</div>
+                    <div class="footer-date">Dijana pada: {{ now()->format('d/m/Y H:i:s') }}</div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-official">📋 Laporan Rasmi</span>
+            </div>
+        </div>
     </div>
 </body>
 

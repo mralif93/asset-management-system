@@ -345,17 +345,17 @@
                             @endif
                         </tbody>
                     @empty
-                        <tbody>
-                            <tr>
-                                <td colspan="9" class="px-6 py-12 text-center text-gray-500">
-                                    <div class="flex flex-col items-center">
-                                        <i class='bx bx-package text-4xl text-gray-300 mb-4'></i>
-                                        <p class="text-lg font-medium">Tiada inventori ditemui</p>
-                                        <p class="text-sm">Tiada inventori yang memenuhi kriteria carian</p>
+                        <tr>
+                            <td colspan="9" class="px-8 py-16 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="bg-emerald-50 rounded-full p-6 mb-4">
+                                        <i class='bx bx-package text-5xl text-emerald-400'></i>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
+                                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Tiada Inventori Ditemui</h3>
+                                    <p class="text-sm text-gray-500 max-w-md">Tiada inventori yang memenuhi kriteria carian. Cuba ubah penapis atau tambah inventori baru.</p>
+                                </div>
+                            </td>
+                        </tr>
                     @endforelse
 
                     <!-- Summary Rows -->
@@ -376,19 +376,35 @@
             </div>
         </div>
 
-        <!-- Note and Action Buttons -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <!-- Notes Section -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Nota:</h3>
+            <div class="space-y-4 text-sm text-gray-700">
+                <div>
+                    <p><strong>Laporan Inventori:</strong> Senarai ini memaparkan semua aset alih yang dikategorikan sebagai inventori berdasarkan nilai perolehan di bawah ambang harta modal.</p>
+                </div>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                    <p><strong>Maklumat Penting:</strong></p>
+                    <ul class="mt-2 space-y-1 text-xs">
+                        <li>• <strong>No. Siri:</strong> Nombor pendaftaran unik untuk setiap aset</li>
+                        <li>• <strong>Tarikh Perolehan:</strong> Tarikh aset diperoleh</li>
+                        <li>• <strong>Kos Perolehan:</strong> Nilai pembelian asal aset</li>
+                        <li>• <strong>Lokasi:</strong> Lokasi semasa aset dalam masjid/surau</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <!-- Note -->
                 <div class="flex-1">
                     <p class="text-sm text-gray-600">
                         <i class='bx bx-info-circle text-blue-500 mr-1'></i>
-                        *NOTA: Laporan ini melaporkan kedudukan keseluruhan aset alih yang dimiliki oleh masjid/surau
-                        merangkumi penerimaan serta maklumat pelupusan dan hapus kira yang telah dikemaskini
+                        *NOTA: Laporan ini melaporkan kedudukan keseluruhan inventori yang dimiliki oleh masjid/surau
                     </p>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="flex flex-wrap gap-3">
                     <button onclick="exportToPDF()"
                         class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">

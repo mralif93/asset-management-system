@@ -52,7 +52,8 @@
                     <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">A</span>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-1">
-                    {{ $inspections->where('kondisi_aset', 'Sedang Digunakan')->count() }}</h3>
+                    {{ $inspections->where('kondisi_aset', 'Sedang Digunakan')->count() }}
+                </h3>
                 <p class="text-sm text-gray-600">Sedang Digunakan</p>
             </div>
 
@@ -65,7 +66,8 @@
                     <span class="text-sm text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full font-medium">B</span>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-1">
-                    {{ $inspections->where('kondisi_aset', 'Tidak Digunakan')->count() }}</h3>
+                    {{ $inspections->where('kondisi_aset', 'Tidak Digunakan')->count() }}
+                </h3>
                 <p class="text-sm text-gray-600">Tidak Digunakan</p>
             </div>
 
@@ -78,7 +80,8 @@
                     <span class="text-sm text-red-600 bg-red-100 px-2 py-1 rounded-full font-medium">C</span>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-1">
-                    {{ $inspections->where('kondisi_aset', 'Rosak')->count() }}</h3>
+                    {{ $inspections->where('kondisi_aset', 'Rosak')->count() }}
+                </h3>
                 <p class="text-sm text-gray-600">Rosak</p>
             </div>
         </div>
@@ -259,25 +262,27 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
-                                        {{ \Carbon\Carbon::parse($inspection->tarikh_pemeriksaan)->format('d/m/Y') }}</div>
+                                        {{ \Carbon\Carbon::parse($inspection->tarikh_pemeriksaan)->format('d/m/Y') }}
+                                    </div>
                                     <div class="text-xs text-gray-500">
-                                        {{ \Carbon\Carbon::parse($inspection->tarikh_pemeriksaan)->diffForHumans() }}</div>
+                                        {{ \Carbon\Carbon::parse($inspection->tarikh_pemeriksaan)->diffForHumans() }}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                        @if($inspection->kondisi_aset === 'Sedang Digunakan') bg-green-100 text-green-800
-                                        @elseif($inspection->kondisi_aset === 'Tidak Digunakan') bg-yellow-100 text-yellow-800
-                                        @elseif($inspection->kondisi_aset === 'Rosak') bg-red-100 text-red-800
-                                        @elseif($inspection->kondisi_aset === 'Sedang Diselenggara') bg-blue-100 text-blue-800
-                                        @elseif($inspection->kondisi_aset === 'Hilang') bg-gray-100 text-gray-800
-                                        @else bg-gray-100 text-gray-800 @endif">
+                                                @if($inspection->kondisi_aset === 'Sedang Digunakan') bg-green-100 text-green-800
+                                                @elseif($inspection->kondisi_aset === 'Tidak Digunakan') bg-yellow-100 text-yellow-800
+                                                @elseif($inspection->kondisi_aset === 'Rosak') bg-red-100 text-red-800
+                                                @elseif($inspection->kondisi_aset === 'Sedang Diselenggara') bg-blue-100 text-blue-800
+                                                @elseif($inspection->kondisi_aset === 'Hilang') bg-gray-100 text-gray-800
+                                                @else bg-gray-100 text-gray-800 @endif">
                                         <div class="w-2 h-2 
-                                            @if($inspection->kondisi_aset === 'Sedang Digunakan') bg-green-500
-                                            @elseif($inspection->kondisi_aset === 'Tidak Digunakan') bg-yellow-500
-                                            @elseif($inspection->kondisi_aset === 'Rosak') bg-red-500
-                                            @elseif($inspection->kondisi_aset === 'Sedang Diselenggara') bg-blue-500
-                                            @elseif($inspection->kondisi_aset === 'Hilang') bg-gray-500
-                                            @else bg-gray-500 @endif rounded-full mr-2"></div>
+                                                    @if($inspection->kondisi_aset === 'Sedang Digunakan') bg-green-500
+                                                    @elseif($inspection->kondisi_aset === 'Tidak Digunakan') bg-yellow-500
+                                                    @elseif($inspection->kondisi_aset === 'Rosak') bg-red-500
+                                                    @elseif($inspection->kondisi_aset === 'Sedang Diselenggara') bg-blue-500
+                                                    @elseif($inspection->kondisi_aset === 'Hilang') bg-gray-500
+                                                    @else bg-gray-500 @endif rounded-full mr-2"></div>
                                         {{ $inspection->kondisi_aset }}
                                     </span>
                                 </td>
@@ -309,7 +314,7 @@
                                             <i class='bx bx-edit text-sm'></i>
                                         </a>
 
-                                        @if(auth()->user()->role === 'admin')
+                                        @if(in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer']))
                                             <form action="{{ route('admin.inspections.destroy', $inspection) }}" method="POST"
                                                 class="inline"
                                                 onsubmit="return confirm('Adakah anda pasti ingin memadamkan pemeriksaan ini?')">

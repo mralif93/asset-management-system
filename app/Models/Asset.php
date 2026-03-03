@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Traits\Auditable;
+use App\Traits\ScopesToMasjidSurau;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Asset extends Model
 {
-    use HasFactory, Auditable, SoftDeletes;
+    use HasFactory, Auditable, SoftDeletes, ScopesToMasjidSurau;
 
     protected $fillable = [
         'masjid_surau_id',
@@ -345,7 +346,7 @@ class Asset extends Model
     public function isDisposed(): bool
     {
         return $this->disposals()
-            ->where('status_pelupusan', 'diluluskan')
+            ->whereIn('status_pelupusan', ['Diluluskan', 'diluluskan'])
             ->exists();
     }
 
@@ -355,7 +356,165 @@ class Asset extends Model
     public function isWrittenOff(): bool
     {
         return $this->lossWriteoffs()
-            ->where('status_kejadian', 'diluluskan')
+            ->whereIn('status_kejadian', ['Diluluskan', 'Diluluskan Hapus Kira', 'diluluskan'])
             ->exists();
+    }
+
+    /**
+     * Scope for active assets.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status_aset', 'Aktif');
+    }
+
+    /**
+     * Scope for disposed assets.
+     */
+    public function scopeDisposed($query)
+    {
+        return $query->where('status_aset', 'Dilupuskan');
+    }
+
+    /**
+     * Scope for lost assets.
+     */
+    public function scopeLost($query)
+    {
+        return $query->where('status_aset', 'Kehilangan');
+    }
+
+    /**
+     * Scope for assets by location.
+     */
+    public function scopeByLocation($query, $location)
+    {
+        return $query->where('lokasi_penempatan', 'like', "%{$location}%");
+    }
+
+    /**
+     * Scope for assets by type.
+     */
+    public function scopeByType($query, $type)
+    {
+        return $query->where('jenis_aset', $type);
+    }
+
+    /**
+     * Scope for assets by category.
+     */
+    public function scopeByCategory($query, $category)
+    {
+        return $query->where('kategori_aset', $category);
+    }
+
+    /**
+     * Scope for assets by masjid/surau.
+     */
+    public function scopeByMasjidSurau($query, $masjidSurauId)
+    {
+        return $query->where('masjid_surau_id', $masjidSurauId);
+    }
+
+    /**
+     * Scope for capital assets (asset category).
+     */
+    public function scopeCapitalAssets($query)
+    {
+        return $query->where('kategori_aset', 'asset');
+    }
+
+    /**
+     * Scope for inventory (non-asset category).
+     */
+    public function scopeInventory($query)
+    {
+        return $query->where('kategori_aset', 'non-asset');
+    }
+
+    /**
+     * Scope for search.
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('nama_aset', 'like', "%{$search}%")
+                ->orWhere('no_siri_pendaftaran', 'like', "%{$search}%")
+                ->orWhere('jenama', 'like', "%{$search}%")
+                ->orWhere('pembekal', 'like', "%{$search}%");
+        });
+    }
+
+    /**
+     * Scope for assets needing inspection.
+     */
+    public function scopeNeedsInspection($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('tarikh_pemeriksaan_terakhir')
+                ->orWhere('tarikh_pemeriksaan_terakhir', '<', now()->subDays(90));
+        });
+    }
+
+    /**
+     * Scope for assets needing maintenance.
+     */
+    public function scopeNeedsMaintenance($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('tarikh_penyelenggaraan_akan_datang')
+                ->orWhere('tarikh_penyelenggaraan_akan_datang', '<', now());
+        });
+    }
+
+    /**
+     * Scope for warranty expiring soon (within 30 days).
+     */
+    public function scopeWarrantyExpiringSoon($query)
+    {
+        return $query->whereNotNull('tarikh_tamat_jaminan')
+            ->whereBetween('tarikh_tamat_jaminan', [now(), now()->addDays(30)])
+            ->where('status_jaminan', 'Aktif');
+    }
+
+    /**
+     * Scope for assets under warranty.
+     */
+    public function scopeUnderWarranty($query)
+    {
+        return $query->where('status_jaminan', 'Aktif')
+            ->where('tarikh_tamat_jaminan', '>', now());
+    }
+
+    /**
+     * Get formatted acquisition value.
+     */
+    public function getFormattedNilaiPerolehanAttribute(): string
+    {
+        return 'RM ' . number_format($this->nilai_perolehan ?? 0, 2);
+    }
+
+    /**
+     * Get formatted current value.
+     */
+    public function getFormattedCurrentValueAttribute(): string
+    {
+        return 'RM ' . number_format($this->getCurrentValue() ?? 0, 2);
+    }
+
+    /**
+     * Get status badge color.
+     */
+    public function getStatusBadgeColorAttribute(): string
+    {
+        return match ($this->status_aset) {
+            'Aktif', 'Sedang Digunakan' => 'green',
+            'Baru' => 'blue',
+            'Dalam Penyelenggaraan' => 'yellow',
+            'Rosak' => 'red',
+            'Dilupuskan' => 'gray',
+            'Kehilangan' => 'purple',
+            default => 'gray',
+        };
     }
 }

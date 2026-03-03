@@ -88,33 +88,37 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.system-overview') }}"
-                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.system-overview') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
-                        <i class='bx bx-stats text-xl mr-4'></i>
-                        <span>Sistem Info</span>
-                        @if(request()->routeIs('admin.system-overview'))
-                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
-                        @endif
-                    </a>
+                    @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+                        <a href="{{ route('admin.system-overview') }}"
+                            class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.system-overview') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
+                            <i class='bx bx-stats text-xl mr-4'></i>
+                            <span>Sistem Info</span>
+                            @if(request()->routeIs('admin.system-overview'))
+                                <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                            @endif
+                        </a>
+                    @endif
                 </div>
 
                 <!-- User Management Section -->
-                <div class="mb-8">
-                    <h3
-                        class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
-                        <i class='bx bx-group text-emerald-300 mr-2'></i>
-                        Pengguna
-                    </h3>
+                @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+                    <div class="mb-8">
+                        <h3
+                            class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
+                            <i class='bx bx-group text-emerald-300 mr-2'></i>
+                            Pengguna
+                        </h3>
 
-                    <a href="{{ route('admin.users.index') }}"
-                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.users.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
-                        <i class='bx bx-list-ul text-xl mr-4'></i>
-                        <span>Pengguna</span>
-                        @if(request()->routeIs('admin.users.*'))
-                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
-                        @endif
-                    </a>
-                </div>
+                        <a href="{{ route('admin.users.index') }}"
+                            class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.users.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
+                            <i class='bx bx-list-ul text-xl mr-4'></i>
+                            <span>Pengguna</span>
+                            @if(request()->routeIs('admin.users.*'))
+                                <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                            @endif
+                        </a>
+                    </div>
+                @endif
 
                 <!-- Asset Management Section -->
                 <div class="mb-8">
@@ -223,23 +227,25 @@
                         Tetapan
                     </h3>
 
-                    <a href="{{ route('admin.masjid-surau.index') }}"
-                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.masjid-surau.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
-                        <i class='bx bx-buildings text-xl mr-4'></i>
-                        <span>Masjid/Surau</span>
-                        @if(request()->routeIs('admin.masjid-surau.*'))
-                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
-                        @endif
-                    </a>
+                    @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+                        <a href="{{ route('admin.masjid-surau.index') }}"
+                            class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.masjid-surau.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
+                            <i class='bx bx-buildings text-xl mr-4'></i>
+                            <span>Masjid/Surau</span>
+                            @if(request()->routeIs('admin.masjid-surau.*'))
+                                <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                            @endif
+                        </a>
 
-                    <a href="{{ route('admin.audit-trails.index') }}"
-                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.audit-trails.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
-                        <i class='bx bx-history text-xl mr-4'></i>
-                        <span>Log Audit</span>
-                        @if(request()->routeIs('admin.audit-trails.*'))
-                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
-                        @endif
-                    </a>
+                        <a href="{{ route('admin.audit-trails.index') }}"
+                            class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.audit-trails.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
+                            <i class='bx bx-history text-xl mr-4'></i>
+                            <span>Log Audit</span>
+                            @if(request()->routeIs('admin.audit-trails.*'))
+                                <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                            @endif
+                        </a>
+                    @endif
 
                     <a href="{{ route('admin.profile.edit') }}"
                         class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.profile.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
@@ -289,7 +295,10 @@
                                     </div>
                                     <div class="hidden md:block text-left">
                                         <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
-                                        <p class="text-xs text-gray-500">Administrator</p>
+                                        <p class="text-xs text-gray-500">
+                                            {{ Auth::user()->masjidSurau ? Auth::user()->masjidSurau->nama : 'Pengurusan Pusat' }}
+                                            • {{ Auth::user()->position ?? ucfirst(Auth::user()->role) }}
+                                        </p>
                                     </div>
                                     <i class='bx bx-chevron-down text-gray-400 transition-transform duration-200'
                                         :class="open ? 'rotate-180' : ''"></i>

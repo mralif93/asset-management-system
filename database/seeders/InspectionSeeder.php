@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Inspection;
 use App\Models\Asset;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -16,9 +17,10 @@ class InspectionSeeder extends Seeder
     public function run(): void
     {
         $assets = Asset::all();
+        $users = User::where('role', 'admin')->get();
+        $defaultUser = $users->first();
 
-        // Sample inspection data
-        $inspections = [
+        $sampleInspections = [
             [
                 'tarikh_pemeriksaan' => Carbon::now()->subDays(30),
                 'pegawai_pemeriksa' => 'Ustaz Ahmad bin Ali',
@@ -61,24 +63,23 @@ class InspectionSeeder extends Seeder
             ],
         ];
 
-        // Create inspections for existing assets
-        foreach ($inspections as $index => $inspectionData) {
+        foreach ($sampleInspections as $index => $inspectionData) {
             if ($index < $assets->count()) {
                 $asset = $assets[$index];
                 
                 Inspection::create(array_merge($inspectionData, [
                     'asset_id' => $asset->id,
+                    'user_id' => $defaultUser?->id,
                 ]));
             }
         }
 
-        // Create additional random inspections
-        $this->createAdditionalInspections($assets);
+        $this->createAdditionalInspections($assets, $users);
 
         $this->command->info('Inspections seeded successfully!');
     }
 
-    private function createAdditionalInspections($assets)
+    private function createAdditionalInspections($assets, $users)
     {
         $kondisiAset = ['Sedang Digunakan', 'Tidak Digunakan', 'Rosak', 'Sedang Diselenggara', 'Hilang'];
         $pegawaiPemeriksa = [
@@ -175,9 +176,8 @@ class InspectionSeeder extends Seeder
             ]
         ];
 
-        // Create multiple inspections for each asset (historical data)
         foreach ($assets as $asset) {
-            $numInspections = rand(1, 3); // 1-3 additional inspections per asset
+            $numInspections = rand(1, 3);
             
             for ($i = 0; $i < $numInspections; $i++) {
                 $kondisi = $kondisiAset[array_rand($kondisiAset)];
@@ -185,6 +185,7 @@ class InspectionSeeder extends Seeder
                 
                 $inspection = [
                     'asset_id' => $asset->id,
+                    'user_id' => $users->random()?->id,
                     'tarikh_pemeriksaan' => $tarikhPemeriksaan,
                     'pegawai_pemeriksa' => $pegawaiPemeriksa[array_rand($pegawaiPemeriksa)],
                     'kondisi_aset' => $kondisi,

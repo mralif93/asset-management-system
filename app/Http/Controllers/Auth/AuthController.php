@@ -44,27 +44,27 @@ class AuthController extends Controller
 
         // Check if user exists and credentials are correct
         $user = User::where('email', $request->email)->first();
-        
+
         if ($user && Hash::check($request->password, $user->password)) {
             // Check if email is verified
             if (is_null($user->email_verified_at)) {
                 // Log failed login attempt due to unverified email
                 AuditTrailService::logLogin($user, false);
-                
+
                 return back()->withErrors([
                     'email' => 'Akaun anda belum disahkan. Sila hubungi pentadbir untuk mengesahkan akaun anda sebelum log masuk.',
                 ])->withInput($request->except('password'));
             }
-            
+
             // Email is verified, proceed with login
             Auth::login($user, $remember);
             $request->session()->regenerate();
-            
+
             // Log successful login
             AuditTrailService::logLogin($user, true);
-            
+
             // Redirect based on role
-            if ($user->role === 'admin') {
+            if (in_array($user->role, ['admin', 'superadmin', 'Asset Officer'])) {
                 return redirect()->intended(route('admin.dashboard'));
             } else {
                 return redirect()->intended(route('user.dashboard'));
@@ -144,8 +144,8 @@ class AuthController extends Controller
         );
 
         return $status === Password::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['email' => __($status)]);
     }
 
     /**
@@ -198,10 +198,10 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = Auth::user();
-        
+
         // Log logout before actually logging out
         AuditTrailService::logLogout($user);
-        
+
         Auth::logout();
 
         $request->session()->invalidate();
@@ -209,4 +209,4 @@ class AuthController extends Controller
 
         return redirect()->route('login')->with('success', 'Anda telah berjaya log keluar.');
     }
-} 
+}

@@ -17,83 +17,62 @@ class UserSeeder extends Seeder
     {
         $this->command->info('Starting UserSeeder...');
 
-        // Create admin user
+        // Create superadmin user (System wide access)
         User::firstOrCreate(
-            ['email' => 'admin@assetflow.test'],
+            ['email' => 'superadmin@assetflow.test'],
             [
-                'name' => 'System Administrator',
+                'name' => 'System Super Administrator',
                 'password' => bcrypt('password'),
-                'role' => 'admin',
+                'role' => 'superadmin',
+                'masjid_surau_id' => null, // Takes over all
                 'phone' => '0123456789',
-                'position' => 'System Administrator',
+                'position' => 'Super Administrator',
                 'email_verified_at' => Carbon::now(),
             ]
         );
 
-        $this->command->info('Admin users created.');
+        $this->command->info('Superadmin created.');
 
-        // Create regular users for each masjid/surau
-        $masjidSuraus = MasjidSurau::limit(5)->get();
-        $this->command->info('Creating users for ' . $masjidSuraus->count() . ' masjid/surau records...');
+        // Define the target Masjids/Suraus
+        $targets = [
+            'Masjid Taman Melawati' => 'melawati',
+            'Masjid Melawati' => 'melawati2',
+            'Surau Al-Ikhlas' => 'alikhlas'
+        ];
 
-        foreach ($masjidSuraus as $masjidSurau) {
-            // Create Asset Officer
-            User::firstOrCreate(
-                ['email' => 'officer.' . Str::slug($masjidSurau->nama) . '@assetflow.test'],
-                [
-                    'name' => 'Pegawai Aset ' . $masjidSurau->nama,
-                    'password' => bcrypt('password'),
-                    'role' => 'Asset Officer',
-                    'masjid_surau_id' => $masjidSurau->id,
-                    'phone' => '01' . rand(10000000, 99999999),
-                    'position' => 'Pegawai Aset',
-                    'email_verified_at' => Carbon::now(),
-                ]
-            );
+        $roles = ['admin', 'user', 'Asset Officer'];
 
-            // Create Staff
-            User::firstOrCreate(
-                ['email' => 'staff.' . Str::slug($masjidSurau->nama) . '@assetflow.test'],
-                [
-                    'name' => 'Staf ' . $masjidSurau->nama,
-                    'password' => bcrypt('password'),
-                    'role' => 'Staff',
-                    'masjid_surau_id' => $masjidSurau->id,
-                    'phone' => '01' . rand(10000000, 99999999),
-                    'position' => 'Staf',
-                    'email_verified_at' => Carbon::now(),
-                ]
-            );
+        foreach ($targets as $namaMasjid => $emailSuffix) {
+            $masjid = MasjidSurau::where('nama', $namaMasjid)->first();
+
+            if ($masjid) {
+                $this->command->info("Creating user roles for {$namaMasjid}...");
+
+                foreach ($roles as $role) {
+                    $emailPrefix = str_replace(' ', '', strtolower($role));
+                    if ($emailPrefix === 'assetofficer') {
+                        $emailPrefix = 'officer'; // Simplify for login convenience
+                    }
+
+                    User::firstOrCreate(
+                        ['email' => $emailPrefix . '.' . $emailSuffix . '@assetflow.test'],
+                        [
+                            'name' => ucwords($role) . ' ' . $namaMasjid,
+                            'password' => bcrypt('password'),
+                            'role' => $role,
+                            'masjid_surau_id' => $masjid->id,
+                            'phone' => '01' . rand(10000000, 99999999),
+                            'position' => ucwords($role),
+                            'email_verified_at' => Carbon::now(),
+                        ]
+                    );
+                }
+                $this->command->info("Users for {$namaMasjid} created successfully.");
+            } else {
+                $this->command->error("{$namaMasjid} not found in database. Please run MasjidSurauSeeder first.");
+            }
         }
 
-        $this->command->info('Regular users created for sample masjid/surau records.');
-
-        // Create test users
-        User::firstOrCreate(
-            ['email' => 'test.admin@assetflow.test'],
-            [
-                'name' => 'Test Admin',
-                'password' => bcrypt('password'),
-                'role' => 'admin',
-                'phone' => '0123456789',
-                'position' => 'Test Admin',
-                'email_verified_at' => Carbon::now(),
-            ]
-        );
-
-        User::firstOrCreate(
-            ['email' => 'test.officer@assetflow.test'],
-            [
-                'name' => 'Test Officer',
-                'password' => bcrypt('password'),
-                'role' => 'Asset Officer',
-                'phone' => '0123456789',
-                'position' => 'Test Officer',
-                'email_verified_at' => Carbon::now(),
-            ]
-        );
-
-        $this->command->info('Test users created.');
         $this->command->info('Users seeded successfully!');
     }
 }

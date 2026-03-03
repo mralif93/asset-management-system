@@ -113,7 +113,7 @@
                     </div>
                     <span class="text-sm text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full font-medium">+2.1%</span>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ number_format($totalMasjidSurau ?? 0) }}</h3>
+                <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ number_format($totalMasjids ?? 0) }}</h3>
                 <p class="text-sm text-gray-600">Masjid/Surau</p>
             </div>
 
@@ -125,7 +125,7 @@
                     </div>
                     <span class="text-sm text-amber-600 bg-amber-100 px-2 py-1 rounded-full font-medium">Pending</span>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ number_format($pendingInspections ?? 0) }}</h3>
+                <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ number_format($stats['assets_needing_inspection'] ?? 0) }}</h3>
                 <p class="text-sm text-gray-600">Pemeriksaan Pending</p>
             </div>
         </div>
@@ -146,17 +146,17 @@
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
-                            @if(isset($recentActivities) && $recentActivities->count() > 0)
-                                @foreach($recentActivities->take(5) as $activity)
+                            @if(isset($recentAssets) && $recentAssets->count() > 0)
+                                @foreach($recentAssets as $asset)
                                     <div class="flex items-start space-x-3">
                                         <div
                                             class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <i class='bx bx-check text-emerald-600 text-sm'></i>
+                                            <i class='bx bx-box text-emerald-600 text-sm'></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-sm text-gray-900">{{ $activity->description ?? 'Aktiviti sistem' }}</p>
+                                            <p class="text-sm text-gray-900">{{ $asset->nama_aset ?? 'Aset baharu' }}</p>
                                             <p class="text-xs text-gray-500 mt-1">
-                                                {{ $activity->created_at->diffForHumans() ?? 'Baru sahaja' }}</p>
+                                                {{ $asset->created_at->diffForHumans() ?? 'Baru sahaja' }}</p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -180,13 +180,18 @@
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
+                            @php
+                                $activeCount = $assetsByStatus->where('status_aset', 'Sedang Digunakan')->first()->count ?? 0;
+                                $maintenanceCount = $assetsByStatus->where('status_aset', 'Dalam Penyelenggaraan')->first()->count ?? 0;
+                                $damagedCount = $assetsByStatus->where('status_aset', 'Rosak')->first()->count ?? 0;
+                            @endphp
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                                     <span class="text-sm text-gray-700">Aktif</span>
                                 </div>
                                 <span
-                                    class="text-sm font-medium text-gray-900">{{ number_format($activeAssets ?? 0) }}</span>
+                                    class="text-sm font-medium text-gray-900">{{ number_format($activeCount) }}</span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
@@ -194,7 +199,7 @@
                                     <span class="text-sm text-gray-700">Maintenance</span>
                                 </div>
                                 <span
-                                    class="text-sm font-medium text-gray-900">{{ number_format($maintenanceAssets ?? 0) }}</span>
+                                    class="text-sm font-medium text-gray-900">{{ number_format($maintenanceCount) }}</span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
@@ -202,7 +207,7 @@
                                     <span class="text-sm text-gray-700">Rosak</span>
                                 </div>
                                 <span
-                                    class="text-sm font-medium text-gray-900">{{ number_format($damagedAssets ?? 0) }}</span>
+                                    class="text-sm font-medium text-gray-900">{{ number_format($damagedCount) }}</span>
                             </div>
                         </div>
                     </div>
@@ -294,18 +299,18 @@
                 <div class="p-6">
                     <div class="space-y-4">
                         @if(isset($upcomingMaintenance) && $upcomingMaintenance->count() > 0)
-                            @foreach($upcomingMaintenance->take(5) as $maintenance)
+                            @foreach($upcomingMaintenance as $maintenance)
                                 <div class="flex items-center space-x-3">
                                     <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
                                         <i class='bx bx-wrench text-amber-600'></i>
                                     </div>
                                     <div class="flex-1">
                                         <p class="text-sm font-medium text-gray-900">
-                                            {{ $maintenance->title ?? 'Penyelenggaraan Rutin' }}</p>
-                                        <p class="text-xs text-gray-500">{{ $maintenance->asset->name ?? 'Aset' }}</p>
+                                            {{ $maintenance->jenis_penyelenggaraan ?? 'Penyelenggaraan Rutin' }}</p>
+                                        <p class="text-xs text-gray-500">{{ $maintenance->asset->nama_aset ?? 'Aset' }}</p>
                                     </div>
                                     <span
-                                        class="text-xs text-gray-500">{{ $maintenance->scheduled_date->format('d M') ?? 'TBD' }}</span>
+                                        class="text-xs text-gray-500">{{ $maintenance->tarikh_penyelenggaraan_akan_datang ? \Carbon\Carbon::parse($maintenance->tarikh_penyelenggaraan_akan_datang)->format('d M') : 'TBD' }}</span>
                                 </div>
                             @endforeach
                         @else

@@ -15,11 +15,12 @@ class ImmovableAssetTest extends TestCase
     public function it_has_fillable_attributes()
     {
         $immovableAsset = new ImmovableAsset();
-        
+
         $fillable = [
             'masjid_surau_id',
             'no_siri_pendaftaran',
             'nama_aset',
+            'batch_id',
             'jenis_aset',
             'alamat',
             'no_hakmilik',
@@ -40,7 +41,7 @@ class ImmovableAssetTest extends TestCase
     public function it_casts_attributes_correctly()
     {
         $immovableAsset = new ImmovableAsset();
-        
+
         $expectedCasts = [
             'luas_tanah_bangunan' => 'decimal:2',
             'kos_perolehan' => 'decimal:2',
@@ -57,69 +58,69 @@ class ImmovableAssetTest extends TestCase
     public function it_belongs_to_masjid_surau()
     {
         $immovableAsset = new ImmovableAsset();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $immovableAsset->masjidSurau()
         );
     }
-    
+
     /** @test */
     public function it_uses_auditable_trait()
     {
         $immovableAsset = new ImmovableAsset();
         $this->assertContains('App\Traits\Auditable', class_uses_recursive($immovableAsset));
     }
-    
+
     /** @test */
     public function it_uses_soft_deletes()
     {
         $immovableAsset = new ImmovableAsset();
         $this->assertContains('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive($immovableAsset));
     }
-    
+
     /** @test */
     public function it_formats_asset_type_correctly()
     {
         $immovableAsset = new ImmovableAsset();
-        
+
         $immovableAsset->jenis_aset = 'tanah';
         $this->assertEquals('Tanah', $immovableAsset->getFormattedAssetTypeAttribute());
-        
+
         $immovableAsset->jenis_aset = 'bangunan';
         $this->assertEquals('Bangunan', $immovableAsset->getFormattedAssetTypeAttribute());
-        
+
         $immovableAsset->jenis_aset = 'other';
         $this->assertEquals('Other', $immovableAsset->getFormattedAssetTypeAttribute());
     }
-    
+
     /** @test */
     public function it_formats_acquisition_source_correctly()
     {
         $immovableAsset = new ImmovableAsset();
-        
+
         $immovableAsset->sumber_perolehan = 'pembelian';
         $this->assertEquals('Pembelian', $immovableAsset->getFormattedAcquisitionSourceAttribute());
-        
+
         $immovableAsset->sumber_perolehan = 'wakaf';
         $this->assertEquals('Wakaf', $immovableAsset->getFormattedAcquisitionSourceAttribute());
-        
+
         $immovableAsset->sumber_perolehan = 'lain_lain';
         $this->assertEquals('Lain-lain', $immovableAsset->getFormattedAcquisitionSourceAttribute());
     }
-    
+
     /** @test */
     public function it_formats_current_condition_correctly()
     {
         $immovableAsset = new ImmovableAsset();
-        
+
         $immovableAsset->keadaan_semasa = 'baik';
         $this->assertEquals('Baik', $immovableAsset->getFormattedCurrentConditionAttribute());
-        
+
         $immovableAsset->keadaan_semasa = 'sederhana';
         $this->assertEquals('Sederhana', $immovableAsset->getFormattedCurrentConditionAttribute());
     }
-    
+
     /** @test */
     public function it_can_create_immovable_asset_with_valid_attributes()
     {
@@ -128,7 +129,7 @@ class ImmovableAssetTest extends TestCase
             'jenis' => 'Masjid',
             'status' => 'Aktif',
         ]);
-        
+
         $assetData = [
             'masjid_surau_id' => $masjidSurau->id,
             'no_siri_pendaftaran' => 'IM-2025-001',
@@ -143,9 +144,9 @@ class ImmovableAssetTest extends TestCase
             'kos_perolehan' => 500000.00,
             'keadaan_semasa' => 'baik',
         ];
-        
+
         $immovableAsset = ImmovableAsset::create($assetData);
-        
+
         $this->assertDatabaseHas('immovable_assets', [
             'id' => $immovableAsset->id,
             'masjid_surau_id' => $masjidSurau->id,
@@ -154,4 +155,4 @@ class ImmovableAssetTest extends TestCase
             'no_hakmilik' => 'HS(D) 123456',
         ]);
     }
-} 
+}

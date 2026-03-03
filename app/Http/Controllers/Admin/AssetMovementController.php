@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AssetMovement;
 use App\Models\Asset;
 use App\Models\MasjidSurau;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -201,10 +202,13 @@ class AssetMovementController extends Controller
         }
 
         if (count($movementIds) > 1) {
+            NotificationService::notifyNewAssetMovementRequest(AssetMovement::find($movementIds[0]));
             return redirect()->route('admin.asset-movements.index')
                 ->with('success', count($movementIds) . ' pergerakan aset berjaya didaftarkan secara berkelompok.');
         }
 
+        NotificationService::notifyNewAssetMovementRequest($movement);
+        
         return redirect()
             ->route('admin.asset-movements.show', $movementIds[0])
             ->with('success', 'Pergerakan aset berjaya didaftarkan dan sedang menunggu kelulusan.');
@@ -322,6 +326,8 @@ class AssetMovementController extends Controller
             'catatan' => $catatan ? $assetMovement->catatan . "\n[Lulus]: " . $catatan : $assetMovement->catatan,
         ]);
 
+        NotificationService::notifyAssetMovementApproved($assetMovement);
+
         return redirect()
             ->route('admin.asset-movements.show', $assetMovement)
             ->with('success', 'Pergerakan aset telah diluluskan.');
@@ -346,6 +352,8 @@ class AssetMovementController extends Controller
             'pegawai_meluluskan' => $user->name, // Storing who rejected it
             'catatan' => $assetMovement->catatan . "\n[Ditolak]: " . $validated['catatan'],
         ]);
+
+        NotificationService::notifyAssetMovementRejected($assetMovement, $validated['catatan']);
 
         return redirect()->route('admin.asset-movements.show', $assetMovement)
             ->with('success', 'Pergerakan aset telah ditolak.');
@@ -397,5 +405,99 @@ class AssetMovementController extends Controller
 
         return redirect()->route('admin.asset-movements.show', $assetMovement)
             ->with('success', 'Kepulangan aset telah direkodkan.');
+    }
+
+    /**
+     * Bulk approve asset movements.
+     */
+    public function bulkApprove(Request $request)
+    {
+        $validated = $request->validate([
+            'movement_ids' => 'required|array',
+            'movement_ids.*' => 'exists:asset_movements,id',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $user = Auth::user();
+        $approvedCount = 0;
+
+        foreach ($validated['movement_ids'] as $movementId) {
+            $movement = AssetMovement::find($movementId);
+            
+            if ($movement && $movement->status_pergerakan === 'menunggu_kelulusan') {
+                $movement->update([
+                    'status_pergerakan' => 'diluluskan',
+                    'pegawai_meluluskan' => $user->name,
+                    'catatan' => $validated['catatan'] 
+                        ? $movement->catatan . "\n[Lulus]: " . $validated['catatan'] 
+                        : $movement->catatan,
+                ]);
+                $approvedCount++;
+            }
+        }
+
+        return redirect()->route('admin.asset-movements.index')
+            ->with('success', $approvedCount . ' pergerakan aset berjaya diluluskan.');
+    }
+
+    /**
+     * Bulk reject asset movements.
+     */
+    public function bulkReject(Request $request)
+    {
+        $validated = $request->validate([
+            'movement_ids' => 'required|array',
+            'movement_ids.*' => 'exists:asset_movements,id',
+            'catatan' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+        $rejectedCount = 0;
+
+        foreach ($validated['movement_ids'] as $movementId) {
+            $movement = AssetMovement::find($movementId);
+            
+            if ($movement && $movement->status_pergerakan === 'menunggu_kelulusan') {
+                $movement->update([
+                    'status_pergerakan' => 'ditolak',
+                    'pegawai_meluluskan' => $user->name,
+                    'catatan' => $movement->catatan . "\n[Ditolak]: " . $validated['catatan'],
+                ]);
+                $rejectedCount++;
+            }
+        }
+
+        return redirect()->route('admin.asset-movements.index')
+            ->with('success', $rejectedCount . ' pergerakan aset telah ditolak.');
+    }
+
+    /**
+     * Display a listing of trashed asset movements.
+     */
+    public function trashed()
+    {
+        $trashedMovements = AssetMovement::onlyTrashed()
+            ->with([
+                'asset',
+                'asset.masjidSurau',
+                'masjidSurauAsal',
+                'masjidSurauDestinasi'
+            ])
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.asset-movements.trashed', compact('trashedMovements'));
+    }
+
+    /**
+     * Restore a soft-deleted asset movement.
+     */
+    public function restore($id)
+    {
+        $movement = AssetMovement::onlyTrashed()->findOrFail($id);
+        $movement->restore();
+
+        return redirect()->route('admin.asset-movements.trashed')
+            ->with('success', 'Pergerakan aset berjaya dipulihkan.');
     }
 }

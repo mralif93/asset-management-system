@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\Auditable;
+use App\Traits\ScopesToMasjidSurau;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ImmovableAsset extends Model
 {
-    use HasFactory, Auditable, SoftDeletes;
+    use HasFactory, Auditable, SoftDeletes, ScopesToMasjidSurau;
 
     protected $fillable = [
         'masjid_surau_id',

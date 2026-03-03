@@ -136,204 +136,162 @@
         </div>
 
         <!-- Main Table -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Senarai Pergerakan Aset</h3>
+                <p class="text-sm text-gray-600">Data pergerakan aset mengikut kriteria yang dipilih</p>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full">
-                    <!-- Table Header -->
-                    <thead class="bg-gray-100">
+                    <thead class="bg-emerald-50">
                         <tr>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                                 Bil.
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                                 Nama Pemohon
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                                 Jawatan
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                                 Tujuan
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                                 Nombor Siri Pendaftaran
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">
                                 Keterangan Aset
                             </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300"
-                                colspan="4">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200" colspan="4">
                                 Dipinjam
                             </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider"
-                                colspan="4">
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider" colspan="4">
                                 Dipulangkan
                             </th>
                         </tr>
-                        <tr class="bg-gray-50">
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                                Tarikh
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                                Kuantiti
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                                Tandatangan Penyerah
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                                Tandatangan Peminjam
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                                Tarikh
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                                Kuantiti
-                            </th>
-                            <th
-                                class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-300">
-                                Tandatangan Penerima
-                            </th>
-                            <th class="px-4 py-2 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                Tandatangan Peminjam
-                            </th>
+                        <tr class="bg-emerald-100/50">
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200"></th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200"></th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200"></th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200"></th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200"></th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200"></th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200">Tarikh</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200">Kuantiti</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200">Tandatangan Penyerah</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200">Tandatangan Peminjam</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200">Tarikh</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200">Kuantiti</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider border-r border-emerald-200">Tandatangan Penerima</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-emerald-700 uppercase tracking-wider">Tandatangan Peminjam</th>
                         </tr>
                     </thead>
 
                     <!-- Table Body -->
-                <!-- Table Body -->
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($groupedMovements as $groupKey => $movements)
-                        @php
-                            $firstMovement = $movements->first();
-                            $totalQuantity = $movements->sum('kuantiti');
-                            $asset = $firstMovement->asset;
-                        @endphp
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                {{ $loop->iteration }}
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                <div class="font-medium">{{ $firstMovement->user->name ?? 'N/A' }}</div>
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                {{ $firstMovement->user->jawatan ?? 'N/A' }}
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                {{ $firstMovement->tujuan_pergerakan ?? 'N/A' }}
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                <div class="font-medium">{{ $asset->no_siri_pendaftaran ?? 'N/A' }}</div>
-                                @if($movements->count() > 1)
-                                    <div class="text-xs text-gray-500 italic mt-1">(+{{ $movements->count() - 1 }} item lain)</div>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 text-sm text-gray-900 border-r border-gray-300">
-                                <div class="font-medium">{{ $asset->nama_aset ?? 'N/A' }}</div>
-                                <div class="text-gray-500 text-xs">{{ $asset->jenis_aset ?? '' }}</div>
-                            </td>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($groupedMovements as $groupKey => $movements)
+                            @php
+                                $firstMovement = $movements->first();
+                                $totalQuantity = $movements->sum('kuantiti');
+                                $asset = $firstMovement->asset;
+                            @endphp
+                            <tr class="hover:bg-emerald-50 transition-colors">
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    <div class="font-medium">{{ $firstMovement->user->name ?? 'N/A' }}</div>
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    {{ $firstMovement->user->jawatan ?? 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    {{ $firstMovement->tujuan_pergerakan ?? 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    <div class="font-medium">{{ $asset->no_siri_pendaftaran ?? 'N/A' }}</div>
+                                    @if($movements->count() > 1)
+                                        <div class="text-xs text-gray-500 italic mt-1">(+{{ $movements->count() - 1 }} item lain)</div>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900 border-r border-gray-200">
+                                    <div class="font-medium">{{ $asset->nama_aset ?? 'N/A' }}</div>
+                                    <div class="text-gray-500 text-xs">{{ $asset->jenis_aset ?? '' }}</div>
+                                </td>
 
-                            <!-- Dipinjam Section -->
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                {{ $firstMovement->tarikh_mula ? \Carbon\Carbon::parse($firstMovement->tarikh_mula)->format('d/m/Y') : 'N/A' }}
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {{ $totalQuantity }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                <div class="text-xs text-gray-500">
-                                    {{ $firstMovement->approver->name ?? 'System' }} <!-- Assuming relation exists or just display text -->
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                @if($firstMovement->pegawai_bertanggungjawab_signature)
-                                    <div class="flex justify-center">
-                                        <img src="{{ $firstMovement->pegawai_bertanggungjawab_signature }}" alt="Signature" class="h-8 object-contain">
-                                    </div>
-                                @else
-                                    <div
-                                        class="h-8 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
-                                        <span class="text-gray-400 text-xs">Tiada</span>
-                                    </div>
-                                @endif
-                            </td>
-
-                            <!-- Dipulangkan Section -->
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                {{ $firstMovement->tarikh_pulang_sebenar ? \Carbon\Carbon::parse($firstMovement->tarikh_pulang_sebenar)->format('d/m/Y') : 'Belum Dipulangkan' }}
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                @if($firstMovement->tarikh_pulang_sebenar)
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <!-- Dipinjam Section -->
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    {{ $firstMovement->tarikh_mula ? \Carbon\Carbon::parse($firstMovement->tarikh_mula)->format('d/m/Y') : 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         {{ $totalQuantity }}
                                     </span>
-                                @else
-                                    <span class="text-gray-400 text-xs">-</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
-                                @if($firstMovement->tandatangan_penerima)
-                                    <div class="flex justify-center">
-                                        <img src="{{ $firstMovement->tandatangan_penerima }}" alt="Receiver Sign" class="h-8 object-contain">
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    <div class="text-xs text-gray-500">
+                                        {{ $firstMovement->approver->name ?? 'System' }}
                                     </div>
-                                @else
-                                    <span class="text-gray-400 text-xs">-</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 text-center text-sm text-gray-900 border-r border-gray-300">
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    @if($firstMovement->pegawai_bertanggungjawab_signature)
+                                        <div class="flex justify-center">
+                                            <img src="{{ $firstMovement->pegawai_bertanggungjawab_signature }}" alt="Signature" class="h-8 object-contain">
+                                        </div>
+                                    @else
+                                        <div class="h-8 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
+                                            <span class="text-gray-400 text-xs">Tiada</span>
+                                        </div>
+                                    @endif
+                                </td>
+
+                                <!-- Dipulangkan Section -->
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    {{ $firstMovement->tarikh_pulang_sebenar ? \Carbon\Carbon::parse($firstMovement->tarikh_pulang_sebenar)->format('d/m/Y') : 'Belum Dipulangkan' }}
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    @if($firstMovement->tarikh_pulang_sebenar)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ $totalQuantity }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">-</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900 border-r border-gray-200">
+                                    @if($firstMovement->tandatangan_penerima)
+                                        <div class="flex justify-center">
+                                            <img src="{{ $firstMovement->tandatangan_penerima }}" alt="Receiver Sign" class="h-8 object-contain">
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-xs">-</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-900">
                                     @if($firstMovement->tandatangan_pemulangan)
-                                    <div class="flex justify-center">
-                                        <img src="{{ $firstMovement->tandatangan_pemulangan }}" alt="Returner Sign" class="h-8 object-contain">
+                                        <div class="flex justify-center">
+                                            <img src="{{ $firstMovement->tandatangan_pemulangan }}" alt="Returner Sign" class="h-8 object-contain">
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-xs">-</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="14" class="px-8 py-16 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <div class="bg-emerald-50 rounded-full p-6 mb-4">
+                                            <i class='bx bx-transfer text-5xl text-emerald-400'></i>
+                                        </div>
+                                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Tiada Pergerakan Aset Ditemui</h3>
+                                        <p class="text-sm text-gray-500 max-w-md">Tiada pergerakan aset yang memenuhi kriteria carian. Cuba ubah penapis untuk melihat data.</p>
                                     </div>
-                                @else
-                                    <span class="text-gray-400 text-xs">-</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="14" class="px-4 py-12 text-center text-gray-500">
-                                <div class="flex flex-col items-center">
-                                    <i class='bx bx-transfer text-4xl text-gray-300 mb-4'></i>
-                                    <p class="text-lg font-medium">Tiada pergerakan aset ditemui</p>
-                                    <p class="text-sm">Tiada pergerakan aset yang memenuhi kriteria carian</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
             </table>
             </div>
         </div>
@@ -379,25 +337,49 @@
             </div>
         </div>
 
+        <!-- Notes Section -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Nota:</h3>
+            <div class="space-y-4 text-sm text-gray-700">
+                <div>
+                    <p><strong>Laporan Penyenggaraan Aset:</strong> Senarai ini memaparkan semua rekod penyenggaraan aset alih yang telah dijalankan.</p>
+                </div>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                    <p><strong>Maklumat Penting:</strong></p>
+                    <ul class="mt-2 space-y-1 text-xs">
+                        <li>• <strong>Tarikh Penyenggaraan:</strong> Tarikh penyenggaraan dijalankan</li>
+                        <li>• <strong>Jenis Penyenggaraan:</strong> Kategori penyenggaraan (pencegahan/betulan)</li>
+                        <li>• <strong>Kos:</strong> Kos penyenggaraan yang dilakukan</li>
+                        <li>• <strong>Status:</strong> Status penyenggaraan (selesai/belum selesai)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Action Buttons -->
-        <div class="mt-8 flex flex-wrap gap-4 justify-end">
-            <button onclick="window.print()"
-                class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                <i class='bx bx-printer mr-2'></i>
-                Cetak Laporan
-            </button>
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="flex-1">
+                    <p class="text-sm text-gray-600">
+                        <i class='bx bx-info-circle text-blue-500 mr-1'></i>
+                        *NOTA: Laporan ini melaporkan semua rekod penyenggaraan aset alih yang telah direkodkan
+                    </p>
+                </div>
 
-            <button onclick="exportToPDF()"
-                class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-                <i class='bx bx-download mr-2'></i>
-                Muat Turun PDF
-            </button>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="exportToPDF()"
+                        class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
+                        <i class='bx bx-file-blank mr-2'></i>
+                        Muat Turun / Cetak Laporan
+                    </button>
 
-            <a href="{{ route('admin.reports.br-ams-forms') }}"
-                class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
-                <i class='bx bx-arrow-back mr-2'></i>
-                Kembali ke Senarai Laporan
-            </a>
+                    <a href="{{ route('admin.reports.index') }}"
+                        class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+                        <i class='bx bx-arrow-back mr-2'></i>
+                        Kembali ke Senarai Laporan
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

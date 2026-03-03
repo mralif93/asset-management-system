@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\User\UserAssetRequestController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -42,7 +43,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 // Dashboard redirects
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
-        if (auth()->user()->role === 'admin') {
+        if (in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer'])) {
             return redirect()->route('admin.dashboard');
         } else {
             return redirect()->route('user.dashboard');
@@ -51,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Legacy profile redirect - redirect to appropriate profile based on role
     Route::get('/profile', function () {
-        if (auth()->user()->role === 'admin') {
+        if (in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer'])) {
             return redirect()->route('admin.profile.edit');
         } else {
             return redirect()->route('user.profile.edit');
@@ -62,14 +63,19 @@ Route::middleware(['auth'])->group(function () {
 // Admin Routes - ALL modules under admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard & System
+    // Dashboard (Admin + Asset Officer)
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/system-overview', [AdminDashboardController::class, 'systemOverview'])->name('system-overview');
 
-    // User Management CRUD
-    Route::resource('users', UserController::class);
-    Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
-    Route::patch('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
-    Route::post('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulk-delete');
+    // Strict Admin Routes
+    Route::middleware(['strict.admin'])->group(function () {
+        Route::get('/system-overview', [AdminDashboardController::class, 'systemOverview'])->name('system-overview');
+
+        // User Management CRUD
+        Route::resource('users', UserController::class);
+        Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+        Route::patch('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulk-delete');
+    });
 
     // Assets Management
     // Define specific routes BEFORE resource route to avoid conflicts
@@ -80,12 +86,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('assets/import/template', [AssetController::class, 'downloadTemplate'])->name('assets.import.template');
     Route::get('assets/location/{lokasi}', [AssetController::class, 'byLocation'])->name('assets.by-location');
     Route::post('assets/bulk-delete', [AssetController::class, 'bulkDelete'])->name('assets.bulk-delete');
+    Route::get('assets/trashed', [AssetController::class, 'trashed'])->name('assets.trashed');
+    Route::post('assets/{id}/restore', [AssetController::class, 'restore'])->name('assets.restore');
+    Route::delete('assets/{id}/force-delete', [AssetController::class, 'forceDelete'])->name('assets.force-delete');
     Route::resource('assets', AssetController::class);
     Route::patch('assets/{asset}/location', [AssetController::class, 'updateLocation'])->name('assets.update-location');
 
     // Asset Movements
     Route::get('/asset-movements/{assetMovement}/return', [AssetMovementController::class, 'showReturnForm'])->name('asset-movements.return-form');
     Route::get('asset-movements/export', [AssetMovementController::class, 'export'])->name('asset-movements.export');
+    Route::post('asset-movements/bulk-approve', [AssetMovementController::class, 'bulkApprove'])->name('asset-movements.bulk-approve');
+    Route::post('asset-movements/bulk-reject', [AssetMovementController::class, 'bulkReject'])->name('asset-movements.bulk-reject');
+    Route::get('asset-movements/trashed', [AssetMovementController::class, 'trashed'])->name('asset-movements.trashed');
+    Route::post('asset-movements/{id}/restore', [AssetMovementController::class, 'restore'])->name('asset-movements.restore');
     Route::resource('asset-movements', AssetMovementController::class);
     Route::patch('asset-movements/{assetMovement}/approve', [AssetMovementController::class, 'approve'])->name('asset-movements.approve');
     Route::patch('asset-movements/{assetMovement}/reject', [AssetMovementController::class, 'reject'])->name('asset-movements.reject');
@@ -93,10 +106,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Inspections
     Route::get('inspections/export', [InspectionController::class, 'export'])->name('inspections.export');
+    Route::get('inspections/trashed', [InspectionController::class, 'trashed'])->name('inspections.trashed');
+    Route::post('inspections/{id}/restore', [InspectionController::class, 'restore'])->name('inspections.restore');
     Route::resource('inspections', InspectionController::class);
 
     // Maintenance Records
     Route::get('maintenance-records/export', [MaintenanceRecordController::class, 'export'])->name('maintenance-records.export');
+    Route::get('maintenance-records/trashed', [MaintenanceRecordController::class, 'trashed'])->name('maintenance-records.trashed');
+    Route::post('maintenance-records/{id}/restore', [MaintenanceRecordController::class, 'restore'])->name('maintenance-records.restore');
     Route::resource('maintenance-records', MaintenanceRecordController::class);
 
     // Immovable Assets
@@ -109,6 +126,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Disposals
     Route::get('disposals/export', [DisposalController::class, 'export'])->name('disposals.export');
+    Route::post('disposals/bulk-approve', [DisposalController::class, 'bulkApprove'])->name('disposals.bulk-approve');
+    Route::post('disposals/bulk-reject', [DisposalController::class, 'bulkReject'])->name('disposals.bulk-reject');
     Route::resource('disposals', DisposalController::class);
     Route::patch('disposals/{disposal}/approve', [DisposalController::class, 'approve'])->name('disposals.approve');
     Route::patch('disposals/{disposal}/reject', [DisposalController::class, 'reject'])->name('disposals.reject');
@@ -156,18 +175,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/br-ams-011/pdf', [ReportController::class, 'brAms011Pdf'])->name('br-ams-011.pdf');
     });
 
-    // Settings - Masjid/Surau Management
-    Route::resource('masjid-surau', MasjidSurauController::class);
-    Route::patch('masjid-surau/{masjidSurau}/toggle-status', [MasjidSurauController::class, 'toggleStatus'])->name('masjid-surau.toggle-status');
-    Route::post('masjid-surau/bulk-delete', [MasjidSurauController::class, 'bulkDelete'])->name('masjid-surau.bulk-delete');
+    // Strict Admin Settings
+    Route::middleware(['strict.admin'])->group(function () {
+        // Settings - Masjid/Surau Management
+        Route::resource('masjid-surau', MasjidSurauController::class);
+        Route::patch('masjid-surau/{masjidSurau}/toggle-status', [MasjidSurauController::class, 'toggleStatus'])->name('masjid-surau.toggle-status');
+        Route::post('masjid-surau/bulk-delete', [MasjidSurauController::class, 'bulkDelete'])->name('masjid-surau.bulk-delete');
 
-    // Settings - Audit Trails
-    Route::prefix('audit-trails')->name('audit-trails.')->group(function () {
-        Route::get('/', [AuditTrailController::class, 'index'])->name('index');
-        Route::get('/export/csv', [AuditTrailController::class, 'export'])->name('export');
-        Route::post('/cleanup', [AuditTrailController::class, 'cleanup'])->name('cleanup');
-        Route::get('/user-activity/json', [AuditTrailController::class, 'userActivity'])->name('user-activity');
-        Route::get('/{auditTrail}', [AuditTrailController::class, 'show'])->name('show');
+        // Settings - Audit Trails
+        Route::prefix('audit-trails')->name('audit-trails.')->group(function () {
+            Route::get('/', [AuditTrailController::class, 'index'])->name('index');
+            Route::get('/export/csv', [AuditTrailController::class, 'export'])->name('export');
+            Route::post('/cleanup', [AuditTrailController::class, 'cleanup'])->name('cleanup');
+            Route::get('/user-activity/json', [AuditTrailController::class, 'userActivity'])->name('user-activity');
+            Route::get('/{auditTrail}', [AuditTrailController::class, 'show'])->name('show');
+        });
     });
 
     // Admin Profile Management
@@ -194,6 +216,10 @@ Route::middleware(['auth', 'user'])->prefix('user')->name('user.')->group(functi
         Route::get('/activity', [UserProfileController::class, 'activity'])->name('activity');
         Route::delete('/', [UserProfileController::class, 'destroy'])->name('destroy');
     });
+
+    // User Asset Requests
+    Route::resource('asset-requests', UserAssetRequestController::class)
+        ->only(['index', 'create', 'store', 'show', 'destroy']);
 });
 
 // require __DIR__.'/auth.php'; // Commented out to use custom authentication

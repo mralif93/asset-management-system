@@ -15,14 +15,14 @@
                 <div class="flex items-center space-x-4 mt-4">
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-trash text-emerald-200'></i>
-                        <span class="text-emerald-100">{{ $disposal->kaedah_pelupusan ?? $disposal->kaedah_pelupusan_dicadang ?? 'Kaedah Belum Ditentukan' }}</span>
+                        <span class="text-emerald-100">{{ $disposal->formatted_actual_disposal_method }}</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <div class="w-3 h-3 
-                            @if(($disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu') === 'menunggu') bg-amber-400
-                            @elseif(($disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu') === 'diluluskan') bg-green-400
+                            @if($disposal->status_pelupusan === 'Dimohon') bg-amber-400
+                            @elseif($disposal->status_pelupusan === 'Diluluskan') bg-green-400
                             @else bg-red-400 @endif rounded-full"></div>
-                        <span class="text-emerald-100">{{ ucfirst($disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu') }}</span>
+                        <span class="text-emerald-100">{{ $disposal->status_pelupusan ?? 'Dimohon' }}</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <i class='bx bx-calendar text-emerald-200'></i>
@@ -54,7 +54,7 @@
     <!-- Actions -->
     <div class="flex items-center justify-end mb-8">
         <div class="flex space-x-3">
-            @if(($disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu') === 'menunggu')
+            @if($disposal->status_pelupusan === 'Dimohon')
                 <a href="{{ route('admin.disposals.edit', $disposal) }}" 
                    class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
                     <i class='bx bx-edit mr-2'></i>
@@ -180,13 +180,13 @@
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">
                             @php
-                                $status = $disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu';
+                                $status = $disposal->status_pelupusan ?? 'Dimohon';
                             @endphp
                             <span class="px-3 py-1 rounded-full text-sm font-medium
-                                @if($status === 'menunggu') bg-amber-100 text-amber-800
-                                @elseif($status === 'diluluskan') bg-green-100 text-green-800
+                                @if($status === 'Dimohon') bg-amber-100 text-amber-800
+                                @elseif($status === 'Diluluskan') bg-green-100 text-green-800
                                 @else bg-red-100 text-red-800 @endif">
-                                {{ ucfirst($status) }}
+                                {{ $status }}
                             </span>
                         </dd>
                     </div>
@@ -210,12 +210,13 @@
                         </div>
                         <dd class="text-lg font-semibold text-gray-900">
                             @php
-                                $method = $disposal->kaedah_pelupusan ?? $disposal->kaedah_pelupusan_dicadang ?? '-';
+                                $method = $disposal->formatted_actual_disposal_method;
+                                $methodLower = strtolower($disposal->kaedah_pelupusan ?? $disposal->kaedah_pelupusan_dicadang ?? '');
                             @endphp
                             <span class="px-3 py-1 rounded-full text-sm font-medium
-                                @if($method === 'Dijual') bg-green-100 text-green-800
-                                @elseif($method === 'Disumbangkan') bg-blue-100 text-blue-800
-                                @elseif($method === 'Dikitar semula') bg-purple-100 text-purple-800
+                                @if($methodLower === 'dijual' || $methodLower === 'jualan') bg-green-100 text-green-800
+                                @elseif($methodLower === 'disumbangkan' || $methodLower === 'sumbangan') bg-blue-100 text-blue-800
+                                @elseif($methodLower === 'dikitar semula') bg-purple-100 text-purple-800
                                 @else bg-gray-100 text-gray-800 @endif">
                                 {{ $method }}
                             </span>
@@ -232,6 +233,20 @@
                             RM {{ number_format($disposal->nilai_pelupusan ?? 0, 2) }}
                         </dd>
                     </div>
+
+                    <!-- Disposal Proceeds (Hasil Pelupusan) - only for sold assets -->
+                    @if(strtolower($disposal->kaedah_pelupusan ?? '') === 'dijual' || strtolower($disposal->kaedah_pelupusan ?? '') === 'jualan')
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center mb-2">
+                            <i class='bx bx-money text-green-600 mr-2'></i>
+                            <dt class="text-sm font-medium text-gray-600">Hasil Pelupusan</dt>
+                        </div>
+                        <dd class="text-lg font-semibold text-green-600">
+                            RM {{ number_format($disposal->hasil_pelupusan ?? 0, 2) }}
+                        </dd>
+                        <p class="text-xs text-gray-500 mt-1">Wang yang diterima daripada jualan aset</p>
+                    </div>
+                    @endif
 
                     <!-- Remaining Value -->
                     <div class="bg-white rounded-lg p-4 border border-gray-200">
@@ -271,14 +286,14 @@
                 @endif
 
                 <!-- Rejection Reason -->
-                @if($disposal->sebab_penolakan && ($disposal->status_kelulusan ?? $disposal->status_pelupusan) === 'ditolak')
+                @if($disposal->status_pelupusan === 'Ditolak' && $disposal->catatan)
                 <div class="mt-6 bg-red-50 rounded-lg p-4 border border-red-200">
                     <div class="flex items-center mb-2">
                         <i class='bx bx-x-circle text-red-600 mr-2'></i>
                         <dt class="text-sm font-medium text-red-700">Sebab Penolakan</dt>
                     </div>
                     <dd class="text-red-900 mt-2">
-                        {{ $disposal->sebab_penolakan }}
+                        {{ $disposal->catatan }}
                     </dd>
                 </div>
                 @endif
@@ -364,6 +379,97 @@
                 </div>
             </div>
 
+            <!-- Depreciation Schedule Section -->
+            @php
+                $depreciationSchedule = $disposal->asset->getDepreciationSchedule();
+                $annualDepreciation = $disposal->asset->getAnnualDepreciation();
+                $depreciableBase = ($disposal->asset->nilai_perolehan ?? 0) - ($disposal->asset->diskaun ?? 0);
+            @endphp
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                            <i class='bx bx-trending-down text-white text-xl'></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Jadual Susut Nilai</h3>
+                            <p class="text-sm text-gray-600">Kaedah Garis Lurus (Straight-Line Method)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p class="text-xs text-gray-600 mb-1">Nilai Perolehan</p>
+                            <p class="text-sm font-bold text-gray-900">RM {{ number_format($disposal->asset->nilai_perolehan ?? 0, 2) }}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p class="text-xs text-gray-600 mb-1">Diskaun</p>
+                            <p class="text-sm font-bold text-gray-900">RM {{ number_format($disposal->asset->diskaun ?? 0, 2) }}</p>
+                        </div>
+                        <div class="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
+                            <p class="text-xs text-emerald-600 mb-1">Nilai Boleh Susut</p>
+                            <p class="text-sm font-bold text-emerald-700">RM {{ number_format($depreciableBase, 2) }}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p class="text-xs text-gray-600 mb-1">Tempoh Hayat</p>
+                            <p class="text-sm font-bold text-gray-900">{{ $disposal->asset->umur_faedah_tahunan ?? '-' }} tahun</p>
+                        </div>
+                        <div class="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
+                            <p class="text-xs text-emerald-600 mb-1">Susut Nilai Tahunan</p>
+                            <p class="text-sm font-bold text-emerald-700">RM {{ number_format($annualDepreciation ?? 0, 2) }}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p class="text-xs text-gray-600 mb-1">Tahun Berlalu</p>
+                            <p class="text-sm font-bold text-gray-900">{{ $disposal->asset->tarikh_perolehan ? (int) $disposal->asset->tarikh_perolehan->diffInYears(now()) : 0 }} tahun</p>
+                        </div>
+                    </div>
+                </div>
+
+                @if(count($depreciationSchedule) > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-emerald-50">
+                            <tr>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">Tahun</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">Nilai Awal (RM)</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider border-r border-emerald-200">Susut Nilai (RM)</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider">Nilai Akhir (RM)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($depreciationSchedule as $entry)
+                            <tr class="hover:bg-emerald-50 transition-colors">
+                                <td class="px-6 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">Tahun {{ $entry['year'] }}</td>
+                                <td class="px-6 py-4 text-right text-sm text-gray-700 border-r border-gray-200">{{ number_format($entry['starting_nbv'], 2) }}</td>
+                                <td class="px-6 py-4 text-right text-sm font-medium text-emerald-600 border-r border-gray-200">{{ number_format($entry['annual_depreciation'], 2) }}</td>
+                                <td class="px-6 py-4 text-right text-sm font-semibold text-gray-900">{{ number_format($entry['ending_nbv'], 2) }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="bg-emerald-50">
+                            <tr>
+                                <td class="px-6 py-4 text-sm font-bold text-gray-900 border-r border-emerald-200" colspan="2">Jumlah Susut Nilai Terkumpul</td>
+                                <td class="px-6 py-4 text-right text-sm font-bold text-emerald-600 border-r border-emerald-200">RM {{ number_format($disposal->asset->getTotalDepreciation(), 2) }}</td>
+                                <td class="px-6 py-4 text-right text-sm font-bold text-gray-900">RM {{ number_format($disposal->asset->getCurrentValue(), 2) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                @else
+                <div class="px-8 py-12 text-center border-t border-gray-200">
+                    <div class="flex flex-col items-center">
+                        <div class="bg-emerald-50 rounded-full p-6 mb-4">
+                            <i class='bx bx-trending-down text-5xl text-emerald-400'></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Tiada Data Susut Nilai</h3>
+                        <p class="text-sm text-gray-500 max-w-md">Tempoh hayat aset tidak ditetapkan atau aset ini bukan harta modal.</p>
+                    </div>
+                </div>
+                @endif
+            </div>
+
             <!-- Images Section -->
             @if($disposal->gambar_pelupusan && count($disposal->gambar_pelupusan) > 0)
             <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border border-amber-200">
@@ -424,12 +530,12 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-sm text-gray-600">Kaedah:</span>
-                            <span class="text-sm font-medium">{{ $disposal->kaedah_pelupusan ?? $disposal->kaedah_pelupusan_dicadang ?? '-' }}</span>
+                            <span class="text-sm font-medium">{{ $disposal->formatted_actual_disposal_method }}</span>
                         </div>
                         <hr class="border-red-200">
                         <div class="flex justify-between">
                             <span class="text-sm text-gray-600">Status:</span>
-                            <span class="text-sm font-medium">{{ ucfirst($disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu') }}</span>
+                            <span class="text-sm font-medium">{{ $disposal->status_pelupusan ?? 'Dimohon' }}</span>
                         </div>
                     </div>
                 </div>
@@ -439,7 +545,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Tindakan Pantas</h3>
                     
                     <div class="space-y-3">
-                        @if(($disposal->status_kelulusan ?? $disposal->status_pelupusan ?? 'menunggu') === 'menunggu')
+                        @if($disposal->status_pelupusan === 'Dimohon')
                         <form action="{{ route('admin.disposals.approve', $disposal) }}" method="POST">
                             @csrf
                             <button type="submit" 

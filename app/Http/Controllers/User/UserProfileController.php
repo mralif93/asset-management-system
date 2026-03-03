@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
@@ -20,10 +21,10 @@ class UserProfileController extends Controller
     public function edit(Request $request): View
     {
         $user = $request->user();
-        
+
         // Log profile view
-        AuditTrailService::logView($user, 'User Profile', 'user-profile');
-        
+        AuditTrailService::logView($user, 'User Profile');
+
         return view('user.profile.edit', [
             'user' => $user,
         ]);
@@ -36,14 +37,26 @@ class UserProfileController extends Controller
     {
         $user = $request->user();
         $oldData = $user->toArray();
-        
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['nullable', 'string', 'max:20'],
             'position' => ['nullable', 'string', 'max:255'],
+            'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
-        
+
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            // Delete old profile picture if exists
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+
+            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
+            $validated['profile_picture'] = $path;
+        }
+
         // Users cannot change their masjid_surau_id - only admins can
         $user->fill($validated);
 
@@ -52,9 +65,9 @@ class UserProfileController extends Controller
         }
 
         $user->save();
-        
+
         // Log profile update
-        AuditTrailService::logUpdate($user, $oldData, $user->toArray());
+        AuditTrailService::logUpdate($user, $oldData);
 
         return Redirect::route('user.profile.edit')->with('status', 'profile-updated');
     }
@@ -73,14 +86,11 @@ class UserProfileController extends Controller
         $user->update([
             'password' => Hash::make($validated['password']),
         ]);
-        
-        // Log password update
+
         AuditTrailService::logCustom(
-            $user,
-            'password_update',
-            'User',
-            $user->id,
+            'PASSWORD_UPDATE',
             'User password updated',
+            $user,
             ['action' => 'Password changed by user']
         );
 
@@ -93,13 +103,13 @@ class UserProfileController extends Controller
     public function activity(Request $request): View
     {
         $user = $request->user();
-        
+
         // Get user's recent activities (limited to their own actions)
         $activities = \App\Models\AuditTrail::where('user_id', $user->id)
             ->whereIn('action', ['login', 'logout', 'view', 'profile_update', 'password_update'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            
+
         return view('user.profile.activity', [
             'user' => $user,
             'activities' => $activities,
@@ -117,14 +127,11 @@ class UserProfileController extends Controller
         ]);
 
         $user = $request->user();
-        
-        // Log account deletion
+
         AuditTrailService::logCustom(
-            $user,
-            'account_deletion',
-            'User',
-            $user->id,
+            'ACCOUNT_DELETION',
             'User account deleted',
+            $user,
             ['deleted_by' => $user->id, 'role' => 'user']
         );
 
@@ -136,4 +143,4 @@ class UserProfileController extends Controller
 
         return Redirect::to('/')->with('success', 'Akaun anda telah berjaya dipadamkan.');
     }
-} 
+}

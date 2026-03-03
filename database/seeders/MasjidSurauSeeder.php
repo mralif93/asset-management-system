@@ -441,5 +441,52 @@ class MasjidSurauSeeder extends Seeder
         ]);
 
         $this->command->info('Masjid Taman Melawati seeded successfully!');
+
+        MasjidSurau::create([
+            'nama' => 'Surau Al-Ikhlas',
+            'nama_rasmi' => 'Surau Al-Ikhlas Taman Melawati',
+            'singkatan_nama' => 'SAITM',
+            'jenis' => 'Surau',
+            'kategori' => 'Kariah',
+            'alamat_baris_1' => 'Jalan J',
+            'alamat_baris_2' => 'Taman Melawati',
+            'poskod' => '53100',
+            'bandar' => 'Kuala Lumpur',
+            'negeri' => 'Wilayah Persekutuan Kuala Lumpur',
+            'daerah' => 'Gombak',
+            'negara' => 'Malaysia',
+            'no_telefon' => '03-41071234',
+            'status' => 'Aktif',
+            'imam_ketua' => 'Ustaz Ali Bin Abu',
+            'bilangan_jemaah' => 500,
+            'tahun_dibina' => 1995,
+            'catatan' => 'Surau utama bagi Fasa 3 Taman Melawati'
+        ]);
+
+        $this->command->info('Surau Al-Ikhlas seeded successfully!');
+
+        // --- NEW ENTRY FOR MASJID MELAWATI ---
+        MasjidSurau::create([
+            'nama' => 'Masjid Melawati',
+            'nama_rasmi' => 'Masjid Melawati',
+            'singkatan_nama' => 'MSJM',
+            'jenis' => 'Masjid',
+            'kategori' => 'Kariah',
+            'alamat_baris_1' => 'Jalan Melawati 5',
+            'alamat_baris_2' => '53100, Kuala Lumpur',
+            'poskod' => '53100',
+            'bandar' => 'Kuala Lumpur',
+            'negeri' => 'Wilayah Persekutuan Kuala Lumpur',
+            'daerah' => 'Gombak',
+            'negara' => 'Malaysia',
+            'no_telefon' => '03-90000000',
+            'status' => 'Aktif',
+            'imam_ketua' => 'TBD Imam Melawati',
+            'bilangan_jemaah' => 1500,
+            'tahun_dibina' => 2005,
+            'catatan' => 'Masjid baru untuk kariah Melawati'
+        ]);
+
+        $this->command->info('Masjid Melawati seeded successfully!');
     }
 }

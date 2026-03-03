@@ -53,7 +53,7 @@
                                 <div class="flex items-baseline space-x-8">
                                     <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-sage px-3 py-2 text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-sage' : '' }}">Dashboard</a>
                                     
-                                    @if(auth()->user()->role === 'admin')
+                                    @if(in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer']))
                                         <div class="relative" x-data="{ open: false }">
                                             <button @click="open = !open" class="text-gray-700 hover:text-sage px-3 py-2 text-sm font-medium inline-flex items-center">
                                                 Assets
@@ -71,9 +71,13 @@
                                         </div>
                                         
                                         <a href="{{ route('reports.index') }}" class="text-gray-700 hover:text-sage px-3 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-sage' : '' }}">Reports</a>
+                                    @endif
+
+                                    @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
                                         <a href="{{ route('users.index') }}" class="text-gray-700 hover:text-sage px-3 py-2 text-sm font-medium {{ request()->routeIs('users.*') ? 'text-sage' : '' }}">Users</a>
                                         <a href="{{ route('masjid-surau.index') }}" class="text-gray-700 hover:text-sage px-3 py-2 text-sm font-medium {{ request()->routeIs('masjid-surau.*') ? 'text-sage' : '' }}">Locations</a>
                                     @endif
+
                                 </div>
                             </div>
                         @endauth
