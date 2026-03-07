@@ -15,17 +15,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             MasjidSurauSeeder::class,
             UserSeeder::class,
-            // AssetSeeder::class,
+            AssetSeeder::class,
+            ImmovableAssetSeeder::class,
         ]);
 
-        // Asset management module seeders (depend on assets and users)
+        // Connected sample scenarios across modules
         $this->call([
-            // AssetMovementSeeder::class,
-            // InspectionSeeder::class,
-            // MaintenanceRecordSeeder::class,
-            // DisposalSeeder::class,
-            // LossWriteoffSeeder::class,
-            // ImmovableAssetSeeder::class,
+            IntegratedModuleScenarioSeeder::class,
         ]);
 
         // Note: AuditTrailSeeder is available but not included by default
