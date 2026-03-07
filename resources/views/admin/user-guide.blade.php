@@ -6,9 +6,10 @@
 
 @section('content')
     <div class="p-6 space-y-6" x-data="{ openAll: false }">
-        <div class="guide-hero rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
-            <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10 floating-orb"></div>
-            <div class="absolute -left-6 -bottom-10 w-28 h-28 rounded-full bg-white/10 floating-orb-delayed"></div>
+        <div
+            class="rounded-2xl p-8 text-white shadow-lg relative overflow-hidden bg-gradient-to-br from-emerald-700 via-emerald-600 to-emerald-500 animate__animated animate__fadeInDown">
+            <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10 animate__animated animate__pulse animate__infinite"></div>
+            <div class="absolute -left-6 -bottom-10 w-28 h-28 rounded-full bg-white/10 animate__animated animate__pulse animate__infinite"></div>
             <div class="relative z-10">
                 <h1 class="text-3xl font-bold mb-2">Panduan Pengguna AssetFlow</h1>
                 <p class="text-emerald-100">Ikuti langkah demi langkah bagi setiap modul. Gunakan contoh data sebagai
@@ -28,7 +29,8 @@
             <p class="text-sm text-gray-600 mb-4">Aliran ini membantu pasukan mengurus data aset secara teratur dari
                 pendaftaran hingga pelaporan rasmi.</p>
             <div class="space-y-3">
-                <div class="p-4 rounded-lg bg-emerald-50 border border-emerald-100">
+                <div class="p-4 rounded-lg bg-emerald-50 border border-emerald-100 animate__animated animate__fadeInUp"
+                    style="animation-delay: 0.05s; animation-duration: 0.5s;">
                     <div class="flex items-start">
                         <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center mr-3">
                             <i class='bx bx-box'></i>
@@ -40,7 +42,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-4 rounded-lg bg-blue-50 border border-blue-100">
+                <div class="p-4 rounded-lg bg-blue-50 border border-blue-100 animate__animated animate__fadeInUp"
+                    style="animation-delay: 0.12s; animation-duration: 0.5s;">
                     <div class="flex items-start">
                         <div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center mr-3">
                             <i class='bx bx-cog'></i>
@@ -52,7 +55,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-4 rounded-lg bg-amber-50 border border-amber-100">
+                <div class="p-4 rounded-lg bg-amber-50 border border-amber-100 animate__animated animate__fadeInUp"
+                    style="animation-delay: 0.19s; animation-duration: 0.5s;">
                     <div class="flex items-start">
                         <div class="w-9 h-9 rounded-lg bg-amber-600 text-white flex items-center justify-center mr-3">
                             <i class='bx bx-shield-quarter'></i>
@@ -64,7 +68,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-4 rounded-lg bg-purple-50 border border-purple-100">
+                <div class="p-4 rounded-lg bg-purple-50 border border-purple-100 animate__animated animate__fadeInUp"
+                    style="animation-delay: 0.26s; animation-duration: 0.5s;">
                     <div class="flex items-start">
                         <div class="w-9 h-9 rounded-lg bg-purple-600 text-white flex items-center justify-center mr-3">
                             <i class='bx bx-bar-chart-alt-2'></i>
@@ -239,13 +244,13 @@
 
         <div class="grid grid-cols-1 gap-6 items-start">
             @foreach($guides as $guide)
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden card-lift self-start"
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden self-start animate__animated animate__fadeInUp"
                     x-data="{ open: false }"
                     x-effect="if (openAll) { open = true } else { open = false }">
                     <button type="button" @click="open = !open"
-                        class="w-full p-6 text-left flex items-center justify-between transition-colors hover:bg-gray-50">
+                        class="w-full p-6 text-left flex items-center justify-between transition-colors hover:bg-gray-50 hover:shadow-sm">
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3 icon-pulse">
+                            <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3 animate__animated animate__pulse animate__infinite">
                                 <i class='bx {{ $guide['icon'] }} text-emerald-700 text-xl'></i>
                             </div>
                             <h3 class="font-semibold text-gray-900">{{ $guide['title'] }}</h3>
@@ -254,12 +259,12 @@
                             :class="open ? 'rotate-180 text-emerald-600' : ''"></i>
                     </button>
 
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 -translate-y-1"
+                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 -translate-y-2 scale-[0.99]"
                         x-transition:enter-end="opacity-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave="transition ease-in duration-200"
                         x-transition:leave-start="opacity-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 -translate-y-1" class="px-6 pb-6">
+                        x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.99]" class="px-6 pb-6">
                         <p class="text-sm font-semibold text-gray-700 mb-2">Langkah demi langkah:</p>
                         <ol class="list-decimal pl-5 text-sm text-gray-700 space-y-1 mb-4">
                             @foreach($guide['steps'] as $step)
@@ -283,43 +288,5 @@
 @endsection
 
 @push('styles')
-    <style>
-        .guide-hero {
-            background: linear-gradient(135deg, #059669, #10b981 55%, #34d399);
-        }
-
-        .card-lift {
-            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-        }
-
-        .card-lift:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(16, 185, 129, .12);
-            border-color: #a7f3d0;
-        }
-
-        .icon-pulse {
-            animation: pulse-soft 1.8s ease-in-out infinite;
-        }
-
-        .floating-orb {
-            animation: float-up 4s ease-in-out infinite;
-        }
-
-        .floating-orb-delayed {
-            animation: float-up 5s ease-in-out infinite .6s;
-        }
-
-        @keyframes pulse-soft {
-            0%,
-            100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes float-up {
-            0%,
-            100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 @endpush
