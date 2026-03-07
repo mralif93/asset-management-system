@@ -47,12 +47,14 @@ class AssetMovementExport implements FromQuery, WithHeadings, WithMapping, Shoul
             $query->where('jenis_pergerakan', $this->request->jenis_pergerakan);
         }
 
-        if ($this->request->filled('masjid_surau_asal_id')) {
-            $query->where('masjid_surau_asal_id', $this->request->masjid_surau_asal_id);
+        $originId = $this->request->input('origin_masjid_surau_id', $this->request->input('masjid_surau_asal_id'));
+        if (!empty($originId)) {
+            $query->where('masjid_surau_asal_id', $originId);
         }
 
-        if ($this->request->filled('masjid_surau_destinasi_id')) {
-            $query->where('masjid_surau_destinasi_id', $this->request->masjid_surau_destinasi_id);
+        $destinationId = $this->request->input('destination_masjid_surau_id', $this->request->input('masjid_surau_destinasi_id'));
+        if (!empty($destinationId)) {
+            $query->where('masjid_surau_destinasi_id', $destinationId);
         }
 
         return $query->latest();

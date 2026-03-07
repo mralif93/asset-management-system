@@ -65,6 +65,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Dashboard & System
     // Dashboard (Admin + Asset Officer)
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/user-guide', function () {
+        return view('admin.user-guide');
+    })->name('user-guide');
 
     // Strict Admin Routes
     Route::middleware(['strict.admin'])->group(function () {
@@ -244,4 +247,3 @@ Route::middleware(['auth', 'user'])->prefix('user')->name('user.')->group(functi
 });
 
 // require __DIR__.'/auth.php'; // Commented out to use custom authentication
-

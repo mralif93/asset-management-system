@@ -37,21 +37,27 @@ class MaintenanceRecordController extends Controller
         }
 
         // Filter by maintenance type
-        if ($request->filled('jenis_penyelenggaraan')) {
-            $query->where('jenis_penyelenggaraan', $request->jenis_penyelenggaraan);
+        $jenis = $request->input('jenis', $request->input('jenis_penyelenggaraan'));
+        if (!empty($jenis)) {
+            $query->where('jenis_penyelenggaraan', $jenis);
         }
 
         // Filter by maintenance status
-        if ($request->filled('status_penyelenggaraan')) {
-            $query->where('status_penyelenggaraan', $request->status_penyelenggaraan);
+        $status = $request->input('status', $request->input('status_penyelenggaraan'));
+        if (!empty($status)) {
+            $query->where('status_penyelenggaraan', $status);
         }
 
         // Filter by date range
-        if ($request->filled('tarikh_dari')) {
-            $query->whereDate('tarikh_penyelenggaraan', '>=', $request->tarikh_dari);
-        }
-        if ($request->filled('tarikh_hingga')) {
-            $query->whereDate('tarikh_penyelenggaraan', '<=', $request->tarikh_hingga);
+        if ($request->filled('bulan')) {
+            $query->whereMonth('tarikh_penyelenggaraan', (int) $request->bulan);
+        } else {
+            if ($request->filled('tarikh_dari')) {
+                $query->whereDate('tarikh_penyelenggaraan', '>=', $request->tarikh_dari);
+            }
+            if ($request->filled('tarikh_hingga')) {
+                $query->whereDate('tarikh_penyelenggaraan', '<=', $request->tarikh_hingga);
+            }
         }
 
         // Filter by cost range

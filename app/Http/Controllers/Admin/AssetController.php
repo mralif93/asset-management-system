@@ -416,41 +416,8 @@ class AssetController extends Controller
      */
     public function export(Request $request)
     {
-        $query = Asset::with('masjidSurau');
-
-        // Apply same filters as index
-        if ($request->filled('lokasi')) {
-            $query->where('lokasi_penempatan', 'like', '%' . $request->lokasi . '%');
-        }
-
-        if ($request->filled('jenis_aset')) {
-            $query->where('jenis_aset', $request->jenis_aset);
-        }
-
-        if ($request->filled('kategori_aset')) {
-            $query->where('kategori_aset', $request->kategori_aset);
-        }
-
-        if ($request->filled('lokasi_penempatan')) {
-            $query->where('lokasi_penempatan', $request->lokasi_penempatan);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status_aset', $request->status);
-        }
-
-        if ($request->filled('keadaan_fizikal')) {
-            $query->where('keadaan_fizikal', $request->keadaan_fizikal);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_aset', 'like', '%' . $search . '%')
-                    ->orWhere('no_siri_pendaftaran', 'like', '%' . $search . '%')
-                    ->orWhere('jenis_aset', 'like', '%' . $search . '%');
-            });
-        }
+        // Enforce Asset Alih export to include only category "asset".
+        $request->merge(['kategori_aset' => 'asset']);
 
         $filename = 'assets_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssetExport($request), $filename);

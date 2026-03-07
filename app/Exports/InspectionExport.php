@@ -31,8 +31,20 @@ class InspectionExport implements FromQuery, WithHeadings, WithMapping, ShouldAu
             });
         }
 
-        if ($this->request->filled('status')) {
-            $query->where('kondisi_aset', $this->request->status);
+        $kondisi = $this->request->input('kondisi', $this->request->input('kondisi_aset', $this->request->input('status')));
+        if (!empty($kondisi)) {
+            $query->where('kondisi_aset', $kondisi);
+        }
+
+        if ($this->request->filled('tarikh')) {
+            $query->whereDate('tarikh_pemeriksaan', $this->request->tarikh);
+        } else {
+            if ($this->request->filled('tarikh_dari')) {
+                $query->whereDate('tarikh_pemeriksaan', '>=', $this->request->tarikh_dari);
+            }
+            if ($this->request->filled('tarikh_hingga')) {
+                $query->whereDate('tarikh_pemeriksaan', '<=', $this->request->tarikh_hingga);
+            }
         }
 
         return $query->latest();

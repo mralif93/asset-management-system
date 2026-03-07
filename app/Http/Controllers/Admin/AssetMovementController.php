@@ -43,12 +43,14 @@ class AssetMovementController extends Controller
             $query->where('jenis_pergerakan', request('jenis_pergerakan'));
         }
 
-        if (request()->filled('masjid_surau_asal_id')) {
-            $query->where('masjid_surau_asal_id', request('masjid_surau_asal_id'));
+        $originId = request('origin_masjid_surau_id', request('masjid_surau_asal_id'));
+        if (!empty($originId)) {
+            $query->where('masjid_surau_asal_id', $originId);
         }
 
-        if (request()->filled('masjid_surau_destinasi_id')) {
-            $query->where('masjid_surau_destinasi_id', request('masjid_surau_destinasi_id'));
+        $destinationId = request('destination_masjid_surau_id', request('masjid_surau_destinasi_id'));
+        if (!empty($destinationId)) {
+            $query->where('masjid_surau_destinasi_id', $destinationId);
         }
 
         $assetMovements = $query->latest()->paginate(15)->withQueryString();

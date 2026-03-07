@@ -39,6 +39,13 @@ class DisposalExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
             $query->where('kaedah_pelupusan_dicadang', $this->request->method);
         }
 
+        if ($this->request->filled('date_from')) {
+            $query->whereDate('tarikh_permohonan', '>=', $this->request->date_from);
+        }
+        if ($this->request->filled('date_to')) {
+            $query->whereDate('tarikh_permohonan', '<=', $this->request->date_to);
+        }
+
         return $query->latest();
     }
 

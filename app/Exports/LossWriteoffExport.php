@@ -31,12 +31,17 @@ class LossWriteoffExport implements FromQuery, WithHeadings, WithMapping, Should
             });
         }
 
-        if ($this->request->filled('status')) {
-            $query->where('status_kejadian', $this->request->status);
+        $statusKejadian = $this->request->input('status_kejadian', $this->request->input('status'));
+        if (!empty($statusKejadian)) {
+            $query->where('status_kejadian', $statusKejadian);
         }
 
         if ($this->request->filled('type')) {
             $query->where('jenis_kejadian', $this->request->type);
+        }
+
+        if ($this->request->filled('date_filter')) {
+            $query->whereDate('tarikh_laporan', $this->request->date_filter);
         }
 
         return $query->latest();

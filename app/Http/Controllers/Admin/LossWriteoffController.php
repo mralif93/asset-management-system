@@ -14,7 +14,7 @@ class LossWriteoffController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', LossWriteoff::class);
 
@@ -27,7 +27,24 @@ class LossWriteoffController extends Controller
             });
         }
 
-        $lossWriteoffs = $query->latest()->paginate(15);
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('asset', function ($q) use ($search) {
+                $q->where('nama_aset', 'like', "%{$search}%")
+                    ->orWhere('no_siri_pendaftaran', 'like', "%{$search}%");
+            });
+        }
+
+        $statusKejadian = $request->input('status_kejadian', $request->input('status'));
+        if (!empty($statusKejadian)) {
+            $query->where('status_kejadian', $statusKejadian);
+        }
+
+        if ($request->filled('date_filter')) {
+            $query->whereDate('tarikh_laporan', $request->date_filter);
+        }
+
+        $lossWriteoffs = $query->latest()->paginate(15)->withQueryString();
 
         // Calculate statistics
         $statsQuery = LossWriteoff::query();

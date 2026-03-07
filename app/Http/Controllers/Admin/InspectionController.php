@@ -27,8 +27,9 @@ class InspectionController extends Controller
         }
 
         // Filter by asset condition
-        if ($request->filled('kondisi_aset')) {
-            $query->where('kondisi_aset', $request->kondisi_aset);
+        $kondisi = $request->input('kondisi', $request->input('kondisi_aset'));
+        if (!empty($kondisi)) {
+            $query->where('kondisi_aset', $kondisi);
         }
 
         // Filter by masjid/surau
@@ -39,11 +40,15 @@ class InspectionController extends Controller
         }
 
         // Filter by date range
-        if ($request->filled('tarikh_dari')) {
-            $query->whereDate('tarikh_pemeriksaan', '>=', $request->tarikh_dari);
-        }
-        if ($request->filled('tarikh_hingga')) {
-            $query->whereDate('tarikh_pemeriksaan', '<=', $request->tarikh_hingga);
+        if ($request->filled('tarikh')) {
+            $query->whereDate('tarikh_pemeriksaan', $request->tarikh);
+        } else {
+            if ($request->filled('tarikh_dari')) {
+                $query->whereDate('tarikh_pemeriksaan', '>=', $request->tarikh_dari);
+            }
+            if ($request->filled('tarikh_hingga')) {
+                $query->whereDate('tarikh_pemeriksaan', '<=', $request->tarikh_hingga);
+            }
         }
 
         // Filter by inspector

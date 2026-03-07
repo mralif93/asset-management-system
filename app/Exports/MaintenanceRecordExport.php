@@ -31,12 +31,18 @@ class MaintenanceRecordExport implements FromQuery, WithHeadings, WithMapping, S
             });
         }
 
-        if ($this->request->filled('status')) {
-            $query->where('status_penyelenggaraan', $this->request->status);
+        $status = $this->request->input('status', $this->request->input('status_penyelenggaraan'));
+        if (!empty($status)) {
+            $query->where('status_penyelenggaraan', $status);
         }
 
-        if ($this->request->filled('jenis')) {
-            $query->where('jenis_penyelenggaraan', $this->request->jenis);
+        $jenis = $this->request->input('jenis', $this->request->input('jenis_penyelenggaraan'));
+        if (!empty($jenis)) {
+            $query->where('jenis_penyelenggaraan', $jenis);
+        }
+
+        if ($this->request->filled('bulan')) {
+            $query->whereMonth('tarikh_penyelenggaraan', (int) $this->request->bulan);
         }
 
         return $query->latest();

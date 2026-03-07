@@ -219,6 +219,24 @@
                     </a>
                 </div>
 
+                <!-- Help Section -->
+                <div class="mb-8">
+                    <h3
+                        class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
+                        <i class='bx bx-help-circle text-emerald-300 mr-2'></i>
+                        Bantuan
+                    </h3>
+
+                    <a href="{{ route('admin.user-guide') }}"
+                        class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.user-guide') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
+                        <i class='bx bx-book-content text-xl mr-4'></i>
+                        <span>Panduan Pengguna</span>
+                        @if(request()->routeIs('admin.user-guide'))
+                            <i class='bx bx-chevron-right ml-auto text-emerald-300'></i>
+                        @endif
+                    </a>
+                </div>
+
                 <!-- Settings Section -->
                 <div class="mb-8">
                     <h3
