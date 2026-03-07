@@ -19,7 +19,7 @@ class UserController extends Controller
         $query = User::with('masjidSurau');
 
         // Apply masjid_surau isolation for admins
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $query->where('masjid_surau_id', auth()->user()->masjid_surau_id);
         }
 
@@ -55,7 +55,7 @@ class UserController extends Controller
 
         $users = $query->latest()->paginate(15)->withQueryString();
 
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $masjidSuraus = MasjidSurau::where('id', auth()->user()->masjid_surau_id)->get();
         } else {
             $masjidSuraus = MasjidSurau::orderBy('nama')->get();
@@ -69,7 +69,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $masjidSuraus = MasjidSurau::where('id', auth()->user()->masjid_surau_id)->get();
         } else {
             $masjidSuraus = MasjidSurau::orderBy('nama')->get();
@@ -101,7 +101,7 @@ class UserController extends Controller
             unset($validated['email_verified_at']);
         }
 
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $validated['masjid_surau_id'] = auth()->user()->masjid_surau_id;
         }
 
@@ -116,7 +116,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak. Pengguna ini bukan dari masjid/surau anda.');
         }
 
@@ -153,11 +153,11 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $masjidSuraus = MasjidSurau::where('id', auth()->user()->masjid_surau_id)->get();
         } else {
             $masjidSuraus = MasjidSurau::orderBy('nama')->get();
@@ -170,7 +170,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -199,7 +199,7 @@ class UserController extends Controller
             unset($validated['email_verified_at']);
         }
 
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $validated['masjid_surau_id'] = auth()->user()->masjid_surau_id;
         }
 
@@ -214,7 +214,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -235,7 +235,7 @@ class UserController extends Controller
      */
     public function toggleStatus(User $user)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -259,7 +259,7 @@ class UserController extends Controller
      */
     public function resetPassword(User $user)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $user->masjid_surau_id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 

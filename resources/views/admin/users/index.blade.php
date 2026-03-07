@@ -51,7 +51,7 @@
                     </div>
                     <span class="text-sm text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium">Aktif</span>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $users->where('role', 'admin')->count() }}</h3>
+                <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $users->where('role', 'administrator')->count() }}</h3>
                 <p class="text-sm text-gray-600">Pentadbir</p>
             </div>
 
@@ -166,7 +166,7 @@
                         <select id="role" name="role"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">Semua Peranan</option>
-                            <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Pentadbir</option>
+                            <option value="admin" {{ request('role') === 'administrator' ? 'selected' : '' }}>Pentadbir</option>
                             <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>Pengguna</option>
                         </select>
                     </div>
@@ -260,8 +260,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
-                                        class="inline-flex px-3 py-1 text-xs font-semibold rounded-full {{ in_array($user->role, ['admin', 'superadmin']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'Asset Officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
-                                        {{ in_array($user->role, ['admin', 'superadmin']) ? 'Pentadbir' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}
+                                        class="inline-flex px-3 py-1 text-xs font-semibold rounded-full {{ in_array($user->role, ['administrator']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
+                                        {{ in_array($user->role, ['administrator']) ? 'Pentadbir' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

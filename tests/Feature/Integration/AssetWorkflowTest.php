@@ -45,7 +45,7 @@ class AssetWorkflowTest extends TestCase
         $this->admin = User::factory()->create([
             'name' => 'Test Admin',
             'email' => 'admin@test.com',
-            'role' => 'admin',
+            'role' => 'administrator',
             'masjid_surau_id' => $this->sourceMasjid->id
         ]);
 

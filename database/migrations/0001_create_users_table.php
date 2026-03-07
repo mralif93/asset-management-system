@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->string('role')->default('Asset Officer');
+            $table->string('role')->default('user');
             $table->unsignedBigInteger('masjid_surau_id')->nullable();
             $table->string('phone')->nullable();
             $table->string('position')->nullable();

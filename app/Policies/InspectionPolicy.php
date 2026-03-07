@@ -12,26 +12,26 @@ class InspectionPolicy
 
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'superadmin', 'Asset Officer']);
+        return in_array($user->role, ['administrator', 'officer']);
     }
 
     public function view(User $user, Inspection $inspection): bool
     {
-        return in_array($user->role, ['admin', 'superadmin', 'Asset Officer']);
+        return in_array($user->role, ['administrator', 'officer']);
     }
 
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'superadmin', 'Asset Officer']);
+        return in_array($user->role, ['administrator', 'officer']);
     }
 
     public function update(User $user, Inspection $inspection): bool
     {
-        return in_array($user->role, ['admin', 'superadmin', 'Asset Officer']);
+        return in_array($user->role, ['administrator', 'officer']);
     }
 
     public function delete(User $user, Inspection $inspection): bool
     {
-        return in_array($user->role, ['admin', 'superadmin', 'Asset Officer']);
+        return in_array($user->role, ['administrator', 'officer']);
     }
 }

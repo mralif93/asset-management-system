@@ -62,10 +62,263 @@ class AssetMovementController extends Controller
      */
     public function export(Request $request)
     {
-        $filename = 'asset_movements_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssetMovementExport($request), $filename);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssetMovementExport($request), 'pergerakan-aset-' . now()->format('Y-m-d') . '.xlsx');
     }
 
+    /**
+     * Download import template
+     */
+    public function downloadTemplate()
+    {
+        $headers = [
+            'ID Aset',
+            'No. Siri Pendaftaran (Wajib)',
+            'Jenis Pergerakan (Pemindahan/Peminjaman/Pulangan)',
+            'Kuantiti',
+            'ID Masjid/Surau Asal',
+            'ID Masjid/Surau Destinasi',
+            'Tarikh Permohonan (DD/MM/YYYY)',
+            'Tarikh Pergerakan (DD/MM/YYYY)',
+            'Tarikh Jangka Pulang (DD/MM/YYYY)',
+            'Lokasi Asal Spesifik',
+            'Lokasi Destinasi Spesifik',
+            'Nama Peminjam/Pegawai Bertanggungjawab',
+            'Tujuan Pergerakan',
+            'Catatan'
+        ];
+
+        $callback = function () use ($headers) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $headers);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=template_import_pergerakan_aset.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ]);
+    }
+
+    /**
+     * Show import form
+     */
+    public function showImport()
+    {
+        $masjidSuraus = MasjidSurau::all();
+        return view('admin.asset-movements.import', compact('masjidSuraus'));
+    }
+
+    /**
+     * Import asset movements from file
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200',
+        ]);
+
+        $file = $request->file('csv_file');
+
+        try {
+            $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\AssetMovementImport, $file);
+            $rows = $sheets[0] ?? [];
+        } catch (\Exception $e) {
+            return redirect()->route('admin.asset-movements.import')
+                ->with('error', 'Gagal membaca fail: ' . $e->getMessage());
+        }
+
+        $result = $this->processImportRows($rows);
+
+        if (count($result['errors']) > 0) {
+            $displayErrors = [];
+            foreach ($result['errors'] as $rowErrors) {
+                foreach ($rowErrors['errors'] as $error) {
+                    $displayErrors[] = $error;
+                }
+            }
+
+            return redirect()->route('admin.asset-movements.import')
+                ->with('import_errors', $displayErrors)
+                ->with('error', 'Terdapat ralat dalam fail import. Sila semak dan cuba lagi.')
+                ->withInput();
+        }
+
+        // Process valid rows
+        $createdCount = 0;
+        foreach ($result['valid_rows'] as $row) {
+            try {
+                AssetMovement::create($row['data']);
+                $createdCount++;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Asset Movement Import Failed: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('admin.asset-movements.index')
+            ->with('success', "Import selesai. {$createdCount} rekod pergerakan baru ditambah.");
+    }
+
+    /**
+     * Preview import data
+     */
+    public function previewImport(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200',
+        ]);
+
+        try {
+            $file = $request->file('csv_file');
+            $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\AssetMovementImport, $file);
+            $rows = $sheets[0] ?? [];
+
+            $result = $this->processImportRows($rows);
+
+            return response()->json([
+                'success' => true,
+                'data' => $result['rows'],
+                'summary' => [
+                    'total' => count($rows) - 1,
+                    'valid' => count($result['valid_rows']),
+                    'invalid' => count($result['errors']),
+                    'skipped' => $result['skipped_count']
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Process import rows
+     */
+    private function processImportRows($rows)
+    {
+        $processedRows = [];
+        $validRows = [];
+        $errorRows = [];
+        $skippedCount = 0;
+
+        // Skip header
+        array_shift($rows);
+
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2;
+            $rowErrors = [];
+
+            if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
+                $skippedCount++;
+                continue;
+            }
+
+            try {
+                $noSiri = $row[1] ?? null;
+                $asset = null;
+
+                if (!empty($noSiri)) {
+                    $asset = Asset::where('no_siri_pendaftaran', $noSiri)->first();
+                } elseif (!empty($row[0])) {
+                    $asset = Asset::find($row[0]);
+                }
+
+                if (!$asset) {
+                    $rowErrors[] = "Aset tidak ditemui (No. Siri: $noSiri)";
+                }
+
+                $data = [
+                    'asset_id' => $asset ? $asset->id : null,
+                    'user_id' => Auth::id(),
+                    'jenis_pergerakan' => $row[2] ?? null,
+                    'kuantiti' => $row[3] ?? 1,
+                    'origin_masjid_surau_id' => $row[4] ?? ($asset ? $asset->masjid_surau_id : null),
+                    'destination_masjid_surau_id' => $row[5] ?? null,
+                    'tarikh_permohonan' => $row[6] ?? now()->format('Y-m-d'),
+                    'tarikh_pergerakan' => $row[7] ?? null,
+                    'tarikh_jangka_pulang' => $row[8] ?? null,
+                    'lokasi_asal_spesifik' => $row[9] ?? ($asset ? $asset->lokasi_penempatan : null),
+                    'lokasi_destinasi_spesifik' => $row[10] ?? null,
+                    'nama_peminjam_pegawai_bertanggungjawab' => $row[11] ?? null,
+                    'tujuan_pergerakan' => $row[12] ?? null,
+                    'catatan' => $row[13] ?? null,
+                    'status_pergerakan' => 'menunggu_kelulusan',
+                ];
+
+                // Validation
+                if (empty($data['jenis_pergerakan']) || !in_array($data['jenis_pergerakan'], ['Pemindahan', 'Peminjaman', 'Pulangan'])) {
+                    $rowErrors[] = "Jenis Pergerakan tidak sah (Pilih: Pemindahan, Peminjaman, atau Pulangan)";
+                }
+
+                if (empty($data['origin_masjid_surau_id']) || !MasjidSurau::find($data['origin_masjid_surau_id'])) {
+                    $rowErrors[] = "ID Masjid/Surau Asal tidak sah";
+                }
+
+                if ($data['jenis_pergerakan'] !== 'Pulangan' && (empty($data['destination_masjid_surau_id']) || !MasjidSurau::find($data['destination_masjid_surau_id']))) {
+                    $rowErrors[] = "ID Masjid/Surau Destinasi tidak sah";
+                }
+
+                $formatDate = function ($date, $field) use (&$rowErrors) {
+                    if (empty($date))
+                        return null;
+                    try {
+                        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+                            return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+                        }
+                        return \Carbon\Carbon::parse($date)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $rowErrors[] = "Format tarikh $field tidak sah";
+                        return null;
+                    }
+                };
+
+                $data['tarikh_permohonan'] = $formatDate($data['tarikh_permohonan'], 'permohonan');
+                $data['tarikh_pergerakan'] = $formatDate($data['tarikh_pergerakan'], 'pergerakan');
+                $data['tarikh_jangka_pulang'] = $formatDate($data['tarikh_jangka_pulang'], 'jangka pulang');
+
+                // Numeric cleaning
+                $data['kuantiti'] = (int) str_replace(',', '', (string) ($data['kuantiti'] ?? 1));
+
+                $processedRow = [
+                    'row' => $rowNumber,
+                    'data' => $data,
+                    'valid' => empty($rowErrors),
+                    'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'display_data' => [
+                        'nama_aset' => $asset ? $asset->nama_aset : '-',
+                        'no_siri' => $noSiri,
+                        'jenis' => $data['jenis_pergerakan'],
+                        'kuantiti' => $data['kuantiti']
+                    ]
+                ];
+
+                $processedRows[] = $processedRow;
+                if (empty($rowErrors))
+                    $validRows[] = $processedRow;
+                else
+                    $errorRows[] = $processedRow;
+
+            } catch (\Exception $e) {
+                $processedRows[] = [
+                    'row' => $rowNumber,
+                    'valid' => false,
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                ];
+                $errorRows[] = end($processedRows);
+            }
+        }
+
+        return [
+            'rows' => $processedRows,
+            'valid_rows' => $validRows,
+            'errors' => $errorRows,
+            'skipped_count' => $skippedCount
+        ];
+    }
     /**
      * borangMohonPergerakanPinjaman(): Display form interface for users to apply for asset movement/loan
      */
@@ -208,7 +461,7 @@ class AssetMovementController extends Controller
         }
 
         NotificationService::notifyNewAssetMovementRequest($movement);
-        
+
         return redirect()
             ->route('admin.asset-movements.show', $movementIds[0])
             ->with('success', 'Pergerakan aset berjaya didaftarkan dan sedang menunggu kelulusan.');
@@ -423,13 +676,13 @@ class AssetMovementController extends Controller
 
         foreach ($validated['movement_ids'] as $movementId) {
             $movement = AssetMovement::find($movementId);
-            
+
             if ($movement && $movement->status_pergerakan === 'menunggu_kelulusan') {
                 $movement->update([
                     'status_pergerakan' => 'diluluskan',
                     'pegawai_meluluskan' => $user->name,
-                    'catatan' => $validated['catatan'] 
-                        ? $movement->catatan . "\n[Lulus]: " . $validated['catatan'] 
+                    'catatan' => $validated['catatan']
+                        ? $movement->catatan . "\n[Lulus]: " . $validated['catatan']
                         : $movement->catatan,
                 ]);
                 $approvedCount++;
@@ -456,7 +709,7 @@ class AssetMovementController extends Controller
 
         foreach ($validated['movement_ids'] as $movementId) {
             $movement = AssetMovement::find($movementId);
-            
+
             if ($movement && $movement->status_pergerakan === 'menunggu_kelulusan') {
                 $movement->update([
                     'status_pergerakan' => 'ditolak',

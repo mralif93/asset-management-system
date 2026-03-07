@@ -20,7 +20,7 @@ class StrictAdminMiddleware
             return redirect()->route('login');
         }
 
-        if (!in_array(Auth::user()->role, ['admin', 'superadmin'])) {
+        if (!in_array(Auth::user()->role, ['admin', 'administrator', 'administrator'])) {
             abort(403, 'Akses ditolak. Anda perlu menjadi admin atau superadmin untuk mengakses halaman ini.');
         }
 

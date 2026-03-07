@@ -174,7 +174,7 @@ class AdminProfileController extends Controller
         $user = $request->user();
         
         // Prevent deletion if this is the only admin
-        $adminCount = \App\Models\User::where('role', 'admin')->count();
+        $adminCount = \App\Models\User::where('role', 'administrator')->count();
         if ($adminCount <= 1) {
             return back()->withErrors([
                 'password' => 'Tidak boleh memadamkan akaun admin terakhir dalam sistem.'

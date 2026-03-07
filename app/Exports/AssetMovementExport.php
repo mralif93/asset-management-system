@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AssetMovementExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class AssetMovementExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, \Maatwebsite\Excel\Concerns\WithColumnFormatting
 {
     protected $request;
 
@@ -87,7 +87,7 @@ class AssetMovementExport implements FromQuery, WithHeadings, WithMapping, Shoul
             $movement->asset->no_siri_pendaftaran ?? '-',
             ucfirst($movement->jenis_pergerakan),
             ucfirst(str_replace('_', ' ', $movement->status_pergerakan)),
-            $movement->kuantiti,
+            (int) $movement->kuantiti,
             $movement->masjidSurauAsal->nama ?? 'Lain-lain',
             $movement->masjidSurauDestinasi->nama ?? 'Lain-lain',
             $movement->tarikh_permohonan ? $movement->tarikh_permohonan->format('d/m/Y') : '-',
@@ -104,5 +104,12 @@ class AssetMovementExport implements FromQuery, WithHeadings, WithMapping, Shoul
     {
         $sheet->getStyle('A1:O1')->getFont()->setBold(true);
         $sheet->getStyle('A1:O1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('E2EFDA');
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'F' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER, // Kuantiti
+        ];
     }
 }

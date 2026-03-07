@@ -29,7 +29,7 @@ class AssetManagementTest extends TestCase
 
         $this->user = User::factory()->create([
             'masjid_surau_id' => $this->masjidSurau->id,
-            'role' => 'admin',
+            'role' => 'administrator',
         ]);
     }
 
@@ -42,13 +42,16 @@ class AssetManagementTest extends TestCase
             'no_siri_pendaftaran' => 'TEST-001',
             'nama_aset' => 'Test Asset 1',
             'jenis_aset' => 'Elektronik',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now(),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'Test Location',
+            'lokasi_penempatan' => 'Bilik Setiausaha',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ]);
 
         Asset::create([
@@ -56,13 +59,16 @@ class AssetManagementTest extends TestCase
             'no_siri_pendaftaran' => 'TEST-002',
             'nama_aset' => 'Test Asset 2',
             'jenis_aset' => 'Perabot',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now(),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 2000,
             'susut_nilai_tahunan' => 200,
-            'lokasi_penempatan' => 'Test Location',
+            'lokasi_penempatan' => 'Bilik Setiausaha',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -78,16 +84,19 @@ class AssetManagementTest extends TestCase
     {
         $assetData = [
             'masjid_surau_id' => $this->masjidSurau->id,
-            'no_siri_pendaftaran' => 'TEST-003',
+            'kuantiti' => 1,
             'nama_aset' => 'New Test Asset',
             'jenis_aset' => 'Elektronik',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now()->format('Y-m-d'),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1500,
             'susut_nilai_tahunan' => 150,
-            'lokasi_penempatan' => 'Test Location',
+            'lokasi_penempatan' => 'Bilik Setiausaha',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ];
 
         $response = $this->actingAs($this->user)
@@ -111,13 +120,16 @@ class AssetManagementTest extends TestCase
             'no_siri_pendaftaran' => 'TEST-004',
             'nama_aset' => 'Test Asset Details',
             'jenis_aset' => 'Elektronik',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now(),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'Test Location',
+            'lokasi_penempatan' => 'Bilik Setiausaha',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -136,25 +148,31 @@ class AssetManagementTest extends TestCase
             'no_siri_pendaftaran' => 'TEST-005',
             'nama_aset' => 'Test Asset Update',
             'jenis_aset' => 'Elektronik',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now(),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'Test Location',
+            'lokasi_penempatan' => 'Bilik Setiausaha',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ]);
 
         $updateData = [
             'nama_aset' => 'Updated Asset Name',
             'jenis_aset' => 'Elektronik',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now()->format('Y-m-d'),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'New Location',
+            'lokasi_penempatan' => 'Bilik Mesyuarat',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ];
 
         $response = $this->actingAs($this->user)
@@ -166,7 +184,7 @@ class AssetManagementTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'id' => $asset->id,
             'nama_aset' => 'Updated Asset Name',
-            'lokasi_penempatan' => 'New Location',
+            'lokasi_penempatan' => 'Bilik Mesyuarat',
         ]);
     }
 
@@ -178,13 +196,16 @@ class AssetManagementTest extends TestCase
             'no_siri_pendaftaran' => 'TEST-006',
             'nama_aset' => 'Test Asset Delete',
             'jenis_aset' => 'Elektronik',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now(),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'Test Location',
+            'lokasi_penempatan' => 'Bilik Setiausaha',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -193,7 +214,7 @@ class AssetManagementTest extends TestCase
         $response->assertStatus(302)
             ->assertRedirect('/admin/assets');
 
-        $this->assertDatabaseMissing('assets', [
+        $this->assertSoftDeleted('assets', [
             'id' => $asset->id,
         ]);
     }
@@ -208,16 +229,19 @@ class AssetManagementTest extends TestCase
 
         $assetData = [
             'masjid_surau_id' => $this->masjidSurau->id,
-            'no_siri_pendaftaran' => 'TEST-007',
+            'kuantiti' => 1,
             'nama_aset' => 'Unauthorized Test',
             'jenis_aset' => 'Elektronik',
+            'kategori_aset' => 'asset',
             'tarikh_perolehan' => now()->format('Y-m-d'),
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'Test Location',
+            'lokasi_penempatan' => 'Bilik Setiausaha',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
-            'status_aset' => 'Aktif',
+            'status_aset' => 'Sedang Digunakan',
+            'keadaan_fizikal' => 'Baik',
+            'status_jaminan' => 'Aktif',
         ];
 
         $response = $this->actingAs($regularUser)

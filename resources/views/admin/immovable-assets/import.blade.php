@@ -2,7 +2,7 @@
 
 @section('title', 'Import Aset Tak Alih')
 @section('page-title', 'Import Aset Tak Alih')
-@section('page-description', 'Muat naik senarai aset tak alih dari fail CSV')
+@section('page-description', 'Muat naik rekod aset tak alih dari fail Excel/CSV')
 
 @section('content')
     <div class="p-6">
@@ -11,7 +11,8 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold mb-2">Import Aset Tak Alih</h1>
-                    <p class="text-emerald-100 text-lg">Muat naik senarai aset tak alih (Excel/CSV)</p>
+                    <p class="text-emerald-100 text-lg">Muat naik senarai aset tak alih (Tanah, Bangunan) dari fail
+                        Excel/CSV</p>
                     <div class="flex items-center space-x-4 mt-4">
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-cloud-upload text-emerald-200'></i>
@@ -36,10 +37,10 @@
             </a>
             <i class='bx bx-chevron-right text-gray-400'></i>
             <a href="{{ route('admin.immovable-assets.index') }}" class="text-gray-500 hover:text-emerald-600">
-                Pengurusan Aset Tak Alih
+                Aset Tak Alih
             </a>
             <i class='bx bx-chevron-right text-gray-400'></i>
-            <span class="text-emerald-600 font-medium">Import Aset Tak Alih</span>
+            <span class="text-emerald-600 font-medium">Import Aset</span>
         </div>
 
         <!-- Success/Error Messages -->
@@ -84,7 +85,7 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">Arahan Import</h3>
-                            <p class="text-sm text-blue-700">Ikuti langkah-langkah untuk import aset tak alih</p>
+                            <p class="text-sm text-blue-700">Ikuti langkah-langkah untuk import rekod aset tak alih</p>
                         </div>
                     </div>
 
@@ -96,8 +97,7 @@
                             </div>
                             <div>
                                 <p class="font-medium text-gray-900 mb-1">Muat turun Template</p>
-                                <p class="text-sm text-gray-600">Muat turun template Excel untuk melihat format yang betul
-                                </p>
+                                <p class="text-sm text-gray-600">Gunakan template Excel rasmi untuk format yang tepat</p>
                             </div>
                         </div>
 
@@ -107,9 +107,9 @@
                                 <span class="text-blue-600 font-semibold">2</span>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-900 mb-1">Isi Data Aset</p>
-                                <p class="text-sm text-gray-600">Isi maklumat aset tak alih dalam template Excel. Pastikan
-                                    format tarikh adalah YYYY-MM-DD</p>
+                                <p class="font-medium text-gray-900 mb-1">Isi Maklumat</p>
+                                <p class="text-sm text-gray-600">Masukkan data aset. Pastikan ID Masjid/Surau adalah tepat
+                                </p>
                             </div>
                         </div>
 
@@ -119,9 +119,8 @@
                                 <span class="text-blue-600 font-semibold">3</span>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-900 mb-1">Muat Naik Fail</p>
-                                <p class="text-sm text-gray-600">Pilih fail Excel/CSV yang telah diisi dan muat naik ke
-                                    sistem</p>
+                                <p class="font-medium text-gray-900 mb-1">Muat Naik</p>
+                                <p class="text-sm text-gray-600">Pilih fail dan klik pratonton untuk semakan awal</p>
                             </div>
                         </div>
 
@@ -131,8 +130,9 @@
                                 <span class="text-blue-600 font-semibold">4</span>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-900 mb-1">Semak Hasil</p>
-                                <p class="text-sm text-gray-600">Sistem akan memproses dan memaparkan hasil import</p>
+                                <p class="font-medium text-gray-900 mb-1">Proses</p>
+                                <p class="text-sm text-gray-600">Sahkan data dan klik import untuk simpan ke dalam sistem
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -141,16 +141,15 @@
                 <!-- Import Form Card -->
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
                     <form action="{{ route('admin.immovable-assets.import.store') }}" method="POST"
-                        enctype="multipart/form-data">
+                        enctype="multipart/form-data" id="importForm">
                         @csrf
 
                         <!-- Form Header -->
                         <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-blue-50">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-gray-900">Muat Naik Fail</h2>
-                                    <p class="text-sm text-gray-600">Pilih fail Excel/CSV yang mengandungi data aset tak
-                                        alih</p>
+                                    <h2 class="text-xl font-semibold text-gray-900">Muat Naik Fail Rekod</h2>
+                                    <p class="text-sm text-gray-600">Pilih fail CSV/Excel yang mengandungi data aset</p>
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <div class="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -165,7 +164,7 @@
                             <div>
                                 <label for="csv_file" class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class='bx bx-file mr-1'></i>
-                                    Fail Excel/CSV <span class="text-red-500">*</span>
+                                    Fail CSV/Excel <span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 flex justify-center px-8 pt-8 pb-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-emerald-400 transition-all duration-300 bg-gradient-to-br from-gray-50 to-emerald-50 hover:from-emerald-50 hover:to-emerald-100 group cursor-pointer"
                                     id="dropZone">
@@ -181,7 +180,7 @@
                                                     class="relative cursor-pointer bg-white rounded-lg px-4 py-2 font-medium text-emerald-600 hover:text-emerald-500 hover:bg-emerald-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500 transition-all duration-200 shadow-sm hover:shadow-md">
                                                     <span class="flex items-center">
                                                         <i class='bx bx-upload mr-2'></i>
-                                                        Pilih fail Excel/CSV
+                                                        Pilih fail CSV
                                                     </span>
                                                     <input id="csv_file" name="csv_file" type="file" class="sr-only"
                                                         accept=".csv,.xlsx,.xls" required>
@@ -190,40 +189,34 @@
                                                     drop di sini</p>
                                             </div>
                                         </div>
-                                        <div class="space-y-2">
-                                            <p class="text-xs text-gray-500 flex items-center justify-center">
-                                                <i class='bx bx-file-blank mr-1'></i>
-                                                Excel, CSV hingga 50MB
-                                            </p>
-                                            <p
-                                                class="text-xs text-emerald-600 font-medium flex items-center justify-center">
-                                                <i class='bx bx-check-circle mr-1'></i>
-                                                Format Excel (.xlsx) disyorkan
-                                            </p>
-                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- File Name Display -->
                                 <div id="fileNameDisplay" class="mt-4 hidden">
-                                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                                    <div
+                                        class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 transition-all duration-300 animate-fadeIn">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center">
-                                                <i class='bx bx-file text-emerald-600 text-xl mr-3'></i>
+                                                <div
+                                                    class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class='bx bx-file text-emerald-600 text-xl'></i>
+                                                </div>
                                                 <div>
-                                                    <p class="text-sm font-medium text-emerald-900" id="fileName"></p>
+                                                    <p class="text-sm font-bold text-emerald-900" id="fileName"></p>
                                                     <p class="text-xs text-emerald-600" id="fileSize"></p>
                                                 </div>
                                             </div>
-                                            <button type="button" id="removeFile" class="text-red-600 hover:text-red-700">
-                                                <i class='bx bx-x text-xl'></i>
+                                            <button type="button" id="removeFile"
+                                                class="p-2 hover:bg-red-50 text-red-600 rounded-full transition-colors">
+                                                <i class='bx bx-trash text-xl'></i>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
                                 @error('csv_file')
-                                    <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <i class='bx bx-error-circle mr-1'></i>
                                         {{ $message }}
                                     </p>
@@ -242,12 +235,11 @@
                                     <div class="ml-3 text-sm">
                                         <p class="font-semibold text-blue-800 mb-1">💡 Tip Berguna:</p>
                                         <ul class="text-blue-700 leading-relaxed space-y-1">
-                                            <li>• Gunakan Template Excel yang disediakan (Sheet "Template" untuk data)</li>
-                                            <li>• Rujuk Sheet "Rujukan" untuk senarai kod yang sah</li>
+                                            <li>• Gunakan <strong>ID Masjid/Surau</strong> yang sah (boleh dirujuk di panel kanan)</li>
+                                            <li>• Jenis aset sah: <strong>Tanah, Bangunan, Tanah dan Bangunan</strong></li>
                                             <li>• Format tarikh mesti YYYY-MM-DD (contoh: 2024-01-15)</li>
-                                            <li>• Masjid/Surau ID mesti wujud dalam sistem</li>
-                                            <li>• Jenis Aset mesti: Tanah, Bangunan, atau Tanah dan Bangunan</li>
-                                            <li>• Nombor siri pendaftaran akan dijana secara automatik</li>
+                                            <li>• Isikan keluasan dalam nilai nombor tanpa simbol tambahan</li>
+                                            <li>• Nombor siri pendaftaran akan dijana secara automatik jika kosong</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -255,8 +247,13 @@
 
                             <!-- Action Buttons -->
                             <div class="flex items-center space-x-4">
-                                <button type="submit"
-                                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                                <button type="button" id="previewBtn"
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                                    <i class='bx bx-show mr-2'></i>
+                                    Pratonton Data
+                                </button>
+                                <button type="submit" id="importBtn"
+                                    class="hidden flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
                                     <i class='bx bx-upload mr-2'></i>
                                     Muat Naik & Import
                                 </button>
@@ -268,6 +265,79 @@
                             </div>
                         </div>
                     </form>
+                </div>
+
+                <!-- Preview UI -->
+                <div id="previewContainer" class="hidden animate-fadeIn space-y-4">
+                    <div
+                        class="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[500px]">
+                        <div
+                            class="p-6 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                            <div class="flex items-center">
+                                <div
+                                    class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center mr-4 border border-gray-100 text-emerald-600">
+                                    <i class='bx bx-table text-2xl'></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-lg">Pratonton Data Import</h3>
+                                    <p class="text-sm text-gray-600">Semak ketepatan data sebelum proses import dijalankan
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="flex items-center px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 shadow-sm">
+                                    <i class='bx bx-check-circle mr-2 text-xl'></i>
+                                    <span class="font-bold text-lg mr-1" id="validCount">0</span>
+                                    <span class="text-xs uppercase font-semibold">SAH</span>
+                                </div>
+                                <div
+                                    class="flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-xl border border-red-100 shadow-sm">
+                                    <i class='bx bx-error-circle mr-2 text-xl'></i>
+                                    <span class="font-bold text-lg mr-1" id="invalidCount">0</span>
+                                    <span class="text-xs uppercase font-semibold">RALAT</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto flex-grow">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4 font-bold">Baris</th>
+                                        <th class="px-6 py-4 font-bold">Status</th>
+                                        <th class="px-6 py-4 font-bold">Nama Aset</th>
+                                        <th class="px-6 py-4 font-bold">Masjid/Surau</th>
+                                        <th class="px-6 py-4 font-bold">Jenis</th>
+                                        <th class="px-6 py-4 font-bold">Tarikh / Ralat</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTableBody" class="divide-y divide-gray-100">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination (Client Side) -->
+                        <div id="paginationControls"
+                            class="hidden p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                            <p class="text-xs text-gray-500">
+                                Memaparkan <span class="font-bold text-gray-900" id="pageStart">0</span> - <span
+                                    class="font-bold text-gray-900" id="pageEnd">0</span>
+                                daripada <span class="font-bold text-gray-900" id="totalRows">0</span> rekod
+                            </p>
+                            <div class="flex space-x-2">
+                                <button id="prevBtn" type="button"
+                                    class="p-2 border rounded-lg bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed">
+                                    <i class='bx bx-chevron-left text-xl'></i>
+                                </button>
+                                <button id="nextBtn" type="button"
+                                    class="p-2 border rounded-lg bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed">
+                                    <i class='bx bx-chevron-right text-xl'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -281,21 +351,52 @@
                         </div>
                         <h3 class="font-semibold text-gray-900">Template Import</h3>
                     </div>
-
-                    <p class="text-sm text-gray-600 mb-4">Muat turun template Excel dengan format yang betul dan contoh
-                        data.
-                        <br><span class="text-xs text-amber-600">Info: Template kini mempunyai 2 sheet (Template &
-                            Rujukan)</span>
-                    </p>
-
+                    <p class="text-sm text-gray-600 mb-4">Muat turun template CSV dengan format yang betul dan contoh data.</p>
                     <a href="{{ route('admin.immovable-assets.import.template') }}"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
                         <i class='bx bx-download mr-2'></i>
                         Muat Turun Template
                     </a>
                 </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                            <i class='bx bx-search text-white'></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-900">Cari Masjid/Surau</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">Cari nama atau kod, kemudian klik item untuk salin ID.</p>
+                    <div class="relative">
+                        <i class='bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'></i>
+                        <input type="text" id="masjidSearchSide" placeholder="Cari nama atau kod..."
+                            class="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+                    </div>
 
-                <!-- Asset Types Info -->
+                    <div id="masjidResultsSide"
+                        class="mt-3 space-y-2 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
+                        @foreach($masjidSuraus as $masjid)
+                            <div class="masjid-item-side group p-3 bg-white rounded-lg border border-gray-100 hover:border-emerald-300 hover:shadow-sm transition-all cursor-pointer"
+                                data-id="{{ $masjid->id }}" data-name="{{ strtolower($masjid->nama) }}"
+                                onclick="copyToClipboard('{{ $masjid->id }}', '{{ addslashes($masjid->nama) }}')">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <span
+                                                class="text-xs font-bold px-1.5 py-0.5 bg-emerald-600 text-white rounded">{{ $masjid->id }}</span>
+                                            <span
+                                                class="text-[10px] font-bold text-gray-400 uppercase">{{ $masjid->jenis ?? 'Surau' }}</span>
+                                        </div>
+                                        <p class="text-xs font-semibold text-gray-800 leading-tight">{{ $masjid->nama }}</p>
+                                    </div>
+                                    <i class='bx bx-copy text-gray-300 group-hover:text-emerald-500'></i>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-2 italic">* Klik pada item untuk salin ID</p>
+                </div>
+
+                <!-- Jenis Aset Sah Card -->
                 <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div class="flex items-center mb-4">
                         <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
@@ -320,113 +421,64 @@
                     </div>
                 </div>
 
-                <!-- Asset Category Info -->
+                <!-- Sumber Perolehan Card -->
                 <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-pink-500 rounded-lg flex items-center justify-center mr-3">
-                            <i class='bx bx-cube text-white'></i>
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                            <i class='bx bx-hash text-white'></i>
                         </div>
-                        <h3 class="font-semibold text-gray-900">Kategori Aset Sah</h3>
+                        <h3 class="font-semibold text-gray-900">Sumber Perolehan</h3>
                     </div>
 
                     <div class="space-y-2">
                         <div class="flex items-center text-sm text-gray-700">
-                            <i class='bx bx-check-circle text-pink-600 mr-2'></i>
-                            <span class="font-medium">asset</span>
-                            <span class="ml-2 text-xs text-gray-500">(Aset bernilai)</span>
+                            <i class='bx bx-check-circle text-blue-600 mr-2'></i>
+                            <span>Wakaf</span>
                         </div>
                         <div class="flex items-center text-sm text-gray-700">
-                            <i class='bx bx-check-circle text-pink-600 mr-2'></i>
-                            <span class="font-medium">non-asset</span>
-                            <span class="ml-2 text-xs text-gray-500">(Bukan aset)</span>
+                            <i class='bx bx-check-circle text-blue-600 mr-2'></i>
+                            <span>Dana Sendiri</span>
                         </div>
-                    </div>
-
-                    <div class="mt-4 p-3 bg-pink-50 border border-pink-200 rounded-lg">
-                        <p class="text-xs text-pink-700">
-                            <i class='bx bx-info-circle mr-1'></i>
-                            Gunakan nilai: <span class="font-semibold">asset</span> atau <span
-                                class="font-semibold">non-asset</span> (huruf kecil)
-                        </p>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class='bx bx-check-circle text-blue-600 mr-2'></i>
+                            <span>Sumbangan</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class='bx bx-check-circle text-blue-600 mr-2'></i>
+                            <span>Kerajaan</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Masjid/Surau Search -->
+                <!-- Keadaan Semasa Sah Card -->
                 <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
-                            <i class='bx bx-building text-white'></i>
+                        <div class="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center mr-3">
+                            <i class='bx bx-health text-white'></i>
                         </div>
-                        <h3 class="font-semibold text-gray-900">Cari Masjid/Surau</h3>
+                        <h3 class="font-semibold text-gray-900">Keadaan Semasa Sah</h3>
                     </div>
 
-                    <p class="text-sm text-gray-600 mb-4">Cari untuk mendapatkan ID Masjid/Surau:</p>
-
-                    <!-- Search Input -->
-                    <div class="mb-4">
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class='bx bx-search text-gray-400'></i>
-                            </div>
-                            <input type="text" id="masjidSearch" placeholder="Cari nama masjid/surau..."
-                                class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                            <button type="button" id="clearSearch"
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center hidden hover:text-purple-600 transition-colors">
-                                <i class='bx bx-x text-gray-400 text-xl'></i>
-                            </button>
+                    <div class="space-y-2">
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class='bx bx-check-circle text-green-600 mr-2'></i>
+                            <span class="font-medium text-green-700">Sangat Baik</span>
                         </div>
-                    </div>
-
-                    <!-- Results Container -->
-                    <div id="masjidResults"
-                        class="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
-                        @foreach($masjidSuraus as $masjid)
-                            <div class="masjid-item bg-white rounded-lg p-3 border border-gray-200 hover:border-purple-300 hover:shadow-sm transition-all cursor-pointer"
-                                data-id="{{ $masjid->id }}" data-name="{{ strtolower($masjid->nama) }}"
-                                data-jenis="{{ strtolower($masjid->jenis ?? '') }}"
-                                onclick="copyMasjidId({{ $masjid->id }}, '{{ addslashes($masjid->nama) }}')">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex-1">
-                                        <div class="flex items-center space-x-2">
-                                            <span class="font-bold text-purple-600 text-lg">{{ $masjid->id }}</span>
-                                            <span
-                                                class="text-xs px-2 py-0.5 rounded-full {{ $masjid->jenis === 'Masjid' ? 'bg-blue-100 text-blue-800' : ($masjid->jenis === 'Surau Jumaat' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') }}">
-                                                {{ $masjid->jenis ?? 'Surau' }}
-                                            </span>
-                                        </div>
-                                        <p class="text-sm text-gray-700 mt-1 font-medium">{{ $masjid->nama }}</p>
-                                        @if($masjid->daerah)
-                                            <p class="text-xs text-gray-500 mt-1">{{ $masjid->daerah }}, {{ $masjid->negeri }}</p>
-                                        @endif
-                                    </div>
-                                    <div class="ml-2">
-                                        <i class='bx bx-copy text-gray-400 hover:text-purple-600'></i>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p class="text-xs text-blue-700 flex items-center">
-                            <i class='bx bx-info-circle mr-1'></i>
-                            Klik pada item untuk salin ID ke clipboard
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Help & Tips -->
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                    <div class="flex items-start">
-                        <i class='bx bx-info-circle text-blue-600 text-lg mr-3 mt-0.5'></i>
-                        <div>
-                            <h4 class="font-medium text-blue-900 mb-2">Bantuan Import</h4>
-                            <ul class="text-sm text-blue-800 space-y-1">
-                                <li>• Format Excel/CSV</li>
-                                <li>• Maksimum 50MB fail</li>
-                                <li>• Semak ralat selepas import</li>
-                                <li>• Nombor siri auto-generate</li>
-                            </ul>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class='bx bx-check-circle text-green-600 mr-2'></i>
+                            <span class="font-medium text-green-600">Baik</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class='bx bx-check-circle text-yellow-600 mr-2'></i>
+                            <span class="font-medium text-yellow-700">Sederhana</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class='bx bx-check-circle text-orange-600 mr-2'></i>
+                            <span class="font-medium text-orange-700">Perlu Pembaikan</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i class='bx bx-check-circle text-red-600 mr-2'></i>
+                            <span class="font-medium text-red-700">Rosak</span>
                         </div>
                     </div>
                 </div>
@@ -434,148 +486,202 @@
         </div>
     </div>
 
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed top-24 right-6 z-[9999] space-y-3 pointer-events-none"></div>
+
+    <style>
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 20px;
+        }
+
+        .masjid-item-side:hover .bx-copy {
+            color: #10b981;
+            transform: scale(1.1);
+        }
+    </style>
+
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const fileInput = document.getElementById('csv_file');
                 const dropZone = document.getElementById('dropZone');
-                const fileNameDisplay = document.getElementById('fileNameDisplay');
-                const fileName = document.getElementById('fileName');
-                const fileSize = document.getElementById('fileSize');
-                const removeFile = document.getElementById('removeFile');
-                const masjidSearch = document.getElementById('masjidSearch');
-                const masjidResults = document.getElementById('masjidResults');
+                const previewBtn = document.getElementById('previewBtn');
+                const importBtn = document.getElementById('importBtn');
+                const previewContainer = document.getElementById('previewContainer');
+                const tableBody = document.getElementById('previewTableBody');
 
-                // Handle file selection
-                fileInput.addEventListener('change', function (e) {
-                    if (e.target.files.length > 0) {
-                        displayFileInfo(e.target.files[0]);
-                    }
-                });
+                let allRows = [];
+                let currentPage = 1;
+                const rowsPerPage = 10;
 
-                // Handle drag and drop
-                dropZone.addEventListener('dragover', function (e) {
-                    e.preventDefault();
-                    dropZone.classList.add('border-emerald-400', 'bg-emerald-50');
-                });
-
-                dropZone.addEventListener('dragleave', function (e) {
+                // File Management
+                fileInput.addEventListener('change', e => e.target.files[0] && displayFile(e.target.files[0]));
+                dropZone.addEventListener('dragover', e => (e.preventDefault(), dropZone.classList.add('border-emerald-400', 'bg-emerald-50')));
+                dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-emerald-400', 'bg-emerald-50'));
+                dropZone.addEventListener('drop', e => {
                     e.preventDefault();
                     dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
-                });
-
-                dropZone.addEventListener('drop', function (e) {
-                    e.preventDefault();
-                    dropZone.classList.remove('border-emerald-400', 'bg-emerald-50');
-
-                    if (e.dataTransfer.files.length > 0) {
+                    if (e.dataTransfer.files.length) {
                         fileInput.files = e.dataTransfer.files;
-                        displayFileInfo(e.dataTransfer.files[0]);
+                        displayFile(e.dataTransfer.files[0]);
                     }
                 });
 
-                // Remove file
-                removeFile.addEventListener('click', function () {
+                document.getElementById('removeFile').onclick = () => {
                     fileInput.value = '';
-                    fileNameDisplay.classList.add('hidden');
-                });
+                    document.getElementById('fileNameDisplay').classList.add('hidden');
+                    previewContainer.classList.add('hidden');
+                    importBtn.classList.add('hidden');
+                };
 
-                function displayFileInfo(file) {
-                    fileName.textContent = file.name;
-                    fileSize.textContent = (file.size / 1024).toFixed(2) + ' KB';
-                    fileNameDisplay.classList.remove('hidden');
+                function displayFile(file) {
+                    document.getElementById('fileName').textContent = file.name;
+                    document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
+                    document.getElementById('fileNameDisplay').classList.remove('hidden');
                 }
 
-                // Masjid/Surau Search Functionality
-                const clearSearchBtn = document.getElementById('clearSearch');
+                // Preview Logic
+                previewBtn.onclick = async () => {
+                    const file = fileInput.files[0];
+                    if (!file) return showToast('Sila pilih fail terlebih dahulu', 'error');
 
-                function handleSearch() {
-                    const searchTerm = masjidSearch.value.toLowerCase().trim();
-                    const items = masjidResults.querySelectorAll('.masjid-item');
+                    const formData = new FormData();
+                    formData.append('csv_file', file);
+                    formData.append('_token', '{{ csrf_token() }}');
 
-                    // Show/hide clear button
-                    if (searchTerm === '') {
-                        clearSearchBtn.classList.add('hidden');
-                        items.forEach(item => item.style.display = 'block');
-                        return;
-                    } else {
-                        clearSearchBtn.classList.remove('hidden');
-                    }
+                    previewBtn.disabled = true;
+                    previewBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-2"></i> Memproses...';
 
-                    // Filter items
-                    items.forEach(item => {
-                        const name = item.getAttribute('data-name');
-                        const jenis = item.getAttribute('data-jenis');
-                        const id = item.getAttribute('data-id');
+                    try {
+                        const response = await fetch('{{ route("admin.immovable-assets.import.preview") }}', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
 
-                        if (name.includes(searchTerm) ||
-                            jenis.includes(searchTerm) ||
-                            id.includes(searchTerm)) {
-                            item.style.display = 'block';
+                        if (result.success) {
+                            allRows = result.data;
+                            document.getElementById('validCount').textContent = result.summary.valid;
+                            document.getElementById('invalidCount').textContent = result.summary.invalid;
+                            document.getElementById('totalRows').textContent = result.summary.total;
+
+                            currentPage = 1;
+                            renderTable();
+
+                            previewContainer.classList.remove('hidden');
+                            document.getElementById('paginationControls').classList.toggle('hidden', allRows.length <= rowsPerPage);
+
+                            if (result.summary.valid > 0 && result.summary.invalid === 0) {
+                                importBtn.classList.remove('hidden');
+                                showToast('Semua data sah!', 'success');
+                            } else if (result.summary.invalid > 0) {
+                                importBtn.classList.add('hidden');
+                                showToast('Terdapat ralat dalam data!', 'error');
+                            }
                         } else {
-                            item.style.display = 'none';
+                            showToast(result.message, 'error');
                         }
-                    });
+                    } catch (e) {
+                        showToast('Ralat sistem berlaku semasa memproses fail', 'error');
+                    } finally {
+                        previewBtn.disabled = false;
+                        previewBtn.innerHTML = '<i class="bx bx-show-alt mr-2"></i> Pratonton Data';
+                    }
+                };
+
+                function renderTable() {
+                    const start = (currentPage - 1) * rowsPerPage;
+                    const end = start + rowsPerPage;
+                    const pageRows = allRows.slice(start, end);
+
+                    tableBody.innerHTML = pageRows.map(row => `
+                            <tr class="${row.valid ? 'hover:bg-gray-50' : 'bg-red-50'}">
+                                <td class="px-6 py-4 font-mono text-xs text-gray-500">${row.row}</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${row.valid ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                                        ${row.valid ? 'SAH' : 'RALAT'}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="font-bold text-gray-900">${row.display_data?.nama_aset || '-'}</div>
+                                </td>
+                                <td class="px-6 py-4 text-gray-700">${row.display_data?.masjid || '-'}</td>
+                                <td class="px-6 py-4 text-gray-700">${row.display_data?.jenis || '-'}</td>
+                                <td class="px-6 py-4 ${row.valid ? 'text-gray-500 italic' : 'text-red-600 font-semibold'}">
+                                    ${row.valid ? row.display_data?.tarikh : row.errors.join('<br>')}
+                                </td>
+                            </tr>
+                        `).join('');
+
+                    document.getElementById('pageStart').textContent = allRows.length ? start + 1 : 0;
+                    document.getElementById('pageEnd').textContent = Math.min(end, allRows.length);
+                    document.getElementById('prevBtn').disabled = currentPage === 1;
+                    document.getElementById('nextBtn').disabled = end >= allRows.length;
                 }
 
-                masjidSearch.addEventListener('input', handleSearch);
+                document.getElementById('prevBtn').onclick = () => currentPage > 1 && (currentPage--, renderTable());
+                document.getElementById('nextBtn').onclick = () => (currentPage * rowsPerPage) < allRows.length && (currentPage++, renderTable());
 
-                // Clear search button functionality
-                clearSearchBtn.addEventListener('click', function () {
-                    masjidSearch.value = '';
-                    handleSearch();
-                    masjidSearch.focus(); // Keep focus on input
-                });
-
-                // Copy Masjid ID to clipboard
-                window.copyMasjidId = function (id, name) {
-                    // Copy to clipboard
-                    navigator.clipboard.writeText(id).then(function () {
-                        // Show notification
-                        showNotification('ID ' + id + ' telah disalin! (' + name + ')', 'success');
-
-                        // Highlight the item briefly
-                        const item = document.querySelector(`[data-id="${id}"]`);
-                        if (item) {
-                            item.classList.add('bg-green-50', 'border-green-300');
-                            setTimeout(() => {
-                                item.classList.remove('bg-green-50', 'border-green-300');
-                            }, 1000);
-                        }
-                    }).catch(function (err) {
-                        showNotification('Gagal menyalin ID. Sila salin secara manual: ' + id, 'error');
+                // Search Functionality
+                const masjidInput = document.getElementById('masjidSearchSide');
+                masjidInput.oninput = function () {
+                    const q = this.value.toLowerCase();
+                    document.querySelectorAll('.masjid-item-side').forEach(item => {
+                        const text = item.getAttribute('data-name') + ' ' + item.getAttribute('data-id');
+                        item.classList.toggle('hidden', !text.includes(q));
                     });
                 };
 
-                function showNotification(message, type) {
-                    // Remove existing notification
-                    const existing = document.querySelector('.notification-toast');
-                    if (existing) {
-                        existing.remove();
-                    }
+                window.copyToClipboard = (id, name) => {
+                    navigator.clipboard.writeText(id).then(() => {
+                        showToast(`ID ${id} disalin ke clipboard!`, 'info');
+                        const item = document.querySelector(`[data-id="${id}"]`);
+                        item.classList.add('bg-emerald-50', 'ring-2', 'ring-emerald-400');
+                        setTimeout(() => item.classList.remove('bg-emerald-50', 'ring-2', 'ring-emerald-400'), 1500);
+                    });
+                };
 
-                    // Create notification
-                    const notification = document.createElement('div');
-                    notification.className = `notification-toast fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                        }`;
-                    notification.innerHTML = `
-                            <i class='bx bx-${type === 'success' ? 'check-circle' : 'error-circle'} text-xl'></i>
-                            <span class="font-medium">${message}</span>
-                        `;
-
-                    document.body.appendChild(notification);
-
-                    // Animate in
+                function showToast(msg, type = 'info') {
+                    const container = document.getElementById('toastContainer');
+                    const toast = document.createElement('div');
+                    const colors = {
+                        success: 'bg-emerald-600',
+                        error: 'bg-red-600',
+                        info: 'bg-emerald-600'
+                    };
+                    toast.className = `${colors[type]} text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 pointer-events-auto animate-fadeIn border border-white/20`;
+                    toast.innerHTML = `<i class='bx bx-${type === 'error' ? 'error-circle' : 'info-circle'} text-2xl'></i><span class="font-bold text-sm">${msg}</span>`;
+                    container.appendChild(toast);
                     setTimeout(() => {
-                        notification.style.opacity = '0';
-                        notification.style.transform = 'translateX(100%)';
-                        notification.style.transition = 'all 0.3s ease';
-                    }, 3000);
-
-                    // Remove after animation
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 3300);
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translateX(20px)';
+                        setTimeout(() => toast.remove(), 300);
+                    }, 4000);
                 }
             });
         </script>

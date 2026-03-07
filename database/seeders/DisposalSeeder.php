@@ -17,7 +17,7 @@ class DisposalSeeder extends Seeder
     {
         // Get all assets
         $assets = Asset::all();
-        $users = User::where('role', 'admin')->get();
+        $users = User::where('role', 'administrator')->get();
 
         if ($assets->isEmpty()) {
             $this->command->error('No assets found. Please run AssetSeeder first.');

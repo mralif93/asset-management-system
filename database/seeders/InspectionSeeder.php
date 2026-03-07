@@ -17,7 +17,7 @@ class InspectionSeeder extends Seeder
     public function run(): void
     {
         $assets = Asset::all();
-        $users = User::where('role', 'admin')->get();
+        $users = User::where('role', 'administrator')->get();
         $defaultUser = $users->first();
 
         $sampleInspections = [

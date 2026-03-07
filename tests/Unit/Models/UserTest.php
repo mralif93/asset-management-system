@@ -25,6 +25,7 @@ class UserTest extends TestCase
             'masjid_surau_id',
             'phone',
             'position',
+            'profile_picture',
         ];
 
         $this->assertEquals($fillable, $user->getFillable());
@@ -142,7 +143,7 @@ class UserTest extends TestCase
             'name' => 'New Test User',
             'email' => 'newtest@example.com',
             'password' => bcrypt('password'),
-            'role' => 'admin',
+            'role' => 'administrator',
             'masjid_surau_id' => $masjidSurau->id,
             'phone' => '0123456789',
             'position' => 'Manager',
@@ -154,7 +155,7 @@ class UserTest extends TestCase
             'id' => $user->id,
             'name' => 'New Test User',
             'email' => 'newtest@example.com',
-            'role' => 'admin',
+            'role' => 'administrator',
             'masjid_surau_id' => $masjidSurau->id,
             'phone' => '0123456789',
             'position' => 'Manager',

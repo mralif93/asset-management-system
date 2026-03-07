@@ -16,7 +16,7 @@ class MasjidSurauController extends Controller
     {
         $query = MasjidSurau::withCount(['assets', 'users']);
 
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $query->where('id', auth()->user()->masjid_surau_id);
         }
 
@@ -48,7 +48,7 @@ class MasjidSurauController extends Controller
         $masjidSuraus = $query->latest()->paginate(10);
 
         // Statistics for the index page
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id) {
             $statistics = [
                 'total_masjid_surau' => 1,
                 'total_masjid' => MasjidSurau::where('id', auth()->user()->masjid_surau_id)->where('jenis', 'Masjid')->count(),
@@ -72,7 +72,7 @@ class MasjidSurauController extends Controller
      */
     public function create()
     {
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()->role !== 'administrator') {
             abort(403, 'Akses ditolak. Anda tidak dibenarkan menambah Masjid/Surau baru.');
         }
 
@@ -84,7 +84,7 @@ class MasjidSurauController extends Controller
      */
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()->role !== 'administrator') {
             abort(403, 'Akses ditolak.');
         }
 
@@ -124,7 +124,7 @@ class MasjidSurauController extends Controller
      */
     public function show(MasjidSurau $masjidSurau)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -152,7 +152,7 @@ class MasjidSurauController extends Controller
      */
     public function edit(MasjidSurau $masjidSurau)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -164,7 +164,7 @@ class MasjidSurauController extends Controller
      */
     public function update(Request $request, MasjidSurau $masjidSurau)
     {
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
+        if (auth()->user()->role !== 'administrator' && auth()->user()->masjid_surau_id && $masjidSurau->id !== auth()->user()->masjid_surau_id) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -204,7 +204,7 @@ class MasjidSurauController extends Controller
      */
     public function destroy(MasjidSurau $masjidSurau)
     {
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()->role !== 'administrator') {
             abort(403, 'Akses ditolak. Anda tidak dibenarkan memadam Masjid/Surau.');
         }
 
@@ -231,7 +231,7 @@ class MasjidSurauController extends Controller
      */
     public function toggleStatus(MasjidSurau $masjidSurau)
     {
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()->role !== 'administrator') {
             abort(403, 'Akses ditolak.');
         }
 
@@ -247,7 +247,7 @@ class MasjidSurauController extends Controller
      */
     public function bulkDelete(Request $request)
     {
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()->role !== 'administrator') {
             abort(403, 'Akses ditolak.');
         }
 

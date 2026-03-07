@@ -24,7 +24,7 @@ class AssetApiControllerTest extends TestCase
 
         $this->masjidSurau = MasjidSurau::factory()->create();
         $this->user = User::factory()->create([
-            'role' => 'admin',
+            'role' => 'administrator',
             'masjid_surau_id' => $this->masjidSurau->id,
         ]);
     }

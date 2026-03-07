@@ -250,7 +250,7 @@
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('role') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Peranan</option>
-                                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Pentadbir</option>
+                                        <option value="admin" {{ old('role') === 'administrator' ? 'selected' : '' }}>Pentadbir</option>
                                         <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>Pengguna</option>
                                     </select>
                                 </div>

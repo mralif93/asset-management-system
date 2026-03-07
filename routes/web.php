@@ -43,7 +43,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 // Dashboard redirects
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
-        if (in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer'])) {
+        if (in_array(auth()->user()->role, ['administrator', 'officer'])) {
             return redirect()->route('admin.dashboard');
         } else {
             return redirect()->route('user.dashboard');
@@ -52,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Legacy profile redirect - redirect to appropriate profile based on role
     Route::get('/profile', function () {
-        if (in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer'])) {
+        if (in_array(auth()->user()->role, ['administrator', 'officer'])) {
             return redirect()->route('admin.profile.edit');
         } else {
             return redirect()->route('user.profile.edit');
@@ -95,6 +95,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Asset Movements
     Route::get('/asset-movements/{assetMovement}/return', [AssetMovementController::class, 'showReturnForm'])->name('asset-movements.return-form');
     Route::get('asset-movements/export', [AssetMovementController::class, 'export'])->name('asset-movements.export');
+    Route::get('asset-movements/import', [AssetMovementController::class, 'showImport'])->name('asset-movements.import');
+    Route::post('asset-movements/import', [AssetMovementController::class, 'import'])->name('asset-movements.import.store');
+    Route::post('asset-movements/import/preview', [AssetMovementController::class, 'previewImport'])->name('asset-movements.import.preview');
+    Route::get('asset-movements/import/template', [AssetMovementController::class, 'downloadTemplate'])->name('asset-movements.import.template');
     Route::post('asset-movements/bulk-approve', [AssetMovementController::class, 'bulkApprove'])->name('asset-movements.bulk-approve');
     Route::post('asset-movements/bulk-reject', [AssetMovementController::class, 'bulkReject'])->name('asset-movements.bulk-reject');
     Route::get('asset-movements/trashed', [AssetMovementController::class, 'trashed'])->name('asset-movements.trashed');
@@ -106,12 +110,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Inspections
     Route::get('inspections/export', [InspectionController::class, 'export'])->name('inspections.export');
+    Route::get('inspections/import', [InspectionController::class, 'showImport'])->name('inspections.import');
+    Route::post('inspections/import', [InspectionController::class, 'import'])->name('inspections.import.store');
+    Route::post('inspections/import/preview', [InspectionController::class, 'previewImport'])->name('inspections.import.preview');
+    Route::get('inspections/import/template', [InspectionController::class, 'downloadTemplate'])->name('inspections.import.template');
     Route::get('inspections/trashed', [InspectionController::class, 'trashed'])->name('inspections.trashed');
     Route::post('inspections/{id}/restore', [InspectionController::class, 'restore'])->name('inspections.restore');
     Route::resource('inspections', InspectionController::class);
 
     // Maintenance Records
     Route::get('maintenance-records/export', [MaintenanceRecordController::class, 'export'])->name('maintenance-records.export');
+    Route::get('maintenance-records/import', [MaintenanceRecordController::class, 'showImport'])->name('maintenance-records.import');
+    Route::post('maintenance-records/import', [MaintenanceRecordController::class, 'import'])->name('maintenance-records.import.store');
+    Route::post('maintenance-records/import/preview', [MaintenanceRecordController::class, 'previewImport'])->name('maintenance-records.import.preview');
+    Route::get('maintenance-records/import/template', [MaintenanceRecordController::class, 'downloadTemplate'])->name('maintenance-records.import.template');
     Route::get('maintenance-records/trashed', [MaintenanceRecordController::class, 'trashed'])->name('maintenance-records.trashed');
     Route::post('maintenance-records/{id}/restore', [MaintenanceRecordController::class, 'restore'])->name('maintenance-records.restore');
     Route::resource('maintenance-records', MaintenanceRecordController::class);
@@ -120,12 +132,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('immovable-assets/export', [ImmovableAssetController::class, 'export'])->name('immovable-assets.export');
     Route::get('immovable-assets/import', [ImmovableAssetController::class, 'showImport'])->name('immovable-assets.import');
     Route::post('immovable-assets/import', [ImmovableAssetController::class, 'import'])->name('immovable-assets.import.store');
+    Route::post('immovable-assets/import/preview', [ImmovableAssetController::class, 'previewImport'])->name('immovable-assets.import.preview');
     Route::get('immovable-assets/import/template', [ImmovableAssetController::class, 'downloadTemplate'])->name('immovable-assets.import.template');
     Route::post('immovable-assets/bulk-delete', [ImmovableAssetController::class, 'bulkDelete'])->name('immovable-assets.bulk-delete');
     Route::resource('immovable-assets', ImmovableAssetController::class);
 
     // Disposals
     Route::get('disposals/export', [DisposalController::class, 'export'])->name('disposals.export');
+    Route::get('disposals/import', [DisposalController::class, 'showImport'])->name('disposals.import');
+    Route::post('disposals/import', [DisposalController::class, 'import'])->name('disposals.import.store');
+    Route::post('disposals/import/preview', [DisposalController::class, 'previewImport'])->name('disposals.import.preview');
+    Route::get('disposals/import/template', [DisposalController::class, 'downloadTemplate'])->name('disposals.import.template');
     Route::post('disposals/bulk-approve', [DisposalController::class, 'bulkApprove'])->name('disposals.bulk-approve');
     Route::post('disposals/bulk-reject', [DisposalController::class, 'bulkReject'])->name('disposals.bulk-reject');
     Route::resource('disposals', DisposalController::class);
@@ -134,6 +151,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Loss Write-offs
     Route::get('loss-writeoffs/export', [LossWriteoffController::class, 'export'])->name('loss-writeoffs.export');
+    Route::get('loss-writeoffs/import', [LossWriteoffController::class, 'showImport'])->name('loss-writeoffs.import');
+    Route::post('loss-writeoffs/import', [LossWriteoffController::class, 'import'])->name('loss-writeoffs.import.store');
+    Route::post('loss-writeoffs/import/preview', [LossWriteoffController::class, 'previewImport'])->name('loss-writeoffs.import.preview');
+    Route::get('loss-writeoffs/import/template', [LossWriteoffController::class, 'downloadTemplate'])->name('loss-writeoffs.import.template');
     Route::resource('loss-writeoffs', LossWriteoffController::class);
     Route::patch('loss-writeoffs/{lossWriteoff}/approve', [LossWriteoffController::class, 'approve'])->name('loss-writeoffs.approve');
     Route::patch('loss-writeoffs/{lossWriteoff}/reject', [LossWriteoffController::class, 'reject'])->name('loss-writeoffs.reject');

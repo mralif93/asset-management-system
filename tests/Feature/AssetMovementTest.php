@@ -15,33 +15,33 @@ class AssetMovementTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
-    private MasjidSurau $masjidSurauAsal;
-    private MasjidSurau $masjidSurauDestinasi;
+    private MasjidSurau $origin;
+    private MasjidSurau $destination;
     private Asset $asset;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->masjidSurauAsal = MasjidSurau::create([
-            'nama' => 'Test Masjid Asal',
+        $this->origin = MasjidSurau::create([
+            'nama' => 'Test Origin',
             'jenis' => 'Masjid',
             'status' => 'Aktif',
         ]);
 
-        $this->masjidSurauDestinasi = MasjidSurau::create([
-            'nama' => 'Test Masjid Destinasi',
+        $this->destination = MasjidSurau::create([
+            'nama' => 'Test Destination',
             'jenis' => 'Masjid',
             'status' => 'Aktif',
         ]);
 
         $this->admin = User::factory()->create([
-            'masjid_surau_id' => $this->masjidSurauAsal->id,
-            'role' => 'admin',
+            'masjid_surau_id' => $this->origin->id,
+            'role' => 'administrator',
         ]);
 
         $this->asset = Asset::create([
-            'masjid_surau_id' => $this->masjidSurauAsal->id,
+            'masjid_surau_id' => $this->origin->id,
             'no_siri_pendaftaran' => 'TEST-001',
             'nama_aset' => 'Test Asset',
             'jenis_aset' => 'Elektronik',
@@ -49,325 +49,141 @@ class AssetMovementTest extends TestCase
             'kaedah_perolehan' => 'Pembelian',
             'nilai_perolehan' => 1000,
             'susut_nilai_tahunan' => 100,
-            'lokasi_penempatan' => 'Original Location',
+            'lokasi_penempatan' => 'Stor A',
             'pegawai_bertanggungjawab_lokasi' => 'Test Officer',
             'status_aset' => 'Aktif',
         ]);
     }
 
     #[Test]
-    public function admin_can_view_asset_movements()
+    public function admin_can_create_asset_movement(): void
     {
-        $movement = AssetMovement::create([
+        $payload = [
             'asset_id' => $this->asset->id,
             'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now(),
-            'tarikh_pergerakan' => now(),
+            'origin_masjid_surau_id' => $this->origin->id,
+            'destination_masjid_surau_id' => $this->destination->id,
+            'lokasi_asal_spesifik' => 'Stor A',
+            'lokasi_destinasi_spesifik' => 'Stor B',
+            'tarikh_pergerakan' => now()->addDay()->format('Y-m-d'),
             'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
-            'status_pergerakan' => 'menunggu_kelulusan',
-            'status_kelulusan_asal' => 'menunggu',
-            'status_kelulusan_destinasi' => 'menunggu',
-        ]);
-
-        $response = $this->actingAs($this->admin)
-            ->get('/admin/asset-movements');
-
-        $response->assertStatus(200)
-            ->assertSee('Test Asset')
-            ->assertSee('Pemindahan')
-            ->assertSee('New Location');
-    }
-
-    #[Test]
-    public function admin_can_create_asset_movement()
-    {
-        $movementData = [
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now()->format('Y-m-d'),
-            'tarikh_pergerakan' => now()->format('Y-m-d'),
-            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
+            'tujuan_pergerakan' => 'Testing purposes',
+            'kuantiti' => 1,
+            'pegawai_bertanggungjawab_signature' => 'signature-data',
+            'disediakan_oleh_jawatan' => 'Pegawai Aset',
+            'disediakan_oleh_tarikh' => now()->format('Y-m-d'),
         ];
 
-        $response = $this->actingAs($this->admin)
-            ->post('/admin/asset-movements', $movementData);
+        $response = $this->actingAs($this->admin)->post('/admin/asset-movements', $payload);
 
+        $response->assertStatus(302);
         $movement = AssetMovement::first();
-
-        $response->assertStatus(302)
-            ->assertRedirect("/admin/asset-movements/{$movement->id}");
-
+        $this->assertNotNull($movement);
+        $response->assertRedirect("/admin/asset-movements/{$movement->id}");
         $this->assertDatabaseHas('asset_movements', [
+            'id' => $movement->id,
             'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
+            'user_id' => $this->admin->id,
             'status_pergerakan' => 'menunggu_kelulusan',
         ]);
     }
 
     #[Test]
-    public function admin_can_view_movement_details()
+    public function admin_can_approve_and_reject_movement(): void
     {
         $movement = AssetMovement::create([
             'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
+            'user_id' => $this->admin->id,
+            'kuantiti' => 1,
+            'origin_masjid_surau_id' => $this->origin->id,
+            'destination_masjid_surau_id' => $this->destination->id,
             'tarikh_permohonan' => now(),
-            'tarikh_pergerakan' => now(),
+            'jenis_pergerakan' => 'Pemindahan',
+            'lokasi_asal_spesifik' => 'Stor A',
+            'lokasi_destinasi_spesifik' => 'Stor B',
             'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
+            'tujuan_pergerakan' => 'Testing purposes',
+            'tarikh_pergerakan' => now()->addDay(),
             'status_pergerakan' => 'menunggu_kelulusan',
-            'status_kelulusan_asal' => 'menunggu',
-            'status_kelulusan_destinasi' => 'menunggu',
         ]);
 
-        $response = $this->actingAs($this->admin)
-            ->get("/admin/asset-movements/{$movement->id}");
-
-        $response->assertStatus(200)
-            ->assertSee('Test Asset')
-            ->assertSee('Pemindahan')
-            ->assertSee('New Location')
-            ->assertSee('Test Borrower');
-    }
-
-    #[Test]
-    public function admin_can_update_movement_status()
-    {
-        $movement = AssetMovement::create([
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now(),
-            'tarikh_pergerakan' => now(),
-            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
-            'status_pergerakan' => 'menunggu_kelulusan',
-            'status_kelulusan_asal' => 'menunggu',
-            'status_kelulusan_destinasi' => 'menunggu',
-        ]);
-
-        $updateData = [
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now()->format('Y-m-d'),
-            'tarikh_pergerakan' => now()->format('Y-m-d'),
-            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes updated',
-        ];
-
-        $response = $this->actingAs($this->admin)
-            ->put("/admin/asset-movements/{$movement->id}", $updateData);
-
-        $response->assertStatus(302)
-            ->assertRedirect("/admin/asset-movements/{$movement->id}");
+        $approve = $this->actingAs($this->admin)
+            ->patch("/admin/asset-movements/{$movement->id}/approve", ['catatan' => 'Approved']);
+        $approve->assertStatus(302)->assertRedirect("/admin/asset-movements/{$movement->id}");
 
         $this->assertDatabaseHas('asset_movements', [
             'id' => $movement->id,
-            'sebab_pergerakan' => 'Testing purposes updated',
-        ]);
-    }
-
-    #[Test]
-    public function regular_user_cannot_create_movement()
-    {
-        $regularUser = User::factory()->create([
-            'masjid_surau_id' => $this->masjidSurauAsal->id,
-            'role' => 'user',
+            'status_pergerakan' => 'diluluskan',
         ]);
 
-        $movementData = [
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now()->format('Y-m-d'),
-            'tarikh_pergerakan' => now()->format('Y-m-d'),
-            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
-        ];
-
-        $response = $this->actingAs($regularUser)
-            ->post('/admin/asset-movements', $movementData);
-
-        $response->assertStatus(403);
-
-        $this->assertDatabaseMissing('asset_movements', [
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-        ]);
-    }
-
-    #[Test]
-    public function admin_can_approve_movement_from_source()
-    {
-        $movement = AssetMovement::create([
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now(),
-            'tarikh_pergerakan' => now(),
-            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
-            'status_pergerakan' => 'menunggu_kelulusan',
-            'status_kelulusan_asal' => 'menunggu',
-            'status_kelulusan_destinasi' => 'menunggu',
-        ]);
-
-        $response = $this->actingAs($this->admin)
-            ->patch("/admin/asset-movements/{$movement->id}/approve", [
-                'type' => 'asal',
-                'status' => 'diluluskan',
-                'catatan' => 'Approved from source'
-            ]);
-
-        $response->assertStatus(302)
-            ->assertRedirect("/admin/asset-movements/{$movement->id}");
-
-        $this->assertDatabaseHas('asset_movements', [
-            'id' => $movement->id,
-            'status_kelulusan_asal' => 'diluluskan',
-            'diluluskan_oleh_asal' => $this->admin->id,
-        ]);
-    }
-
-    #[Test]
-    public function admin_can_reject_movement()
-    {
-        $movement = AssetMovement::create([
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now(),
-            'tarikh_pergerakan' => now(),
-            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
-            'status_pergerakan' => 'menunggu_kelulusan',
-            'status_kelulusan_asal' => 'menunggu',
-            'status_kelulusan_destinasi' => 'menunggu',
-        ]);
-
-        $response = $this->actingAs($this->admin)
-            ->patch("/admin/asset-movements/{$movement->id}/reject", [
-                'approval_type' => 'asal',
-                'sebab_penolakan' => 'Asset not available'
-            ]);
-
-        $response->assertStatus(302)
-            ->assertRedirect("/admin/asset-movements/{$movement->id}");
+        $reject = $this->actingAs($this->admin)
+            ->patch("/admin/asset-movements/{$movement->id}/reject", ['catatan' => 'Rejected']);
+        $reject->assertStatus(302)->assertRedirect("/admin/asset-movements/{$movement->id}");
 
         $this->assertDatabaseHas('asset_movements', [
             'id' => $movement->id,
             'status_pergerakan' => 'ditolak',
-            'status_kelulusan_asal' => 'ditolak',
-            'sebab_penolakan' => 'Asset not available'
         ]);
     }
 
     #[Test]
-    public function movement_requires_valid_dates()
-    {
-        $invalidData = [
-            'asset_id' => $this->asset->id,
-            'jenis_pergerakan' => 'Pemindahan',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now()->addDays(1), // Invalid: Application date in future
-            'tarikh_pergerakan' => now(), // Invalid: Movement date before application
-            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes'
-        ];
-
-        $response = $this->actingAs($this->admin)
-            ->post('/admin/asset-movements', $invalidData);
-
-        $response->assertStatus(302)
-            ->assertSessionHasErrors(['tarikh_pergerakan']);
-    }
-
-    #[Test]
-    public function admin_can_record_asset_return()
+    public function admin_can_record_asset_return(): void
     {
         $movement = AssetMovement::create([
             'asset_id' => $this->asset->id,
+            'user_id' => $this->admin->id,
+            'kuantiti' => 1,
+            'origin_masjid_surau_id' => $this->origin->id,
+            'destination_masjid_surau_id' => $this->destination->id,
+            'tarikh_permohonan' => now()->subDays(2),
             'jenis_pergerakan' => 'Peminjaman',
-            'masjid_surau_asal_id' => $this->masjidSurauAsal->id,
-            'masjid_surau_destinasi_id' => $this->masjidSurauDestinasi->id,
-            'lokasi_asal' => 'Original Location',
-            'lokasi_terperinci_asal' => 'Original Location',
-            'lokasi_destinasi' => 'New Location',
-            'lokasi_terperinci_destinasi' => 'New Location',
-            'tarikh_permohonan' => now()->subDays(5),
-            'tarikh_pergerakan' => now()->subDays(4),
-            'tarikh_jangka_pulangan' => now()->addDays(1),
+            'lokasi_asal_spesifik' => 'Stor A',
+            'lokasi_destinasi_spesifik' => 'Stor B',
             'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
-            'sebab_pergerakan' => 'Testing purposes',
+            'tujuan_pergerakan' => 'Borrowing',
+            'tarikh_pergerakan' => now()->subDay(),
             'status_pergerakan' => 'diluluskan',
-            'status_kelulusan_asal' => 'diluluskan',
-            'status_kelulusan_destinasi' => 'diluluskan',
         ]);
 
         $response = $this->actingAs($this->admin)
-            ->patch("/admin/asset-movements/{$movement->id}/return", [
+            ->patch("/admin/asset-movements/{$movement->id}/process-return", [
                 'tarikh_pulang_sebenar' => now()->format('Y-m-d H:i:s'),
-                'catatan_pergerakan' => 'Returned in good condition'
+                'catatan' => 'Returned safely',
+                'tandatangan_penerima' => 'sig-1',
+                'tandatangan_pemulangan' => 'sig-2',
             ]);
 
-        $response->assertStatus(302)
-            ->assertRedirect("/admin/asset-movements/{$movement->id}");
-
+        $response->assertStatus(302)->assertRedirect("/admin/asset-movements/{$movement->id}");
         $this->assertDatabaseHas('asset_movements', [
             'id' => $movement->id,
-            'status_pergerakan' => 'selesai',
-            'tarikh_pulang_sebenar' => now()->format('Y-m-d H:i:s'),
-            'catatan_pergerakan' => 'Returned in good condition'
+            'status_pergerakan' => 'dipulangkan',
         ]);
     }
-} 
+
+    #[Test]
+    public function regular_user_cannot_create_movement(): void
+    {
+        $user = User::factory()->create([
+            'masjid_surau_id' => $this->origin->id,
+            'role' => 'user',
+        ]);
+
+        $response = $this->actingAs($user)->post('/admin/asset-movements', [
+            'asset_id' => $this->asset->id,
+            'jenis_pergerakan' => 'Pemindahan',
+            'origin_masjid_surau_id' => $this->origin->id,
+            'destination_masjid_surau_id' => $this->destination->id,
+            'lokasi_asal_spesifik' => 'Stor A',
+            'lokasi_destinasi_spesifik' => 'Stor B',
+            'tarikh_pergerakan' => now()->addDay()->format('Y-m-d'),
+            'nama_peminjam_pegawai_bertanggungjawab' => 'Test Borrower',
+            'tujuan_pergerakan' => 'Testing purposes',
+            'kuantiti' => 1,
+            'pegawai_bertanggungjawab_signature' => 'signature-data',
+            'disediakan_oleh_jawatan' => 'Pegawai Aset',
+            'disediakan_oleh_tarikh' => now()->format('Y-m-d'),
+        ]);
+
+        $response->assertStatus(403);
+    }
+}

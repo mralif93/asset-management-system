@@ -15,7 +15,7 @@
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-user-circle text-emerald-200'></i>
                             <span
-                                class="text-emerald-100">{{ auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin' ? 'Pentadbir Sistem' : (auth()->user()->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}</span>
+                                class="text-emerald-100">{{ auth()->user()->role === 'administrator' || auth()->user()->role === 'administrator' ? 'Pentadbir Sistem' : (auth()->user()->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}</span>
                         </div>
                         <div class="flex items-center space-x-2">
                             <div
@@ -322,7 +322,7 @@
                             </div>
                             <h4 class="font-semibold text-gray-900">{{ $user->name }}</h4>
                             <p class="text-sm text-gray-600">
-                                {{ $user->role === 'admin' || $user->role === 'superadmin' ? 'Pentadbir Sistem' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}
+                                {{ $user->role === 'administrator' || $user->role === 'administrator' ? 'Pentadbir Sistem' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}
                             </p>
                             @if($user->position)
                                 <p class="text-xs text-gray-500">{{ $user->position }}</p>
@@ -370,7 +370,7 @@
                         <div class="flex items-center justify-between">
                             <span>Tahap Akses:</span>
                             <span
-                                class="font-medium">{{ $user->role === 'admin' || $user->role === 'superadmin' ? 'Pentadbir' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}</span>
+                                class="font-medium">{{ $user->role === 'administrator' || $user->role === 'administrator' ? 'Pentadbir' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}</span>
                         </div>
                     </div>
                 </div>

@@ -26,13 +26,21 @@ class LossWriteoffTest extends TestCase
         
         $fillable = [
             'asset_id',
+            'user_id',
+            'kuantiti_kehilangan',
             'tarikh_laporan',
+            'tarikh_kehilangan',
             'jenis_kejadian',
             'sebab_kejadian',
             'butiran_kejadian',
             'pegawai_pelapor',
+            'nilai_kehilangan',
+            'laporan_polis',
+            'dokumen_kehilangan',
             'tarikh_kelulusan_hapus_kira',
             'status_kejadian',
+            'diluluskan_oleh',
+            'sebab_penolakan',
             'catatan',
         ];
 
@@ -46,7 +54,11 @@ class LossWriteoffTest extends TestCase
         
         $expectedCasts = [
             'tarikh_laporan' => 'datetime',
+            'tarikh_kehilangan' => 'datetime',
             'tarikh_kelulusan_hapus_kira' => 'datetime',
+            'kuantiti_kehilangan' => 'integer',
+            'nilai_kehilangan' => 'decimal:2',
+            'dokumen_kehilangan' => 'array',
             'deleted_at' => 'datetime',
             'id' => 'int',
         ];

@@ -101,6 +101,7 @@
 
             <!-- Export Data -->
             <a href="{{ route('admin.disposals.export', request()->query()) }}"
+                onclick="openExportConfirm(event, this.href, 'Adakah anda pasti mahu eksport data pelupusan?')"
                 class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <div class="flex items-center justify-between mb-4">
                     <div
@@ -126,6 +127,20 @@
                 <h3 class="font-semibold text-gray-900 mb-2">Laporan Pelupusan</h3>
                 <p class="text-sm text-gray-600">Analitik dan statistik</p>
             </div>
+
+            <!-- Import Disposal -->
+            <a href="{{ route('admin.disposals.import') }}"
+                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                        <i class='bx bx-cloud-upload text-amber-600 text-xl'></i>
+                    </div>
+                    <i class='bx bx-right-arrow-alt text-gray-400 group-hover:text-amber-600 transition-colors'></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Import Data</h3>
+                <p class="text-sm text-gray-600">Import permohonan pelupusan secara pukal</p>
+            </a>
 
             <!-- Approval Queue -->
             <div
@@ -392,8 +407,52 @@
         </div>
     </div>
 
+    <!-- Export Confirmation Modal -->
+    <div id="exportConfirmModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/40" onclick="closeExportConfirm()"></div>
+        <div class="relative flex min-h-full items-center justify-center p-4">
+            <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-gray-200">
+                <div class="p-6">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class='bx bx-download text-xl'></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Sahkan Eksport Data</h3>
+                            <p id="exportConfirmMessage" class="text-sm text-gray-600 mt-1">Adakah anda pasti?</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center justify-end space-x-3">
+                        <button type="button" onclick="closeExportConfirm()"
+                            class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors">
+                            Batal
+                        </button>
+                        <a id="exportConfirmAction" href="#"
+                            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors inline-flex items-center">
+                            <i class='bx bx-check mr-2'></i>
+                            Ya, Eksport
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
+            function openExportConfirm(event, url, message) {
+                event.preventDefault();
+                document.getElementById('exportConfirmAction').setAttribute('href', url);
+                document.getElementById('exportConfirmMessage').textContent = message;
+                document.getElementById('exportConfirmModal').classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            }
+
+            function closeExportConfirm() {
+                document.getElementById('exportConfirmModal').classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+
             function showRejectModal(disposalId) {
                 const form = document.getElementById('rejectForm');
                 form.action = `/admin/disposals/${disposalId}/reject`;

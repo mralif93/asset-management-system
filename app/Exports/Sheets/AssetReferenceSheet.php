@@ -5,6 +5,7 @@ namespace App\Exports\Sheets;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Models\MasjidSurau;
 use App\Helpers\SystemData;
 use App\Helpers\AssetRegistrationNumber;
 
@@ -13,6 +14,7 @@ class AssetReferenceSheet implements FromCollection, WithTitle, WithHeadings
     public function collection()
     {
         // Gather all reference data
+        $masjids = MasjidSurau::select('id', 'nama')->get();
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
         $locations = SystemData::getValidLocations();
         $conditions = SystemData::getPhysicalConditions();
@@ -29,6 +31,7 @@ class AssetReferenceSheet implements FromCollection, WithTitle, WithHeadings
 
         // Determine max rows needed
         $maxRows = max(
+            $masjids->count(),
             count($assetTypes),
             count($locations),
             count($conditions),
@@ -42,6 +45,8 @@ class AssetReferenceSheet implements FromCollection, WithTitle, WithHeadings
 
         for ($i = 0; $i < $maxRows; $i++) {
             $data[] = [
+                $masjids[$i]->id ?? '',
+                $masjids[$i]->nama ?? '',
                 $assetTypes[$i] ?? '',
                 $categories[$i] ?? '',
                 $locations[$i] ?? '',
@@ -58,6 +63,8 @@ class AssetReferenceSheet implements FromCollection, WithTitle, WithHeadings
     public function headings(): array
     {
         return [
+            'MASJID/SURAU ID',
+            'NAMA MASJID/SURAU',
             'JENIS ASET SAH',
             'KATEGORI ASET SAH',
             'LOKASI PENEMPATAN SAH',

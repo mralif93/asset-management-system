@@ -15,7 +15,7 @@ class AssetNewFieldsTest extends TestCase
     public function test_asset_can_have_physical_condition()
     {
         $masjidSurau = MasjidSurau::factory()->create();
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'administrator']);
 
         $asset = Asset::factory()->create([
             'masjid_surau_id' => $masjidSurau->id,
@@ -28,7 +28,7 @@ class AssetNewFieldsTest extends TestCase
     public function test_asset_can_have_warranty_status()
     {
         $masjidSurau = MasjidSurau::factory()->create();
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'administrator']);
 
         $asset = Asset::factory()->create([
             'masjid_surau_id' => $masjidSurau->id,
@@ -41,7 +41,7 @@ class AssetNewFieldsTest extends TestCase
     public function test_asset_can_have_inspection_and_maintenance_dates()
     {
         $masjidSurau = MasjidSurau::factory()->create();
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'administrator']);
 
         $asset = Asset::factory()->create([
             'masjid_surau_id' => $masjidSurau->id,
@@ -56,7 +56,7 @@ class AssetNewFieldsTest extends TestCase
     public function test_asset_can_have_warranty_notes()
     {
         $masjidSurau = MasjidSurau::factory()->create();
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'administrator']);
 
         $asset = Asset::factory()->create([
             'masjid_surau_id' => $masjidSurau->id,
@@ -69,7 +69,7 @@ class AssetNewFieldsTest extends TestCase
     public function test_asset_has_default_values()
     {
         $masjidSurau = MasjidSurau::factory()->create();
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'administrator']);
 
         $asset = Asset::factory()->create([
             'masjid_surau_id' => $masjidSurau->id,

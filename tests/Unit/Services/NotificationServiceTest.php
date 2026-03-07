@@ -26,7 +26,7 @@ class NotificationServiceTest extends TestCase
 
         $this->masjidSurau = MasjidSurau::factory()->create();
         $this->adminUser = User::factory()->create([
-            'role' => 'admin',
+            'role' => 'administrator',
             'masjid_surau_id' => $this->masjidSurau->id,
         ]);
         $this->asset = Asset::factory()->create([
@@ -74,7 +74,7 @@ class NotificationServiceTest extends TestCase
 
     public function test_get_pending_notifications_for_admin(): void
     {
-        $user = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'administrator']);
 
         $notifications = NotificationService::getPendingNotifications($user);
 

@@ -65,7 +65,7 @@ class AdminDashboardController extends Controller
                 ->count(),
             'recent_disposals' => Disposal::whereMonth('created_at', now()->month)->count(),
             'active_users' => User::whereNotNull('email_verified_at')->count(),
-            'admin_users' => User::where('role', 'admin')->count(),
+            'admin_users' => User::where('role', 'administrator')->count(),
         ];
 
         // Recent activities across all masjids
@@ -195,7 +195,7 @@ class AdminDashboardController extends Controller
                 LossWriteoff::where('status_kejadian', 'Dilaporkan')->count(),
             'total_masjids' => MasjidSurau::count(),
             'total_users' => User::count(),
-            'admin_users' => User::where('role', 'admin')->count(),
+            'admin_users' => User::where('role', 'administrator')->count(),
             'regular_users' => User::where('role', 'user')->count(),
             'assets_this_month' => Asset::whereMonth('created_at', now()->month)->count(),
             'movements_this_month' => AssetMovement::whereMonth('created_at', now()->month)->count(),

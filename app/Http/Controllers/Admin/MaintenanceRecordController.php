@@ -219,17 +219,177 @@ class MaintenanceRecordController extends Controller
         return view('admin.maintenance-records.trashed', compact('trashedRecords'));
     }
 
-    /**
-     * Restore a soft-deleted maintenance record.
-     */
-    public function restore($id)
+    public function showImport()
     {
-        $this->authorize('restore', MaintenanceRecord::class);
+        $this->authorize('create', MaintenanceRecord::class);
+        $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+        return view('admin.maintenance-records.import', compact('masjidSuraus'));
+    }
 
-        $record = MaintenanceRecord::onlyTrashed()->findOrFail($id);
-        $record->restore();
+    public function downloadTemplate()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MaintenanceImportTemplateExport(), 'template_penyelenggaraan.xlsx');
+    }
 
-        return redirect()->route('admin.maintenance-records.trashed')
-            ->with('success', 'Rekod penyelenggaraan berjaya dipulihkan.');
+    public function previewImport(Request $request)
+    {
+        $this->authorize('create', MaintenanceRecord::class);
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+        ]);
+
+        $file = $request->file('csv_file');
+        $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\MaintenanceImport, $file);
+        $rows = $sheets[0] ?? [];
+
+        $result = $this->processImportRows($rows);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result['rows'],
+            'summary' => [
+                'total' => count($result['rows']),
+                'valid' => count($result['valid_rows']),
+                'invalid' => count($result['errors']),
+                'skipped' => $result['skipped_count']
+            ]
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $this->authorize('create', MaintenanceRecord::class);
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+        ]);
+
+        $file = $request->file('csv_file');
+        $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\MaintenanceImport, $file);
+        $rows = $sheets[0] ?? [];
+
+        $result = $this->processImportRows($rows);
+
+        if (count($result['errors']) > 0) {
+            return back()->with('import_errors', collect($result['errors'])->pluck('errors')->flatten()->all());
+        }
+
+        foreach ($result['valid_rows'] as $row) {
+            MaintenanceRecord::create($row['data']);
+        }
+
+        return redirect()->route('admin.maintenance-records.index')
+            ->with('success', count($result['valid_rows']) . ' rekod penyelenggaraan berjaya diimport.');
+    }
+
+    private function processImportRows(array $rows)
+    {
+        $processedRows = [];
+        $validRows = [];
+        $errorRows = [];
+        $skippedCount = 0;
+
+        // Skip header row
+        array_shift($rows);
+
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2;
+
+            // Skip empty rows
+            if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
+                $skippedCount++;
+                continue;
+            }
+
+            $rowErrors = [];
+
+            try {
+                $noSiri = $row[0] ?? null;
+                $asset = Asset::where('no_siri_pendaftaran', $noSiri)->first();
+
+                if (!$asset) {
+                    $rowErrors[] = "No. Siri Pendaftaran Aset tidak sah atau tidak wujud.";
+                }
+
+                $formatDate = function ($date, $field) use (&$rowErrors) {
+                    if (empty($date))
+                        return null;
+                    try {
+                        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+                            return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+                        }
+                        return \Carbon\Carbon::parse($date)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $rowErrors[] = "Format tarikh $field tidak sah (Gunakan DD/MM/YYYY)";
+                        return null;
+                    }
+                };
+
+                $data = [
+                    'asset_id' => $asset ? $asset->id : null,
+                    'user_id' => Auth::id(),
+                    'tarikh_penyelenggaraan' => $formatDate($row[1] ?? null, 'penyelenggaraan'),
+                    'jenis_penyelenggaraan' => $row[2] ?? 'Pencegahan',
+                    'butiran_kerja' => $row[3] ?? null,
+                    'penyedia_perkhidmatan' => $row[4] ?? null,
+                    'kos_penyelenggaraan' => (float) str_replace(',', '', (string) ($row[5] ?? 0)),
+                    'status_penyelenggaraan' => $row[6] ?? 'Selesai',
+                    'pegawai_bertanggungjawab' => $row[7] ?? null,
+                    'catatan' => $row[8] ?? '-',
+                ];
+
+                if (empty($data['tarikh_penyelenggaraan']))
+                    $rowErrors[] = "Tarikh Penyelenggaraan diperlukan.";
+                if (empty($data['butiran_kerja']))
+                    $rowErrors[] = "Butiran Kerja diperlukan.";
+                if (empty($data['penyedia_perkhidmatan']))
+                    $rowErrors[] = "Penyedia Perkhidmatan diperlukan.";
+
+                // Validate Type
+                $validTypes = ['Pencegahan', 'Pembaikan', 'Kalibrasi', 'Pembersihan'];
+                if (!in_array($data['jenis_penyelenggaraan'], $validTypes)) {
+                    $rowErrors[] = "Jenis Penyelenggaraan tidak sah. Pilih: " . implode(', ', $validTypes);
+                }
+
+                // Validate Status
+                $validStatuses = ['Selesai', 'Dalam Proses', 'Belum Selesai'];
+                if (!in_array($data['status_penyelenggaraan'], $validStatuses)) {
+                    $rowErrors[] = "Status tidak sah. Pilih: " . implode(', ', $validStatuses);
+                }
+
+                $processedRow = [
+                    'row' => $rowNumber,
+                    'data' => $data,
+                    'valid' => empty($rowErrors),
+                    'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'display_data' => [
+                        'no_siri' => $noSiri ?? '-',
+                        'nama_aset' => $asset ? $asset->nama_aset : '-',
+                        'tarikh' => $row[1] ?? '-',
+                        'jenis' => $data['jenis_penyelenggaraan']
+                    ]
+                ];
+
+                $processedRows[] = $processedRow;
+                if (empty($rowErrors))
+                    $validRows[] = $processedRow;
+                else
+                    $errorRows[] = $processedRow;
+
+            } catch (\Exception $e) {
+                $processedRows[] = [
+                    'row' => $rowNumber,
+                    'valid' => false,
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                ];
+                $errorRows[] = end($processedRows);
+            }
+        }
+
+        return [
+            'rows' => $processedRows,
+            'valid_rows' => $validRows,
+            'errors' => $errorRows,
+            'skipped_count' => $skippedCount
+        ];
     }
 }

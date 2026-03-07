@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'System Super Administrator',
                 'password' => bcrypt('password'),
-                'role' => 'superadmin',
+                'role' => 'administrator',
                 'masjid_surau_id' => null, // Takes over all
                 'phone' => '0123456789',
                 'position' => 'Super Administrator',
@@ -33,31 +33,31 @@ class UserSeeder extends Seeder
 
         $this->command->info('Superadmin created.');
 
-        // Define the target Masjids/Suraus
-        $targets = [
-            'Masjid Taman Melawati' => 'melawati',
-            'Masjid Melawati' => 'melawati2',
-            'Surau Al-Ikhlas' => 'alikhlas'
+        $targetNames = [
+            'Masjid Al-Hidayah, Taman Melawati' => 'melawati',
+            'MASJID AS-SYAKIRIN PUCHONG UTAMA' => 'syakirin',
+            'SURAU AL-HIDAYAH TITIWANGSA' => 'titiwangsa'
         ];
 
-        $roles = ['admin', 'user', 'Asset Officer'];
+        $roles = ['administrator', 'user', 'officer'];
 
-        foreach ($targets as $namaMasjid => $emailSuffix) {
+        foreach ($targetNames as $namaMasjid => $emailSuffix) {
             $masjid = MasjidSurau::where('nama', $namaMasjid)->first();
 
+            if (!$masjid) {
+                $masjid = MasjidSurau::where('nama', 'like', "%" . $namaMasjid . "%")->first();
+            }
+
             if ($masjid) {
-                $this->command->info("Creating user roles for {$namaMasjid}...");
+                $this->command->info("Creating user roles for {$masjid->nama}...");
 
                 foreach ($roles as $role) {
                     $emailPrefix = str_replace(' ', '', strtolower($role));
-                    if ($emailPrefix === 'assetofficer') {
-                        $emailPrefix = 'officer'; // Simplify for login convenience
-                    }
 
                     User::firstOrCreate(
                         ['email' => $emailPrefix . '.' . $emailSuffix . '@assetflow.test'],
                         [
-                            'name' => ucwords($role) . ' ' . $namaMasjid,
+                            'name' => ucwords($role) . ' ' . $masjid->nama,
                             'password' => bcrypt('password'),
                             'role' => $role,
                             'masjid_surau_id' => $masjid->id,
@@ -67,9 +67,9 @@ class UserSeeder extends Seeder
                         ]
                     );
                 }
-                $this->command->info("Users for {$namaMasjid} created successfully.");
+                $this->command->info("Users for {$masjid->nama} created successfully.");
             } else {
-                $this->command->error("{$namaMasjid} not found in database. Please run MasjidSurauSeeder first.");
+                $this->command->error("{$namaMasjid} not found in database. Please ensure MasjidSurauSeeder has run.");
             }
         }
 

@@ -504,7 +504,7 @@
                                     Lihat Detail
                                 </a>
                                 
-                                @if($lossWriteoff->status_kelulusan === 'menunggu' && in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer']))
+                                @if($lossWriteoff->status_kelulusan === 'menunggu' && in_array(auth()->user()->role, ['administrator', 'officer']))
                                 <form action="{{ route('admin.loss-writeoffs.approve', $lossWriteoff) }}" method="POST" class="w-full">
                                     @csrf
                                     <button type="submit" 

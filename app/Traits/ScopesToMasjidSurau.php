@@ -11,7 +11,7 @@ trait ScopesToMasjidSurau
     {
         static::addGlobalScope('masjid_surau', function (Builder $builder) {
             // Only apply scope if user is logged in, has a masjid_surau_id, and is NOT a superadmin
-            if (Auth::check() && Auth::user()->role !== 'superadmin' && Auth::user()->masjid_surau_id) {
+            if (Auth::check() && Auth::user()->role !== 'administrator' && Auth::user()->masjid_surau_id) {
                 $masjidSurauId = Auth::user()->masjid_surau_id;
                 $model = $builder->getModel();
 

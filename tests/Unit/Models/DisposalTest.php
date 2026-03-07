@@ -20,14 +20,23 @@ class DisposalTest extends TestCase
         
         $fillable = [
             'asset_id',
+            'kuantiti',
             'tarikh_permohonan',
             'justifikasi_pelupusan',
             'kaedah_pelupusan_dicadang',
+            'kaedah_pelupusan',
             'nombor_mesyuarat_jawatankuasa',
             'tarikh_kelulusan_pelupusan',
+            'tarikh_pelupusan',
             'status_pelupusan',
             'pegawai_pemohon',
+            'tempat_pelupusan',
+            'hasil_pelupusan',
+            'nilai_pelupusan',
+            'nilai_baki',
             'catatan',
+            'user_id',
+            'gambar_pelupusan',
         ];
 
         $this->assertEquals($fillable, $disposal->getFillable());
@@ -41,6 +50,12 @@ class DisposalTest extends TestCase
         $expectedCasts = [
             'tarikh_permohonan' => 'datetime',
             'tarikh_kelulusan_pelupusan' => 'datetime',
+            'tarikh_pelupusan' => 'datetime',
+            'kuantiti' => 'integer',
+            'hasil_pelupusan' => 'decimal:2',
+            'nilai_pelupusan' => 'decimal:2',
+            'nilai_baki' => 'decimal:2',
+            'gambar_pelupusan' => 'array',
             'deleted_at' => 'datetime',
             'id' => 'int',
         ];
@@ -60,11 +75,11 @@ class DisposalTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_have_user_relationship()
+    public function it_has_user_relationship()
     {
         $disposal = new Disposal();
-        
-        $this->assertFalse(method_exists($disposal, 'user'));
+
+        $this->assertTrue(method_exists($disposal, 'user'));
     }
 
     /** @test */

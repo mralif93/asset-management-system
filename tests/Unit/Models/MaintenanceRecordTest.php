@@ -23,6 +23,7 @@ class MaintenanceRecordTest extends TestCase
             'asset_id',
             'user_id',
             'tarikh_penyelenggaraan',
+            'tarikh_penyelenggaraan_akan_datang',
             'jenis_penyelenggaraan',
             'butiran_kerja',
             'nama_syarikat_kontraktor',
@@ -30,6 +31,8 @@ class MaintenanceRecordTest extends TestCase
             'kos_penyelenggaraan',
             'status_penyelenggaraan',
             'pegawai_bertanggungjawab',
+            'catatan_penyelenggaraan',
+            'gambar_penyelenggaraan',
             'catatan'
         ];
 
@@ -43,7 +46,9 @@ class MaintenanceRecordTest extends TestCase
         
         $expectedCasts = [
             'tarikh_penyelenggaraan' => 'datetime',
+            'tarikh_penyelenggaraan_akan_datang' => 'datetime',
             'kos_penyelenggaraan' => 'decimal:2',
+            'gambar_penyelenggaraan' => 'array',
             'deleted_at' => 'datetime',
             'id' => 'int',
         ];
@@ -63,11 +68,11 @@ class MaintenanceRecordTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_have_user_relationship()
+    public function it_has_user_relationship()
     {
         $maintenanceRecord = new MaintenanceRecord();
-        
-        $this->assertFalse(method_exists($maintenanceRecord, 'user'));
+
+        $this->assertTrue(method_exists($maintenanceRecord, 'user'));
     }
 
     /** @test */
@@ -135,7 +140,7 @@ class MaintenanceRecordTest extends TestCase
         $maintenanceRecord = new MaintenanceRecord();
         
         $maintenanceRecord->status_penyelenggaraan = 'belum_mula';
-        $this->assertEquals('Belum mula', $maintenanceRecord->getFormattedStatusAttribute());
+        $this->assertEquals('belum_mula', $maintenanceRecord->getFormattedStatusAttribute());
         
         $maintenanceRecord->status_penyelenggaraan = 'dalam_proses';
         $this->assertEquals('Dalam Proses', $maintenanceRecord->getFormattedStatusAttribute());

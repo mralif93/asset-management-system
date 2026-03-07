@@ -36,7 +36,7 @@ class SmokeTest extends TestCase
 
         $this->admin = User::factory()->create([
             'masjid_surau_id' => $this->masjidSurau->id,
-            'role' => 'admin'
+            'role' => 'administrator'
         ]);
 
         $this->user = User::factory()->create([
@@ -159,7 +159,7 @@ class SmokeTest extends TestCase
         $this->assertDatabaseHas('inspections', [
             'asset_id' => $this->asset->id,
             'kondisi_aset' => 'Baik',
-            'nama_pemeriksa' => 'Smoke Test Inspector'
+            'pegawai_pemeriksa' => 'Smoke Test Inspector'
         ]);
 
         // 6. Maintenance Record

@@ -17,7 +17,7 @@ class NotificationService
      */
     public static function notifyNewDisposalRequest(Disposal $disposal): void
     {
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'administrator')->get();
         $assetName = $disposal->asset->nama_aset ?? 'Unknown';
 
         foreach ($admins as $admin) {
@@ -93,7 +93,7 @@ class NotificationService
      */
     public static function notifyNewAssetMovementRequest(AssetMovement $movement): void
     {
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'administrator')->get();
         $assetName = $movement->asset->nama_aset ?? 'Unknown';
 
         foreach ($admins as $admin) {
@@ -169,7 +169,7 @@ class NotificationService
      */
     public static function notifyNewLossWriteoffRequest(LossWriteoff $lossWriteoff): void
     {
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'administrator')->get();
         $assetName = $lossWriteoff->asset->nama_aset ?? 'Unknown';
 
         foreach ($admins as $admin) {
@@ -228,7 +228,7 @@ class NotificationService
             'days_until_inspection' => $daysUntilInspection,
         ]);
 
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'administrator')->get();
         foreach ($admins as $admin) {
             Mail::to($admin->email)->send(new GenericSystemNotification(
                 'Pemeriksaan Aset Hampir Tiba',
@@ -254,7 +254,7 @@ class NotificationService
             'asset_name' => $assetName,
         ]);
 
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'administrator')->get();
         foreach ($admins as $admin) {
             Mail::to($admin->email)->send(new GenericSystemNotification(
                 'Pemeriksaan Aset Tertunggak',
@@ -281,7 +281,7 @@ class NotificationService
             'days_until_expiry' => $daysUntilExpiry,
         ]);
 
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'administrator')->get();
         foreach ($admins as $admin) {
             Mail::to($admin->email)->send(new GenericSystemNotification(
                 'Jaminan Aset Tamat Tempoh Hampir',
@@ -308,7 +308,7 @@ class NotificationService
             'days_until_maintenance' => $daysUntilMaintenance,
         ]);
 
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'administrator')->get();
         foreach ($admins as $admin) {
             Mail::to($admin->email)->send(new GenericSystemNotification(
                 'Penyelenggaraan Aset Dikehendaki',
@@ -329,7 +329,7 @@ class NotificationService
     {
         $notifications = [];
 
-        if ($user->role === 'admin') {
+        if ($user->role === 'administrator') {
             // Pending disposal requests
             $pendingDisposals = Disposal::where('status_pelupusan', 'Dimohon')->count();
             if ($pendingDisposals > 0) {

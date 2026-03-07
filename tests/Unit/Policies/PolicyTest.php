@@ -32,7 +32,7 @@ class PolicyTest extends TestCase
 
         $this->masjidSurau = MasjidSurau::factory()->create();
         $this->adminUser = User::factory()->create([
-            'role' => 'admin',
+            'role' => 'administrator',
             'masjid_surau_id' => $this->masjidSurau->id,
         ]);
         $this->regularUser = User::factory()->create([

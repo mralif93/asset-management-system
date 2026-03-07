@@ -16,7 +16,7 @@
                         <div class="flex items-center space-x-2">
                             <i class='bx bx-user-circle text-emerald-200'></i>
                             <span
-                                class="text-emerald-100">{{ in_array($user->role, ['admin', 'superadmin']) ? 'Pentadbir' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}</span>
+                                class="text-emerald-100">{{ in_array($user->role, ['administrator']) ? 'Pentadbir' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}</span>
                         </div>
                         <div class="flex items-center space-x-2">
                             <div
@@ -224,14 +224,14 @@
                             </div>
                             <dd class="flex items-center">
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ in_array($user->role, ['admin', 'superadmin']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'Asset Officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ in_array($user->role, ['administrator']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
                                     <i
-                                        class='bx {{ in_array($user->role, ['admin', 'superadmin']) ? 'bx-crown' : ($user->role === 'Asset Officer' ? 'bx-briefcase' : 'bx-user') }} mr-1'></i>
-                                    {{ in_array($user->role, ['admin', 'superadmin']) ? 'Pentadbir' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}
+                                        class='bx {{ in_array($user->role, ['administrator']) ? 'bx-crown' : ($user->role === 'officer' ? 'bx-briefcase' : 'bx-user') }} mr-1'></i>
+                                    {{ in_array($user->role, ['administrator']) ? 'Pentadbir' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}
                                 </span>
                             </dd>
                             <p class="text-xs text-gray-500 mt-2">
-                                {{ in_array($user->role, ['admin', 'superadmin']) ? 'Akses penuh kepada semua fungsi sistem' : ($user->role === 'Asset Officer' ? 'Akses kepada pengurusan aset' : 'Akses terhad mengikut peranan') }}
+                                {{ in_array($user->role, ['administrator']) ? 'Akses penuh kepada semua fungsi sistem' : ($user->role === 'officer' ? 'Akses kepada pengurusan aset' : 'Akses terhad mengikut peranan') }}
                             </p>
                         </div>
 
@@ -318,8 +318,8 @@
                             <p class="text-sm text-gray-600">{{ $user->email }}</p>
                             <div class="flex items-center justify-center space-x-2 mt-3">
                                 <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ in_array($user->role, ['admin', 'superadmin']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'Asset Officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
-                                    {{ in_array($user->role, ['admin', 'superadmin']) ? 'Pentadbir' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ in_array($user->role, ['administrator']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
+                                    {{ in_array($user->role, ['administrator']) ? 'Pentadbir' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}
                                 </span>
                                 <span
                                     class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $user->email_verified_at ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">

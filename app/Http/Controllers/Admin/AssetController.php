@@ -26,7 +26,7 @@ class AssetController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Asset::class);
-        
+
         $query = Asset::with('masjidSurau')->withCount('batchSiblings');
 
         // Search by name or registration number
@@ -86,16 +86,29 @@ class AssetController extends Controller
             $query->where('nilai_perolehan', '<=', $request->nilai_max);
         }
 
-        $assets = $query->where(function ($q) {
-            $q->whereNull('batch_id')
-                 ->orWhereIn('id', function ($sub) {
-                     $sub->selectRaw('MIN(id)')
-                         ->from('assets')
-                         ->whereNotNull('batch_id')
-                         ->groupBy('batch_id');
-                 });
-        })->latest()->paginate(15);
-        
+        $assets = clone $query;
+
+        // Group by name and location manually because DB batch_id is empty for existing imports.
+        // We fetch the latest asset for each unique name+location group.
+        $assets = $assets->selectRaw('MIN(id) as id, nama_aset, lokasi_penempatan')
+            ->groupBy('nama_aset', 'lokasi_penempatan')
+            ->pluck('id');
+
+        $assets = Asset::whereIn('id', $assets)
+            ->latest()
+            ->paginate(15);
+
+        // Attach siblings dynamically based on identical name and location
+        foreach ($assets as $asset) {
+            $siblings = Asset::where('nama_aset', $asset->nama_aset)
+                ->where('lokasi_penempatan', $asset->lokasi_penempatan)
+                ->orderBy('no_siri_pendaftaran')
+                ->get();
+            $asset->setRelation('batchSiblings', $siblings);
+            $asset->batch_siblings_count = $siblings->count();
+            $asset->batch_siblings_sum_nilai_perolehan = $siblings->sum('nilai_perolehan');
+        }
+
         $assetTypes = array_keys(AssetRegistrationNumber::getAssetTypeAbbreviations());
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
         $locations = Asset::select('lokasi_penempatan')->distinct()->orderBy('lokasi_penempatan')->pluck('lokasi_penempatan');
@@ -584,6 +597,7 @@ class AssetController extends Controller
         $errorRows = [];
         $skippedCount = 0;
         $sequenceOffsets = []; // Track ID generation offsets
+        $seenSequenceNumbers = []; // Track customized IDs to avoid duplicates inside CSV
 
         // Skip header row
         array_shift($rows);
@@ -641,9 +655,6 @@ class AssetController extends Controller
                 $existingAsset = null;
                 if (!empty($noSiriPendaftaran)) {
                     $existingAsset = Asset::where('no_siri_pendaftaran', $noSiriPendaftaran)->first();
-                    if (!$existingAsset) {
-                        $rowErrors[] = "No. Siri Pendaftaran '$noSiriPendaftaran' tidak dijumpai untuk kemaskini.";
-                    }
                 }
 
                 // Validate required fields
@@ -651,7 +662,7 @@ class AssetController extends Controller
                     $rowErrors[] = "Nama Aset diperlukan";
 
                 if (empty($assetData['masjid_surau_id']) || !MasjidSurau::find($assetData['masjid_surau_id'])) {
-                    $rowErrors[] = "Masjid/Surau ID tidak sah";
+                    $rowErrors[] = "Masjid/Surau ID tidak wujud di dalam sistem.";
                 }
 
                 if (empty($assetData['jenis_aset']) || !in_array($assetData['jenis_aset'], $availableAssetTypes)) {
@@ -708,35 +719,42 @@ class AssetController extends Controller
 
                 // Generate ID if valid basic info AND not updating existing
                 if (empty($rowErrors) && !$existingAsset) {
-                    $year = $tarikhPerolehan->format('y');
-                    $offsetKey = "{$assetData['masjid_surau_id']}_{$assetData['jenis_aset']}_{$year}";
-                    $currentOffset = $sequenceOffsets[$offsetKey] ?? 0;
+                    if (empty($noSiriPendaftaran)) {
+                        $year = $tarikhPerolehan->format('y');
+                        $offsetKey = "{$assetData['masjid_surau_id']}_{$assetData['jenis_aset']}_{$year}";
+                        $currentOffset = $sequenceOffsets[$offsetKey] ?? 0;
 
-                    $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
-                        $assetData['masjid_surau_id'],
-                        $assetData['jenis_aset'],
-                        $year,
-                        $currentOffset
-                    );
+                        $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generate(
+                            $assetData['masjid_surau_id'],
+                            $assetData['jenis_aset'],
+                            $year,
+                            $currentOffset
+                        );
 
-                    // Increment offset for this key
-                    $sequenceOffsets[$offsetKey] = $currentOffset + 1;
+                        // Increment offset for this key
+                        $sequenceOffsets[$offsetKey] = $currentOffset + 1;
 
-                    // Check duplicate
-                    if (Asset::where('no_siri_pendaftaran', $assetData['no_siri_pendaftaran'])->exists()) {
-                        // Note: If we are just previewing, this check is against DB. 
-                        // Since we assume generating NEW IDs, existence means meaningful collision or logic error.
-                        // But for preview of NEXT item, it shouldn't exist unless race condition.
-                        // However, if the generated ID exists, we report it.
-                        $rowErrors[] = "Nombor siri pendaftaran dijana sudah wujud: {$assetData['no_siri_pendaftaran']}";
+                        // Check duplicate
+                        if (Asset::where('no_siri_pendaftaran', $assetData['no_siri_pendaftaran'])->exists()) {
+                            $rowErrors[] = "Nombor siri pendaftaran dijana sudah wujud: {$assetData['no_siri_pendaftaran']}";
+                        }
+                    } else {
+                        // User provided NO_SIRI_PENDAFTARAN but it doesn't exist in system. Treat as NEW entry.
+                        $assetData['no_siri_pendaftaran'] = $noSiriPendaftaran;
+
+                        // We still need to check if $noSiriPendaftaran is duplicated within the same import file
+                        if (in_array($noSiriPendaftaran, $seenSequenceNumbers)) {
+                            $rowErrors[] = "Nombor siri pendaftaran $noSiriPendaftaran dikesan berulang di dalam fail yang sama.";
+                        }
+                        $seenSequenceNumbers[] = $noSiriPendaftaran;
                     }
                 }
 
                 // Conversions
-                $assetData['nilai_perolehan'] = (float) ($assetData['nilai_perolehan'] ?? 0);
-                $assetData['diskaun'] = (float) ($assetData['diskaun'] ?? 0);
+                $assetData['nilai_perolehan'] = (float) str_replace(',', '', (string) ($assetData['nilai_perolehan'] ?? 0));
+                $assetData['diskaun'] = (float) str_replace(',', '', (string) ($assetData['diskaun'] ?? 0));
                 $assetData['umur_faedah_tahunan'] = !empty($assetData['umur_faedah_tahunan']) ? (int) $assetData['umur_faedah_tahunan'] : null;
-                $assetData['susut_nilai_tahunan'] = !empty($assetData['susut_nilai_tahunan']) ? (float) $assetData['susut_nilai_tahunan'] : null;
+                $assetData['susut_nilai_tahunan'] = !empty($assetData['susut_nilai_tahunan']) ? (float) str_replace(',', '', (string) ($assetData['susut_nilai_tahunan'])) : null;
 
                 // Dates for creating model
                 $formatDateForDB = function ($date) {
@@ -798,7 +816,7 @@ class AssetController extends Controller
     public function trashed()
     {
         $this->authorize('viewAny', Asset::class);
-        
+
         $trashedAssets = Asset::onlyTrashed()
             ->with('masjidSurau')
             ->latest()
@@ -813,7 +831,7 @@ class AssetController extends Controller
     public function restore($id)
     {
         $this->authorize('restore', Asset::class);
-        
+
         $asset = Asset::onlyTrashed()->findOrFail($id);
         $asset->restore();
 
@@ -827,16 +845,16 @@ class AssetController extends Controller
     public function forceDelete($id)
     {
         $this->authorize('forceDelete', Asset::class);
-        
+
         $asset = Asset::onlyTrashed()->findOrFail($id);
-        
+
         // Delete associated images
         if ($asset->gambar_aset) {
             foreach ($asset->gambar_aset as $image) {
                 Storage::disk('public')->delete($image);
             }
         }
-        
+
         $asset->forceDelete();
 
         return redirect()->route('admin.assets.trashed')

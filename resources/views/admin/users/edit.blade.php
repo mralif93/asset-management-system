@@ -60,8 +60,8 @@
                             <div class="w-2 h-2 {{ $user->email_verified_at ? 'bg-green-500' : 'bg-red-500' }} rounded-full mr-2"></div>
                             {{ $user->email_verified_at ? 'Aktif' : 'Tidak Aktif' }}
                         </span>
-                        <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full {{ in_array($user->role, ['admin', 'superadmin']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'Asset Officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
-                            {{ in_array($user->role, ['admin', 'superadmin']) ? 'Pentadbir' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}
+                        <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full {{ in_array($user->role, ['administrator']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
+                            {{ in_array($user->role, ['administrator']) ? 'Pentadbir' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}
                         </span>
                     </div>
                 </div>
@@ -219,7 +219,7 @@
                                             required
                                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('role') border-red-500 @enderror appearance-none bg-white">
                                         <option value="">Pilih Peranan</option>
-                                        <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Pentadbir</option>
+                                        <option value="admin" {{ old('role', $user->role) === 'administrator' ? 'selected' : '' }}>Pentadbir</option>
                                         <option value="user" {{ old('role', $user->role) === 'user' ? 'selected' : '' }}>Pengguna</option>
                                     </select>
                                 </div>
@@ -229,7 +229,7 @@
                                         {{ $message }}
                                     </p>
                                 @enderror
-                                @if(in_array($user->role, ['admin', 'superadmin']) && \App\Models\User::whereIn('role', ['admin', 'superadmin'])->count() <= 1)
+                                @if(in_array($user->role, ['administrator']) && \App\Models\User::whereIn('role', ['administrator'])->count() <= 1)
                                     <p class="mt-1 text-xs text-amber-600 flex items-center">
                                         <i class='bx bx-warning mr-1'></i>
                                         This is the last administrator in the system
@@ -438,8 +438,8 @@
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Peranan:</span>
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ in_array($user->role, ['admin', 'superadmin']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'Asset Officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
-                                        {{ in_array($user->role, ['admin', 'superadmin']) ? 'Pentadbir' : ($user->role === 'Asset Officer' ? 'Pegawai Aset' : 'Pengguna') }}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ in_array($user->role, ['administrator']) ? 'bg-purple-100 text-purple-800' : ($user->role === 'officer' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
+                                        {{ in_array($user->role, ['administrator']) ? 'Pentadbir' : ($user->role === 'officer' ? 'Pegawai Aset' : 'Pengguna') }}
                                     </span>
                                 </div>
                                 <div class="flex items-center justify-between">

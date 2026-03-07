@@ -20,7 +20,7 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        if (!in_array(Auth::user()->role, ['admin', 'superadmin', 'Asset Officer'])) {
+        if (!in_array(Auth::user()->role, ['admin', 'administrator', 'administrator', 'officer', 'officer'])) {
             abort(403, 'Akses ditolak. Anda perlu menjadi admin, superadmin, atau pegawai aset untuk mengakses halaman ini.');
         }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\MasjidSurau;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,14 +19,30 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        $masjid = MasjidSurau::create([
+            'nama' => 'Masjid Test',
+            'jenis' => 'Masjid',
+            'status' => 'Aktif',
+        ]);
+
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'phone' => '0123456789',
+            'position' => 'AJK',
+            'masjid_surau_id' => $masjid->id,
+            'terms' => '1',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertGuest();
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+            'role' => 'user',
+            'masjid_surau_id' => $masjid->id,
+        ]);
     }
 }

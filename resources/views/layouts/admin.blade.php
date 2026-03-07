@@ -88,7 +88,7 @@
                         @endif
                     </a>
 
-                    @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+                    @if(in_array(auth()->user()->role, ['administrator']))
                         <a href="{{ route('admin.system-overview') }}"
                             class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.system-overview') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                             <i class='bx bx-stats text-xl mr-4'></i>
@@ -101,7 +101,7 @@
                 </div>
 
                 <!-- User Management Section -->
-                @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+                @if(in_array(auth()->user()->role, ['administrator']))
                     <div class="mb-8">
                         <h3
                             class="px-4 text-xs font-bold text-emerald-200 uppercase tracking-widest mb-4 flex items-center">
@@ -227,7 +227,7 @@
                         Tetapan
                     </h3>
 
-                    @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+                    @if(in_array(auth()->user()->role, ['administrator']))
                         <a href="{{ route('admin.masjid-surau.index') }}"
                             class="group flex items-center px-4 py-3 text-white rounded-xl font-medium transition-all duration-200 hover:translate-x-2 hover:bg-white/10 {{ request()->routeIs('admin.masjid-surau.*') ? 'bg-white/15 border-l-4 border-emerald-400 translate-x-1' : '' }}">
                             <i class='bx bx-buildings text-xl mr-4'></i>

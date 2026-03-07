@@ -35,7 +35,7 @@ class AuditTrailServiceTest extends TestCase
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
             'masjid_surau_id' => $this->masjidSurau->id,
-            'role' => 'admin',
+            'role' => 'administrator',
         ]);
 
         $this->asset = Asset::create([

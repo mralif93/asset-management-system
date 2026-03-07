@@ -62,7 +62,7 @@
                     Edit Laporan
                 </a>
 
-                @if($lossWriteoff->status_kejadian === 'Dilaporkan' && in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer']))
+                @if($lossWriteoff->status_kejadian === 'Dilaporkan' && in_array(auth()->user()->role, ['administrator', 'officer']))
                     <form action="{{ route('admin.loss-writeoffs.approve', $lossWriteoff) }}" method="POST" class="inline">
                         @csrf
                         <button type="submit"
@@ -394,7 +394,7 @@
                                 Edit Laporan
                             </a>
 
-                            @if($lossWriteoff->status_kejadian === 'Dilaporkan' && in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer']))
+                            @if($lossWriteoff->status_kejadian === 'Dilaporkan' && in_array(auth()->user()->role, ['administrator', 'officer']))
                                 <form action="{{ route('admin.loss-writeoffs.approve', $lossWriteoff) }}" method="POST"
                                     class="w-full">
                                     @csrf
@@ -497,7 +497,7 @@
     </div>
 
     <!-- Reject Modal -->
-    @if($lossWriteoff->status_kejadian === 'Dilaporkan' && in_array(auth()->user()->role, ['admin', 'superadmin', 'Asset Officer']))
+    @if($lossWriteoff->status_kejadian === 'Dilaporkan' && in_array(auth()->user()->role, ['administrator', 'officer']))
         <div id="rejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-xl bg-white">
                 <div class="mt-3">

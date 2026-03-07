@@ -16,23 +16,23 @@ use App\Http\Controllers\Api\DisposalController as ApiDisposalController;
 */
 
 Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
-    
+
     // Assets API
     Route::get('/assets', [ApiAssetController::class, 'index']);
-    Route::get('/assets/{asset}', [ApiAssetController::class, 'show']);
     Route::get('/assets/summary', [ApiAssetController::class, 'summary']);
+    Route::get('/assets/{asset}', [ApiAssetController::class, 'show']);
 
     // Inspections API
     Route::get('/inspections', [ApiInspectionController::class, 'index']);
-    Route::get('/inspections/{inspection}', [ApiInspectionController::class, 'show']);
     Route::get('/inspections/upcoming', [ApiInspectionController::class, 'upcoming']);
     Route::get('/inspections/overdue', [ApiInspectionController::class, 'overdue']);
+    Route::get('/inspections/{inspection}', [ApiInspectionController::class, 'show']);
 
     // Disposals API
     Route::get('/disposals', [ApiDisposalController::class, 'index']);
-    Route::get('/disposals/{disposal}', [ApiDisposalController::class, 'show']);
     Route::get('/disposals/pending', [ApiDisposalController::class, 'pending']);
     Route::get('/disposals/summary', [ApiDisposalController::class, 'summary']);
+    Route::get('/disposals/{disposal}', [ApiDisposalController::class, 'show']);
 });
 
 // Public API routes (if needed)

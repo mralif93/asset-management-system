@@ -103,6 +103,7 @@
 
             <!-- Export Assets -->
             <a href="{{ route('admin.assets.export', request()->query()) }}"
+                onclick="openExportConfirm(event, this.href, 'Adakah anda pasti mahu eksport data aset?')"
                 class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div
@@ -304,111 +305,249 @@
                                     Tindakan</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($assets as $asset)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                                                <i class='bx bx-package text-emerald-700 text-lg'></i>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ $asset->nama_aset }}
-                                                    @if($asset->batch_siblings_count > 1)
+                        @forelse($assets as $asset)
+                            @if($asset->batch_siblings_count > 1)
+                                <tbody class="bg-white border-b border-gray-200" x-data="{ expanded: false }">
+                                    <tr class="hover:bg-emerald-50 transition-colors cursor-pointer bg-gray-50 group"
+                                        @click="expanded = !expanded">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <i class='bx bx-chevron-right text-xl text-emerald-600 transition-transform duration-200 mr-2'
+                                                    :class="expanded ? 'rotate-90' : ''"></i>
+                                                <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                                                    <i class='bx bx-package text-emerald-700 text-lg'></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        {{ $asset->nama_aset }}
                                                         <span
-                                                            class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                                                            class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800"
                                                             title="Aset ini sebahagian daripada kumpulan {{ $asset->batch_siblings_count }} unit">
-                                                            Qty: {{ $asset->batch_siblings_count }}
+                                                            {{ $asset->batch_siblings_count }} Unit
                                                         </span>
+                                                    </div>
+                                                    <div class="text-sm text-gray-400 mt-1">
+                                                        Klik untuk lihat siri
+                                                    </div>
+                                                    @if($asset->tarikh_perolehan)
+                                                        <div class="text-xs text-gray-400 flex items-center mt-1">
+                                                            <i class='bx bx-calendar mr-1'></i>
+                                                            {{ $asset->tarikh_perolehan->format('d/m/Y') }}
+                                                        </div>
                                                     @endif
                                                 </div>
-                                                <div class="text-sm text-gray-500">{{ $asset->no_siri_pendaftaran }}</div>
-                                                @if($asset->tarikh_perolehan)
-                                                    <div class="text-xs text-gray-400 flex items-center">
-                                                        <i class='bx bx-calendar mr-1'></i>
-                                                        {{ $asset->tarikh_perolehan->format('d/m/Y') }}
-                                                    </div>
-                                                @endif
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            {{ $asset->jenis_aset }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
-                                                        @if($asset->kategori_aset === 'asset') bg-emerald-100 text-emerald-800
-                                                        @else bg-orange-100 text-orange-800 @endif">
-                                            {{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $asset->lokasi_penempatan }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                                        @if($asset->status_aset === 'Sedang Digunakan') bg-green-100 text-green-800
-                                                        @elseif($asset->status_aset === 'Aktif') bg-green-100 text-green-800
-                                                        @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-100 text-yellow-800
-                                                        @elseif($asset->status_aset === 'Baru') bg-blue-100 text-blue-800
-                                                        @else bg-red-100 text-red-800 @endif">
-                                            <div class="w-2 h-2 
-                                                            @if($asset->status_aset === 'Sedang Digunakan') bg-green-500
-                                                            @elseif($asset->status_aset === 'Aktif') bg-green-500
-                                                            @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-500
-                                                            @elseif($asset->status_aset === 'Baru') bg-blue-500
-                                                            @else bg-red-500 @endif 
-                                                            rounded-full mr-2"></div>
-                                            {{ $asset->status_aset }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
-                                                        @if($asset->keadaan_fizikal === 'Cemerlang') bg-green-100 text-green-800
-                                                        @elseif($asset->keadaan_fizikal === 'Baik') bg-blue-100 text-blue-800
-                                                        @elseif($asset->keadaan_fizikal === 'Sederhana') bg-yellow-100 text-yellow-800
-                                                        @elseif($asset->keadaan_fizikal === 'Rosak') bg-orange-100 text-orange-800
-                                                        @else bg-red-100 text-red-800 @endif">
-                                            {{ $asset->keadaan_fizikal ?? 'Baik' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        RM {{ number_format($asset->nilai_perolehan, 2) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end space-x-3">
-                                            <a href="{{ route('admin.assets.show', $asset) }}"
-                                                class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-colors"
-                                                title="Lihat">
-                                                <i class='bx bx-show text-sm'></i>
-                                            </a>
-                                            <a href="{{ route('admin.assets.edit', $asset) }}"
-                                                class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
-                                                title="Edit">
-                                                <i class='bx bx-edit text-sm'></i>
-                                            </a>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                {{ $asset->jenis_aset }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
+                                                                                    @if($asset->kategori_aset === 'asset') bg-emerald-100 text-emerald-800
+                                                                                    @else bg-orange-100 text-orange-800 @endif">
+                                                {{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {{ $asset->lokasi_penempatan }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                                Pelbagai (Kumpulan)
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                                Pelbagai (Kumpulan)
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">
+                                            RM {{ number_format($asset->batch_siblings_sum_nilai_perolehan, 2) }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end space-x-3">
+                                                <!-- Action buttons omitted for grouping header. Refer to rows below. -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Child Rows -->
+                                    @foreach($asset->batchSiblings ?? [] as $sibling)
+                                        <tr x-show="expanded" x-transition:enter="transition ease-out duration-100"
+                                            x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                            x-transition:enter-end="opacity-100 transform translate-y-0"
+                                            class="bg-emerald-50/30 hover:bg-emerald-50 transition-colors">
+                                            <td class="px-6 py-3 whitespace-nowrap border-l-2 border-emerald-400 pl-16">
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="text-sm font-mono text-gray-600 bg-white border border-gray-200 px-2 py-1 rounded shadow-sm">
+                                                        {{ $sibling->no_siri_pendaftaran }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td colspan="3" class="px-6 py-3"></td>
+                                            <td class="px-6 py-3 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
+                                                                                                @if($sibling->status_aset === 'Sedang Digunakan') bg-green-100 text-green-800
+                                                                                                @elseif($sibling->status_aset === 'Aktif') bg-green-100 text-green-800
+                                                                                                @elseif($sibling->status_aset === 'Dalam Penyelenggaraan') bg-yellow-100 text-yellow-800
+                                                                                                @elseif($sibling->status_aset === 'Baru') bg-blue-100 text-blue-800
+                                                                                                @else bg-red-100 text-red-800 @endif">
+                                                    <div class="w-2 h-2 
+                                                                                                    @if($sibling->status_aset === 'Sedang Digunakan') bg-green-500
+                                                                                                    @elseif($sibling->status_aset === 'Aktif') bg-green-500
+                                                                                                    @elseif($sibling->status_aset === 'Dalam Penyelenggaraan') bg-yellow-500
+                                                                                                    @elseif($sibling->status_aset === 'Baru') bg-blue-500
+                                                                                                    @else bg-red-500 @endif 
+                                                                                                    rounded-full mr-2"></div>
+                                                    {{ $sibling->status_aset }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-3 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
+                                                                                                @if($sibling->keadaan_fizikal === 'Cemerlang') bg-green-100 text-green-800
+                                                                                                @elseif($sibling->keadaan_fizikal === 'Baik') bg-blue-100 text-blue-800
+                                                                                                @elseif($sibling->keadaan_fizikal === 'Sederhana') bg-yellow-100 text-yellow-800
+                                                                                                @elseif($sibling->keadaan_fizikal === 'Rosak') bg-orange-100 text-orange-800
+                                                                                                @else bg-red-100 text-red-800 @endif">
+                                                    {{ $sibling->keadaan_fizikal ?? 'Baik' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-3"></td>
+                                            <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
+                                                <div class="flex items-center justify-end space-x-3">
+                                                    <a href="{{ route('admin.assets.show', $sibling) }}"
+                                                        class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+                                                        title="Lihat">
+                                                        <i class='bx bx-show text-sm'></i>
+                                                    </a>
+                                                    <a href="{{ route('admin.assets.edit', $sibling) }}"
+                                                        class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
+                                                        title="Edit">
+                                                        <i class='bx bx-edit text-sm'></i>
+                                                    </a>
 
-                                            <form action="{{ route('admin.assets.destroy', $asset) }}" method="POST"
-                                                class="inline"
-                                                onsubmit="return confirm('Adakah anda pasti ingin memadamkan aset ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
-                                                    title="Padamkan">
-                                                    <i class='bx bx-trash text-sm'></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
+                                                    <form action="{{ route('admin.assets.destroy', $sibling) }}" method="POST"
+                                                        class="inline"
+                                                        onsubmit="return confirm('Adakah anda pasti ingin memadamkan aset ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
+                                                            title="Padamkan">
+                                                            <i class='bx bx-trash text-sm'></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            @else
+                                <tbody class="bg-white border-b border-gray-200">
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                                                    <i class='bx bx-package text-emerald-700 text-lg'></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        {{ $asset->nama_aset }}
+                                                    </div>
+                                                    <div class="text-sm text-gray-500">{{ $asset->no_siri_pendaftaran }}</div>
+                                                    @if($asset->tarikh_perolehan)
+                                                        <div class="text-xs text-gray-400 flex items-center">
+                                                            <i class='bx bx-calendar mr-1'></i>
+                                                            {{ $asset->tarikh_perolehan->format('d/m/Y') }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                {{ $asset->jenis_aset }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full 
+                                                                                    @if($asset->kategori_aset === 'asset') bg-emerald-100 text-emerald-800
+                                                                                    @else bg-orange-100 text-orange-800 @endif">
+                                                {{ $asset->kategori_aset === 'asset' ? 'Asset' : 'Non-Asset' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {{ $asset->lokasi_penempatan }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
+                                                                                    @if($asset->status_aset === 'Sedang Digunakan') bg-green-100 text-green-800
+                                                                                    @elseif($asset->status_aset === 'Aktif') bg-green-100 text-green-800
+                                                                                    @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-100 text-yellow-800
+                                                                                    @elseif($asset->status_aset === 'Baru') bg-blue-100 text-blue-800
+                                                                                    @else bg-red-100 text-red-800 @endif">
+                                                <div class="w-2 h-2 
+                                                                                        @if($asset->status_aset === 'Sedang Digunakan') bg-green-500
+                                                                                        @elseif($asset->status_aset === 'Aktif') bg-green-500
+                                                                                        @elseif($asset->status_aset === 'Dalam Penyelenggaraan') bg-yellow-500
+                                                                                        @elseif($asset->status_aset === 'Baru') bg-blue-500
+                                                                                        @else bg-red-500 @endif 
+                                                                                        rounded-full mr-2"></div>
+                                                {{ $asset->status_aset }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
+                                                                                    @if($asset->keadaan_fizikal === 'Cemerlang') bg-green-100 text-green-800
+                                                                                    @elseif($asset->keadaan_fizikal === 'Baik') bg-blue-100 text-blue-800
+                                                                                    @elseif($asset->keadaan_fizikal === 'Sederhana') bg-yellow-100 text-yellow-800
+                                                                                    @elseif($asset->keadaan_fizikal === 'Rosak') bg-orange-100 text-orange-800
+                                                                                    @else bg-red-100 text-red-800 @endif">
+                                                {{ $asset->keadaan_fizikal ?? 'Baik' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            RM {{ number_format($asset->nilai_perolehan, 2) }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end space-x-3">
+                                                <a href="{{ route('admin.assets.show', $asset) }}"
+                                                    class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+                                                    title="Lihat">
+                                                    <i class='bx bx-show text-sm'></i>
+                                                </a>
+                                                <a href="{{ route('admin.assets.edit', $asset) }}"
+                                                    class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-colors"
+                                                    title="Edit">
+                                                    <i class='bx bx-edit text-sm'></i>
+                                                </a>
+
+                                                <form action="{{ route('admin.assets.destroy', $asset) }}" method="POST"
+                                                    class="inline"
+                                                    onsubmit="return confirm('Adakah anda pasti ingin memadamkan aset ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
+                                                        title="Padamkan">
+                                                        <i class='bx bx-trash text-sm'></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endif
+                        @empty
+                            <tbody class="bg-white">
                                 <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center">
+                                    <td colspan="8" class="px-6 py-12 text-center border-b border-gray-200">
                                         <div class="flex flex-col items-center">
                                             <i class='bx bx-package text-5xl text-gray-400 mb-4'></i>
                                             <p class="text-gray-500 text-lg">Tiada aset dijumpai</p>
@@ -416,8 +555,8 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforelse
-                        </tbody>
+                            </tbody>
+                        @endforelse
                     </table>
                 </div>
 
@@ -430,4 +569,52 @@
             </div>
         </div>
     </div>
+
+    <!-- Export Confirmation Modal -->
+    <div id="exportConfirmModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/40" onclick="closeExportConfirm()"></div>
+        <div class="relative flex min-h-full items-center justify-center p-4">
+            <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-gray-200">
+                <div class="p-6">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class='bx bx-download text-xl'></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Sahkan Eksport Data</h3>
+                            <p id="exportConfirmMessage" class="text-sm text-gray-600 mt-1">Adakah anda pasti?</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center justify-end space-x-3">
+                        <button type="button" onclick="closeExportConfirm()"
+                            class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors">
+                            Batal
+                        </button>
+                        <a id="exportConfirmAction" href="#"
+                            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors inline-flex items-center">
+                            <i class='bx bx-check mr-2'></i>
+                            Ya, Eksport
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function openExportConfirm(event, url, message) {
+            event.preventDefault();
+            document.getElementById('exportConfirmAction').setAttribute('href', url);
+            document.getElementById('exportConfirmMessage').textContent = message;
+            document.getElementById('exportConfirmModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeExportConfirm() {
+            document.getElementById('exportConfirmModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    </script>
+@endpush

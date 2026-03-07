@@ -42,10 +42,28 @@ class ImmovableAssetController extends Controller
             $query->where('keadaan_semasa', $request->keadaan_semasa);
         }
 
-        $immovableAssets = $query->latest()->paginate(15);
+        $assetsGroups = clone $query;
+        $assetsGroups = $assetsGroups->selectRaw('MIN(id) as id, nama_aset, alamat')
+            ->groupBy('nama_aset', 'alamat')
+            ->pluck('id');
+
+        $immovableAssets = ImmovableAsset::whereIn('id', $assetsGroups)
+            ->latest()
+            ->paginate(15);
 
         // Preserve query parameters in pagination
         $immovableAssets->appends($request->query());
+
+        // Attach siblings dynamically based on identical name and location
+        foreach ($immovableAssets as $asset) {
+            $siblings = ImmovableAsset::where('nama_aset', $asset->nama_aset)
+                ->where('alamat', $asset->alamat)
+                ->orderBy('no_siri_pendaftaran')
+                ->get();
+            $asset->setRelation('batchSiblings', $siblings);
+            $asset->batch_siblings_count = $siblings->count();
+            $asset->batch_siblings_sum_kos_perolehan = $siblings->sum('kos_perolehan');
+        }
 
         return view('admin.immovable-assets.index', compact('immovableAssets'));
     }
@@ -248,160 +266,207 @@ class ImmovableAssetController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200', // Allow Excel
+            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200',
         ]);
 
         $file = $request->file('csv_file');
 
         try {
-            // Use Laravel Excel to convert file to array
             $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\ImmovableAssetImport, $file);
-            $rows = $sheets[0] ?? []; // Get first sheet
+            $rows = $sheets[0] ?? [];
         } catch (\Exception $e) {
             return redirect()->route('admin.immovable-assets.import')
                 ->with('error', 'Gagal membaca fail: ' . $e->getMessage());
         }
 
-        $errors = [];
-        $successCount = 0;
-        $skipCount = 0;
+        $result = $this->processImportRows($rows);
 
-        // Skip header row
+        if (count($result['errors']) > 0) {
+            $displayErrors = [];
+            foreach ($result['errors'] as $rowErrors) {
+                foreach ($rowErrors['errors'] as $error) {
+                    $displayErrors[] = $error;
+                }
+            }
+
+            return redirect()->route('admin.immovable-assets.import')
+                ->with('import_errors', $displayErrors)
+                ->with('error', 'Terdapat ralat dalam fail import. Sila semak dan cuba lagi.')
+                ->withInput();
+        }
+
+        // Process valid rows
+        $createdCount = 0;
+        foreach ($result['valid_rows'] as $row) {
+            try {
+                ImmovableAsset::create($row['data']);
+                $createdCount++;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Immovable Asset Import Failed: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('admin.immovable-assets.index')
+            ->with('success', "Import selesai. {$createdCount} aset tak alih baru ditambah.");
+    }
+
+    /**
+     * Preview import data
+     */
+    public function previewImport(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:51200',
+        ]);
+
+        try {
+            $file = $request->file('csv_file');
+            $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new \App\Imports\ImmovableAssetImport, $file);
+            $rows = $sheets[0] ?? [];
+
+            $result = $this->processImportRows($rows);
+
+            return response()->json([
+                'success' => true,
+                'data' => $result['rows'],
+                'summary' => [
+                    'total' => count($rows) - 1,
+                    'valid' => count($result['valid_rows']),
+                    'invalid' => count($result['errors']),
+                    'skipped' => $result['skipped_count']
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Process import rows
+     */
+    private function processImportRows($rows)
+    {
+        $processedRows = [];
+        $validRows = [];
+        $errorRows = [];
+        $skippedCount = 0;
+
+        // Skip header
         array_shift($rows);
 
-        $rowIndex = 0;
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2;
+            $rowErrors = [];
 
-        foreach ($rows as $row) {
-            $rowIndex++;
-            $rowNumber = $rowIndex + 1;
-
-            // Skip empty rows
-            if (
-                empty(array_filter($row, function ($value) {
-                    return !is_null($value) && $value !== '';
-                }))
-            ) {
-                $skipCount++;
+            if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
+                $skippedCount++;
                 continue;
             }
 
             try {
-                // Map columns
-                $assetData = [
-                    'masjid_surau_id' => $row[0] ?? null,
+                $masjidSurauId = $row[0] ?? null;
+                $masjidSurau = MasjidSurau::find($masjidSurauId);
+
+                $data = [
+                    'masjid_surau_id' => $masjidSurauId,
                     'nama_aset' => $row[1] ?? null,
                     'jenis_aset' => $row[2] ?? null,
                     'alamat' => $row[3] ?? null,
                     'no_hakmilik' => $row[4] ?? null,
                     'no_lot' => $row[5] ?? null,
-                    'luas_tanah_bangunan' => $row[6] ?? null,
+                    'luas_tanah_bangunan' => $row[6] ?? 0,
                     'tarikh_perolehan' => $row[7] ?? null,
                     'sumber_perolehan' => $row[8] ?? null,
-                    'kos_perolehan' => $row[9] ?? null,
+                    'kos_perolehan' => $row[9] ?? 0,
                     'keadaan_semasa' => $row[10] ?? 'Baik',
                     'catatan' => $row[11] ?? null,
                 ];
 
-                // Validate required fields
-                if (empty($assetData['nama_aset'])) {
-                    $errors[] = "Baris {$rowNumber}: Nama Aset diperlukan";
-                    continue;
+                // Validation
+                if (empty($data['nama_aset'])) {
+                    $rowErrors[] = "Nama Aset diperlukan";
                 }
 
-                if (empty($assetData['masjid_surau_id']) || !MasjidSurau::find($assetData['masjid_surau_id'])) {
-                    $errors[] = "Baris {$rowNumber}: Masjid/Surau ID tidak sah";
-                    continue;
+                if (!$masjidSurau) {
+                    $rowErrors[] = "Masjid/Surau ID tidak sah";
                 }
 
-                if (empty($assetData['jenis_aset']) || !in_array($assetData['jenis_aset'], ['Tanah', 'Bangunan', 'Tanah dan Bangunan'])) {
-                    $errors[] = "Baris {$rowNumber}: Jenis Aset tidak sah. Sila gunakan: Tanah, Bangunan, atau Tanah dan Bangunan";
-                    continue;
+                $validJenis = ['Tanah', 'Bangunan', 'Tanah dan Bangunan'];
+                if (empty($data['jenis_aset']) || !in_array($data['jenis_aset'], $validJenis)) {
+                    $rowErrors[] = "Jenis Aset tidak sah (Pilih: Tanah, Bangunan, atau Tanah dan Bangunan)";
                 }
 
-                if (empty($assetData['tarikh_perolehan'])) {
-                    $errors[] = "Baris {$rowNumber}: Tarikh Perolehan diperlukan";
-                    continue;
-                }
-
-                // Validate date format (Excel might return internal date, but since we use ToArray it might be raw string if cell is text, or calculation if general. 
-                // However, standard PHPSpreadsheet handles dates nicely usually returning serial or string depending on options.
-                // Since we didn't specify date formatting in Import, we assume input is YYYY-MM-DD string or recognizable.
-                // If Excel returns numeric date, we might need handling. For simplicity assuming text input YYYY-MM-DD as per template instructions.
-                try {
-                    // Check if it's numeric (Excel date serial)
-                    if (is_numeric($assetData['tarikh_perolehan'])) {
-                        $tarikhPerolehan = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($assetData['tarikh_perolehan']);
-                    } else {
-                        // Check for DD/MM/YYYY format
-                        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $assetData['tarikh_perolehan'])) {
-                            $tarikhPerolehan = \Carbon\Carbon::createFromFormat('d/m/Y', $assetData['tarikh_perolehan']);
+                // Date parsing
+                if (empty($data['tarikh_perolehan'])) {
+                    $rowErrors[] = "Tarikh Perolehan diperlukan";
+                } else {
+                    try {
+                        if (is_numeric($data['tarikh_perolehan'])) {
+                            $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data['tarikh_perolehan']);
+                            $data['tarikh_perolehan'] = $dt->format('Y-m-d');
+                        } elseif (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $data['tarikh_perolehan'])) {
+                            $data['tarikh_perolehan'] = \Carbon\Carbon::createFromFormat('d/m/Y', $data['tarikh_perolehan'])->format('Y-m-d');
                         } else {
-                            $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
+                            $data['tarikh_perolehan'] = \Carbon\Carbon::parse($data['tarikh_perolehan'])->format('Y-m-d');
                         }
+                    } catch (\Exception $e) {
+                        $rowErrors[] = "Format tarikh perolehan tidak sah";
                     }
-                    $assetData['tarikh_perolehan'] = $tarikhPerolehan->format('Y-m-d');
-
-                } catch (\Exception $e) {
-                    $errors[] = "Baris {$rowNumber}: Format tarikh perolehan tidak sah. Gunakan format YYYY-MM-DD atau DD/MM/YYYY";
-                    continue;
                 }
 
-                // Validate source
-                $validSources = \App\Helpers\SystemData::getAcquisitionSources();
-                if (!empty($assetData['sumber_perolehan']) && !in_array($assetData['sumber_perolehan'], $validSources)) {
-                    $errors[] = "Baris {$rowNumber}: Sumber Perolehan tidak sah. Sila gunakan: " . implode(', ', $validSources);
-                    continue;
+                // Numeric cleaning
+                $data['luas_tanah_bangunan'] = (float) str_replace(',', '', (string) ($data['luas_tanah_bangunan'] ?? 0));
+                $data['kos_perolehan'] = (float) str_replace(',', '', (string) ($data['kos_perolehan'] ?? 0));
+
+                // Registration number generation
+                if (empty($rowErrors)) {
+                    $y = (new \Carbon\Carbon($data['tarikh_perolehan']))->format('y');
+                    $data['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable($data['masjid_surau_id'], $y);
+
+                    if (ImmovableAsset::where('no_siri_pendaftaran', $data['no_siri_pendaftaran'])->exists()) {
+                        $rowErrors[] = "Nombor siri pendaftaran sudah wujud: {$data['no_siri_pendaftaran']}";
+                    }
                 }
 
-                // Validate condition
-                $validConditions = \App\Helpers\SystemData::getPhysicalConditions();
-                if (!empty($assetData['keadaan_semasa']) && !in_array($assetData['keadaan_semasa'], $validConditions)) {
-                    $errors[] = "Baris {$rowNumber}: Keadaan Semasa tidak sah. Sila gunakan: " . implode(', ', $validConditions);
-                    continue;
+                $processedRow = [
+                    'row' => $rowNumber,
+                    'data' => $data,
+                    'valid' => empty($rowErrors),
+                    'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'display_data' => [
+                        'nama_aset' => $data['nama_aset'] ?: '-',
+                        'masjid' => $masjidSurau ? $masjidSurau->nama : "ID: " . $data['masjid_surau_id'],
+                        'jenis' => $data['jenis_aset'] ?: '-',
+                        'tarikh' => $data['tarikh_perolehan'] ?: '-'
+                    ]
+                ];
+
+                $processedRows[] = $processedRow;
+                if (empty($rowErrors)) {
+                    $validRows[] = $processedRow;
+                } else {
+                    $errorRows[] = $processedRow;
                 }
-
-                // Generate registration number
-                $assetData['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable(
-                    $assetData['masjid_surau_id'],
-                    (new \Carbon\Carbon($assetData['tarikh_perolehan']))->format('y')
-                );
-
-                // Check if registration number already exists (duplicate check)
-                if (ImmovableAsset::where('no_siri_pendaftaran', $assetData['no_siri_pendaftaran'])->exists()) {
-                    $errors[] = "Baris {$rowNumber}: Nombor siri pendaftaran sudah wujud: {$assetData['no_siri_pendaftaran']}";
-                    continue;
-                }
-
-                // Convert numeric fields
-                $assetData['luas_tanah_bangunan'] = (float) ($assetData['luas_tanah_bangunan'] ?? 0);
-                $assetData['kos_perolehan'] = (float) ($assetData['kos_perolehan'] ?? 0);
-
-                // Create immovable asset
-                ImmovableAsset::create($assetData);
-                $successCount++;
 
             } catch (\Exception $e) {
-                $errors[] = "Baris {$rowNumber}: " . $e->getMessage();
+                $processedRows[] = [
+                    'row' => $rowNumber,
+                    'valid' => false,
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                ];
+                $errorRows[] = end($processedRows);
             }
         }
 
-        $message = "Import selesai. {$successCount} aset tak alih berjaya diimport.";
-        if ($skipCount > 0) {
-            $message .= " {$skipCount} baris kosong dilangkau.";
-        }
-        if (count($errors) > 0) {
-            $message .= " " . count($errors) . " ralat ditemui.";
-        }
-
-        if (count($errors) > 0) {
-            return redirect()->route('admin.immovable-assets.import')
-                ->with('import_errors', $errors)
-                ->with('success', $message)
-                ->withInput();
-        }
-
-        return redirect()->route('admin.immovable-assets.index')
-            ->with('success', $message);
+        return [
+            'rows' => $processedRows,
+            'valid_rows' => $validRows,
+            'errors' => $errorRows,
+            'skipped_count' => $skippedCount
+        ];
     }
 
     /**

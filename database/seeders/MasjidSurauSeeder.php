@@ -18,33 +18,34 @@ class MasjidSurauSeeder extends Seeder
             'type' => 'Masjid',
             'selector' => '//div[@class="card"]//table//tr[position()>1]',
             'columns' => [
-                'name' => 1,
-                'address' => 2,
+                'name' => 2,
+                'address' => 0, // No address in the list
                 'district' => 3,
-                'phone' => 4,
-                'leader' => 5
+                'category' => 4,
+                'phone' => 5,
+                'leader' => 0 // No leader in the list
             ]
         ],
         [
             'url' => 'https://e-masjid.jais.gov.my/dashboard/listsurau',
             'type' => 'Surau',
-            'selector' => '//table[@class="table datatable"]//tr[position()>1]',
+            'selector' => '//table[contains(@class, "datatable")]//tr[position()>1]',
             'columns' => [
-                'name_address' => 1,
-                'phone_email' => 2,
-                'kariah' => 3,
-                'category' => 4
+                'name_address' => 2,
+                'phone_email' => 3,
+                'kariah' => 4,
+                'category' => 5
             ]
         ],
         [
             'url' => 'https://e-masjid.jais.gov.my/dashboard/listsuraujumaat',
             'type' => 'Surau',
-            'selector' => '//table[@class="table datatable"]//tr[position()>1]',
+            'selector' => '//table[contains(@class, "datatable")]//tr[position()>1]',
             'columns' => [
-                'name_address' => 1,
-                'phone_email' => 2,
-                'kariah' => 3,
-                'category' => 4
+                'name_address' => 2,
+                'phone_email' => 3,
+                'kariah' => 4,
+                'category' => 5
             ]
         ]
     ];
@@ -414,11 +415,143 @@ class MasjidSurauSeeder extends Seeder
 
     public function run()
     {
-        $this->command->info('Starting MasjidSurau seeder for Masjid Taman Melawati...');
+        $this->command->info('Starting MasjidSurau seeder by fetching data from URLs...');
 
         // Clear existing records first
         MasjidSurau::truncate();
 
+        foreach ($this->sources as $source) {
+            $this->command->info("Fetching data from: {$source['url']}");
+
+            try {
+                $response = Http::withoutVerifying()->get($source['url']);
+
+                if (!$response->successful()) {
+                    $this->command->error("Failed to fetch data from {$source['url']}. Status: " . $response->status());
+                    continue;
+                }
+
+                $html = $response->body();
+
+                // Suppress libxml warnings for malformed HTML
+                libxml_use_internal_errors(true);
+
+                $dom = new DOMDocument();
+                // Avoid mb_convert_encoding on large HTML to fix silent failures
+                @$dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+                $xpath = new DOMXPath($dom);
+                $rows = $xpath->query($source['selector']);
+
+                if (!$rows || $rows->length === 0) {
+                    $this->command->warn("No data found for {$source['type']} at {$source['url']}");
+                    continue;
+                }
+
+                $count = 0;
+
+                foreach ($rows as $row) {
+                    $cells = $xpath->query('.//td', $row);
+
+                    if ($cells->length < count($source['columns'])) {
+                        continue;
+                    }
+
+                    try {
+                        if ($source['type'] === 'Masjid') {
+                            $name = trim($cells->item($source['columns']['name'] - 1)->nodeValue ?? '');
+                            $district = trim($cells->item($source['columns']['district'] - 1)->nodeValue ?? '');
+                            $category = trim($cells->item($source['columns']['category'] - 1)->nodeValue ?? '');
+
+                            if (empty($name) || $this->isDuplicate($name, '', $district)) {
+                                continue;
+                            }
+
+                            $phone = trim($cells->item($source['columns']['phone'] - 1)->nodeValue ?? '');
+
+                            // Initialize extra fields
+                            $capacity = null;
+                            $yearBuilt = null;
+                            $notes = '';
+                            $leader = '';
+
+                            // Skipping profile fetching for now to speed up the seeder
+                            // (Previously fetched Kapasiti, Tarikh Dibina, etc.)
+
+                            MasjidSurau::create([
+                                'nama' => $name,
+                                'nama_rasmi' => $name,
+                                'jenis' => 'Masjid',
+                                'kategori' => $category,
+                                'daerah' => $district,
+                                'no_telefon' => $phone,
+                                'imam_ketua' => $leader,
+                                'bilangan_jemaah' => $capacity,
+                                'tahun_dibina' => $yearBuilt,
+                                'catatan' => trim($notes),
+                                'status' => 'Aktif',
+                            ]);
+                            $count++;
+                        } else {
+                            $nameAddressCell = $cells->item($source['columns']['name_address'] - 1);
+                            $innerHtml = '';
+                            if ($nameAddressCell) {
+                                foreach ($nameAddressCell->childNodes as $child) {
+                                    $innerHtml .= $dom->saveHTML($child);
+                                }
+                            }
+
+                            $phoneEmailCell = $cells->item($source['columns']['phone_email'] - 1);
+                            $phoneEmailInner = '';
+                            if ($phoneEmailCell) {
+                                foreach ($phoneEmailCell->childNodes as $child) {
+                                    $phoneEmailInner .= $dom->saveHTML($child);
+                                }
+                            }
+
+                            $kariah = trim($cells->item($source['columns']['kariah'] - 1)->nodeValue ?? '');
+                            $category = trim($cells->item($source['columns']['category'] - 1)->nodeValue ?? '');
+
+                            $parsed = $this->parseSurauData($innerHtml, $phoneEmailInner, $kariah, $category);
+
+                            if (empty($parsed['nama']) || $this->isDuplicate($parsed['nama'], trim($parsed['alamat_baris_1'] . ' ' . $parsed['alamat_baris_2']), $parsed['daerah'])) {
+                                continue;
+                            }
+
+                            MasjidSurau::create([
+                                'nama' => $parsed['nama'],
+                                'nama_rasmi' => $parsed['nama'],
+                                'jenis' => 'Surau',
+                                'kategori' => $parsed['kategori'],
+                                'alamat_baris_1' => $parsed['alamat_baris_1'],
+                                'alamat_baris_2' => $parsed['alamat_baris_2'],
+                                'poskod' => $parsed['poskod'],
+                                'daerah' => $parsed['daerah'],
+                                'no_telefon' => $parsed['no_tel'],
+                                'email' => $parsed['email'],
+                                'catatan' => 'Kariah: ' . $parsed['kariah'],
+                                'status' => 'Aktif',
+                            ]);
+                            $count++;
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("Error processing row: " . $e->getMessage());
+                    }
+                }
+
+                $this->command->info("Seeded $count items for {$source['type']} from {$source['url']}");
+                libxml_clear_errors();
+
+            } catch (\Exception $e) {
+                $this->command->error("Exception while fetching {$source['url']}: " . $e->getMessage());
+            }
+        }
+
+        $this->command->info("Total duplicates skipped: {$this->duplicatesFound}");
+        $this->command->info('MasjidSurau seeding completed!');
+
+        // --- PREVIOUS SAMPLE DATA (Kept for reference, not executed) ---
+        /*
         MasjidSurau::create([
             'nama' => 'Masjid Taman Melawati',
             'nama_rasmi' => 'Masjid Al-Hidayah Taman Melawati',
@@ -439,8 +572,6 @@ class MasjidSurauSeeder extends Seeder
             'tahun_dibina' => 1985,
             'catatan' => 'Masjid utama bagi kariah Taman Melawati'
         ]);
-
-        $this->command->info('Masjid Taman Melawati seeded successfully!');
 
         MasjidSurau::create([
             'nama' => 'Surau Al-Ikhlas',
@@ -463,9 +594,6 @@ class MasjidSurauSeeder extends Seeder
             'catatan' => 'Surau utama bagi Fasa 3 Taman Melawati'
         ]);
 
-        $this->command->info('Surau Al-Ikhlas seeded successfully!');
-
-        // --- NEW ENTRY FOR MASJID MELAWATI ---
         MasjidSurau::create([
             'nama' => 'Masjid Melawati',
             'nama_rasmi' => 'Masjid Melawati',
@@ -486,7 +614,6 @@ class MasjidSurauSeeder extends Seeder
             'tahun_dibina' => 2005,
             'catatan' => 'Masjid baru untuk kariah Melawati'
         ]);
-
-        $this->command->info('Masjid Melawati seeded successfully!');
+        */
     }
 }

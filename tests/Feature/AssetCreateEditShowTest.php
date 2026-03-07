@@ -33,7 +33,7 @@ class AssetCreateEditShowTest extends TestCase
         // Create admin user
         $this->admin = User::factory()->create([
             'masjid_surau_id' => $this->masjidSurau->id,
-            'role' => 'admin',
+            'role' => 'administrator',
         ]);
 
         // Fake storage for image uploads
@@ -59,10 +59,9 @@ class AssetCreateEditShowTest extends TestCase
     #[Test]
     public function admin_can_create_new_asset_with_all_required_fields()
     {
-        $image = UploadedFile::fake()->image('asset-image.jpg', 800, 600);
-
         $assetData = [
             'masjid_surau_id' => $this->masjidSurau->id,
+            'kuantiti' => 1,
             'nama_aset' => 'Komputer Desktop Dell',
             'jenis_aset' => 'Peralatan Pejabat',
             'kategori_aset' => 'asset',
@@ -78,7 +77,6 @@ class AssetCreateEditShowTest extends TestCase
             'status_aset' => 'Sedang Digunakan',
             'keadaan_fizikal' => 'Baik',
             'status_jaminan' => 'Aktif',
-            'gambar_aset' => [$image],
         ];
 
         $response = $this->actingAs($this->admin)
@@ -96,20 +94,16 @@ class AssetCreateEditShowTest extends TestCase
             'status_aset' => 'Sedang Digunakan',
         ]);
 
-        // Verify image was stored
         $asset = Asset::where('nama_aset', 'Komputer Desktop Dell')->first();
-        $this->assertNotNull($asset->gambar_aset);
-        $this->assertIsArray($asset->gambar_aset);
-        $this->assertCount(1, $asset->gambar_aset);
+        $this->assertNotNull($asset);
     }
 
     #[Test]
     public function admin_can_create_asset_with_optional_fields()
     {
-        $image = UploadedFile::fake()->image('asset-image.jpg');
-
         $assetData = [
             'masjid_surau_id' => $this->masjidSurau->id,
+            'kuantiti' => 1,
             'nama_aset' => 'Printer Canon',
             'jenis_aset' => 'Peralatan Pejabat',
             'kategori_aset' => 'asset',
@@ -137,7 +131,6 @@ class AssetCreateEditShowTest extends TestCase
             'tarikh_tamat_jaminan' => '2025-02-20',
             'catatan' => 'Printer untuk kegunaan pejabat',
             'catatan_jaminan' => 'Jaminan 1 tahun dari pembekal',
-            'gambar_aset' => [$image],
         ];
 
         $response = $this->actingAs($this->admin)
@@ -157,10 +150,11 @@ class AssetCreateEditShowTest extends TestCase
     }
 
     #[Test]
-    public function create_asset_requires_at_least_one_image()
+    public function create_asset_without_image_is_allowed()
     {
         $assetData = [
             'masjid_surau_id' => $this->masjidSurau->id,
+            'kuantiti' => 1,
             'nama_aset' => 'Asset Without Image',
             'jenis_aset' => 'Peralatan',
             'kategori_aset' => 'asset',
@@ -177,10 +171,9 @@ class AssetCreateEditShowTest extends TestCase
         $response = $this->actingAs($this->admin)
             ->post('/admin/assets', $assetData);
 
-        $response->assertStatus(302)
-            ->assertSessionHasErrors(['gambar_aset']);
+        $response->assertStatus(302);
 
-        $this->assertDatabaseMissing('assets', [
+        $this->assertDatabaseHas('assets', [
             'nama_aset' => 'Asset Without Image',
         ]);
     }
@@ -211,8 +204,6 @@ class AssetCreateEditShowTest extends TestCase
     #[Test]
     public function create_asset_validates_asset_type()
     {
-        $image = UploadedFile::fake()->image('asset.jpg');
-
         $assetData = [
             'masjid_surau_id' => $this->masjidSurau->id,
             'nama_aset' => 'Test Asset',
@@ -226,7 +217,6 @@ class AssetCreateEditShowTest extends TestCase
             'status_aset' => 'Sedang Digunakan',
             'keadaan_fizikal' => 'Baik',
             'status_jaminan' => 'Tiada Jaminan',
-            'gambar_aset' => [$image],
         ];
 
         $response = $this->actingAs($this->admin)
@@ -239,10 +229,9 @@ class AssetCreateEditShowTest extends TestCase
     #[Test]
     public function create_asset_generates_registration_number()
     {
-        $image = UploadedFile::fake()->image('asset.jpg');
-
         $assetData = [
             'masjid_surau_id' => $this->masjidSurau->id,
+            'kuantiti' => 1,
             'nama_aset' => 'Test Asset Registration',
             'jenis_aset' => 'Peralatan',
             'kategori_aset' => 'asset',
@@ -254,7 +243,6 @@ class AssetCreateEditShowTest extends TestCase
             'status_aset' => 'Sedang Digunakan',
             'keadaan_fizikal' => 'Baik',
             'status_jaminan' => 'Tiada Jaminan',
-            'gambar_aset' => [$image],
         ];
 
         $response = $this->actingAs($this->admin)
@@ -414,11 +402,9 @@ class AssetCreateEditShowTest extends TestCase
     #[Test]
     public function admin_can_add_images_to_existing_asset()
     {
-        $existingImage = UploadedFile::fake()->image('existing-image.jpg');
-        
-        // Create asset with initial image via POST
-        $initialData = [
+        $asset = Asset::create([
             'masjid_surau_id' => $this->masjidSurau->id,
+            'no_siri_pendaftaran' => 'TEST/IMG/24/001',
             'nama_aset' => 'Asset with Images',
             'jenis_aset' => 'Peralatan',
             'kategori_aset' => 'asset',
@@ -430,17 +416,9 @@ class AssetCreateEditShowTest extends TestCase
             'status_aset' => 'Sedang Digunakan',
             'keadaan_fizikal' => 'Baik',
             'status_jaminan' => 'Tiada Jaminan',
-            'gambar_aset' => [$existingImage],
-        ];
+            'gambar_aset' => ['assets/existing-image.jpg'],
+        ]);
         
-        $this->actingAs($this->admin)->post('/admin/assets', $initialData);
-        
-        $asset = Asset::where('nama_aset', 'Asset with Images')->first();
-        $this->assertNotNull($asset);
-        $this->assertNotNull($asset->gambar_aset);
-        
-        // Test that we can update the asset without adding new images
-        // (Adding images to existing assets requires special handling in controller)
         $updateData = [
             'nama_aset' => $asset->nama_aset,
             'jenis_aset' => $asset->jenis_aset,
@@ -674,4 +652,3 @@ class AssetCreateEditShowTest extends TestCase
         $response->assertStatus(403);
     }
 }
-

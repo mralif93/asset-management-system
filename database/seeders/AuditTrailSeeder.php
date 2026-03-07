@@ -173,7 +173,7 @@ class AuditTrailSeeder extends Seeder
         // Masjid/Surau activities
         if ($masjidSuraus->isNotEmpty()) {
             foreach ($masjidSuraus as $masjidSurau) {
-                $user = $users->where('role', 'admin')->first() ?? $users->first();
+                $user = $users->where('role', 'administrator')->first() ?? $users->first();
                 
                 $activities[] = [
                     'id' => 'AUD-' . Str::random(8),
@@ -201,7 +201,7 @@ class AuditTrailSeeder extends Seeder
 
         // Export activities
         for ($i = 0; $i < 5; $i++) {
-            $user = $users->where('role', 'admin')->random();
+            $user = $users->where('role', 'administrator')->random();
             $activities[] = [
                 'user_id' => $user->id,
                 'user_name' => $user->name,

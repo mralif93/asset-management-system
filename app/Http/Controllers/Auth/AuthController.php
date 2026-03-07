@@ -64,7 +64,7 @@ class AuthController extends Controller
             AuditTrailService::logLogin($user, true);
 
             // Redirect based on role
-            if (in_array($user->role, ['admin', 'superadmin', 'Asset Officer'])) {
+            if (in_array($user->role, ['administrator', 'officer'])) {
                 return redirect()->intended(route('admin.dashboard'));
             } else {
                 return redirect()->intended(route('user.dashboard'));
