@@ -115,8 +115,8 @@
             </a>
 
             <!-- Maintenance Reports -->
-            <div
-                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 cursor-pointer">
+            <a href="{{ route('admin.reports.maintenance-schedule') }}"
+                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div
                         class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
@@ -126,7 +126,7 @@
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-2">Laporan Penyelenggaraan</h3>
                 <p class="text-sm text-gray-600">Analitik dan statistik</p>
-            </div>
+            </a>
 
             <!-- Import Data -->
             <a href="{{ route('admin.maintenance-records.import') }}"
@@ -143,8 +143,8 @@
             </a>
 
             <!-- Schedule Maintenance -->
-            <div
-                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 cursor-pointer">
+            <a href="{{ route('admin.reports.maintenance-schedule') }}"
+                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div
                         class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition-colors">
@@ -154,7 +154,7 @@
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-2">Jadual Penyelenggaraan</h3>
                 <p class="text-sm text-gray-600">Penyelenggaraan berkala</p>
-            </div>
+            </a>
         </div>
 
         <!-- Search and Filters Card -->

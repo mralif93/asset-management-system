@@ -146,8 +146,8 @@
             </a>
 
             <!-- Loss Reports -->
-            <div
-                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-purple-200 cursor-pointer">
+            <a href="{{ route('admin.reports.index') }}"
+                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-purple-200">
                 <div class="flex items-center justify-between mb-4">
                     <div
                         class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
@@ -157,11 +157,11 @@
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-2">Laporan Analisis</h3>
                 <p class="text-sm text-gray-600">Statistik dan trend kehilangan</p>
-            </div>
+            </a>
 
             <!-- Approval Queue -->
-            <div
-                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-amber-200 cursor-pointer">
+            <a href="{{ route('admin.loss-writeoffs.index', ['status_kejadian' => 'Dilaporkan']) }}"
+                class="group bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-amber-200">
                 <div class="flex items-center justify-between mb-4">
                     <div
                         class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition-colors">
@@ -171,7 +171,7 @@
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-2">Baris Gilir Kelulusan</h3>
                 <p class="text-sm text-gray-600">{{ $pendingLosses }} menunggu kelulusan</p>
-            </div>
+            </a>
         </div>
 
         <!-- Search and Filters Card -->
