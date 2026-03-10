@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Inspection;
 use App\Models\Asset;
+use App\Models\Inspection;
 use App\Models\MasjidSurau;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -76,6 +76,7 @@ class InspectionController extends Controller
     public function export(Request $request)
     {
         $filename = 'inspections_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\InspectionExport($request), $filename);
     }
 
@@ -103,7 +104,7 @@ class InspectionController extends Controller
             'gambar_pemeriksaan' => 'nullable|array',
             'gambar_pemeriksaan.*' => 'image|mimes:jpeg,png,jpg|max:2048',
             'signature' => 'required|string',
-            'jawatan_pemeriksa' => 'required|string'
+            'jawatan_pemeriksa' => 'required|string',
         ]);
 
         // Handle image uploads
@@ -115,7 +116,6 @@ class InspectionController extends Controller
             }
             $validated['gambar_pemeriksaan'] = $images;
         }
-
 
         // Get asset location
         $asset = Asset::find($validated['asset_id']);
@@ -182,7 +182,7 @@ class InspectionController extends Controller
             'gambar_pemeriksaan' => 'nullable|array',
             'gambar_pemeriksaan.*' => 'image|mimes:jpeg,png,jpg|max:2048',
             'signature' => 'nullable|string',
-            'jawatan_pemeriksa' => 'required|string'
+            'jawatan_pemeriksa' => 'required|string',
         ]);
 
         // Handle image uploads
@@ -246,19 +246,20 @@ class InspectionController extends Controller
     {
         $this->authorize('create', Inspection::class);
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+
         return view('admin.inspections.import', compact('masjidSuraus'));
     }
 
     public function downloadTemplate()
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\InspectionImportTemplateExport(), 'template_pemeriksaan.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\InspectionImportTemplateExport, 'template_pemeriksaan.xlsx');
     }
 
     public function previewImport(Request $request)
     {
         $this->authorize('create', Inspection::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -266,6 +267,10 @@ class InspectionController extends Controller
         $rows = $sheets[0] ?? [];
 
         $result = $this->processImportRows($rows);
+
+        $warningsCount = count(array_filter($result['rows'], function ($r) {
+            return !empty($r['warnings']);
+        }));
 
         return response()->json([
             'success' => true,
@@ -274,8 +279,9 @@ class InspectionController extends Controller
                 'total' => count($result['rows']),
                 'valid' => count($result['valid_rows']),
                 'invalid' => count($result['errors']),
-                'skipped' => $result['skipped_count']
-            ]
+                'skipped' => $result['skipped_count'],
+                'warnings' => $warningsCount,
+            ],
         ]);
     }
 
@@ -283,7 +289,7 @@ class InspectionController extends Controller
     {
         $this->authorize('create', Inspection::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -292,16 +298,38 @@ class InspectionController extends Controller
 
         $result = $this->processImportRows($rows);
 
-        if (count($result['errors']) > 0) {
+        // Only block on hard errors (not duplicates/warnings)
+        $hardErrors = array_filter($result['errors'], fn($r) => empty($r['existing_id']));
+        if (count($hardErrors) > 0) {
             return back()->with('import_errors', collect($result['errors'])->pluck('errors')->flatten()->all());
         }
 
+        $createdCount = 0;
+        $updatedCount = 0;
+
         foreach ($result['valid_rows'] as $row) {
-            Inspection::create($row['data']);
+            if (!empty($row['existing_id'])) {
+                $inspection = Inspection::find($row['existing_id']);
+                if ($inspection) {
+                    $inspection->update($row['data']);
+                    $updatedCount++;
+                }
+            } else {
+                Inspection::create($row['data']);
+                $createdCount++;
+            }
+        }
+
+        $message = 'Import selesai. ';
+        if ($createdCount > 0) {
+            $message .= "{$createdCount} rekod pemeriksaan baru ditambah. ";
+        }
+        if ($updatedCount > 0) {
+            $message .= "{$updatedCount} rekod pemeriksaan dikemaskini.";
         }
 
         return redirect()->route('admin.inspections.index')
-            ->with('success', count($result['valid_rows']) . ' rekod pemeriksaan berjaya diimport.');
+            ->with('success', rtrim($message));
     }
 
     private function processImportRows(array $rows)
@@ -310,6 +338,7 @@ class InspectionController extends Controller
         $validRows = [];
         $errorRows = [];
         $skippedCount = 0;
+        $rowWarnings = [];
 
         // Skip header row
         array_shift($rows);
@@ -320,29 +349,46 @@ class InspectionController extends Controller
             // Skip empty rows
             if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
                 $skippedCount++;
+
                 continue;
             }
 
             $rowErrors = [];
+            $existingInspection = null;
 
             try {
                 $noSiri = $row[0] ?? null;
                 $asset = Asset::where('no_siri_pendaftaran', $noSiri)->first();
 
                 if (!$asset) {
-                    $rowErrors[] = "No. Siri Pendaftaran Aset tidak sah atau tidak wujud.";
+                    $rowErrors[] = 'No. Siri Pendaftaran Aset tidak sah atau tidak wujud.';
+                } else {
+                    // Check if inspection already exists for this asset on this date
+                    $tarikhPemeriksaan = $row[1] ?? null;
+                    if ($tarikhPemeriksaan) {
+                        $formattedDate = \Carbon\Carbon::parse($tarikhPemeriksaan)->format('Y-m-d');
+                        $existingInspection = \App\Models\Inspection::where('asset_id', $asset->id)
+                            ->whereDate('tarikh_pemeriksaan', $formattedDate)
+                            ->first();
+                        if ($existingInspection) {
+                            $rowWarnings[$rowNumber] = 'Aset ini sudah ada pemeriksaan pada tarikh ini';
+                        }
+                    }
                 }
 
                 $formatDate = function ($date, $field) use (&$rowErrors) {
-                    if (empty($date))
+                    if (empty($date)) {
                         return null;
+                    }
                     try {
                         if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
                             return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
                         }
+
                         return \Carbon\Carbon::parse($date)->format('Y-m-d');
                     } catch (\Exception $e) {
                         $rowErrors[] = "Format tarikh $field tidak sah (Gunakan DD/MM/YYYY)";
+
                         return null;
                     }
                 };
@@ -360,47 +406,55 @@ class InspectionController extends Controller
                     'lokasi_semasa_pemeriksaan' => $asset ? $asset->lokasi_penempatan : '-',
                 ];
 
-                if (empty($data['tarikh_pemeriksaan']))
-                    $rowErrors[] = "Tarikh Pemeriksaan diperlukan.";
-                if (empty($data['pegawai_pemeriksa']))
-                    $rowErrors[] = "Nama Pegawai Pemeriksa diperlukan.";
+                if (empty($data['tarikh_pemeriksaan'])) {
+                    $rowErrors[] = 'Tarikh Pemeriksaan diperlukan.';
+                }
+                if (empty($data['pegawai_pemeriksa'])) {
+                    $rowErrors[] = 'Nama Pegawai Pemeriksa diperlukan.';
+                }
 
                 // Validate Condition
                 $validConditions = ['Baik', 'Sederhana', 'Rosak', 'Sedang Digunakan', 'Tidak Digunakan'];
                 if (!in_array($data['kondisi_aset'], $validConditions)) {
-                    $rowErrors[] = "Kondisi Aset tidak sah. Pilih: " . implode(', ', $validConditions);
+                    $rowErrors[] = 'Kondisi Aset tidak sah. Pilih: ' . implode(', ', $validConditions);
                 }
 
                 // Validate Action
                 $validActions = ['Tiada Tindakan', 'Penyelenggaraan', 'Pelupusan', 'Hapus Kira'];
                 if (!in_array($data['cadangan_tindakan'], $validActions)) {
-                    $rowErrors[] = "Cadangan Tindakan tidak sah. Pilih: " . implode(', ', $validActions);
+                    $rowErrors[] = 'Cadangan Tindakan tidak sah. Pilih: ' . implode(', ', $validActions);
                 }
 
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $data,
-                    'valid' => empty($rowErrors),
+                    'existing_id' => $existingInspection ? $existingInspection->id : null,
+                    'valid' => empty($rowErrors) && empty($rowWarnings[$rowNumber]),
                     'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'warnings' => $rowWarnings[$rowNumber] ?? null,
                     'display_data' => [
                         'no_siri' => $noSiri ?? '-',
                         'nama_aset' => $asset ? $asset->nama_aset : '-',
                         'tarikh' => $row[1] ?? '-',
-                        'kondisi' => $data['kondisi_aset']
-                    ]
+                        'kondisi' => $data['kondisi_aset'],
+                    ],
                 ];
 
                 $processedRows[] = $processedRow;
-                if (empty($rowErrors))
+                // Warned rows = duplicates → update during import
+                if (!empty($rowWarnings[$rowNumber])) {
                     $validRows[] = $processedRow;
-                else
+                } elseif (empty($rowErrors)) {
+                    $validRows[] = $processedRow;
+                } else {
                     $errorRows[] = $processedRow;
+                }
 
             } catch (\Exception $e) {
                 $processedRows[] = [
                     'row' => $rowNumber,
                     'valid' => false,
-                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()],
                 ];
                 $errorRows[] = end($processedRows);
             }
@@ -410,7 +464,7 @@ class InspectionController extends Controller
             'rows' => $processedRows,
             'valid_rows' => $validRows,
             'errors' => $errorRows,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
         ];
     }
 }

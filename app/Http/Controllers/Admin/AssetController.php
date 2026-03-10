@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\AssetRegistrationNumber;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\MasjidSurau;
-use App\Helpers\AssetRegistrationNumber;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AssetController extends Controller
 {
@@ -129,6 +128,7 @@ class AssetController extends Controller
             ->where('nama', 'like', '%Taman Melawati%')
             ->first();
         $default_masjid_surau_id = $defaultMasjid ? $defaultMasjid->id : (auth()->user()->masjid_surau_id ?? null);
+
         return view('admin.assets.create', compact('masjidSuraus', 'assetTypes', 'default_masjid_surau_id'));
     }
 
@@ -242,12 +242,14 @@ class AssetController extends Controller
                     ->withInput()
                     ->with('error', 'Ralat: Nombor siri pendaftaran aset ini telah wujud. Sila cuba lagi.');
             }
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Ralat pangkalan data: ' . $e->getMessage());
 
         } catch (\Exception $e) {
             \DB::rollBack();
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Ralat mewujudkan aset: ' . $e->getMessage());
@@ -402,7 +404,7 @@ class AssetController extends Controller
     {
         $validated = $request->validate([
             'asset_ids' => 'required|array|min:1',
-            'asset_ids.*' => 'exists:assets,id'
+            'asset_ids.*' => 'exists:assets,id',
         ]);
 
         $deletedCount = Asset::whereIn('id', $validated['asset_ids'])->delete();
@@ -420,6 +422,7 @@ class AssetController extends Controller
         $request->merge(['kategori_aset' => 'asset']);
 
         $filename = 'assets_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssetExport($request), $filename);
     }
 
@@ -466,8 +469,9 @@ class AssetController extends Controller
 
         $result = $this->processImportRows($rows);
 
-        if (count($result['errors']) > 0) {
-            // Flatten errors for display
+        // Only block on hard errors (no existing_id = truly invalid rows, not just duplicates)
+        $hardErrors = array_filter($result['errors'], fn($r) => empty($r['existing_id']));
+        if (count($hardErrors) > 0) {
             $displayErrors = [];
             foreach ($result['errors'] as $rowErrors) {
                 foreach ($rowErrors['errors'] as $error) {
@@ -505,11 +509,13 @@ class AssetController extends Controller
             }
         }
 
-        $message = "Import selesai. ";
-        if ($createdCount > 0)
+        $message = 'Import selesai. ';
+        if ($createdCount > 0) {
             $message .= "{$createdCount} aset baru ditambah. ";
-        if ($updatedCount > 0)
+        }
+        if ($updatedCount > 0) {
             $message .= "{$updatedCount} aset dikemaskini. ";
+        }
 
         if ($result['skipped_count'] > 0) {
             $message .= " {$result['skipped_count']} baris kosong dilangkau.";
@@ -534,6 +540,11 @@ class AssetController extends Controller
 
             $result = $this->processImportRows($rows);
 
+            // Count rows with warnings
+            $warningsCount = count(array_filter($result['rows'], function ($r) {
+                return !empty($r['warnings']);
+            }));
+
             return response()->json([
                 'success' => true,
                 'data' => $result['rows'],
@@ -541,14 +552,15 @@ class AssetController extends Controller
                     'total' => count($rows) - 1, // Exclude header
                     'valid' => count($result['valid_rows']),
                     'invalid' => count($result['errors']),
-                    'skipped' => $result['skipped_count']
-                ]
+                    'skipped' => $result['skipped_count'],
+                    'warnings' => $warningsCount,
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
@@ -565,6 +577,7 @@ class AssetController extends Controller
         $skippedCount = 0;
         $sequenceOffsets = []; // Track ID generation offsets
         $seenSequenceNumbers = []; // Track customized IDs to avoid duplicates inside CSV
+        $rowWarnings = []; // Track warnings for existing records
 
         // Skip header row
         array_shift($rows);
@@ -581,6 +594,7 @@ class AssetController extends Controller
                 }))
             ) {
                 $skippedCount++;
+
                 continue;
             }
 
@@ -622,18 +636,23 @@ class AssetController extends Controller
                 $existingAsset = null;
                 if (!empty($noSiriPendaftaran)) {
                     $existingAsset = Asset::where('no_siri_pendaftaran', $noSiriPendaftaran)->first();
+                    if ($existingAsset) {
+                        // Add warning that this will update existing record
+                        $rowWarnings[$rowNumber] = "Rekod sedia ada - akan dikemaskini (ID: {$existingAsset->id})";
+                    }
                 }
 
                 // Validate required fields
-                if (empty($assetData['nama_aset']))
-                    $rowErrors[] = "Nama Aset diperlukan";
+                if (empty($assetData['nama_aset'])) {
+                    $rowErrors[] = 'Nama Aset diperlukan';
+                }
 
                 if (empty($assetData['masjid_surau_id']) || !MasjidSurau::find($assetData['masjid_surau_id'])) {
-                    $rowErrors[] = "Masjid/Surau ID tidak wujud di dalam sistem.";
+                    $rowErrors[] = 'Masjid/Surau ID tidak wujud di dalam sistem.';
                 }
 
                 if (empty($assetData['jenis_aset']) || !in_array($assetData['jenis_aset'], $availableAssetTypes)) {
-                    $rowErrors[] = "Jenis Aset tidak sah. Gunakan: " . implode(', ', $availableAssetTypes);
+                    $rowErrors[] = 'Jenis Aset tidak sah. Gunakan: ' . implode(', ', $availableAssetTypes);
                 }
 
                 if (empty($assetData['kategori_aset']) || !in_array($assetData['kategori_aset'], ['asset', 'non-asset'])) {
@@ -641,7 +660,7 @@ class AssetController extends Controller
                 }
 
                 if (empty($assetData['tarikh_perolehan'])) {
-                    $rowErrors[] = "Tarikh Perolehan diperlukan";
+                    $rowErrors[] = 'Tarikh Perolehan diperlukan';
                 } else {
                     try {
                         if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $assetData['tarikh_perolehan'])) {
@@ -650,7 +669,7 @@ class AssetController extends Controller
                             $tarikhPerolehan = \Carbon\Carbon::parse($assetData['tarikh_perolehan']);
                         }
                     } catch (\Exception $e) {
-                        $rowErrors[] = "Format tarikh perolehan tidak sah (YYYY-MM-DD atau DD/MM/YYYY)";
+                        $rowErrors[] = 'Format tarikh perolehan tidak sah (YYYY-MM-DD atau DD/MM/YYYY)';
                     }
                 }
 
@@ -676,13 +695,15 @@ class AssetController extends Controller
 
                 $validLocations = \App\Helpers\SystemData::getValidLocations();
                 if (empty($assetData['lokasi_penempatan']) || !in_array($assetData['lokasi_penempatan'], $validLocations)) {
-                    $rowErrors[] = "Lokasi Penempatan tidak sah";
+                    $rowErrors[] = 'Lokasi Penempatan tidak sah';
                 }
 
-                if (empty($assetData['pegawai_bertanggungjawab_lokasi']))
-                    $rowErrors[] = "Pegawai Bertanggungjawab diperlukan";
-                if (empty($assetData['kaedah_perolehan']))
-                    $rowErrors[] = "Kaedah Perolehan diperlukan";
+                if (empty($assetData['pegawai_bertanggungjawab_lokasi'])) {
+                    $rowErrors[] = 'Pegawai Bertanggungjawab diperlukan';
+                }
+                if (empty($assetData['kaedah_perolehan'])) {
+                    $rowErrors[] = 'Kaedah Perolehan diperlukan';
+                }
 
                 // Generate ID if valid basic info AND not updating existing
                 if (empty($rowErrors) && !$existingAsset) {
@@ -725,11 +746,13 @@ class AssetController extends Controller
 
                 // Dates for creating model
                 $formatDateForDB = function ($date) {
-                    if (empty($date))
+                    if (empty($date)) {
                         return null;
+                    }
                     if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
                         return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
                     }
+
                     return \Carbon\Carbon::parse($date)->format('Y-m-d');
                 };
 
@@ -739,20 +762,23 @@ class AssetController extends Controller
                 $assetData['tarikh_resit'] = $formatDateForDB($assetData['tarikh_resit']);
                 $assetData['tarikh_tamat_jaminan'] = $formatDateForDB($assetData['tarikh_tamat_jaminan']);
 
-
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $assetData,
                     'existing_id' => $existingAsset ? $existingAsset->id : null,
-                    'valid' => empty($rowErrors),
+                    'valid' => empty($rowErrors) && empty($rowWarnings[$rowNumber]),
                     'errors' => array_map(function ($e) use ($rowNumber) {
                         return "Baris $rowNumber: $e";
-                    }, $rowErrors)
+                    }, $rowErrors),
+                    'warnings' => $rowWarnings[$rowNumber] ?? null,
                 ];
 
                 $processedRows[] = $processedRow;
 
-                if (empty($rowErrors)) {
+                // Rows with warnings = duplicates, treat as valid_rows for updating
+                if (!empty($rowWarnings[$rowNumber])) {
+                    $validRows[] = $processedRow; // will be updated in import()
+                } elseif (empty($rowErrors)) {
                     $validRows[] = $processedRow;
                 } else {
                     $errorRows[] = $processedRow;
@@ -763,7 +789,7 @@ class AssetController extends Controller
                     'row' => $rowNumber,
                     'data' => $row, // Raw data on crash
                     'valid' => false,
-                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()],
                 ];
                 $errorRows[] = end($processedRows);
             }
@@ -773,7 +799,7 @@ class AssetController extends Controller
             'rows' => $processedRows,
             'valid_rows' => $validRows,
             'errors' => $errorRows,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
         ];
     }
 

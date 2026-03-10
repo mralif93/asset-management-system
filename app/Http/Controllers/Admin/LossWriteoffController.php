@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\LossWriteoff;
 use App\Models\Asset;
+use App\Models\LossWriteoff;
 use App\Models\MasjidSurau;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class LossWriteoffController extends Controller
 {
@@ -76,6 +76,7 @@ class LossWriteoffController extends Controller
     public function export(Request $request)
     {
         $filename = 'loss_writeoffs_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\LossWriteoffExport($request), $filename);
     }
 
@@ -108,7 +109,7 @@ class LossWriteoffController extends Controller
             'laporan_polis' => 'nullable|string',
             'catatan' => 'nullable|string',
             'dokumen_kehilangan' => 'nullable|array',
-            'dokumen_kehilangan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120'
+            'dokumen_kehilangan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         // Handle document uploads
@@ -168,7 +169,7 @@ class LossWriteoffController extends Controller
             'laporan_polis' => 'nullable|string',
             'catatan' => 'nullable|string',
             'dokumen_kehilangan' => 'nullable|array',
-            'dokumen_kehilangan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120'
+            'dokumen_kehilangan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         // Handle document uploads
@@ -204,12 +205,12 @@ class LossWriteoffController extends Controller
         $lossWriteoff->update([
             'status_kejadian' => 'Diluluskan',
             'tarikh_kelulusan_hapus_kira' => now(),
-            'diluluskan_oleh' => Auth::id()
+            'diluluskan_oleh' => Auth::id(),
         ]);
 
         // Update asset status
         $lossWriteoff->asset->update([
-            'status_aset' => Asset::STATUS_LOST
+            'status_aset' => Asset::STATUS_LOST,
         ]);
 
         return redirect()->route('admin.loss-writeoffs.show', $lossWriteoff)
@@ -221,14 +222,14 @@ class LossWriteoffController extends Controller
         $this->authorize('reject', $lossWriteoff);
 
         $request->validate([
-            'sebab_penolakan' => 'required|string'
+            'sebab_penolakan' => 'required|string',
         ]);
 
         $lossWriteoff->update([
             'status_kejadian' => 'Ditolak',
             'tarikh_kelulusan_hapus_kira' => now(),
             'diluluskan_oleh' => Auth::id(),
-            'sebab_penolakan' => $request->sebab_penolakan
+            'sebab_penolakan' => $request->sebab_penolakan,
         ]);
 
         return redirect()->route('admin.loss-writeoffs.show', $lossWriteoff)
@@ -239,19 +240,20 @@ class LossWriteoffController extends Controller
     {
         $this->authorize('create', LossWriteoff::class);
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+
         return view('admin.loss-writeoffs.import', compact('masjidSuraus'));
     }
 
     public function downloadTemplate()
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\LossWriteoffImportTemplateExport(), 'template_hapus_kira.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\LossWriteoffImportTemplateExport, 'template_hapus_kira.xlsx');
     }
 
     public function previewImport(Request $request)
     {
         $this->authorize('create', LossWriteoff::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -259,6 +261,12 @@ class LossWriteoffController extends Controller
         $rows = $sheets[0] ?? [];
 
         $result = $this->processImportRows($rows);
+
+        $result = $this->processImportRows($rows);
+
+        $warningsCount = count(array_filter($result['rows'], function ($r) {
+            return !empty($r['warnings']);
+        }));
 
         return response()->json([
             'success' => true,
@@ -267,8 +275,9 @@ class LossWriteoffController extends Controller
                 'total' => count($result['rows']),
                 'valid' => count($result['valid_rows']),
                 'invalid' => count($result['errors']),
-                'skipped' => $result['skipped_count']
-            ]
+                'skipped' => $result['skipped_count'],
+                'warnings' => $warningsCount,
+            ],
         ]);
     }
 
@@ -276,7 +285,7 @@ class LossWriteoffController extends Controller
     {
         $this->authorize('create', LossWriteoff::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -285,16 +294,38 @@ class LossWriteoffController extends Controller
 
         $result = $this->processImportRows($rows);
 
-        if (count($result['errors']) > 0) {
+        // Only block on hard errors (not duplicates/warnings)
+        $hardErrors = array_filter($result['errors'], fn($r) => empty($r['existing_id']));
+        if (count($hardErrors) > 0) {
             return back()->with('import_errors', collect($result['errors'])->pluck('errors')->flatten()->all());
         }
 
+        $createdCount = 0;
+        $updatedCount = 0;
+
         foreach ($result['valid_rows'] as $row) {
-            LossWriteoff::create($row['data']);
+            if (!empty($row['existing_id'])) {
+                $lossWriteoff = LossWriteoff::find($row['existing_id']);
+                if ($lossWriteoff) {
+                    $lossWriteoff->update($row['data']);
+                    $updatedCount++;
+                }
+            } else {
+                LossWriteoff::create($row['data']);
+                $createdCount++;
+            }
+        }
+
+        $message = 'Import selesai. ';
+        if ($createdCount > 0) {
+            $message .= "{$createdCount} rekod kehilangan baru ditambah. ";
+        }
+        if ($updatedCount > 0) {
+            $message .= "{$updatedCount} rekod kehilangan dikemaskini.";
         }
 
         return redirect()->route('admin.loss-writeoffs.index')
-            ->with('success', count($result['valid_rows']) . ' rekod kehilangan berjaya diimport.');
+            ->with('success', rtrim($message));
     }
 
     private function processImportRows(array $rows)
@@ -303,6 +334,7 @@ class LossWriteoffController extends Controller
         $validRows = [];
         $errorRows = [];
         $skippedCount = 0;
+        $rowWarnings = [];
 
         // Skip header row
         array_shift($rows);
@@ -313,29 +345,42 @@ class LossWriteoffController extends Controller
             // Skip empty rows
             if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
                 $skippedCount++;
+
                 continue;
             }
 
             $rowErrors = [];
+            $existingLoss = null;
 
             try {
                 $noSiri = $row[0] ?? null;
                 $asset = Asset::where('no_siri_pendaftaran', $noSiri)->first();
 
                 if (!$asset) {
-                    $rowErrors[] = "No. Siri Pendaftaran Aset tidak sah atau tidak wujud.";
+                    $rowErrors[] = 'No. Siri Pendaftaran Aset tidak sah atau tidak wujud.';
+                } else {
+                    // Check if loss writeoff already exists for this asset
+                    $existingLoss = \App\Models\LossWriteoff::where('asset_id', $asset->id)
+                        ->whereIn('status_kejadian', ['Dilaporkan', 'Dalam Penyiasatan'])
+                        ->first();
+                    if ($existingLoss) {
+                        $rowWarnings[$rowNumber] = "Aset ini sudah ada laporan kehilangan (Status: {$existingLoss->status_kejadian})";
+                    }
                 }
 
                 $formatDate = function ($date, $field) use (&$rowErrors) {
-                    if (empty($date))
+                    if (empty($date)) {
                         return null;
+                    }
                     try {
                         if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
                             return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
                         }
+
                         return \Carbon\Carbon::parse($date)->format('Y-m-d');
                     } catch (\Exception $e) {
                         $rowErrors[] = "Format tarikh $field tidak sah (Gunakan DD/MM/YYYY)";
+
                         return null;
                     }
                 };
@@ -353,46 +398,53 @@ class LossWriteoffController extends Controller
                     'status_kejadian' => 'Dilaporkan',
                 ];
 
-                if (empty($data['tarikh_laporan']))
-                    $rowErrors[] = "Tarikh Laporan diperlukan.";
+                if (empty($data['tarikh_laporan'])) {
+                    $rowErrors[] = 'Tarikh Laporan diperlukan.';
+                }
 
                 // Validate Jenis
                 $validTypes = ['hilang', 'hapus_kira'];
                 if (!in_array($data['jenis_kejadian'], $validTypes)) {
-                    $rowErrors[] = "Jenis Kejadian tidak sah. Pilih: " . implode(', ', $validTypes);
+                    $rowErrors[] = 'Jenis Kejadian tidak sah. Pilih: ' . implode(', ', $validTypes);
                 }
 
                 // Validate Sebab
                 $validReasons = ['bencana_alam', 'kecurian', 'kecuaian', 'tidak_dapat_dikesan'];
                 if (!in_array($data['sebab_kejadian'], $validReasons)) {
-                    $rowErrors[] = "Sebab Kejadian tidak sah. Pilih: " . implode(', ', $validReasons);
+                    $rowErrors[] = 'Sebab Kejadian tidak sah. Pilih: ' . implode(', ', $validReasons);
                 }
 
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $data,
-                    'valid' => empty($rowErrors),
+                    'existing_id' => $existingLoss ? $existingLoss->id : null,
+                    'valid' => empty($rowErrors) && empty($rowWarnings[$rowNumber]),
                     'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'warnings' => $rowWarnings[$rowNumber] ?? null,
                     'display_data' => [
                         'no_siri' => $noSiri ?? '-',
                         'nama_aset' => $asset ? $asset->nama_aset : '-',
                         'tarikh' => $row[2] ?? '-',
                         'jenis' => $data['jenis_kejadian'],
-                        'sebab' => $data['sebab_kejadian']
-                    ]
+                        'sebab' => $data['sebab_kejadian'],
+                    ],
                 ];
 
                 $processedRows[] = $processedRow;
-                if (empty($rowErrors))
+                // Warned rows = duplicates → update during import
+                if (!empty($rowWarnings[$rowNumber])) {
                     $validRows[] = $processedRow;
-                else
+                } elseif (empty($rowErrors)) {
+                    $validRows[] = $processedRow;
+                } else {
                     $errorRows[] = $processedRow;
+                }
 
             } catch (\Exception $e) {
                 $processedRows[] = [
                     'row' => $rowNumber,
                     'valid' => false,
-                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()],
                 ];
                 $errorRows[] = end($processedRows);
             }
@@ -402,7 +454,7 @@ class LossWriteoffController extends Controller
             'rows' => $processedRows,
             'valid_rows' => $validRows,
             'errors' => $errorRows,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
         ];
     }
 }

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\MaintenanceRecord;
 use App\Models\Asset;
+use App\Models\MaintenanceRecord;
 use App\Models\MasjidSurau;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class MaintenanceRecordController extends Controller
 {
@@ -88,6 +88,7 @@ class MaintenanceRecordController extends Controller
     public function export(Request $request)
     {
         $filename = 'maintenance_records_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MaintenanceRecordExport($request), $filename);
     }
 
@@ -175,7 +176,7 @@ class MaintenanceRecordController extends Controller
             'tarikh_penyelenggaraan_akan_datang' => 'nullable|date|after:tarikh_penyelenggaraan',
             'gambar_penyelenggaraan' => 'nullable|array',
             'gambar_penyelenggaraan.*' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'status_penyelenggaraan' => 'required|string'
+            'status_penyelenggaraan' => 'required|string',
         ]);
 
         // Handle image uploads
@@ -229,19 +230,20 @@ class MaintenanceRecordController extends Controller
     {
         $this->authorize('create', MaintenanceRecord::class);
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+
         return view('admin.maintenance-records.import', compact('masjidSuraus'));
     }
 
     public function downloadTemplate()
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MaintenanceImportTemplateExport(), 'template_penyelenggaraan.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MaintenanceImportTemplateExport, 'template_penyelenggaraan.xlsx');
     }
 
     public function previewImport(Request $request)
     {
         $this->authorize('create', MaintenanceRecord::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -249,6 +251,10 @@ class MaintenanceRecordController extends Controller
         $rows = $sheets[0] ?? [];
 
         $result = $this->processImportRows($rows);
+
+        $warningsCount = count(array_filter($result['rows'], function ($r) {
+            return !empty($r['warnings']);
+        }));
 
         return response()->json([
             'success' => true,
@@ -257,8 +263,9 @@ class MaintenanceRecordController extends Controller
                 'total' => count($result['rows']),
                 'valid' => count($result['valid_rows']),
                 'invalid' => count($result['errors']),
-                'skipped' => $result['skipped_count']
-            ]
+                'skipped' => $result['skipped_count'],
+                'warnings' => $warningsCount,
+            ],
         ]);
     }
 
@@ -266,7 +273,7 @@ class MaintenanceRecordController extends Controller
     {
         $this->authorize('create', MaintenanceRecord::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -275,16 +282,38 @@ class MaintenanceRecordController extends Controller
 
         $result = $this->processImportRows($rows);
 
-        if (count($result['errors']) > 0) {
+        // Only block on hard errors (not duplicates/warnings)
+        $hardErrors = array_filter($result['errors'], fn($r) => empty($r['existing_id']));
+        if (count($hardErrors) > 0) {
             return back()->with('import_errors', collect($result['errors'])->pluck('errors')->flatten()->all());
         }
 
+        $createdCount = 0;
+        $updatedCount = 0;
+
         foreach ($result['valid_rows'] as $row) {
-            MaintenanceRecord::create($row['data']);
+            if (!empty($row['existing_id'])) {
+                $maintenance = MaintenanceRecord::find($row['existing_id']);
+                if ($maintenance) {
+                    $maintenance->update($row['data']);
+                    $updatedCount++;
+                }
+            } else {
+                MaintenanceRecord::create($row['data']);
+                $createdCount++;
+            }
+        }
+
+        $message = 'Import selesai. ';
+        if ($createdCount > 0) {
+            $message .= "{$createdCount} rekod penyelenggaraan baru ditambah. ";
+        }
+        if ($updatedCount > 0) {
+            $message .= "{$updatedCount} rekod penyelenggaraan dikemaskini.";
         }
 
         return redirect()->route('admin.maintenance-records.index')
-            ->with('success', count($result['valid_rows']) . ' rekod penyelenggaraan berjaya diimport.');
+            ->with('success', rtrim($message));
     }
 
     private function processImportRows(array $rows)
@@ -293,6 +322,7 @@ class MaintenanceRecordController extends Controller
         $validRows = [];
         $errorRows = [];
         $skippedCount = 0;
+        $rowWarnings = [];
 
         // Skip header row
         array_shift($rows);
@@ -303,29 +333,46 @@ class MaintenanceRecordController extends Controller
             // Skip empty rows
             if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
                 $skippedCount++;
+
                 continue;
             }
 
             $rowErrors = [];
+            $existingMaintenance = null;
 
             try {
                 $noSiri = $row[0] ?? null;
                 $asset = Asset::where('no_siri_pendaftaran', $noSiri)->first();
 
                 if (!$asset) {
-                    $rowErrors[] = "No. Siri Pendaftaran Aset tidak sah atau tidak wujud.";
+                    $rowErrors[] = 'No. Siri Pendaftaran Aset tidak sah atau tidak wujud.';
+                } else {
+                    // Check if maintenance record already exists for this asset on this date
+                    $tarikhPenyelenggaraan = $row[1] ?? null;
+                    if ($tarikhPenyelenggaraan) {
+                        $formattedDate = \Carbon\Carbon::parse($tarikhPenyelenggaraan)->format('Y-m-d');
+                        $existingMaintenance = \App\Models\MaintenanceRecord::where('asset_id', $asset->id)
+                            ->whereDate('tarikh_penyelenggaraan', $formattedDate)
+                            ->first();
+                        if ($existingMaintenance) {
+                            $rowWarnings[$rowNumber] = 'Aset ini sudah ada penyelenggaraan pada tarikh ini';
+                        }
+                    }
                 }
 
                 $formatDate = function ($date, $field) use (&$rowErrors) {
-                    if (empty($date))
+                    if (empty($date)) {
                         return null;
+                    }
                     try {
                         if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
                             return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
                         }
+
                         return \Carbon\Carbon::parse($date)->format('Y-m-d');
                     } catch (\Exception $e) {
                         $rowErrors[] = "Format tarikh $field tidak sah (Gunakan DD/MM/YYYY)";
+
                         return null;
                     }
                 };
@@ -343,49 +390,58 @@ class MaintenanceRecordController extends Controller
                     'catatan' => $row[8] ?? '-',
                 ];
 
-                if (empty($data['tarikh_penyelenggaraan']))
-                    $rowErrors[] = "Tarikh Penyelenggaraan diperlukan.";
-                if (empty($data['butiran_kerja']))
-                    $rowErrors[] = "Butiran Kerja diperlukan.";
-                if (empty($data['penyedia_perkhidmatan']))
-                    $rowErrors[] = "Penyedia Perkhidmatan diperlukan.";
+                if (empty($data['tarikh_penyelenggaraan'])) {
+                    $rowErrors[] = 'Tarikh Penyelenggaraan diperlukan.';
+                }
+                if (empty($data['butiran_kerja'])) {
+                    $rowErrors[] = 'Butiran Kerja diperlukan.';
+                }
+                if (empty($data['penyedia_perkhidmatan'])) {
+                    $rowErrors[] = 'Penyedia Perkhidmatan diperlukan.';
+                }
 
                 // Validate Type
                 $validTypes = ['Pencegahan', 'Pembaikan', 'Kalibrasi', 'Pembersihan'];
                 if (!in_array($data['jenis_penyelenggaraan'], $validTypes)) {
-                    $rowErrors[] = "Jenis Penyelenggaraan tidak sah. Pilih: " . implode(', ', $validTypes);
+                    $rowErrors[] = 'Jenis Penyelenggaraan tidak sah. Pilih: ' . implode(', ', $validTypes);
                 }
 
                 // Validate Status
                 $validStatuses = ['Selesai', 'Dalam Proses', 'Belum Selesai'];
                 if (!in_array($data['status_penyelenggaraan'], $validStatuses)) {
-                    $rowErrors[] = "Status tidak sah. Pilih: " . implode(', ', $validStatuses);
+                    $rowErrors[] = 'Status tidak sah. Pilih: ' . implode(', ', $validStatuses);
                 }
 
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $data,
-                    'valid' => empty($rowErrors),
+                    'existing_id' => $existingMaintenance ? $existingMaintenance->id : null,
+                    'valid' => empty($rowErrors) && empty($rowWarnings[$rowNumber]),
                     'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'warnings' => $rowWarnings[$rowNumber] ?? null,
                     'display_data' => [
                         'no_siri' => $noSiri ?? '-',
                         'nama_aset' => $asset ? $asset->nama_aset : '-',
                         'tarikh' => $row[1] ?? '-',
-                        'jenis' => $data['jenis_penyelenggaraan']
-                    ]
+                        'jenis' => $data['jenis_penyelenggaraan'],
+                    ],
                 ];
 
                 $processedRows[] = $processedRow;
-                if (empty($rowErrors))
+                // Warned rows = duplicates → update during import
+                if (!empty($rowWarnings[$rowNumber])) {
                     $validRows[] = $processedRow;
-                else
+                } elseif (empty($rowErrors)) {
+                    $validRows[] = $processedRow;
+                } else {
                     $errorRows[] = $processedRow;
+                }
 
             } catch (\Exception $e) {
                 $processedRows[] = [
                     'row' => $rowNumber,
                     'valid' => false,
-                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()],
                 ];
                 $errorRows[] = end($processedRows);
             }
@@ -395,7 +451,7 @@ class MaintenanceRecordController extends Controller
             'rows' => $processedRows,
             'valid_rows' => $validRows,
             'errors' => $errorRows,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
         ];
     }
 }

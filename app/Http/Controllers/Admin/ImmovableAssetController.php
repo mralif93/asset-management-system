@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\AssetRegistrationNumber;
 use App\Http\Controllers\Controller;
 use App\Models\ImmovableAsset;
 use App\Models\MasjidSurau;
-use App\Helpers\AssetRegistrationNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -105,7 +105,7 @@ class ImmovableAssetController extends Controller
             'keadaan_semasa' => 'required|string|in:' . implode(',', \App\Helpers\SystemData::getPhysicalConditions()),
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array|max:5',
-            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Combine keluasan_tanah and keluasan_bangunan if provided separately
@@ -186,7 +186,7 @@ class ImmovableAssetController extends Controller
             'keadaan_semasa' => 'required|string|in:' . implode(',', \App\Helpers\SystemData::getPhysicalConditions()),
             'catatan' => 'nullable|string',
             'gambar_aset' => 'nullable|array|max:5',
-            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'gambar_aset.*' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Handle image deletions
@@ -239,6 +239,7 @@ class ImmovableAssetController extends Controller
     public function export(Request $request)
     {
         $filename = 'immovable_assets_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ImmovableAssetExport($request), $filename);
     }
 
@@ -281,7 +282,9 @@ class ImmovableAssetController extends Controller
 
         $result = $this->processImportRows($rows);
 
-        if (count($result['errors']) > 0) {
+        // Only block on hard errors (not warnings/duplicates)
+        $hardErrors = array_filter($result['errors'], fn($r) => empty($r['existing_id']));
+        if (count($hardErrors) > 0) {
             $displayErrors = [];
             foreach ($result['errors'] as $rowErrors) {
                 foreach ($rowErrors['errors'] as $error) {
@@ -297,17 +300,34 @@ class ImmovableAssetController extends Controller
 
         // Process valid rows
         $createdCount = 0;
+        $updatedCount = 0;
         foreach ($result['valid_rows'] as $row) {
             try {
-                ImmovableAsset::create($row['data']);
-                $createdCount++;
+                if (!empty($row['existing_id'])) {
+                    $asset = ImmovableAsset::find($row['existing_id']);
+                    if ($asset) {
+                        $asset->update($row['data']);
+                        $updatedCount++;
+                    }
+                } else {
+                    ImmovableAsset::create($row['data']);
+                    $createdCount++;
+                }
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Immovable Asset Import Failed: ' . $e->getMessage());
             }
         }
 
+        $message = 'Import selesai. ';
+        if ($createdCount > 0) {
+            $message .= "{$createdCount} aset tak alih baru ditambah. ";
+        }
+        if ($updatedCount > 0) {
+            $message .= "{$updatedCount} aset tak alih dikemaskini.";
+        }
+
         return redirect()->route('admin.immovable-assets.index')
-            ->with('success', "Import selesai. {$createdCount} aset tak alih baru ditambah.");
+            ->with('success', rtrim($message));
     }
 
     /**
@@ -326,6 +346,10 @@ class ImmovableAssetController extends Controller
 
             $result = $this->processImportRows($rows);
 
+            $warningsCount = count(array_filter($result['rows'], function ($r) {
+                return !empty($r['warnings']);
+            }));
+
             return response()->json([
                 'success' => true,
                 'data' => $result['rows'],
@@ -333,13 +357,14 @@ class ImmovableAssetController extends Controller
                     'total' => count($rows) - 1,
                     'valid' => count($result['valid_rows']),
                     'invalid' => count($result['errors']),
-                    'skipped' => $result['skipped_count']
-                ]
+                    'skipped' => $result['skipped_count'],
+                    'warnings' => $warningsCount,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
@@ -353,6 +378,7 @@ class ImmovableAssetController extends Controller
         $validRows = [];
         $errorRows = [];
         $skippedCount = 0;
+        $rowWarnings = [];
 
         // Skip header
         array_shift($rows);
@@ -363,12 +389,44 @@ class ImmovableAssetController extends Controller
 
             if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
                 $skippedCount++;
+
                 continue;
             }
 
             try {
                 $masjidSurauId = $row[0] ?? null;
                 $masjidSurau = MasjidSurau::find($masjidSurauId);
+
+                $existingAsset = null;
+                // Check for duplicate - based on no hakmilik or no lot
+                $noHakmilik = !empty($row[4]) ? trim($row[4]) : null;
+                $noLot = !empty($row[5]) ? trim($row[5]) : null;
+                $namaAset = $row[1] ?? null;
+
+                if ($noHakmilik || $noLot) {
+                    // Primary: match by title/lot number
+                    $existingAsset = \App\Models\ImmovableAsset::where('masjid_surau_id', $masjidSurauId)
+                        ->where(function ($query) use ($noHakmilik, $noLot) {
+                            if ($noHakmilik) {
+                                $query->orWhere('no_hakmilik', $noHakmilik);
+                            }
+                            if ($noLot) {
+                                $query->orWhere('no_lot', $noLot);
+                            }
+                        })
+                        ->first();
+                }
+
+                // Fallback: match by nama_aset + masjid_surau_id when both no_hakmilik and no_lot are empty
+                if (!$existingAsset && $namaAset && $masjidSurauId) {
+                    $existingAsset = \App\Models\ImmovableAsset::where('masjid_surau_id', $masjidSurauId)
+                        ->where('nama_aset', $namaAset)
+                        ->first();
+                }
+
+                if ($existingAsset) {
+                    $rowWarnings[$rowNumber] = "Rekod sedia ada - akan dikemaskini (ID: {$existingAsset->id})";
+                }
 
                 $data = [
                     'masjid_surau_id' => $masjidSurauId,
@@ -387,21 +445,21 @@ class ImmovableAssetController extends Controller
 
                 // Validation
                 if (empty($data['nama_aset'])) {
-                    $rowErrors[] = "Nama Aset diperlukan";
+                    $rowErrors[] = 'Nama Aset diperlukan';
                 }
 
                 if (!$masjidSurau) {
-                    $rowErrors[] = "Masjid/Surau ID tidak sah";
+                    $rowErrors[] = 'Masjid/Surau ID tidak sah';
                 }
 
                 $validJenis = ['Tanah', 'Bangunan', 'Tanah dan Bangunan'];
                 if (empty($data['jenis_aset']) || !in_array($data['jenis_aset'], $validJenis)) {
-                    $rowErrors[] = "Jenis Aset tidak sah (Pilih: Tanah, Bangunan, atau Tanah dan Bangunan)";
+                    $rowErrors[] = 'Jenis Aset tidak sah (Pilih: Tanah, Bangunan, atau Tanah dan Bangunan)';
                 }
 
                 // Date parsing
                 if (empty($data['tarikh_perolehan'])) {
-                    $rowErrors[] = "Tarikh Perolehan diperlukan";
+                    $rowErrors[] = 'Tarikh Perolehan diperlukan';
                 } else {
                     try {
                         if (is_numeric($data['tarikh_perolehan'])) {
@@ -413,7 +471,7 @@ class ImmovableAssetController extends Controller
                             $data['tarikh_perolehan'] = \Carbon\Carbon::parse($data['tarikh_perolehan'])->format('Y-m-d');
                         }
                     } catch (\Exception $e) {
-                        $rowErrors[] = "Format tarikh perolehan tidak sah";
+                        $rowErrors[] = 'Format tarikh perolehan tidak sah';
                     }
                 }
 
@@ -423,29 +481,39 @@ class ImmovableAssetController extends Controller
 
                 // Registration number generation
                 if (empty($rowErrors)) {
-                    $y = (new \Carbon\Carbon($data['tarikh_perolehan']))->format('y');
-                    $data['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable($data['masjid_surau_id'], $y);
+                    if (!$existingAsset) {
+                        $y = (new \Carbon\Carbon($data['tarikh_perolehan']))->format('y');
+                        $data['no_siri_pendaftaran'] = AssetRegistrationNumber::generateImmovable($data['masjid_surau_id'], $y);
 
-                    if (ImmovableAsset::where('no_siri_pendaftaran', $data['no_siri_pendaftaran'])->exists()) {
-                        $rowErrors[] = "Nombor siri pendaftaran sudah wujud: {$data['no_siri_pendaftaran']}";
+                        if (ImmovableAsset::where('no_siri_pendaftaran', $data['no_siri_pendaftaran'])->exists()) {
+                            $rowErrors[] = "Nombor siri pendaftaran sudah wujud: {$data['no_siri_pendaftaran']}";
+                        }
+                    } else {
+                        $data['no_siri_pendaftaran'] = $existingAsset->no_siri_pendaftaran;
                     }
                 }
 
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $data,
-                    'valid' => empty($rowErrors),
+                    'existing_id' => $existingAsset ? $existingAsset->id : null,
+                    'valid' => empty($rowErrors) && empty($rowWarnings[$rowNumber]),
                     'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'warnings' => $rowWarnings[$rowNumber] ?? null,
                     'display_data' => [
                         'nama_aset' => $data['nama_aset'] ?: '-',
-                        'masjid' => $masjidSurau ? $masjidSurau->nama : "ID: " . $data['masjid_surau_id'],
+                        'masjid' => $masjidSurau ? $masjidSurau->nama : 'ID: ' . $data['masjid_surau_id'],
                         'jenis' => $data['jenis_aset'] ?: '-',
-                        'tarikh' => $data['tarikh_perolehan'] ?: '-'
-                    ]
+                        'tarikh' => $data['tarikh_perolehan'] ?: '-',
+                    ],
                 ];
 
                 $processedRows[] = $processedRow;
-                if (empty($rowErrors)) {
+
+                // Rows with warnings = duplicates to update
+                if (!empty($rowWarnings[$rowNumber])) {
+                    $validRows[] = $processedRow; // will be updated in import()
+                } elseif (empty($rowErrors)) {
                     $validRows[] = $processedRow;
                 } else {
                     $errorRows[] = $processedRow;
@@ -455,7 +523,7 @@ class ImmovableAssetController extends Controller
                 $processedRows[] = [
                     'row' => $rowNumber,
                     'valid' => false,
-                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()],
                 ];
                 $errorRows[] = end($processedRows);
             }
@@ -465,7 +533,7 @@ class ImmovableAssetController extends Controller
             'rows' => $processedRows,
             'valid_rows' => $validRows,
             'errors' => $errorRows,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
         ];
     }
 
@@ -476,7 +544,7 @@ class ImmovableAssetController extends Controller
     {
         $validated = $request->validate([
             'asset_ids' => 'required|array|min:1',
-            'asset_ids.*' => 'exists:immovable_assets,id'
+            'asset_ids.*' => 'exists:immovable_assets,id',
         ]);
 
         $deletedCount = ImmovableAsset::whereIn('id', $validated['asset_ids'])->delete();

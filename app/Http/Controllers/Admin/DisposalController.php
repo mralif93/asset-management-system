@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Disposal;
 use App\Models\Asset;
+use App\Models\Disposal;
 use App\Models\MasjidSurau;
 use App\Services\NotificationService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class DisposalController extends Controller
 {
@@ -54,6 +54,7 @@ class DisposalController extends Controller
     public function export(Request $request)
     {
         $filename = 'disposals_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\DisposalExport($request), $filename);
     }
 
@@ -84,7 +85,7 @@ class DisposalController extends Controller
             'hasil_pelupusan' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string',
             'gambar_pelupusan' => 'nullable|array',
-            'gambar_pelupusan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240'
+            'gambar_pelupusan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         // Handle document uploads
@@ -163,7 +164,7 @@ class DisposalController extends Controller
             'hasil_pelupusan' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string',
             'gambar_pelupusan' => 'nullable|array',
-            'gambar_pelupusan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240'
+            'gambar_pelupusan.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         // Handle document uploads
@@ -207,7 +208,7 @@ class DisposalController extends Controller
 
         // Update asset status
         $disposal->asset->update([
-            'status_aset' => Asset::STATUS_DISPOSED
+            'status_aset' => Asset::STATUS_DISPOSED,
         ]);
 
         NotificationService::notifyDisposalApproved($disposal);
@@ -221,7 +222,7 @@ class DisposalController extends Controller
         $this->authorize('reject', $disposal);
 
         $request->validate([
-            'sebab_penolakan' => 'required|string'
+            'sebab_penolakan' => 'required|string',
         ]);
 
         $disposal->update([
@@ -261,7 +262,7 @@ class DisposalController extends Controller
                 ]);
 
                 $disposal->asset->update([
-                    'status_aset' => Asset::STATUS_DISPOSED
+                    'status_aset' => Asset::STATUS_DISPOSED,
                 ]);
 
                 $approvedCount++;
@@ -309,19 +310,20 @@ class DisposalController extends Controller
     {
         $this->authorize('create', Disposal::class);
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
+
         return view('admin.disposals.import', compact('masjidSuraus'));
     }
 
     public function downloadTemplate()
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\DisposalImportTemplateExport(), 'template_pelupusan.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\DisposalImportTemplateExport, 'template_pelupusan.xlsx');
     }
 
     public function previewImport(Request $request)
     {
         $this->authorize('create', Disposal::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -329,6 +331,11 @@ class DisposalController extends Controller
         $rows = $sheets[0] ?? [];
 
         $result = $this->processImportRows($rows);
+
+        // Count rows with warnings
+        $warningsCount = count(array_filter($result['rows'], function ($r) {
+            return !empty($r['warnings']);
+        }));
 
         return response()->json([
             'success' => true,
@@ -337,8 +344,9 @@ class DisposalController extends Controller
                 'total' => count($result['rows']),
                 'valid' => count($result['valid_rows']),
                 'invalid' => count($result['errors']),
-                'skipped' => $result['skipped_count']
-            ]
+                'skipped' => $result['skipped_count'],
+                'warnings' => $warningsCount,
+            ],
         ]);
     }
 
@@ -346,7 +354,7 @@ class DisposalController extends Controller
     {
         $this->authorize('create', Disposal::class);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,xlsx,xls'
+            'csv_file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
         $file = $request->file('csv_file');
@@ -355,16 +363,38 @@ class DisposalController extends Controller
 
         $result = $this->processImportRows($rows);
 
-        if (count($result['errors']) > 0) {
+        // Only block on hard errors (not duplicates/warnings)
+        $hardErrors = array_filter($result['errors'], fn($r) => empty($r['existing_id']));
+        if (count($hardErrors) > 0) {
             return back()->with('import_errors', collect($result['errors'])->pluck('errors')->flatten()->all());
         }
 
+        $createdCount = 0;
+        $updatedCount = 0;
+
         foreach ($result['valid_rows'] as $row) {
-            Disposal::create($row['data']);
+            if (!empty($row['existing_id'])) {
+                $disposal = Disposal::find($row['existing_id']);
+                if ($disposal) {
+                    $disposal->update($row['data']);
+                    $updatedCount++;
+                }
+            } else {
+                Disposal::create($row['data']);
+                $createdCount++;
+            }
+        }
+
+        $message = 'Import selesai. ';
+        if ($createdCount > 0) {
+            $message .= "{$createdCount} permohonan pelupusan baru ditambah. ";
+        }
+        if ($updatedCount > 0) {
+            $message .= "{$updatedCount} permohonan pelupusan dikemaskini.";
         }
 
         return redirect()->route('admin.disposals.index')
-            ->with('success', count($result['valid_rows']) . ' rekod pelupusan berjaya diimport.');
+            ->with('success', rtrim($message));
     }
 
     private function processImportRows(array $rows)
@@ -373,6 +403,7 @@ class DisposalController extends Controller
         $validRows = [];
         $errorRows = [];
         $skippedCount = 0;
+        $rowWarnings = [];
 
         // Skip header row
         array_shift($rows);
@@ -383,29 +414,42 @@ class DisposalController extends Controller
             // Skip empty rows
             if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
                 $skippedCount++;
+
                 continue;
             }
 
             $rowErrors = [];
+            $existingDisposal = null;
 
             try {
                 $noSiri = $row[0] ?? null;
                 $asset = Asset::where('no_siri_pendaftaran', $noSiri)->first();
 
                 if (!$asset) {
-                    $rowErrors[] = "No. Siri Pendaftaran Aset tidak sah atau tidak wujud.";
+                    $rowErrors[] = 'No. Siri Pendaftaran Aset tidak sah atau tidak wujud.';
+                } else {
+                    // Check if disposal already exists for this asset
+                    $existingDisposal = \App\Models\Disposal::where('asset_id', $asset->id)
+                        ->whereIn('status_pelupusan', ['Dimohon', 'Lulus'])
+                        ->first();
+                    if ($existingDisposal) {
+                        $rowWarnings[$rowNumber] = "Aset ini sudah ada permohonan pelupusan (Status: {$existingDisposal->status_pelupusan})";
+                    }
                 }
 
                 $formatDate = function ($date, $field) use (&$rowErrors) {
-                    if (empty($date))
+                    if (empty($date)) {
                         return null;
+                    }
                     try {
                         if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
                             return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
                         }
+
                         return \Carbon\Carbon::parse($date)->format('Y-m-d');
                     } catch (\Exception $e) {
                         $rowErrors[] = "Format tarikh $field tidak sah (Gunakan DD/MM/YYYY)";
+
                         return null;
                     }
                 };
@@ -422,46 +466,53 @@ class DisposalController extends Controller
                     'status_pelupusan' => 'Dimohon',
                 ];
 
-                if (empty($data['tarikh_permohonan']))
-                    $rowErrors[] = "Tarikh Permohonan diperlukan.";
+                if (empty($data['tarikh_permohonan'])) {
+                    $rowErrors[] = 'Tarikh Permohonan diperlukan.';
+                }
 
                 // Validate Justifikasi
                 $validJustifications = ['rosak_teruk', 'usang', 'tidak_ekonomi', 'tiada_penggunaan', 'lain_lain'];
                 if (!in_array($data['justifikasi_pelupusan'], $validJustifications)) {
-                    $rowErrors[] = "Justifikasi tidak sah. Pilih: " . implode(', ', $validJustifications);
+                    $rowErrors[] = 'Justifikasi tidak sah. Pilih: ' . implode(', ', $validJustifications);
                 }
 
                 // Validate Kaedah
                 $validMethods = ['jualan', 'buangan', 'hadiah', 'tukar_beli', 'hapus_kira'];
                 if (!in_array($data['kaedah_pelupusan_dicadang'], $validMethods)) {
-                    $rowErrors[] = "Kaedah tidak sah. Pilih: " . implode(', ', $validMethods);
+                    $rowErrors[] = 'Kaedah tidak sah. Pilih: ' . implode(', ', $validMethods);
                 }
 
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $data,
-                    'valid' => empty($rowErrors),
+                    'existing_id' => $existingDisposal ? $existingDisposal->id : null,
+                    'valid' => empty($rowErrors) && empty($rowWarnings[$rowNumber]),
                     'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'warnings' => $rowWarnings[$rowNumber] ?? null,
                     'display_data' => [
                         'no_siri' => $noSiri ?? '-',
                         'nama_aset' => $asset ? $asset->nama_aset : '-',
                         'tarikh' => $row[2] ?? '-',
                         'justifikasi' => $data['justifikasi_pelupusan'],
-                        'kaedah' => $data['kaedah_pelupusan_dicadang']
-                    ]
+                        'kaedah' => $data['kaedah_pelupusan_dicadang'],
+                    ],
                 ];
 
                 $processedRows[] = $processedRow;
-                if (empty($rowErrors))
+                // Warned rows = duplicates → update during import
+                if (!empty($rowWarnings[$rowNumber])) {
                     $validRows[] = $processedRow;
-                else
+                } elseif (empty($rowErrors)) {
+                    $validRows[] = $processedRow;
+                } else {
                     $errorRows[] = $processedRow;
+                }
 
             } catch (\Exception $e) {
                 $processedRows[] = [
                     'row' => $rowNumber,
                     'valid' => false,
-                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()],
                 ];
                 $errorRows[] = end($processedRows);
             }
@@ -471,7 +522,7 @@ class DisposalController extends Controller
             'rows' => $processedRows,
             'valid_rows' => $validRows,
             'errors' => $errorRows,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
         ];
     }
 }

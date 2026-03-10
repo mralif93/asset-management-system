@@ -287,6 +287,12 @@
                                 <span class="font-medium">Sah</span>
                             </div>
                             <div
+                                class="flex items-center px-4 py-2 bg-amber-50 text-amber-700 rounded-lg border border-amber-200 shadow-sm">
+                                <i class='bx bx-warning mr-2 text-xl'></i>
+                                <span class="font-bold text-lg mr-1" id="warningsCount">0</span>
+                                <span class="font-medium">Amaran</span>
+                            </div>
+                            <div
                                 class="flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-lg border border-red-200 shadow-sm">
                                 <i class='bx bx-error-circle mr-2 text-xl'></i>
                                 <span class="font-bold text-lg mr-1" id="invalidCount">0</span>
@@ -304,6 +310,7 @@
                                     <th class="px-6 py-3 bg-gray-50">Jenis</th>
                                     <th class="px-6 py-3 bg-gray-50">Tarikh</th>
                                     <th class="px-6 py-3 bg-gray-50">Lokasi</th>
+                                    <th class="px-6 py-3 bg-gray-50">Amaran</th>
                                     <th class="px-6 py-3 bg-gray-50">Ralat / Catatan</th>
                                 </tr>
                             </thead>
@@ -821,6 +828,7 @@
                 const previewTableBody = document.getElementById('previewTableBody');
                 const validCountSpan = document.getElementById('validCount');
                 const invalidCountSpan = document.getElementById('invalidCount');
+                const warningsCountSpan = document.getElementById('warningsCount');
 
                 // Pagination Elements
                 const paginationControls = document.getElementById('paginationControls');
@@ -845,15 +853,29 @@
                         const tr = document.createElement('tr');
                         tr.className = 'bg-white border-b hover:bg-gray-50';
 
-                        const statusHtml = row.valid
-                            ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full">Sah</span>'
-                            : '<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Ralat</span>';
+                        // Determine status badge - show warning if exists
+                        let statusHtml = '';
+                        if (row.warnings && row.warnings.length > 0) {
+                            statusHtml = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-amber-700 bg-amber-100 rounded-full">Amaran</span>';
+                        } else if (row.valid) {
+                            statusHtml = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full">Sah</span>';
+                        } else {
+                            statusHtml = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Ralat</span>';
+                        }
+
+                        // Warnings column
+                        let warningsHtml = '-';
+                        if (row.warnings && row.warnings.length > 0) {
+                            warningsHtml = `<ul class="list-disc list-inside text-amber-600 text-xs">
+                                <li>${row.warnings}</li>
+                            </ul>`;
+                        }
 
                         let errorsHtml = '-';
                         if (!row.valid) {
                             errorsHtml = `<ul class="list-disc list-inside text-red-600 text-xs">
-                                                                ${row.errors.map(err => `<li>${err}</li>`).join('')}
-                                                            </ul>`;
+                                                                 ${row.errors.map(err => `<li>${err}</li>`).join('')}
+                                                             </ul>`;
                         } else {
                             errorsHtml = row.data.no_siri_pendaftaran
                                 ? `<span class="text-xs text-gray-500">ID Dijana: ${row.data.no_siri_pendaftaran}</span>`
@@ -867,6 +889,7 @@
                                                             <td class="px-6 py-4">${row.data.jenis_aset || '-'}</td>
                                                             <td class="px-6 py-4">${row.data.tarikh_perolehan || '-'}</td>
                                                             <td class="px-6 py-4">${row.data.lokasi_penempatan || '-'}</td>
+                                                            <td class="px-6 py-4">${warningsHtml}</td>
                                                             <td class="px-6 py-4">${errorsHtml}</td>
                                                         `;
                         previewTableBody.appendChild(tr);
@@ -932,6 +955,7 @@
                                 // Update counts
                                 validCountSpan.textContent = data.summary.valid;
                                 invalidCountSpan.textContent = data.summary.invalid;
+                                warningsCountSpan.textContent = data.summary.warnings || 0;
 
                                 // Render first page
                                 renderTable(currentPage);

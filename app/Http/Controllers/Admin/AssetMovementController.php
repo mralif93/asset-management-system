@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AssetMovement;
 use App\Models\Asset;
+use App\Models\AssetMovement;
 use App\Models\MasjidSurau;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class AssetMovementController extends Controller
             'masjidSurauAsal',
             'masjidSurauDestinasi',
             'approvedByAsal',
-            'approvedByDestinasi'
+            'approvedByDestinasi',
         ]);
 
         // Apply filters
@@ -86,7 +86,7 @@ class AssetMovementController extends Controller
             'Lokasi Destinasi Spesifik',
             'Nama Peminjam/Pegawai Bertanggungjawab',
             'Tujuan Pergerakan',
-            'Catatan'
+            'Catatan',
         ];
 
         $callback = function () use ($headers) {
@@ -96,11 +96,11 @@ class AssetMovementController extends Controller
         };
 
         return response()->stream($callback, 200, [
-            "Content-type" => "text/csv",
-            "Content-Disposition" => "attachment; filename=template_import_pergerakan_aset.csv",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=template_import_pergerakan_aset.csv',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
         ]);
     }
 
@@ -110,6 +110,7 @@ class AssetMovementController extends Controller
     public function showImport()
     {
         $masjidSuraus = MasjidSurau::all();
+
         return view('admin.asset-movements.import', compact('masjidSuraus'));
     }
 
@@ -134,7 +135,9 @@ class AssetMovementController extends Controller
 
         $result = $this->processImportRows($rows);
 
-        if (count($result['errors']) > 0) {
+        // Only block on hard errors (not duplicates/warnings)
+        $hardErrors = array_filter($result['errors'], fn($r) => empty($r['existing_id']));
+        if (count($hardErrors) > 0) {
             $displayErrors = [];
             foreach ($result['errors'] as $rowErrors) {
                 foreach ($rowErrors['errors'] as $error) {
@@ -150,17 +153,35 @@ class AssetMovementController extends Controller
 
         // Process valid rows
         $createdCount = 0;
+        $updatedCount = 0;
+
         foreach ($result['valid_rows'] as $row) {
             try {
-                AssetMovement::create($row['data']);
-                $createdCount++;
+                if (!empty($row['existing_id'])) {
+                    $movement = AssetMovement::find($row['existing_id']);
+                    if ($movement) {
+                        $movement->update($row['data']);
+                        $updatedCount++;
+                    }
+                } else {
+                    AssetMovement::create($row['data']);
+                    $createdCount++;
+                }
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Asset Movement Import Failed: ' . $e->getMessage());
             }
         }
 
+        $message = 'Import selesai. ';
+        if ($createdCount > 0) {
+            $message .= "{$createdCount} rekod pergerakan baru ditambah. ";
+        }
+        if ($updatedCount > 0) {
+            $message .= "{$updatedCount} rekod pergerakan dikemaskini.";
+        }
+
         return redirect()->route('admin.asset-movements.index')
-            ->with('success', "Import selesai. {$createdCount} rekod pergerakan baru ditambah.");
+            ->with('success', rtrim($message));
     }
 
     /**
@@ -179,6 +200,10 @@ class AssetMovementController extends Controller
 
             $result = $this->processImportRows($rows);
 
+            $warningsCount = count(array_filter($result['rows'], function ($r) {
+                return !empty($r['warnings']);
+            }));
+
             return response()->json([
                 'success' => true,
                 'data' => $result['rows'],
@@ -186,13 +211,14 @@ class AssetMovementController extends Controller
                     'total' => count($rows) - 1,
                     'valid' => count($result['valid_rows']),
                     'invalid' => count($result['errors']),
-                    'skipped' => $result['skipped_count']
-                ]
+                    'skipped' => $result['skipped_count'],
+                    'warnings' => $warningsCount,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
@@ -206,6 +232,7 @@ class AssetMovementController extends Controller
         $validRows = [];
         $errorRows = [];
         $skippedCount = 0;
+        $rowWarnings = [];
 
         // Skip header
         array_shift($rows);
@@ -216,8 +243,12 @@ class AssetMovementController extends Controller
 
             if (empty(array_filter($row, fn($v) => !is_null($v) && $v !== ''))) {
                 $skippedCount++;
+
                 continue;
             }
+
+            $rowErrors = [];
+            $existingMovement = null;
 
             try {
                 $noSiri = $row[1] ?? null;
@@ -231,6 +262,14 @@ class AssetMovementController extends Controller
 
                 if (!$asset) {
                     $rowErrors[] = "Aset tidak ditemui (No. Siri: $noSiri)";
+                } else {
+                    // Check if asset already has active movement
+                    $existingMovement = \App\Models\AssetMovement::where('asset_id', $asset->id)
+                        ->whereIn('status_pergerakan', ['Dimohon', 'Diluluskan'])
+                        ->first();
+                    if ($existingMovement) {
+                        $rowWarnings[$rowNumber] = "Aset ini sedang dalam pergerakan aktif (Status: {$existingMovement->status_pergerakan})";
+                    }
                 }
 
                 $data = [
@@ -253,27 +292,30 @@ class AssetMovementController extends Controller
 
                 // Validation
                 if (empty($data['jenis_pergerakan']) || !in_array($data['jenis_pergerakan'], ['Pemindahan', 'Peminjaman', 'Pulangan'])) {
-                    $rowErrors[] = "Jenis Pergerakan tidak sah (Pilih: Pemindahan, Peminjaman, atau Pulangan)";
+                    $rowErrors[] = 'Jenis Pergerakan tidak sah (Pilih: Pemindahan, Peminjaman, atau Pulangan)';
                 }
 
                 if (empty($data['origin_masjid_surau_id']) || !MasjidSurau::find($data['origin_masjid_surau_id'])) {
-                    $rowErrors[] = "ID Masjid/Surau Asal tidak sah";
+                    $rowErrors[] = 'ID Masjid/Surau Asal tidak sah';
                 }
 
                 if ($data['jenis_pergerakan'] !== 'Pulangan' && (empty($data['destination_masjid_surau_id']) || !MasjidSurau::find($data['destination_masjid_surau_id']))) {
-                    $rowErrors[] = "ID Masjid/Surau Destinasi tidak sah";
+                    $rowErrors[] = 'ID Masjid/Surau Destinasi tidak sah';
                 }
 
                 $formatDate = function ($date, $field) use (&$rowErrors) {
-                    if (empty($date))
+                    if (empty($date)) {
                         return null;
+                    }
                     try {
                         if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
                             return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
                         }
+
                         return \Carbon\Carbon::parse($date)->format('Y-m-d');
                     } catch (\Exception $e) {
                         $rowErrors[] = "Format tarikh $field tidak sah";
+
                         return null;
                     }
                 };
@@ -288,27 +330,33 @@ class AssetMovementController extends Controller
                 $processedRow = [
                     'row' => $rowNumber,
                     'data' => $data,
-                    'valid' => empty($rowErrors),
+                    'existing_id' => ($existingMovement ?? null) ? $existingMovement->id : null,
+                    'valid' => empty($rowErrors) && empty($rowWarnings[$rowNumber]),
                     'errors' => array_map(fn($e) => "Baris $rowNumber: $e", $rowErrors),
+                    'warnings' => $rowWarnings[$rowNumber] ?? null,
                     'display_data' => [
                         'nama_aset' => $asset ? $asset->nama_aset : '-',
                         'no_siri' => $noSiri,
                         'jenis' => $data['jenis_pergerakan'],
-                        'kuantiti' => $data['kuantiti']
-                    ]
+                        'kuantiti' => $data['kuantiti'],
+                    ],
                 ];
 
                 $processedRows[] = $processedRow;
-                if (empty($rowErrors))
+                // Warned rows = duplicates → update during import
+                if (!empty($rowWarnings[$rowNumber])) {
                     $validRows[] = $processedRow;
-                else
+                } elseif (empty($rowErrors)) {
+                    $validRows[] = $processedRow;
+                } else {
                     $errorRows[] = $processedRow;
+                }
 
             } catch (\Exception $e) {
                 $processedRows[] = [
                     'row' => $rowNumber,
                     'valid' => false,
-                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()]
+                    'errors' => ["Baris $rowNumber: Ralat Sistem - " . $e->getMessage()],
                 ];
                 $errorRows[] = end($processedRows);
             }
@@ -318,9 +366,10 @@ class AssetMovementController extends Controller
             'rows' => $processedRows,
             'valid_rows' => $validRows,
             'errors' => $errorRows,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
         ];
     }
+
     /**
      * borangMohonPergerakanPinjaman(): Display form interface for users to apply for asset movement/loan
      */
@@ -341,7 +390,6 @@ class AssetMovementController extends Controller
         $masjidSuraus = MasjidSurau::orderBy('nama')->get();
         $validLocations = \App\Helpers\SystemData::getValidLocations();
 
-
         $defaultMasjid = MasjidSurau::where('nama', 'like', '%Al-Hidayah%')
             ->where('nama', 'like', '%Taman Melawati%')
             ->first();
@@ -354,7 +402,7 @@ class AssetMovementController extends Controller
                 'jenis' => 'Surau', // Valid enum value required
                 'alamat_baris_1' => '-',
                 'daerah' => 'Lain-lain',
-                'status' => 'Aktif'
+                'status' => 'Aktif',
             ]
         );
         $default_destination_masjid_id = $lainLain->id;
@@ -458,6 +506,7 @@ class AssetMovementController extends Controller
 
         if (count($movementIds) > 1) {
             NotificationService::notifyNewAssetMovementRequest(AssetMovement::find($movementIds[0]));
+
             return redirect()->route('admin.asset-movements.index')
                 ->with('success', count($movementIds) . ' pergerakan aset berjaya didaftarkan secara berkelompok.');
         }
@@ -480,7 +529,7 @@ class AssetMovementController extends Controller
             'masjidSurauAsal',
             'masjidSurauDestinasi',
             'approvedByAsal',
-            'approvedByDestinasi'
+            'approvedByDestinasi',
         ]);
 
         return view('admin.asset-movements.show', compact('assetMovement'));
@@ -655,7 +704,7 @@ class AssetMovementController extends Controller
         // Update asset location back to original
         $assetMovement->asset->update([
             'lokasi_penempatan' => $assetMovement->lokasi_asal_spesifik,
-            'masjid_surau_id' => $assetMovement->origin_masjid_surau_id
+            'masjid_surau_id' => $assetMovement->origin_masjid_surau_id,
         ]);
 
         return redirect()->route('admin.asset-movements.show', $assetMovement)
@@ -736,7 +785,7 @@ class AssetMovementController extends Controller
                 'asset',
                 'asset.masjidSurau',
                 'masjidSurauAsal',
-                'masjidSurauDestinasi'
+                'masjidSurauDestinasi',
             ])
             ->latest()
             ->paginate(15);

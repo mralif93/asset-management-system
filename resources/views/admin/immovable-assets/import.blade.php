@@ -235,7 +235,8 @@
                                     <div class="ml-3 text-sm">
                                         <p class="font-semibold text-blue-800 mb-1">💡 Tip Berguna:</p>
                                         <ul class="text-blue-700 leading-relaxed space-y-1">
-                                            <li>• Gunakan <strong>ID Masjid/Surau</strong> yang sah (boleh dirujuk di panel kanan)</li>
+                                            <li>• Gunakan <strong>ID Masjid/Surau</strong> yang sah (boleh dirujuk di panel
+                                                kanan)</li>
                                             <li>• Jenis aset sah: <strong>Tanah, Bangunan, Tanah dan Bangunan</strong></li>
                                             <li>• Format tarikh mesti YYYY-MM-DD (contoh: 2024-01-15)</li>
                                             <li>• Isikan keluasan dalam nilai nombor tanpa simbol tambahan</li>
@@ -292,6 +293,12 @@
                                     <span class="text-xs uppercase font-semibold">SAH</span>
                                 </div>
                                 <div
+                                    class="flex items-center px-4 py-2 bg-amber-50 text-amber-700 rounded-xl border border-amber-100 shadow-sm">
+                                    <i class='bx bx-warning mr-2 text-xl'></i>
+                                    <span class="font-bold text-lg mr-1" id="warningsCount">0</span>
+                                    <span class="text-xs uppercase font-semibold">AMARAN</span>
+                                </div>
+                                <div
                                     class="flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-xl border border-red-100 shadow-sm">
                                     <i class='bx bx-error-circle mr-2 text-xl'></i>
                                     <span class="font-bold text-lg mr-1" id="invalidCount">0</span>
@@ -309,7 +316,9 @@
                                         <th class="px-6 py-4 font-bold">Nama Aset</th>
                                         <th class="px-6 py-4 font-bold">Masjid/Surau</th>
                                         <th class="px-6 py-4 font-bold">Jenis</th>
-                                        <th class="px-6 py-4 font-bold">Tarikh / Ralat</th>
+                                        <th class="px-6 py-4 font-bold">Tarikh</th>
+                                        <th class="px-6 py-4 font-bold">Amaran</th>
+                                        <th class="px-6 py-4 font-bold">Ralat</th>
                                     </tr>
                                 </thead>
                                 <tbody id="previewTableBody" class="divide-y divide-gray-100">
@@ -351,7 +360,8 @@
                         </div>
                         <h3 class="font-semibold text-gray-900">Template Import</h3>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Muat turun template CSV dengan format yang betul dan contoh data.</p>
+                    <p class="text-sm text-gray-600 mb-4">Muat turun template CSV dengan format yang betul dan contoh data.
+                    </p>
                     <a href="{{ route('admin.immovable-assets.import.template') }}"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
                         <i class='bx bx-download mr-2'></i>
@@ -588,6 +598,7 @@
                             allRows = result.data;
                             document.getElementById('validCount').textContent = result.summary.valid;
                             document.getElementById('invalidCount').textContent = result.summary.invalid;
+                            document.getElementById('warningsCount').textContent = result.summary.warnings || 0;
                             document.getElementById('totalRows').textContent = result.summary.total;
 
                             currentPage = 1;
@@ -619,24 +630,49 @@
                     const end = start + rowsPerPage;
                     const pageRows = allRows.slice(start, end);
 
-                    tableBody.innerHTML = pageRows.map(row => `
-                            <tr class="${row.valid ? 'hover:bg-gray-50' : 'bg-red-50'}">
-                                <td class="px-6 py-4 font-mono text-xs text-gray-500">${row.row}</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${row.valid ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
-                                        ${row.valid ? 'SAH' : 'RALAT'}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="font-bold text-gray-900">${row.display_data?.nama_aset || '-'}</div>
-                                </td>
-                                <td class="px-6 py-4 text-gray-700">${row.display_data?.masjid || '-'}</td>
-                                <td class="px-6 py-4 text-gray-700">${row.display_data?.jenis || '-'}</td>
-                                <td class="px-6 py-4 ${row.valid ? 'text-gray-500 italic' : 'text-red-600 font-semibold'}">
-                                    ${row.valid ? row.display_data?.tarikh : row.errors.join('<br>')}
-                                </td>
-                            </tr>
-                        `).join('');
+                    tableBody.innerHTML = pageRows.map(row => {
+                        let statusHtml = '';
+                        if (row.warnings && row.warnings.length > 0) {
+                            statusHtml = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-amber-700 bg-amber-100 rounded-full">AMARAN</span>';
+                        } else if (row.valid) {
+                            statusHtml = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-emerald-700 bg-emerald-100 rounded-full">SAH</span>';
+                        } else {
+                            statusHtml = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full">RALAT</span>';
+                        }
+
+                        let warningsHtml = '-';
+                        if (row.warnings && row.warnings.length > 0) {
+                            warningsHtml = `<ul class="list-disc list-inside text-amber-600 text-xs">
+                                        <li>${row.warnings}</li>
+                                    </ul>`;
+                        }
+
+                        let errorsHtml = '-';
+                        if (!row.valid) {
+                            errorsHtml = `<ul class="list-disc list-inside text-red-600 text-xs">
+                                        ${row.errors.map(err => `<li>${err}</li>`).join('')}
+                                    </ul>`;
+                        }
+
+                        return `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">${row.row}</td>
+                                        <td class="px-6 py-4">
+                                            ${statusHtml}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-bold text-gray-900">${row.display_data?.nama_aset || '-'}</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-700">${row.display_data?.masjid || '-'}</td>
+                                        <td class="px-6 py-4 text-gray-700">${row.display_data?.jenis || '-'}</td>
+                                        <td class="px-6 py-4 text-gray-500">
+                                            ${row.display_data?.tarikh || '-'}
+                                        </td>
+                                        <td class="px-6 py-4">${warningsHtml}</td>
+                                        <td class="px-6 py-4">${errorsHtml}</td>
+                                    </tr>
+                                `;
+                    }).join('');
 
                     document.getElementById('pageStart').textContent = allRows.length ? start + 1 : 0;
                     document.getElementById('pageEnd').textContent = Math.min(end, allRows.length);

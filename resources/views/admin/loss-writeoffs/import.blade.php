@@ -293,6 +293,12 @@
                                     <span class="text-xs uppercase font-semibold">SAH</span>
                                 </div>
                                 <div
+                                    class="flex items-center px-4 py-2 bg-amber-50 text-amber-700 rounded-xl border border-amber-100 shadow-sm">
+                                    <i class='bx bx-warning mr-2 text-xl'></i>
+                                    <span class="font-bold text-lg mr-1" id="warningsCount">0</span>
+                                    <span class="text-xs uppercase font-semibold">AMARAN</span>
+                                </div>
+                                <div
                                     class="flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-xl border border-red-100 shadow-sm">
                                     <i class='bx bx-error-circle mr-2 text-xl'></i>
                                     <span class="font-bold text-lg mr-1" id="invalidCount">0</span>
@@ -309,7 +315,8 @@
                                         <th class="px-6 py-4 font-bold">Status</th>
                                         <th class="px-6 py-4 font-bold">No. Siri Aset</th>
                                         <th class="px-6 py-4 font-bold">Nama Aset</th>
-                                        <th class="px-6 py-4 font-bold">Jenis / Sebab</th>
+                                        <th class="px-6 py-4 font-bold">Jenis / sebab</th>
+                                        <th class="px-6 py-4 font-bold">Amaran</th>
                                         <th class="px-6 py-4 font-bold">Tarikh / Ralat</th>
                                     </tr>
                                 </thead>
@@ -543,6 +550,7 @@
                             allRows = result.data;
                             document.getElementById('validCount').textContent = result.summary.valid;
                             document.getElementById('invalidCount').textContent = result.summary.invalid;
+                            document.getElementById('warningsCount').textContent = result.summary.warnings || 0;
                             document.getElementById('totalRows').textContent = result.summary.total;
 
                             currentPage = 1;
@@ -574,24 +582,38 @@
                     const end = start + rowsPerPage;
                     const pageRows = allRows.slice(start, end);
 
-                    tableBody.innerHTML = pageRows.map(row => `
+                    tableBody.innerHTML = pageRows.map(row => {
+                        // Determine status badge
+                        let statusBadge = '';
+                        if (row.warnings && row.warnings.length > 0) {
+                            statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">AMARAN</span>';
+                        } else if (row.valid) {
+                            statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">SAH</span>';
+                        } else {
+                            statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">RALAT</span>';
+                        }
+
+                        // Warnings column
+                        const warningsHtml = row.warnings ? `<span class="text-amber-600 text-xs">${row.warnings}</span>` : '-';
+
+                        return `
                                 <tr class="${row.valid ? 'hover:bg-gray-50' : 'bg-red-50'}">
                                     <td class="px-6 py-4 font-mono text-xs text-gray-500">${row.row}</td>
                                     <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${row.valid ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
-                                            ${row.valid ? 'SAH' : 'RALAT'}
-                                        </span>
+                                        ${statusBadge}
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="font-bold text-gray-900">${row.display_data?.no_siri || '-'}</div>
                                     </td>
                                     <td class="px-6 py-4 text-gray-700">${row.display_data?.nama_aset || '-'}</td>
                                     <td class="px-6 py-4 text-gray-700 italic">${row.display_data?.jenis || '-'}<br>${row.display_data?.sebab || '-'}</td>
+                                    <td class="px-6 py-4">${warningsHtml}</td>
                                     <td class="px-6 py-4 ${row.valid ? 'text-gray-500 italic' : 'text-red-600 font-semibold'}">
                                         ${row.valid ? row.display_data?.tarikh : row.errors.join('<br>')}
                                     </td>
                                 </tr>
-                            `).join('');
+                            `;
+                    }).join('');
 
                     document.getElementById('pageStart').textContent = allRows.length ? start + 1 : 0;
                     document.getElementById('pageEnd').textContent = Math.min(end, allRows.length);
