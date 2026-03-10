@@ -17,6 +17,9 @@
     <!-- Boxicons -->
     <link href="{{ asset('assets/css/boxicons.min.css') }}" rel="stylesheet">
 
+    <!-- Animate.css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
     <!-- Alpine.js -->
     <script defer src="{{ asset('assets/js/alpine.min.js') }}"></script>
 
