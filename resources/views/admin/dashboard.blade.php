@@ -4,23 +4,32 @@
 @section('page-title', 'Admin Dashboard')
 
 @section('content')
-    <div class="p-6">
+    <div class="p-8">
         <!-- Welcome Section -->
         <div class="mb-8">
-            <div class="bg-emerald-600 rounded-2xl p-8 text-white animate__animated animate__fadeInDown">
-                <div class="flex items-center justify-between">
+            <div class="bg-emerald-600 rounded-2xl p-8 text-white overflow-hidden shadow-lg relative animate__animated animate__fadeInDown">
+                <!-- Decorative background pattern -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                
+                <div class="relative flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold mb-2">Selamat datang, {{ Auth::user()->name }}!</h1>
                         <p class="text-emerald-100 text-lg">Kelola aset organisasi anda dengan mudah dan efisien</p>
                         <div class="flex items-center space-x-4 mt-4">
-                            <span class="bg-emerald-500/30 px-3 py-1 rounded-full text-sm">
+                            <span class="bg-emerald-500/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm border border-emerald-400/30">
                                 <i class='bx bx-calendar mr-1'></i>
                                 {{ now()->format('d M Y') }}
                             </span>
+                            <span class="bg-emerald-500/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm border border-emerald-400/30">
+                                <i class='bx bx-time mr-1'></i>
+                                {{ now()->format('h:i A') }}
+                            </span>
                         </div>
                     </div>
-                    <div class="hidden md:block animate__animated animate__bounce animate__infinite animate__slow">
-                        <i class='bx bx-shield-check text-6xl text-emerald-200'></i>
+                    <div class="hidden md:block relative">
+                        <i class='bx bx-shield-check text-7xl text-emerald-200/50 absolute -top-4 -right-4 animate__animated animate__pulse animate__infinite'></i>
+                        <i class='bx bx-shield-check text-6xl text-emerald-200 relative animate__animated animate__bounce animate__infinite animate__slow'></i>
                     </div>
                 </div>
             </div>
