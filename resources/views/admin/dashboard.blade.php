@@ -194,8 +194,8 @@
             <!-- Quick Stats -->
             <div class="space-y-6">
                 <!-- Asset Status -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow animate__animated animate__fadeInRight animate__delay-3s">
-                    <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-white">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden animate__animated animate__fadeInRight animate__delay-3s">
+                    <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-white rounded-t-xl">
                         <h3 class="text-lg font-semibold text-gray-900">Status Aset</h3>
                     </div>
                     <div class="p-6">
@@ -244,8 +244,8 @@
                 </div>
 
                 <!-- System Health -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow animate__animated animate__fadeInRight animate__delay-4s">
-                    <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden animate__animated animate__fadeInRight animate__delay-4s">
+                    <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white rounded-t-xl">
                         <h3 class="text-lg font-semibold text-gray-900">Kesihatan Sistem</h3>
                     </div>
                     <div class="p-6">
@@ -295,8 +295,8 @@
         <!-- Bottom Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
             <!-- Recent Users -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow animate__animated animate__fadeInUp animate__delay-3s">
-                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden animate__animated animate__fadeInUp animate__delay-3s">
+                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white rounded-t-xl">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-gray-900">Pengguna Terkini</h2>
                         <a href="{{ route('admin.users.index') }}"
@@ -331,8 +331,8 @@
             </div>
 
             <!-- Maintenance Schedule -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow animate__animated animate__fadeInUp animate__delay-4s">
-                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-white">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden animate__animated animate__fadeInUp animate__delay-4s">
+                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-white rounded-t-xl">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-gray-900">Jadual Penyelenggaraan</h2>
                         <a href="{{ route('admin.maintenance-records.index') }}"
