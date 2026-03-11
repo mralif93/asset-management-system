@@ -184,6 +184,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/inspection-schedule', [ReportController::class, 'inspectionSchedule'])->name('inspection-schedule');
         Route::get('/maintenance-schedule', [ReportController::class, 'maintenanceSchedule'])->name('maintenance-schedule');
         Route::get('/asset-depreciation', [ReportController::class, 'assetDepreciation'])->name('asset-depreciation');
+        Route::get('/asset-depreciation/export', [ReportController::class, 'exportAssetDepreciation'])->name('asset-depreciation.export');
 
         // PDF Downloads
         Route::get('/br-ams-001/pdf', [ReportController::class, 'brAms001Pdf'])->name('br-ams-001.pdf');

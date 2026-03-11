@@ -418,8 +418,10 @@ class AssetController extends Controller
      */
     public function export(Request $request)
     {
-        // Enforce Asset Alih export to include only category "asset".
-        $request->merge(['kategori_aset' => 'asset']);
+        // Only force category "asset" if not already specified in the request
+        if (!$request->filled('kategori_aset')) {
+            $request->merge(['kategori_aset' => 'asset']);
+        }
 
         $filename = 'assets_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
 
@@ -619,16 +621,16 @@ class AssetController extends Controller
                     'status_aset' => $row[14] ?? 'Sedang Digunakan',
                     'keadaan_fizikal' => $row[15] ?? 'Baik',
                     'status_jaminan' => $row[16] ?? 'Tiada Jaminan',
-                    'tarikh_pemeriksaan_terakhir' => !empty($row[17]) ? $row[17] : null,
-                    'tarikh_penyelenggaraan_akan_datang' => !empty($row[18]) ? $row[18] : null,
+                    'tarikh_pemeriksaan_terakhir' => $row[17] ?? null,
+                    'tarikh_penyelenggaraan_akan_datang' => $row[18] ?? null,
                     'no_resit' => $row[19] ?? null,
-                    'tarikh_resit' => !empty($row[20]) ? $row[20] : null,
+                    'tarikh_resit' => $row[20] ?? null,
                     'pembekal' => $row[21] ?? null,
                     'jenama' => $row[22] ?? null,
                     'no_pesanan_kerajaan' => $row[23] ?? null,
                     'no_rujukan_kontrak' => $row[24] ?? null,
                     'tempoh_jaminan' => $row[25] ?? null,
-                    'tarikh_tamat_jaminan' => !empty($row[26]) ? $row[26] : null,
+                    'tarikh_tamat_jaminan' => $row[26] ?? null,
                     'catatan' => $row[27] ?? null,
                     'catatan_jaminan' => $row[28] ?? null,
                 ];

@@ -52,6 +52,7 @@ class ImmovableAssetDataSheet implements FromQuery, WithHeadings, WithMapping, S
     {
         return [
             'Masjid/Surau ID',
+            'No. Siri Pendaftaran',
             'Nama Aset',
             'Jenis Aset',
             'Alamat',
@@ -70,6 +71,7 @@ class ImmovableAssetDataSheet implements FromQuery, WithHeadings, WithMapping, S
     {
         return [
             $asset->masjid_surau_id,
+            $asset->no_siri_pendaftaran,
             $asset->nama_aset,
             $asset->jenis_aset,
             $asset->alamat ?? '',

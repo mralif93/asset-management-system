@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\AssetDepreciationExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -174,7 +176,28 @@ class ReportController extends Controller
      */
     public function assetDepreciation()
     {
-        $assets = Asset::with('masjidSurau')
+        $assets = $this->getDepreciationData();
+
+        return view('admin.reports.asset-depreciation', compact('assets'));
+    }
+
+    /**
+     * Export asset depreciation to Excel
+     */
+    public function exportAssetDepreciation()
+    {
+        $assets = $this->getDepreciationData();
+        $filename = 'laporan_susut_nilai_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return Excel::download(new AssetDepreciationExport($assets), $filename);
+    }
+
+    /**
+     * Helper to get common depreciation data
+     */
+    private function getDepreciationData()
+    {
+        return Asset::with('masjidSurau')
             ->whereNotNull('tarikh_perolehan')
             ->whereNotNull('nilai_perolehan')
             ->get()
@@ -199,8 +222,6 @@ class ReportController extends Controller
 
                 return $asset;
             });
-
-        return view('admin.reports.asset-depreciation', compact('assets'));
     }
 
     /**
@@ -1357,23 +1378,23 @@ class ReportController extends Controller
     {
         $masjidSurauId = $request->masjid_surau_id;
         $tahun = $request->tahun;
-        
+
         $query = Disposal::with(['asset', 'asset.masjidSurau'])
             ->where('status_pelupusan', 'Diluluskan');
-            
+
         if ($masjidSurauId) {
             $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        
+
         if ($tahun) {
             $query->whereYear('tarikh_pelupusan', $tahun);
         }
-        
+
         $disposals = $query->orderBy('tarikh_pelupusan', 'desc')->get();
         $totalProceeds = $disposals->sum('hasil_pelupusan');
-        
+
         $pdf = Pdf::loadView('admin.reports.pdf.br-ams-008', compact('disposals', 'totalProceeds'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-008-' . date('Y-m-d') . '.pdf');
@@ -1383,22 +1404,22 @@ class ReportController extends Controller
     {
         $masjidSurauId = $request->masjid_surau_id;
         $tahun = $request->tahun;
-        
+
         $query = LossWriteoff::with(['asset', 'asset.masjidSurau']);
-            
+
         if ($masjidSurauId) {
             $query->whereHas('asset', function ($q) use ($masjidSurauId) {
                 $q->where('masjid_surau_id', $masjidSurauId);
             });
         }
-        
+
         if ($tahun) {
             $query->whereYear('tarikh_kehilangan', $tahun);
         }
-        
+
         $lossWriteoffs = $query->orderBy('tarikh_kehilangan', 'desc')->get();
         $totalValue = $lossWriteoffs->sum('nilai_kehilangan');
-        
+
         $pdf = Pdf::loadView('admin.reports.pdf.br-ams-009', compact('lossWriteoffs', 'totalValue'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('BR-AMS-009-' . date('Y-m-d') . '.pdf');

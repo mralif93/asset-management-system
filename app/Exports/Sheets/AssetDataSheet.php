@@ -25,7 +25,7 @@ class AssetDataSheet implements FromQuery, WithHeadings, WithMapping, ShouldAuto
     public function query()
     {
         // Asset Alih report/export should only include category "asset".
-        $query = Asset::with('masjidSurau')->where('kategori_aset', 'asset');
+        $query = Asset::with('masjidSurau');
 
         // Apply same filters as index
         if ($this->request->filled('masjid_surau_id')) {
